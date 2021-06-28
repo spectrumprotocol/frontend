@@ -1,0 +1,137 @@
+<main>
+    <div class="container py-5" *ngIf="poll && staked && config">
+        <div class="row">
+            <div class="col-4">
+                 <h2><a class="fas fa-angle-left" routerLink="/gov" ></a> Poll details</h2>
+            </div>
+        </div>
+        <div class="row pt-3">
+            <app-poll-item [poll]="poll" [staked]="staked" [config]="config"></app-poll-item>
+        </div>
+        <div class="row pt-3">
+            <div class="col-12">
+                <div class="card py-3">
+                    <div class="card-body">
+                        <div class="row gy-3">
+                            <div class="col-12">
+                                <h6 class="card-subtitle">Creator</h6>
+                                <a [href]="'https://finder.terra.money/' + terrajs.settings.chainID + '/account/' + poll.creator"
+                                    target="_blank">{{ poll.creator }}</a>
+                            </div>
+                            <div class="col-12">
+                                <h6 class="card-subtitle">Description</h6>
+                                <pre>{{ poll.description }}</pre>
+                            </div>
+                            <div class="col-12" *ngIf="poll.link">
+                                <h6 class="card-subtitle">Link</h6>
+                                <a [href]="poll.link" target="_blank">{{ poll.link }}</a>
+                            </div>
+                            <div class="col-12" *ngFor="let item of poll.execute_msgs || []; let i = index">
+                                <h6 class="card-subtitle">Execution message {{i + 1}}</h6>
+                                <span>Contract Address: </span><a
+                                    [href]="'https://finder.terra.money/' + terrajs.settings.chainID + '/address/' + item.execute.contract"
+                                    target="_blank">{{ item.execute.contract }}</a>
+                                <pre class="json" [innerHtml]="item.execute.msg | jsonParse | prettyjson:2"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-3" *ngIf="canVote">
+            <div class="card spec-form">
+                <div class="card-header">
+                    Vote
+                </div>
+                <div class="card-body">
+                    <form class="needs-validation" novalidate #form="ngForm">
+                        <div class="text-end small mt-5 text-muted">
+                            <span>Balance: {{ maxAmount | number }} SPEC</span>
+                        </div>
+                        <div class="input-group mb-5">
+                            <input type="number" class="form-control" placeholder="0.00" name="amount"
+                                [(ngModel)]="amount" [min]="0.000001" [max]="maxAmount" [step]="0.000001" required
+                                #amountCtl="ngModel" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'"
+                                [class.is-invalid]="(form.submitted || amountCtl.touched) && amountCtl.invalid" />
+                            <button class="btn btn-outline-primary" type="button" (click)="setMax()">
+                                Max
+                            </button>
+                            <div class="invalid-feedback" *ngIf="amount > maxAmount">
+                                Amount must be between 0 and {{ maxAmount | number }}
+                            </div>
+                            <div class="invalid-feedback" *ngIf="amountCtl.errors?.pattern">
+                                Amount must be within 6 decimal points
+                            </div>
+                        </div>
+                        <div class="card-text small text-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Vote cannot be changed after submission.
+                            Staked SPEC used to vote in polls are locked and cannot be withdrawn until the poll
+                            finishes.
+                        </div>
+                        <div class="row gx-2">
+                            <div class="d-grid col-6">
+                                <button type="submit" class="btn btn-success" (click)="vote('yes')"
+                                    [disabled]="!amount">YES</button>
+                            </div>
+                            <div class="d-grid col-6">
+                                <button type="submit" class="btn btn-danger" (click)="vote('no')"
+                                    [disabled]="!amount">NO</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-3" *ngIf="yourVote">
+            <div class="card spec-form">
+                <div class="card-header">
+                    Voted
+                </div>
+                <div class="card-body">
+                    <div class="card-title text-success" *ngIf="voteOption === 'yes'">
+                        YES: {{ yourVote / staked | percent }} ({{ yourVote | unit }} SPEC)
+                    </div>
+                    <div class="card-title text-danger" *ngIf="voteOption === 'no'">
+                        NO: {{ yourVote / staked | percent }} ({{ yourVote | unit }} SPEC)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-3" *ngIf="canEnd">
+            <div class="card spec-form">
+                <div class="card-header">
+                    End Poll
+                </div>
+                <div class="card-body">
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" (click)="submit('End poll')">
+                            End poll
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-3" *ngIf="canExecute">
+            <div class="card spec-form">
+                <div class="card-header">
+                    Execute Poll
+                </div>
+                <div class="card-body">
+                    <div class="row gx-2">
+                        <div class="d-grid col-6">
+                            <button type="submit" class="btn btn-success" (click)="submit('Execute poll')">
+                                Execute poll
+                            </button>
+                        </div>
+                        <div class="d-grid col-6">
+                            <button type="submit" class="btn btn-danger" (click)="submit('Expire poll')"
+                                [disabled]="!canExpire">
+                                Expire poll
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

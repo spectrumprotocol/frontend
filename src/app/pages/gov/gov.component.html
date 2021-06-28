@@ -1,0 +1,93 @@
+<main>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-8">
+                <h2>Governance</h2>
+                <span>Stake your SPEC here, all changes in Spectrum must be done through SPEC stakers.</span>
+            </div>
+            <div class="col-4 text-end">
+                <a class="btn btn-secondary" href="https://github.com/spectrumprotocol/contracts/issues" target="_blank">Join Forum</a>
+                <button type="button" class="btn btn-primary ms-3 mt-3" routerLink="/gov/poll/new">Create Poll</button>
+            </div>
+        </div>
+        <div class="row g-3 pt-3">
+            <div class="col-md-4">
+                <div class="row g-3">
+                    <div class="col-6 col-md-12">
+                        <div class="card box-left">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    Total Staked <i class="fas fa-info-circle info-icon"
+                                        mdbTooltip="Total quantity of SPEC tokens staked"></i>
+                                </p>
+                                <h5 class="card-title"><app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit> SPEC</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-12">
+                        <div class="card box-left">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    Staking Ratio <i class="fas fa-info-circle info-icon"
+                                        mdbTooltip="Ratio of the quantity of staked SPEC tokens to the total quantity of SPEC"></i>
+                                </p>
+                                <h5 class="card-title"><app-digit [value]="supply ? +info.stat?.govStaked * 100 / supply : 0"></app-digit>%</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card text-center box-right">
+                    <div class="card-body">
+                        <img src="/assets/logo.png" class="logo" />
+                        <h5 class="card-title">Spectrum token (SPEC)</h5>
+                        <h2 class="text-primary">{{ info.stat?.govApr | percent }} APR</h2>
+                        <p class="small">
+                            {{ info.stat?.govApr / 365 | percent }} daily rate <i class="fas fa-info-circle info-icon"
+                                mdbTooltip="SPEC staking return from vault fee"></i>
+                        </p>
+                        <button type="button" class="btn btn-primary" routerLink="/gov/stake">Stake</button>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="small">Staked SPEC</p>
+                                <h5 class="card-title"><app-digit [value]="myStaked / UNIT"></app-digit> SPEC</h5>
+                            </div>
+                            <div class="col-6 border-start">
+                                <p class="small">Stakable SPEC</p>
+                                <h5 class="card-title"><app-digit [value]="+info.userSpecAmount || 0"></app-digit> SPEC</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row pt-5">
+            <div class="col-4">
+                <h5>Polls <i class="fas fa-info-circle info-icon"
+                        mdbTooltip="Staked SPEC can be used as voting power in polls that are currently in progress"></i>
+                </h5>
+            </div>
+            <div class="col-8 text-end form-group">
+                <select class="form-control filter" [(ngModel)]="filteredStatus" (change)="pollReset()">
+                    <option value="">All</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="passed">Passed</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="executed">Executed</option>
+                    <option value="expired">Expired</option>
+                </select>
+            </div>
+        </div>
+        <div class="row pt-3 g-4" *ngIf="config && info.stat?.govStaked">
+            <div class="col-md-6" *ngFor="let poll of polls">
+                <app-poll-item [poll]="poll" [config]="config" [staked]="+info.stat.govStaked" link="gov"></app-poll-item>
+            </div>
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <button type="button" class="btn btn-outline-default border-1" *ngIf="hasMore" (click)="pollMore()">More</button>
+            </div>
+        </div>
+    </div>
+</main>

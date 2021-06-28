@@ -1,0 +1,185 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "scss/variables";
+@import "~mdb-angular-ui-kit/assets/scss/free/variables";
+@import "scss/dark";
+@import "~@fortawesome/fontawesome-free/scss/fontawesome";
+@import "~@fortawesome/fontawesome-free/scss/solid";
+@import "~@fortawesome/fontawesome-free/scss/regular";
+@import "~@fortawesome/fontawesome-free/scss/brands";
+@import "~mdb-angular-ui-kit/assets/scss/mdb";
+// @import "./scss/dark-theme/mdb.free";
+//@import "./scss/dark-theme/scss/free/variables";
+// @import "./scss/dark-theme/mdb.dark.min";
+
+html,
+body {
+  height: 100%;
+}
+.btn {
+  text-transform: unset !important;
+}
+
+.text-default {
+  color: $default;
+}
+
+.spec-form {
+  max-width: 640px;
+  margin: 0 auto;
+  border-radius: 0.25rem;
+  .fee {
+    background-color: $blue-gray-50;
+  }
+}
+
+.height-350 {
+  min-height: 350px;
+}
+
+.slippageInput {
+  width: 80px;
+}
+
+.percentage-center {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.mdb-form-control-maxwidth {
+  width: 100%;
+}
+
+.fix-height-use-with-button {
+  height: unset !important;
+}
+
+.igt-fixwidth {
+  width: 66px !important;
+}
+
+.igt-fixwidth-vault {
+  width: 90px !important;
+}
+
+.igt-fixwidth-vault-long {
+  width: 100px !important;
+}
+
+.invalid-feedback-custom {
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #f93154;
+}
+
+.warning-feedback {
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #dd794a;
+}
+
+.pool-info {
+  font-size: 0.875em;
+}
+
+.info-icon {
+  vertical-align: text-top;
+  font-size: small;
+  cursor: help;
+}
+
+.icon-between-inputs {
+  text-align: center;
+  color: #757575;
+}
+
+.w-70 {
+  width: 70%;
+}
+
+.w-30 {
+  width: 30%;
+}
+
+.icon-reinvest-input {
+  padding-top: 10px;
+  padding-left: 10px;
+}
+pre.json {
+  padding: 10px;
+  background-color: #333;
+  span {
+    white-space: normal;
+  }
+  .string {
+    color: green;
+  }
+  .number {
+    color: darkorange;
+  }
+  .boolean {
+    color: blue;
+  }
+  .null {
+    color: magenta;
+  }
+  .key {
+    color: red;
+  }
+}
+
+.last {
+  border-top-right-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
+}
+
+.fixed {
+  > .form-label {
+    transform: translateY(-1rem) translateY(0.1rem) scale(0.8);
+  }
+}
+
+.gap22px {
+  height: 22px;
+}
+
+.gap3353 {
+  height: 33.53px;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: #333;
+}
+
+.form-control {
+  background-color: transparent;
+  &:focus {
+    background-color: #3e3e3e;
+  }
+  &::placeholder {
+    color: $gray-600;
+  }
+  > option {
+    background-color: #4f4f4f !important;
+  }
+}
+
+.hover-shadow:hover,
+.card.hover-shadow:hover {
+  box-shadow: 0 3px 17px 0 rgba(252, 81, 133, 0.2), 0 4px 20px 0 rgba(252, 81, 133, 0.19);
+  transition: all 0.3s ease-in-out;
+}

@@ -1,0 +1,18 @@
+.alert-container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9000;
+    padding: 20px;
+    pointer-events: none;
+
+    & > .alert {
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        pointer-events: auto;
+    }
+}

@@ -1,0 +1,9 @@
+<div class="alert-container">
+    <div class="alert alert-dismissible" [ngClass]="'alert-' + item.iconType" role="alert"
+        *ngFor="let item of modal.notifyItems; let i = index" @fade>
+        <button type="button" class="btn-close" aria-label="Close" (click)="dismiss(i)">
+        </button>
+        <i class="fas" [ngClass]="[ item.icon, item.iconClass ]" *ngIf="item.icon"></i> {{item.message}} <a
+            class="alert-link" *ngIf="item.link" [href]="item.link" target="_blank">({{item.linkText || 'link'}})</a>
+    </div>
+</div>

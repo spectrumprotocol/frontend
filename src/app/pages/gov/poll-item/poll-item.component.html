@@ -1,0 +1,58 @@
+<a class="card poll-card hover-shadow" [class.link]="link" [class.done]="poll.status !== 'in_progress'"
+    [routerLink]="link && '/' + link + '/poll/' + poll.id" tabindex="-1">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-8">
+                <div class="card-text text-primary" *ngIf="poll.status === 'in_progress'">
+                    <i class="fas fa-play"></i> In Progress
+                </div>
+                <div class="card-text text-success" *ngIf="poll.status === 'passed'">
+                    <i class="fas fa-check"></i> Passed
+                </div>
+                <div class="card-text text-danger" *ngIf="poll.status === 'rejected'">
+                    <i class="fas fa-times"></i> Rejected
+                </div>
+                <div class="card-text text-default" *ngIf="poll.status === 'executed'">
+                    <i class="fas fa-award"></i> Executed
+                </div>
+                <div class="card-text text-muted" *ngIf="poll.status === 'expired'">
+                    <i class="fas fa-clock"></i> Expired
+                </div>
+            </div>
+            <div class="col-4 text-end small text-muted">
+                ID: {{poll.id}}
+            </div>
+        </div>
+        <h5 class="card-title mt-1">{{poll.title}}</h5>
+        <div class="px-2 py-4">
+            <div *ngIf="votes_ratio < +config.quorum">
+                <div class="text-center text-muted small" [style.width]="+config.quorum * 2 | percent">
+                    <small>Quorum {{ +config.quorum | percent }}</small>
+                </div>
+                <div class="indicator border-end border-light" [style.width]="+config.quorum | percent"></div>
+            </div>
+            <div *ngIf="votes_ratio >= +config.quorum">
+                <div class="text-center text-muted small"
+                    [style.width]="votes_ratio * +config.threshold * 2 | percent">
+                    <small>Threshold {{ +config.threshold | percent }}</small>
+                </div>
+                <div class="indicator border-end border-light" [style.width]="votes_ratio * +config.threshold | percent">
+                </div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" [style.width]="yes_ratio | percent"></div>
+                <div class="progress-bar bg-danger" role="progressbar" [style.width]="no_ratio | percent"></div>
+            </div>
+            <div class="row">
+                <div class="col-4 small"><small>Voted: {{ votes_ratio | percent }}<span *ngIf="!link"> ({{ votes_balance | shortNum }} {{unit || 'votes'}})</span></small></div>
+                <div class="col-8 small text-end">
+                    <small class="text-success">Yes: {{ yes_ratio | percent }}<span *ngIf="!link"> ({{ yes_balance | shortNum }} {{unit || 'votes'}})</span></small>&nbsp;
+                    <small class="text-danger">No: {{ no_ratio | percent }}<span *ngIf="!link"> ({{ no_balance | shortNum }} {{unit || 'votes'}})</span></small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <small><strong>{{dateLabel}}:</strong> {{ date | date:'medium' }} <i class="fas fa-clock"></i> {{ date | timeago }}</small>
+    </div>
+</a>

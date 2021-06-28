@@ -1,0 +1,51 @@
+<div class="modal-header">
+    <div *ngIf="loading">
+        <div class="spinner-border" role="status" aria-hidden="true"></div>
+        <h4 class="modal-title">{{ loadingMsg }}</h4>
+    </div>
+    <div *ngIf="failed">
+        <i class="fas fa-5x fa-times-circle text-danger"></i>
+        <h4 class="modal-title">Failed</h4>
+    </div>
+    <div *ngIf="!loading && !failed">
+        <div *ngIf="!executed">
+            <i class="fas fa-5x fa-info-circle text-info"></i>
+            <h4 class="modal-title">Please confirm your transaction</h4>
+        </div>
+        <div *ngIf="executed">
+            <i class="fas fa-5x fa-check text-success"></i>
+            <h4 class="modal-title">Success</h4>
+        </div>
+
+    </div>
+</div>
+<div class="modal-body">
+    <div *ngIf="failed">
+        {{ failMsg }}
+    </div>
+    <div *ngIf="!failed && !executed && signMsg">
+        <div class="row">
+            <div class="col-6 small">Fee <i class="fas fa-info-circle info-icon"
+                    mdbTooltip="Fee paid to terra chain to execute this transaction"></i></div>
+            <div class="col-6 text-end small">
+                {{ signMsg.fee.amount.get('uusd').amount.toString() | unit }} UST
+            </div>
+        </div>
+    </div>
+    <div *ngIf="txhash">
+        <div class="row">
+            <div class="col-6 small">Transaction Id</div>
+            <div class="col-6 text-end small">
+                <a [href]="link" target="_blank">{{txhash | truncate}}</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="relative waves-light btn btn-secondary" (click)="cancel()" *ngIf="!executed || failed"
+        [disabled]="loading">Cancel</button>
+    <button type="button" class="relative waves-light btn btn-primary" (click)="execute()" *ngIf="!executed && !failed"
+        [disabled]="loading">Confirm</button>
+    <button type="button" class="relative waves-light btn btn-primary" (click)="done()"
+        *ngIf="executed && !failed">Done</button>
+</div>

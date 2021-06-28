@@ -1,0 +1,27 @@
+@import 'src/scss/variables';
+@import '~mdb-angular-ui-kit/assets/scss/free/variables';
+@import 'src/scss/dark';
+
+.poll-card {
+    background-color: $gray-700;
+    color: $body-color;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: default;
+}
+
+.poll-card.link {
+    cursor: pointer;
+}
+
+.poll-card.done {
+    background-color: $gray-800;
+}
+
+.indicator {
+    height: 4px;
+}
+
+.progress {
+    background-color: $white;
+} 

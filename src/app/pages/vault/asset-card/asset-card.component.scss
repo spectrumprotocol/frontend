@@ -1,0 +1,82 @@
+@import "src/scss/variables";
+.mAssetIcon {
+  width: 50px;
+  height: 50px;
+  z-index: 1;
+}
+
+.ust-outline {
+  border: 1px solid;
+  margin-left: -10px;
+}
+
+.loading-asset-card {
+  background-color: rgba(79, 79, 79, 0.8);
+}
+
+.asset-card {
+  min-height: 200px;
+  padding: 5px;
+}
+
+.asset-card-info {
+  cursor: pointer;
+}
+
+.asset-card-input-container {
+  min-width: 500px;
+}
+
+.masset-info {
+  width: 200px;
+}
+
+.animate-up {
+  -webkit-animation: mover 1s infinite alternate;
+  animation: mover 1s infinite alternate;
+}
+
+.green {
+  color: rgb(4, 180, 48);
+}
+
+
+.badge-deposited {
+  top: 0;
+  left: 0;
+  border-top-left-radius: 0.2rem;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.badge-depositable {
+  top: 0;
+  right: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0.2rem;
+  border-bottom-left-radius: 0.25rem;
+  border-bottom-right-radius: 0;
+}
+
+@-webkit-keyframes mover {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-0.2em);
+  }
+}
+@keyframes mover {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-0.2em);
+  }
+}
+
+.fee-remark {
+  position: relative;
+  transform: translate(15px, 15px);
+}
