@@ -3,7 +3,7 @@
   <div class="card-body">
     <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount"
       class="badge bg-primary position-absolute badge-deposited">Deposited</span>
-    <span *ngIf="info.tokenBalances[vault.assetToken]!=='0'"
+    <span *ngIf="+info.tokenBalances[vault.assetToken]"
       class="badge bg-info position-absolute badge-depositable">Depositable</span>
     <div class="row asset-card-info" (click)="belowSection.toggle()" aria-expanded="false" aria-controls="belowSection">
       <div class="col-12 col-md-3 text-center">
