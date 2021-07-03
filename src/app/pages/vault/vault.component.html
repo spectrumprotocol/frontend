@@ -47,11 +47,13 @@
         </div>
       </div>
     </div>
-    <div class="row pt-3" *ngIf="height < info.specFarmConfig?.lock_start">
-      <div class="notice border border-primary text-center">SPEC reward will start to distribute on {{ info.specFarmConfig?.lock_start | toDate | date:'long' }} (block {{ info.specFarmConfig.lock_start }})</div>
+    <div class="row pt-3">
+      <div class="notice border border-primary text-center">📢 Please be advised that on July 4, 2021, the development
+        fund will be unstaked and transferred to the locked contract. <br>Total Value Locked will be reduced
+        significantly. (<a href="https://docs.spec.finance/protocol/spec-spectrum-token#development-fund-vesting" target="_blank">more details</a>)</div>
     </div>
     <div class="row pt-3">
-      <div class="notice border border-primary text-center">Spectrum Protocol is being audited, please use your own discretion before investing. (<a href="https://docs.spec.finance/transparency" target="_blank">more details</a>)</div>
+      <div class="notice border border-primary text-center">⚡ Spectrum Protocol is being audited, please use your own discretion before investing. (<a href="https://docs.spec.finance/transparency" target="_blank">more details</a>)</div>
     </div>
 
     <div class="d-flex flex-column flex-sm-row pt-4 pb-1">
