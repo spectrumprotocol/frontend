@@ -109,7 +109,7 @@ registerLocaleData(locale, 'en');
     // { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true},
     {
       provide: APP_INITIALIZER,
-      useFactory: (terrajs: TerrajsService) => () => terrajs.connect(true),
+      useFactory: (terrajs: TerrajsService) => () => setTimeout(() => terrajs.connect(true), 1000),
       deps: [TerrajsService],
       multi: true
     },

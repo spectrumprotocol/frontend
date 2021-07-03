@@ -6,6 +6,7 @@ import { TruncatePipe } from '../pipes/truncate.pipe';
 import { InfoService } from '../services/info.service';
 import { Subscription } from 'rxjs';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-menubar',
@@ -23,23 +24,38 @@ export class MenubarComponent implements OnInit, OnDestroy {
   ) { }
 
   private heightChanged: Subscription;
+  private connected: Subscription;
   @ViewChild('dropdown') dropdown: MdbDropdownDirective;
 
   walletText = 'Connect Wallet';
 
   async ngOnInit() {
+    this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
+      await this.info.refreshBalance({ ust: true, spec: true });
+    });
+    this.connected = this.terrajs.connected.subscribe(connected => {
+      if (connected) {
+        this.walletText = this.getWalletText();
+      } else {
+        this.walletText = 'Connect Wallet';
+      }
+    });
+
+    // delay to wait for extension to load
+    setTimeout(() => this.initWallet(), 1000);
+  }
+
+  async initWallet() {
     if (!this.terrajs.checkInstalled()) {
       this.walletText = 'Please install Terra Station';
     } else if (this.terrajs.isConnected) {
       this.walletText = this.getWalletText();
     }
-    this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
-      await this.info.refreshBalance({ ust: true, spec: true });
-    });
   }
 
   ngOnDestroy(): void {
     this.heightChanged.unsubscribe();
+    this.connected.unsubscribe();
   }
 
   private getWalletText() {
