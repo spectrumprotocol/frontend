@@ -6,6 +6,7 @@ import { TruncatePipe } from '../pipes/truncate.pipe';
 import { InfoService } from '../services/info.service';
 import { Subscription } from 'rxjs';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-menubar',
@@ -20,7 +21,18 @@ export class MenubarComponent implements OnInit, OnDestroy {
     private clipboard: Clipboard,
     private modelService: ModalService,
     private truncate: TruncatePipe,
-  ) { }
+    private route: ActivatedRoute
+  ) {
+    route.params.subscribe(val => {
+      setTimeout(() => {
+        if (this.terrajs.checkInstalled()) {
+          this.terrajs.connect().then(() =>
+            this.walletText = this.getWalletText()
+          );
+        }
+      }, 2000)
+    });
+  }
 
   private heightChanged: Subscription;
   @ViewChild('dropdown') dropdown: MdbDropdownDirective;
@@ -28,6 +40,12 @@ export class MenubarComponent implements OnInit, OnDestroy {
   walletText = 'Connect Wallet';
 
   async ngOnInit() {
+    setTimeout(() => {
+      this.initWallet();
+    }, 1000)
+  }
+
+  async initWallet() {
     if (!this.terrajs.checkInstalled()) {
       this.walletText = 'Please install Terra Station';
     } else if (this.terrajs.isConnected) {
