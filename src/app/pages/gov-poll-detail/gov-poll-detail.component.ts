@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MsgExecuteContract } from '@terra-money/terra.js';
 import { Subscription } from 'rxjs';
 import { fade } from '../../consts/animations';
 import { CONFIG } from '../../consts/config';
@@ -117,7 +118,22 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
   async submit(action: string) {
     const poll_id = this.poll.id;
     if (action === 'End poll') {
-      await this.gov.handle({ poll_end: { poll_id } });
+      await this.terrajs.post([
+        new MsgExecuteContract(
+          this.terrajs.address,
+          this.terrajs.settings.gov,
+          {
+            mint: { }
+          }
+        ),
+        new MsgExecuteContract(
+          this.terrajs.address,
+          this.terrajs.settings.gov,
+          {
+            poll_end: { poll_id }
+          },
+        )
+      ]);
     } else if (action === 'Execute poll') {
       await this.gov.handle({ poll_execute: { poll_id } });
     } else if (action === 'Expire poll') {

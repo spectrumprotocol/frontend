@@ -72,7 +72,7 @@ export class TxPostComponent implements OnInit {
       });
       const payload = res.payload as PostResponse;
       this.txhash = payload.result?.txhash;
-      this.link = this.txhash && `https://finder.terra.money/${this.terrajs.settings.chainID}/tx/${this.txhash}`;
+      this.link = this.txhash && `https://finder.extraterrestrial.money/${this.terrajs.settings.chainID}/tx/${this.txhash}`;
       if (!payload.success) {
         throw payload.error;
       }
