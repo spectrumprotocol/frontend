@@ -56,6 +56,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    this.showDepositedPoolOnly = localStorage.getItem('deposit') === 'true';
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         this.loading = true;
@@ -129,6 +130,12 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
     this.lastSortBy = undefined;
     this.refresh();
+  }
+
+  memoize(name: string) {
+    if (name === 'deposit') {
+      localStorage.setItem('deposit', `${this.showDepositedPoolOnly}`);
+    }
   }
 
   @debounce(250)
