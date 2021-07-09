@@ -18,9 +18,9 @@
                             <div class="card-body">
                                 <p class="card-text">
                                     Total Staked <i class="fas fa-info-circle info-icon"
-                                        mdbTooltip="Total quantity of SPEC tokens staked"></i>
+                                        mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
                                 </p>
-                                <h5 class="card-title"><app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit> SPEC</h5>
+                                <h5 class="card-title"><app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit> SPEC (<app-digit [value]="supply ? +info.stat?.govStaked * 100 / supply : 0"></app-digit>%)</h5>
                             </div>
                         </div>
                     </div>
@@ -28,10 +28,10 @@
                         <div class="card box-left">
                             <div class="card-body">
                                 <p class="card-text">
-                                    Staking Ratio <i class="fas fa-info-circle info-icon"
-                                        mdbTooltip="Ratio of the quantity of staked SPEC tokens to the total quantity of SPEC"></i>
+                                    Circulation Supply <i class="fas fa-info-circle info-icon"
+                                        mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
                                 </p>
-                                <h5 class="card-title"><app-digit [value]="supply ? +info.stat?.govStaked * 100 / supply : 0"></app-digit>%</h5>
+                                <h5 class="card-title"><app-digit [value]="+supply / UNIT"></app-digit> SPEC</h5>
                             </div>
                         </div>
                     </div>

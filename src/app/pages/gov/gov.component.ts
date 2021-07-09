@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { WalletService } from 'src/app/services/api/wallet.service';
 import { CONFIG } from '../../consts/config';
 import { GovService } from '../../services/api/gov.service';
 import { ConfigInfo } from '../../services/api/gov/config_info';
@@ -31,13 +32,17 @@ export class GovComponent implements OnInit, OnDestroy {
     public info: InfoService,
     private terrajs: TerrajsService,
     private token: TokenService,
+    private wallet: WalletService,
   ) { }
 
   ngOnInit() {
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
-        this.token.query(this.terrajs.settings.specToken, { token_info: {} })
-          .then(it => this.supply = +it.total_supply);
+        const height = await this.terrajs.getHeight();
+        const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
+        const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform, height);
+        Promise.all([task1, task2])
+          .then(it => this.supply = +it[0].total_supply - +it[1].staked_amount - +it[1].unstaked_amount);
         this.gov.config()
           .then(it => this.config = it);
         this.info.refreshStat();
