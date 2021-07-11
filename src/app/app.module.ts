@@ -49,6 +49,8 @@ import { PricePipe } from './pipes/price.pipe';
 import { ToDatePipe } from './pipes/to-date.pipe';
 import { BalancePipe } from './pipes/balance.pipe';
 import { LpBalancePipe } from './pipes/lp-balance.pipe';
+import { ConnectOptionsComponent } from './services/connect-options/connect-options.component';
+import { WalletOptionsComponent } from './services/wallet-options/wallet-options.component';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -90,6 +92,8 @@ registerLocaleData(locale, 'en');
     ToDatePipe,
     BalancePipe,
     LpBalancePipe,
+    ConnectOptionsComponent,
+    WalletOptionsComponent,
   ],
     imports: [
         AppRoutingModule,

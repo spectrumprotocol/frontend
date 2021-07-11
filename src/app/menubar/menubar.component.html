@@ -1,62 +1,70 @@
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <!-- Container wrapper -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
   <div class="container-fluid">
-    <!-- Navbar brand -->
-    <a class="navbar-brand" href="#"><img src="/assets/logo.png" class="logo" /> Spectrum Protocol</a>
-
-    <!-- Toggle button -->
-    <button class="navbar-toggler" type="button" (click)="basicNavbar.toggle()" aria-expanded="false"
-      aria-label="Toggle navigation">
-      <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Collapsible wrapper -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent" mdbCollapse #basicNavbar="mdbCollapse">
-      <!-- Left links -->
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/vaults" routerLinkActive="active">Vaults</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/trade" routerLinkActive="active">Trade SPEC</a>
-        </li>
-        <!-- <li class="nav-item">
+    <a class="navbar-brand" routerLink="/"><img src="/assets/logo.png" class="logo" /> Spectrum Protocol</a>
+    <!-- Left links -->
+    <ul class="navbar-nav me-auto d-none d-md-flex">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/vaults" routerLinkActive="active">Vaults</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/trade" routerLinkActive="active">Trade SPEC</a>
+      </li>
+      <!-- <li class="nav-item">
           <a class="nav-link" routerLink="/pool" routerLinkActive="active">Provide SPEC-UST</a>
         </li> -->
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/gov" routerLinkActive="active">Governance</a>
-        </li>
-      </ul>
-      <!-- Left links -->
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/gov" routerLinkActive="active">Governance</a>
+      </li>
+    </ul>
+    <!-- Left links -->
 
-      <div mdbDropdown class="dropdown" *ngIf="terrajs.address" #dropdown>
-        <button class="btn btn-outline-primary dropdown-toggle" type="button" mdbDropdownToggle>
-          <i class="fas fa-wallet"></i> <span class="text-muted"> {{walletText}} | </span>{{ info.userUstAmount |
-          number : '1.0-2'}} UST
-        </button>
-        <ul mdbDropdownMenu class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-          <li>
-            <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
-              SPEC: {{ info.userSpecAmount | number: '1.0-2' }}
-            </a>
-          </li>
-          <li><button class="dropdown-item" type="button" (click)="copy()">Copy address</button></li>
-          <li><a class="dropdown-item"
-              href="https://finder.extraterrestrial.money/{{terrajs.settings.chainID}}/account/{{terrajs.address}}" target="_blank"
-              (click)="dropdown.hide()">View on Terra Finder</a></li>
-          <li>
-            <hr class="dropdown-divider" />
-          </li>
-          <li><button class="dropdown-item" type="button" (click)="disconnect()">Disconnect</button></li>
-        </ul>
-      </div>
-      <button type="button" class="btn btn-outline-primary" *ngIf="!terrajs.address" (click)="connect()"
-        mdbTooltip="Click to connect" placement="bottom"><i class="fas fa-wallet"></i> <span class="text-muted">
-          {{walletText}} </span></button>
+    <!--- right links -->
+    <div mdbDropdown class="dropdown" *ngIf="terrajs.address" #dropdown>
+      <button class="btn btn-outline-primary dropdown-toggle" type="button" mdbDropdownToggle>
+        <i class="fas fa-wallet"></i> <span class="text-muted d-none d-md-inline"> {{walletText}} |</span> {{
+        info.userUstAmount |
+        number : '1.0-2'}} UST
+      </button>
+      <ul mdbDropdownMenu class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+        <li>
+          <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
+            SPEC: {{ info.userSpecAmount | number: '1.0-2' }}
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item disabled d-md-none" href="#" tabindex="-1" aria-disabled="true">
+            {{walletText}}
+          </a>
+        </li>
+        <li><button class="dropdown-item" type="button" (click)="copy()">Copy address</button></li>
+        <li><a class="dropdown-item"
+            href="https://finder.extraterrestrial.money/{{terrajs.settings.chainID}}/account/{{terrajs.address}}"
+            target="_blank" (click)="dropdown.hide()">View on Terra Finder</a></li>
+        <li>
+          <hr class="dropdown-divider" />
+        </li>
+        <li><button class="dropdown-item" type="button" (click)="disconnect()">Disconnect</button></li>
+      </ul>
     </div>
-    <!-- Collapsible wrapper -->
+    <button type="button" class="btn btn-outline-primary" *ngIf="!terrajs.address" (click)="connect()"><i
+        class="fas fa-wallet"></i> <span class="text-muted">
+        {{walletText}} </span></button>
+    <!--- right links -->
   </div>
-  <!-- Container wrapper -->
 </nav>
-<!-- Navbar -->
+
+<nav class="navbar navbar-expand fixed-bottom navbar-dark bg-dark d-md-none">
+  <div class="container-fluid justify-content-center">
+    <ul class="navbar-nav">
+      <li class="nav-item ms-1 me-1">
+        <a class="nav-link" routerLink="/vaults" routerLinkActive="active">Vaults</a>
+      </li>
+      <li class="nav-item ms-1 me-1">
+        <a class="nav-link" routerLink="/trade" routerLinkActive="active">Trade SPEC</a>
+      </li>
+      <li class="nav-item ms-1 me-1">
+        <a class="nav-link" routerLink="/gov" routerLinkActive="active">Governance</a>
+      </li>
+    </ul>
+  </div>
+</nav>

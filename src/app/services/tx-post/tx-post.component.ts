@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Msg, StdSignMsg } from '@terra-money/terra.js';
+import { Msg } from '@terra-money/terra.js';
 import { MdbModalRef } from 'mdb-angular-ui-kit';
 import { CONFIG } from '../../consts/config';
-import { PostResponse, TerrajsService } from '../terrajs.service';
+import { TerrajsService } from '../terrajs.service';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
 
 @Component({
@@ -18,7 +18,7 @@ export class TxPostComponent implements OnInit {
   msgs: Msg[];
   failed = false;
   failMsg: string;
-  signMsg: StdSignMsg;
+  signMsg: any;
   UNIT = CONFIG.UNIT;
   txhash: string;
   link: string;
@@ -33,8 +33,7 @@ export class TxPostComponent implements OnInit {
   async ngOnInit() {
     try {
       if (!this.terrajs.isConnected) {
-        this.loadingMsg = 'Connecting...';
-        await this.terrajs.connect();
+        throw new Error('please connect your wallet');
       }
       this.loadingMsg = 'Simulating...';
       this.signMsg = await this.terrajs.lcdClient.tx.create(this.terrajs.address, {
@@ -64,17 +63,15 @@ export class TxPostComponent implements OnInit {
     try {
       this.loading = true;
       this.loadingMsg = 'Broadcasting...';
-      const res = await this.terrajs.extension.request('post', {
-        msgs: this.msgs.map(it => it.toJSON()),
-        fee: this.signMsg.fee.toJSON(),
+      const res = await this.terrajs.walletController.post({
+        msgs: this.msgs,
+        fee: this.signMsg.fee,
         gasPrices: `${this.terrajs.lcdClient.config.gasPrices['uusd']}uusd`,
-        purgeQueue: true,
       });
-      const payload = res.payload as PostResponse;
-      this.txhash = payload.result?.txhash;
+      this.txhash = res.result.txhash;
       this.link = this.txhash && `https://finder.extraterrestrial.money/${this.terrajs.settings.chainID}/tx/${this.txhash}`;
-      if (!payload.success) {
-        throw payload.error;
+      if (!res.success) {
+        throw res;
       }
       this.executed = true;
 

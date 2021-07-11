@@ -68,8 +68,11 @@
               "node_modules/hammerjs/hammer.min.js"
             ],
             "allowedCommonJsDependencies": [
+              "@terra-dev/web-extension",
               "@terra-money/terra.js",
               "bignumber.js",
+              "react",
+              "react/jsx-runtime",
               "zen-observable"
             ]
           },

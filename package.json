@@ -23,7 +23,9 @@
     "@angular/router": "~11.2.10",
     "@apollo/client": "^3.0.0",
     "@fortawesome/fontawesome-free": "~5.15.3",
-    "@terra-money/terra.js": "~1.7.0",
+    "@pedrouid/iso-crypto": "1.0.0",
+    "@terra-money/terra.js": "~1.8.0",
+    "@terra-money/wallet-provider": "^1.2.0",
     "@types/chart.js": "~2.9.32",
     "angular2-prettyjson": "^3.0.1",
     "animate.css": "~4.1.1",
@@ -34,9 +36,9 @@
     "cipher-base": "~1.0.4",
     "graphql": "^15.0.0",
     "hammerjs": "~2.0.8",
-    "mdb-angular-ui-kit": "^1.0.0-beta3",
+    "mdb-angular-ui-kit": "1.0.0-beta3",
     "ngx-google-analytics": "^11.2.1",
-    "rxjs": "~6.6.7",
+    "rxjs": "^7.1.0",
     "timeago.js": "^4.0.2",
     "tslib": "~2.2.0",
     "utils-decorators": "^1.8.1",
@@ -64,5 +66,8 @@
     "ts-node": "~9.1.1",
     "tslint": "~6.1.0",
     "typescript": "~4.1.5"
+  },
+  "browser": {
+    "crypto": false
   }
 }

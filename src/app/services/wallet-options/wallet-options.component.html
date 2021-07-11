@@ -1,0 +1,10 @@
+<div class="modal-header">
+    <h4 class="modal-title">Choose wallet</h4>
+</div>
+<div class="modal-body">
+    <div class="d-grid gap-2">
+        <button type="button" *ngFor="let wallet of wallets" class="btn btn-secondary btn-lg" (click)="select(wallet)">
+            {{ wallet.terraAddress }}
+        </button>
+    </div>
+</div>

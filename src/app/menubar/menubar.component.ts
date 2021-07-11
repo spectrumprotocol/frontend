@@ -6,7 +6,6 @@ import { TruncatePipe } from '../pipes/truncate.pipe';
 import { InfoService } from '../services/info.service';
 import { Subscription } from 'rxjs';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-menubar',
@@ -45,8 +44,9 @@ export class MenubarComponent implements OnInit, OnDestroy {
     setTimeout(() => this.initWallet(), 1000);
   }
 
-  async initWallet() {
-    if (!this.terrajs.checkInstalled()) {
+  private async initWallet() {
+    const installed = await this.terrajs.checkInstalled();
+    if (!installed) {
       this.walletText = 'Please install Terra Station';
     } else if (this.terrajs.isConnected) {
       this.walletText = this.getWalletText();
@@ -63,12 +63,8 @@ export class MenubarComponent implements OnInit, OnDestroy {
   }
 
   async connect() {
-    if (this.terrajs.checkInstalled()) {
-      await this.terrajs.connect();
-      this.walletText = this.getWalletText();
-    } else {
-      window.open('https://chrome.google.com/webstore/detail/terra-station/aiifbnbfobpmeekipheeijimdpnlpgpp', '_blank');
-    }
+    await this.terrajs.connect();
+    this.walletText = this.getWalletText();
   }
 
   async disconnect() {
