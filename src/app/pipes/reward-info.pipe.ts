@@ -16,10 +16,10 @@ export class RewardInfoPipe implements PipeTransform {
       return undefined;
     }
     let str = '';
-    if (+rewardInfo.auto_bond_amount) {
+    if (+rewardInfo.auto_bond_amount >= 10) {
       str += this.unit.transform(+rewardInfo.auto_bond_amount, '1.0-2') + ' in auto compound pool';
     }
-    if (+rewardInfo.stake_bond_amount) {
+    if (+rewardInfo.stake_bond_amount >= 10) {
       if (str) {
         str += ' + ';
       }

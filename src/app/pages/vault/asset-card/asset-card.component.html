@@ -1,9 +1,9 @@
 <div class="card asset-card col-12 hover-shadow"
-  [ngClass]="{'border border-primary' : +info.rewardInfos[vault.assetToken]?.bond_amount >= 0.00001}">
+  [ngClass]="{'border border-primary' : +info.rewardInfos[vault.assetToken]?.bond_amount >= 10}">
   <div class="card-body">
-    <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 0.00001"
+    <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
       class="badge bg-primary position-absolute badge-deposited">Deposited</span>
-    <span *ngIf="+info.tokenBalances[vault.assetToken] >= 0.00001"
+    <span *ngIf="+info.tokenBalances[vault.assetToken] >= 10"
       class="badge bg-info position-absolute badge-depositable">Depositable</span>
     <div class="row asset-card-info" (click)="belowSection.toggle()" aria-expanded="false" aria-controls="belowSection">
       <div class="col-12 col-md-3 text-center">
@@ -37,15 +37,15 @@
           <div class="col-12 col-sm-6 col-md-4">
             <div class="fs-6 mt-2">{{ vault.symbol }} Balance</div>
             <div class="fs-5">{{info.tokenBalances[vault.assetToken] || '0' | unit: '1.0-2' }}
-              <span class="small text-muted" *ngIf="+info.tokenBalances[vault.assetToken] >= 0.00001">
+              <span class="small text-muted" *ngIf="+info.tokenBalances[vault.assetToken] >= 10">
                 &nbsp;(${{ info.tokenBalances[vault.assetToken] || '0' | balance: info.poolResponses[vault.assetToken] |
                 unit: '1.0-2' }})</span>
             </div>
             <div class="fs-6 mt-2">LP Deposited</div>
             <div class="fs-5">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: '1.0-2'}}
               <i class="fas fa-info-circle info-icon" [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo"
-                *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 0.00001"></i>
-              <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 0.00001">
+                *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"></i>
+              <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
                 &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
                 info.poolResponses[vault.assetToken] |
                 unit: '1.0-2' }})</span>
@@ -55,10 +55,10 @@
             <div class="fs-6 mt-2">Staked SPEC <i class="fas fa-info-circle info-icon"
                 mdbTooltip="During platform launch SPEC reward will be locked and release 2% per day"
                 *ngIf="height < info.specFarmConfig?.lock_end"></i></div>
-            <div class="fs-5"><span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 0.00001"
+            <div class="fs-5"><span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10"
                 class="fas fa-chevron-up animate-up text-success"></span>
               {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit: '1.0-2'}}
-              <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 0.00001">
+              <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10">
                 &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | balance:
                 info.poolResponses[terrajs.settings.specToken] |
                 unit: '1.0-2' }})</span>
@@ -241,7 +241,7 @@
         </mdb-tab>
         <mdb-tab title="Unstake gov tokens">
           <div class="small mt-6">
-            <span *ngIf="+info.rewardInfos[vault.assetToken]?.locked_spec_reward >= 0.00001">
+            <span *ngIf="+info.rewardInfos[vault.assetToken]?.locked_spec_reward >= 10">
               To prevent token dump on platform launch, SPEC token rewards will be locked and released gradually over 50
               days.
             </span>
@@ -252,7 +252,7 @@
             <div class="col text-end">
               {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}</div>
           </div>
-          <div *ngIf="+info.rewardInfos[vault.assetToken]?.locked_spec_reward >= 0.00001">
+          <div *ngIf="+info.rewardInfos[vault.assetToken]?.locked_spec_reward >= 10">
             <div class="row">
               <div class="col">Locked SPEC</div>
               <div class="col text-end">
