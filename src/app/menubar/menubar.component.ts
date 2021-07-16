@@ -49,21 +49,23 @@ export class MenubarComponent implements OnInit, OnDestroy {
         }),
         // NOTE : SwitchMap means "Subscribe, in a subscribe, we are passing control to "initWallet".
         // Observables and promises are fully interoperable
-        debounceTime(1000),
+        debounceTime(1500),
         switchMap(() => {
           return this.initWallet();
         }),
+        tap((installed) => {
+          if (!installed) {
+            this.walletText = 'Please install Terra Station';
+          } else if (this.terrajs.isConnected) {
+            this.walletText = this.getWalletText();
+          }
+        })
       ).subscribe()
     );
   }
 
-  private async initWallet() {
-    const installed = await this.terrajs.checkInstalled();
-    if (!installed) {
-      this.walletText = 'Please install Terra Station';
-    } else if (this.terrajs.isConnected) {
-      this.walletText = this.getWalletText();
-    }
+  private async initWallet(): Promise<boolean> {
+    return await this.terrajs.checkInstalled();
   }
 
   ngOnDestroy(): void {
