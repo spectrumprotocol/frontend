@@ -4,7 +4,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { ModalService } from '../services/modal.service';
 import { TruncatePipe } from '../pipes/truncate.pipe';
 import { InfoService } from '../services/info.service';
-import { Subscription, switchMap, tap } from 'rxjs';
+import { debounceTime, Subscription, switchMap, tap } from 'rxjs';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
 
 @Component({
@@ -49,6 +49,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
         }),
         // NOTE : SwitchMap means "Subscribe, in a subscribe, we are passing control to "initWallet".
         // Observables and promises are fully interoperable
+        debounceTime(1000),
         switchMap(() => {
           return this.initWallet();
         }),
