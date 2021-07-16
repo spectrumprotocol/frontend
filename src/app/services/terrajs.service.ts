@@ -4,7 +4,7 @@ import { ISettings, networks } from '../consts/networks';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 import { MdbModalService } from 'mdb-angular-ui-kit';
-import { filter, startWith } from 'rxjs/operators';
+import { filter, first, startWith } from 'rxjs/operators';
 import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus } from '@terra-money/wallet-provider';
 import { ModalService } from './modal.service';
 
@@ -91,6 +91,10 @@ export class TerrajsService implements OnDestroy {
   }
 
   async checkInstalled() {
+    await firstValueFrom(this.walletController.states().pipe(
+      first((state: WalletStates) => state.status !== WalletStatus.INITIALIZING),
+      // tap(console.warn)
+    ));
     const types = await firstValueFrom(this.walletController.availableInstallTypes());
     return types.length === 0;
   }
