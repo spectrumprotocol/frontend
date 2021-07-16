@@ -4,7 +4,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { ModalService } from '../services/modal.service';
 import { TruncatePipe } from '../pipes/truncate.pipe';
 import { InfoService } from '../services/info.service';
-import { debounceTime, defer, Subscription, switchMap, tap } from 'rxjs';
+import { Subscription, switchMap, tap } from 'rxjs';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
 
 @Component({
