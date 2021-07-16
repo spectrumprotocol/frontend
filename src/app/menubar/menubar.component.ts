@@ -47,9 +47,10 @@ export class MenubarComponent implements OnInit, OnDestroy {
             this.walletText = 'Connect Wallet';
           }
         }),
+        // NOTE : Wait for Terra extension loaded, some kind of "WebExtensions loaded" hook could be better, but can't find any.
+        debounceTime(1500),
         // NOTE : SwitchMap means "Subscribe, in a subscribe, we are passing control to "initWallet".
         // Observables and promises are fully interoperable
-        debounceTime(1500),
         switchMap(() => {
           return this.initWallet();
         }),
