@@ -273,10 +273,12 @@
             <div class="col text-end">
               {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit }}</div>
           </div>
-          <div class="d-grid mt-3">
-            <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake rewards</button>
-            <button type="submit" class="btn btn-primary mt-2" (click)="doClaimReward(true)"
-              *ngIf="vault.poolInfo.farm === 'Mirror'">Unstake all rewards from {{ vault.poolInfo.farm }}</button>
+          <div class="d-grid mt-3" *ngIf="vault.poolInfo.farm === 'Spectrum'">
+            <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake unlocked SPEC</button>
+          </div>
+          <div class="d-grid mt-3" *ngIf="vault.poolInfo.farm === 'Mirror'">
+            <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake MIR + unlocked SPEC</button>
+            <button type="submit" class="btn btn-primary mt-2" (click)="doClaimReward(true)">Unstake MIR + unlocked SPEC from all Mirror pools</button>
           </div>
         </mdb-tab>
       </mdb-tabs>

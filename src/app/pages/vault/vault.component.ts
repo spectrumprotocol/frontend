@@ -159,7 +159,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.lastSortBy = this.sortBy;
     }
     if (this.showDepositedPoolOnly) {
-      vaults = vaults.filter(it => +this.info.rewardInfos?.[it.assetToken]?.bond_amount > 0);
+      vaults = vaults.filter(it => +this.info.rewardInfos?.[it.assetToken]?.bond_amount >= 10);
     }
     if (this.search) {
       vaults = vaults.filter(it => it.symbol.toLowerCase().includes(this.search.toLowerCase()));
