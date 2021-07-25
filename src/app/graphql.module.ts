@@ -13,6 +13,14 @@ export function createApollo(httpLink: HttpLink): Record<string, ApolloClientOpt
       link: httpLink.create({ uri: 'https://tequila-graph.mirror.finance/graphql' }),
       cache: new InMemoryCache(),
     },
+    anchor: {
+      link: httpLink.create({ uri: 'https://mantle.anchorprotocol.com/graphql' }),
+      cache: new InMemoryCache(),
+    },
+    anchorTest: {
+      link: httpLink.create({ uri: 'https://tequila-mantle.anchorprotocol.com/graphql' }),
+      cache: new InMemoryCache(),
+    },
   };
 }
 

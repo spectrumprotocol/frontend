@@ -12,9 +12,7 @@ import { GovService } from './api/gov.service';
 import { FarmInfoService, FARM_INFO_SERVICE, PairStat, PoolInfo, RewardInfoResponseItem } from './farm_info/farm-info.service';
 import { fromEntries } from '../libs/core';
 import { PairInfo } from './api/terraswap_factory/pair_info';
-import { MirrorFarmService } from './api/mirror-farm.service';
 import { SpecFarmService } from './api/spec-farm.service';
-import { ConfigInfo as MirrorFarmConfigInfo } from './api/mirror_farm/config_info';
 import { ConfigInfo as SpecFarmConfigInfo } from './api/spec_farm/config_info';
 
 export interface Stat {
@@ -60,7 +58,7 @@ export class InfoService {
     private terraSwap: TerraSwapService,
     private terraSwapFactory: TerraSwapFactoryService,
     private token: TokenService,
-    private specFarm: SpecFarmService
+    private specFarm: SpecFarmService,
   ) {
     try {
       const poolJson = localStorage.getItem('poolInfos');
@@ -99,7 +97,7 @@ export class InfoService {
     }
     if (opt.ust) {
       const task = this.bankService.balances()
-        .then(it => this.userUstAmount = div(it.get(Denom.USD).amount.toNumber(), CONFIG.UNIT));
+        .then(it => this.userUstAmount = div(it.get(Denom.USD)?.amount.toNumber() ?? 0, CONFIG.UNIT));
       tasks.push(task);
     }
   }

@@ -49,6 +49,7 @@ import { PricePipe } from './pipes/price.pipe';
 import { ToDatePipe } from './pipes/to-date.pipe';
 import { BalancePipe } from './pipes/balance.pipe';
 import { LpBalancePipe } from './pipes/lp-balance.pipe';
+import { AnchorFarmInfoService } from './services/farm_info/anchor.farm-info.service';
 import { ConnectOptionsComponent } from './services/connect-options/connect-options.component';
 import { WalletOptionsComponent } from './services/wallet-options/wallet-options.component';
 
@@ -119,6 +120,7 @@ registerLocaleData(locale, 'en');
     },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true},
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true},
+    { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true},
     TruncatePipe,
     DecimalPipe,
     UnitPipe,
