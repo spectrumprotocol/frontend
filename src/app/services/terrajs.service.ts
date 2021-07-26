@@ -81,6 +81,9 @@ export class TerrajsService implements OnDestroy {
     this.walletController = new WalletController({
       defaultNetwork: mainnet,
       walletConnectChainIds,
+      connectorOpts: {
+        bridge: 'https://walletconnect.terra.dev/'
+      },
       waitingChromeExtensionInstallCheck: 1000
     });
     this.subscription = this.heightChanged.subscribe(() => this.height++);
