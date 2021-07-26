@@ -6,6 +6,7 @@ import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 import { MdbModalService } from 'mdb-angular-ui-kit';
 import { filter, startWith } from 'rxjs/operators';
 import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus } from '@terra-money/wallet-provider';
+import { checkAvailableExtension } from '@terra-money/wallet-provider/utils/checkAvailableExtension';
 import { ModalService } from './modal.service';
 
 export const BLOCK_TIME = 6500; // 6.5s
@@ -94,6 +95,7 @@ export class TerrajsService implements OnDestroy {
   }
 
   async checkInstalled() {
+    await checkAvailableExtension(1500);
     const types = await firstValueFrom(this.walletController.availableInstallTypes());
     return types.length === 0;
   }

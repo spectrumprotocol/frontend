@@ -4,7 +4,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { ModalService } from '../services/modal.service';
 import { TruncatePipe } from '../pipes/truncate.pipe';
 import { InfoService } from '../services/info.service';
-import { Subscription } from 'rxjs';
+import { Subscription, switchMap, tap } from 'rxjs';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
 
 @Component({
@@ -22,40 +22,54 @@ export class MenubarComponent implements OnInit, OnDestroy {
     private truncate: TruncatePipe,
   ) { }
 
-  private heightChanged: Subscription;
-  private connected: Subscription;
+  private processes: Subscription;
   @ViewChild('dropdown') dropdown: MdbDropdownDirective;
 
   walletText = 'Connect Wallet';
 
   async ngOnInit() {
-    this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
-      await this.info.refreshBalance({ ust: true, spec: true });
-    });
-    this.connected = this.terrajs.connected.subscribe(connected => {
-      if (connected) {
-        this.walletText = this.getWalletText();
-      } else {
-        this.walletText = 'Connect Wallet';
-      }
-    });
+    // NOTE : Create a composite subscription, we will compose everything into it and unsub everything once on destroy.
+    this.processes = new Subscription();
+    this.processes.add(
+      this.terrajs.heightChanged.pipe(
+        tap(async () => {
+          await this.info.refreshBalance({ ust: true, spec: true });
+        })
+      ).subscribe()
+    );
 
-    // delay to wait for extension to load
-    setTimeout(() => this.initWallet(), 1000);
+    this.processes.add(
+      this.terrajs.connected.pipe(
+        tap((connected) => {
+          if (connected) {
+            this.walletText = this.getWalletText();
+          } else {
+            this.walletText = 'Connect Wallet';
+          }
+        }),
+        // NOTE : SwitchMap means "Subscribe, in a subscribe, we are passing control to "initWallet".
+        // Observables and promises are fully interoperable
+        switchMap(() => {
+          // NOTE : Will wait until the first state who is not "initialized".
+          return this.initWallet();
+        }),
+        tap((installed) => {
+          if (!installed) {
+            this.walletText = 'Please install Terra Station';
+          } else if (this.terrajs.isConnected) {
+            this.walletText = this.getWalletText();
+          }
+        })
+      ).subscribe()
+    );
   }
 
-  private async initWallet() {
-    const installed = await this.terrajs.checkInstalled();
-    if (!installed) {
-      this.walletText = 'Please install Terra Station';
-    } else if (this.terrajs.isConnected) {
-      this.walletText = this.getWalletText();
-    }
+  private async initWallet(): Promise<boolean> {
+    return await this.terrajs.checkInstalled();
   }
 
   ngOnDestroy(): void {
-    this.heightChanged.unsubscribe();
-    this.connected.unsubscribe();
+    this.processes.unsubscribe();
   }
 
   private getWalletText() {
