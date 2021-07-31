@@ -42,7 +42,7 @@ export const networks: Record<string, ISettings> = {
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
     anchorStaker: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
     anchorToken: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
-    anchorFarm: '',
+    anchorFarm: 'terra1fqzczuddqsdml37a20pysjx5wk9dh4tdzu2mrw',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
