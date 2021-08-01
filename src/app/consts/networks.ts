@@ -14,13 +14,18 @@ export interface ISettings {
   terraSwapFactory: string;
   staker: string;
   anchorGov: string;
-  anchorStaker: string;
+  anchorStaking: string;
   anchorToken: string;
   anchorFarm: string;
+  pylonGov: string;
+  pylonStaking: string;
+  pylonToken: string;
+  pylonFarm: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
   anchorGraph: string;
+  pylonAPI: string;
   chainID: string;
 }
 export const networks: Record<string, ISettings> = {
@@ -40,13 +45,18 @@ export const networks: Record<string, ISettings> = {
     terraSwapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
     staker: 'terra1fxwelge6mf5l6z0rjpylzcfq9w9tw2q7tewaf5',
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
-    anchorStaker: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
+    anchorStaking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
     anchorToken: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
-    anchorFarm: '',
+    anchorFarm: 'terra1fqzczuddqsdml37a20pysjx5wk9dh4tdzu2mrw',
+    pylonGov: 'terra1rqkyau9hanxtn63mjrdfhpnkpddztv3qav0tq2',
+    pylonStaking: 'terra19nek85kaqrvzlxygw20jhy08h3ryjf5kg4ep3l',
+    pylonToken: 'terra1kcthelkax4j9x8d3ny6sdag0qmxxynl3qtcrpy',
+    pylonFarm: '',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
     anchorGraph: 'anchor',
+    pylonAPI: 'https://api.pylon.money',
     chainID: 'columbus-4',
   },
   testnet: {
@@ -65,13 +75,18 @@ export const networks: Record<string, ISettings> = {
     terraSwapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
     staker: 'terra15nwqmmmza9y643apneg0ddwt0ekk38qdevnnjt',
     anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
-    anchorStaker: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
+    anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
     anchorToken: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
     anchorFarm: 'terra1yvpd3j7mry7qrmmn2x9vapmr9qpzkvjgs4f7z7',
+    pylonGov: 'terra1hffjqjscxgz5lnmmtwhksrcg4gd3x4nyp9mzwx',
+    pylonStaking: 'terra17av0lfhqymusm6j9jpepzerg6u54q57jp7xnrz',
+    pylonToken: 'terra1lqm5tutr5xcw9d5vc4457exa3ghd4sr9mzwdex',
+    pylonFarm: 'terra1hgjp2yjqe7ngzsx283tm7ch8xcsvk5c8mdj2tw',
     lcd: 'https://tequila-lcd.terra.dev',
     fcd: 'https://tequila-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
     anchorGraph: 'anchorTest',
+    pylonAPI: 'https://api.dev.pylon.rocks',
     chainID: 'tequila-0004',
   },
 };

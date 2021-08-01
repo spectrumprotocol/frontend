@@ -172,6 +172,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     const specPoolResponse = this.info.poolResponses[this.terrajs.settings.specToken];
     const mirPoolResponse = this.info.poolResponses[this.terrajs.settings.mirrorToken];
     const ancPoolResponse = this.info.poolResponses[this.terrajs.settings.anchorToken];
+    const minePoolResponse = this.info.poolResponses[this.terrajs.settings.pylonToken];
     let tvl = 0;
     for (const vault of this.allVaults) {
       const rewardInfo = this.info.rewardInfos[vault.assetToken];
@@ -185,6 +186,8 @@ export class VaultComponent implements OnInit, OnDestroy {
         tvl += +this.balancePipe.transform(rewardInfo.pending_farm_reward, mirPoolResponse) / CONFIG.UNIT || 0;
       } else if (vault.poolInfo.farm === 'Anchor') {
         tvl += +this.balancePipe.transform(rewardInfo.pending_farm_reward, ancPoolResponse) / CONFIG.UNIT || 0;
+      } else if (vault.poolInfo.farm === 'Pylon') {
+        tvl += +this.balancePipe.transform(rewardInfo.pending_farm_reward, minePoolResponse) / CONFIG.UNIT || 0;
       }
     }
 

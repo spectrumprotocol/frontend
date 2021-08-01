@@ -81,6 +81,11 @@
                   &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
                   info.poolResponses[terrajs.settings.anchorToken] |
                   unit: '1.0-2' }})</span>
+                <span class="small text-muted"
+                  *ngIf="vault.poolInfo.farm === 'Pylon' && +info.rewardInfos[vault.assetToken]?.pending_farm_reward">
+                  &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
+                  info.poolResponses[terrajs.settings.pylonToken] |
+                  unit: '1.0-2' }})</span>
               </div>
             </div>
           </div>

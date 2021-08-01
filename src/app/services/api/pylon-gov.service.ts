@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
-import { ConfigResponse } from './anchor_gov/config_response';
-import { HandleMsg } from './anchor_gov/handle_msg';
-import { QueryMsg } from './anchor_gov/query_msg';
-import { StakerResponse } from './anchor_gov/staker_response';
-import { StateResponse } from './anchor_staking/state_response';
+import { ConfigResponse } from './pylon_gov/config_response';
+import { HandleMsg } from './pylon_gov/handle_msg';
+import { QueryMsg } from './pylon_gov/query_msg';
+import { StakerResponse } from './pylon_gov/staker_response';
+import { StateResponse } from './pylon_staking/state_response';
 import { WasmService } from './wasm.service';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class AnchorGovService {
+export class PylonGovService {
 
   constructor(
     private terrajs: TerrajsService,
@@ -30,10 +30,10 @@ export class AnchorGovService {
   query(msg: Extract<QueryMsg, { state: unknown }>): Promise<StateResponse>;
   query(msg: Extract<QueryMsg, { staker: unknown }>): Promise<StakerResponse>;
   query(msg: QueryMsg): Promise<any> {
-    return this.wasm.query(this.terrajs.settings.anchorGov, msg);
+    return this.wasm.query(this.terrajs.settings.pylonGov, msg);
   }
 
   handle(msg: HandleMsg, opts?: ExecuteOptions) {
-    return this.wasm.execute(this.terrajs.settings.anchorGov, msg, opts);
+    return this.wasm.execute(this.terrajs.settings.pylonGov, msg, opts);
   }
 }

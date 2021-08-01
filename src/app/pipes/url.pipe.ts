@@ -20,6 +20,7 @@ export class UrlPipe implements PipeTransform {
           case 'SPEC': return '/assets/SPEC.png';
           case 'ANC': return 'https://whitelist.anchorprotocol.com/logo/ANC.png';
           case 'TTN': return 'https://whitelist.anchorprotocol.com/logo/ANC.png';
+          case 'MINE': return 'https://assets.pylon.rocks/logo/MINE.png';
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -30,6 +31,7 @@ export class UrlPipe implements PipeTransform {
           case 'SPEC': return '/trade';
           case 'ANC': return 'https://app.anchorprotocol.com/gov/trade/buy';
           case 'TTN': return 'https://app.anchorprotocol.com/gov/trade/buy';
+          case 'MINE': return 'https://app.pylon.money/trade/buy';
           default: return 'https://terra.mirror.finance/trade#buy';
         }
       case 'mint':

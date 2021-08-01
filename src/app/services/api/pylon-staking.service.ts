@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
-import { ConfigResponse } from './anchor_staking/config_response';
-import { HandleMsg } from './anchor_staking/handle_msg';
-import { QueryMsg } from './anchor_staking/query_msg';
-import { StakerInfoResponse } from './anchor_staking/staker_info_response';
-import { StateResponse } from './anchor_staking/state_response';
+import { ConfigResponse } from './pylon_staking/config_response';
+import { HandleMsg } from './pylon_staking/handle_msg';
+import { QueryMsg } from './pylon_staking/query_msg';
+import { StakerInfoResponse } from './pylon_staking/staker_info_response';
+import { StateResponse } from './pylon_staking/state_response';
 import { WasmService } from './wasm.service';
 
 
@@ -12,7 +12,7 @@ import { WasmService } from './wasm.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AnchorStakingService {
+export class PylonStakingService {
 
   constructor(
     private terrajs: TerrajsService,
@@ -24,10 +24,10 @@ export class AnchorStakingService {
   query(msg: Extract<QueryMsg, { staker_info: unknown }>): Promise<StakerInfoResponse>;
 
   query(msg: QueryMsg): Promise<any> {
-    return this.wasm.query(this.terrajs.settings.anchorStaking, msg);
+    return this.wasm.query(this.terrajs.settings.pylonStaking, msg);
   }
 
   handle(msg: HandleMsg, opts?: ExecuteOptions) {
-    return this.wasm.execute(this.terrajs.settings.anchorStaking, msg, opts);
+    return this.wasm.execute(this.terrajs.settings.pylonStaking, msg, opts);
   }
 }
