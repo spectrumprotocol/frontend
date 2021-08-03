@@ -106,7 +106,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
     const rewardInfo = await this.anchorFarm.query({
       reward_info: {
         staker_addr: this.terrajs.address,
-        height: +height,
+        height: +height + 2,
       }
     });
     return rewardInfo.reward_infos;
