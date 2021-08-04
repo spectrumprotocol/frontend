@@ -198,56 +198,59 @@ input[type="number"] {
 .badge-info,
 .alert-info {
   background: $info;
-  background: -webkit-linear-gradient(45deg, lighten($info, 10%) 0%, $info 50%);
-  background: linear-gradient(45deg, lighten($info, 10%) 0%, $info 50%);
+  background: -webkit-linear-gradient(45deg, darken($info, 7%) 0%, $info 50%);
+  background: linear-gradient(45deg, darken($info, 7%) 0%, $info 50%);
 }
 
-.bg-success .btn-success,
+.bg-success,
+.btn-success,
 .badge-success,
 .alert-success {
   background: $success;
-  background: -webkit-linear-gradient(45deg, lighten($success, 10%) 0%, $success 50%);
-  background: linear-gradient(45deg, lighten($success, 10%) 0%, $success 50%);
+  background: -webkit-linear-gradient(45deg, darken($success, 7%) 0%, $success 50%);
+  background: linear-gradient(45deg, darken($success, 7%) 0%, $success 50%);
 }
 
-.bg-warning .btn-warning,
+
+.bg-warning,
+.btn-warning,
 .badge-warning,
 .alert-warning {
   background: $warning;
-  background: -webkit-linear-gradient(45deg, lighten($warning, 10%) 0%, $warning 50%);
-  background: linear-gradient(45deg, lighten($warning, 10%) 0%, $warning 50%);
+  background: -webkit-linear-gradient(45deg, darken($warning, 7%) 0%, $warning 50%);
+  background: linear-gradient(45deg, darken($warning, 7%) 0%, $warning 50%);
 }
 
-.bg-danger .btn-danger,
+.bg-danger,
+.btn-danger,
 .badge-danger,
 .alert-danger {
   background: $danger;
-  background: -webkit-linear-gradient(45deg, lighten($danger, 10%) 0%, $danger 37%);
-  background: linear-gradient(45deg, lighten($danger, 10%) 0%, $danger 37%);
+  background: -webkit-linear-gradient(45deg, darken($danger, 7%) 0%, $danger 37%);
+  background: linear-gradient(45deg, darken($danger, 7%) 0%, $danger 37%);
 }
 
 .bg-Spectrum {
   background: $spectrum;
-  background: -webkit-linear-gradient(45deg, lighten($spectrum, 5%) 0%, $spectrum 50%);
-  background: linear-gradient(45deg, lighten($spectrum, 5%) 0%, $spectrum 50%);
+  background: -webkit-linear-gradient(315deg, darken($spectrum, 7%) 0%, $spectrum 50%);
+  background: linear-gradient(315deg, darken($spectrum, 7%) 0%, $spectrum 50%);
 }
 
 .bg-Mirror {
   background: $mirror;
-  background: -webkit-linear-gradient(45deg, lighten($mirror, 5%) 0%, $mirror 50%);
-  background: linear-gradient(45deg, lighten($mirror, 5%) 0%, $mirror 50%);
+  background: -webkit-linear-gradient(315deg, darken($mirror, 7%) 0%, $mirror 50%);
+  background: linear-gradient(315deg, darken($mirror, 7%) 0%, $mirror 50%);
 }
 
 .bg-Anchor {
   background: $anchor;
-  background: -webkit-linear-gradient(45deg, lighten($anchor, 5%) 0%, $anchor 50%);
-  background: linear-gradient(45deg, lighten($anchor, 5%) 0%, $anchor 50%);
+  background: -webkit-linear-gradient(315deg, darken($anchor, 7%) 0%, $anchor 50%);
+  background: linear-gradient(315deg, darken($anchor, 7%) 0%, $anchor 50%);
 }
 
 .bg-Pylon {
   background: $pylon;
-  background: -webkit-linear-gradient(45deg, lighten($pylon, 5%) 0%, $pylon 50%);
-  background: linear-gradient(45deg, lighten($pylon, 5%) 0%, $pylon 50%);
+  background: -webkit-linear-gradient(315deg, darken($pylon, 7%) 0%, $pylon 50%);
+  background: linear-gradient(315deg, darken($pylon, 7%) 0%, $pylon 50%);
 }
-
 

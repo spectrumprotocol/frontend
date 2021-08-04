@@ -164,6 +164,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         return this.terrajs.settings.mirrorFarm;
       case 'Spectrum':
         return this.terrajs.settings.specFarm;
+      case 'Anchor':
+        return this.terrajs.settings.anchorFarm;
     }
   }
 
@@ -222,6 +224,31 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         ]);
         break;
       }
+      case 'Anchor': {
+        this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', 'ANC', this.vault.symbol + '-UST');
+        await this.terrajs.post([
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.terrajs.settings.anchorFarm,
+            {
+              unbond: {
+                asset_token: this.vault.poolInfo.asset_token,
+                amount: times(this.withdrawAmt, CONFIG.UNIT),
+              }
+            }
+          ),
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.vault.pairInfo.liquidity_token, {
+              send: {
+                amount: times(this.withdrawAmt, CONFIG.UNIT),
+                contract: this.vault.pairInfo.contract_addr,
+                msg: toBase64({ withdraw_liquidity: {} }),
+              }
+            })
+        ]);
+        break;
+      }
     }
     this.withdrawAmt = undefined;
   }
@@ -263,6 +290,28 @@ export class AssetCardComponent implements OnInit, OnDestroy {
           new MsgExecuteContract(
             this.terrajs.address,
             this.terrajs.settings.specFarm,
+            {
+              withdraw: {
+                asset_token: all ? undefined : this.vault.poolInfo.asset_token,
+              }
+            }
+          )
+        ]);
+        break;
+      }
+      case 'Anchor': {
+        this.$gaService.event('CLICK_CLAIM_REWARD', 'ANC', this.vault.symbol + '-UST');
+        await this.terrajs.post([
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.terrajs.settings.gov,
+            {
+              mint: {}
+            }
+          ),
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.terrajs.settings.anchorFarm,
             {
               withdraw: {
                 asset_token: all ? undefined : this.vault.poolInfo.asset_token,

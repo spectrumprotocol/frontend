@@ -18,6 +18,8 @@ export class UrlPipe implements PipeTransform {
         }
         switch (symbol) {
           case 'SPEC': return '/assets/SPEC.png';
+          case 'ANC': return 'https://whitelist.anchorprotocol.com/logo/ANC.png';
+          case 'TTN': return 'https://whitelist.anchorprotocol.com/logo/ANC.png';
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -26,6 +28,8 @@ export class UrlPipe implements PipeTransform {
         }
         switch (symbol) {
           case 'SPEC': return '/trade';
+          case 'ANC': return 'https://app.anchorprotocol.com/gov/trade/buy';
+          case 'TTN': return 'https://app.anchorprotocol.com/gov/trade/buy';
           default: return 'https://terra.mirror.finance/trade#buy';
         }
       case 'mint':
