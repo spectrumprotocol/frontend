@@ -105,8 +105,8 @@ export class TerrajsService implements OnDestroy {
       .then(it => it.filter(t => t !== 'READONLY'));
   }
 
-  async getHeight(): Promise<number> {
-    if (this.height <= 1) {
+  async getHeight(force?: boolean): Promise<number> {
+    if (this.height <= 1 || force) {
       await this.get('wasm/parameters'); // call something to get height
     }
     return this.height;
