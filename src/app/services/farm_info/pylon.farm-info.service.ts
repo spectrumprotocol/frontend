@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
 import BigNumber from 'bignumber.js';
 import { PylonFarmService } from '../api/pylon-farm.service';
 import { PylonStakingService } from '../api/pylon-staking.service';
@@ -8,7 +7,7 @@ import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { GovService } from '../api/gov.service';
 import { TerraSwapService } from '../api/terraswap.service';
 import { PairInfo } from '../api/terraswap_factory/pair_info';
-import { GetResponse, TerrajsService } from '../terrajs.service';
+import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
@@ -16,6 +15,7 @@ import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
   farmName = 'Pylon';
+  tokenSymbol = 'MINE';
 
   constructor(
     private gov: GovService,
@@ -43,7 +43,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     const pylonLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/liquidity/v1/overview`));
     const pylonGovStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/governance/v1/overview`));
     const pairs: Record<string, PairStat> = {};
-    
+
     const poolApr = +(pylonLPStat.apy || 0);
     pairs[this.terrajs.settings.pylonToken] = createPairStat(poolApr, this.terrajs.settings.pylonToken);
 
@@ -67,6 +67,7 @@ export class PylonFarmInfoService implements FarmInfoService {
 
     return pairs;
 
+    // tslint:disable-next-line:no-shadowed-variable
     function createPairStat(poolApr: number, token: string) {
       const poolInfo = poolInfos[token];
       const stat: PairStat = {
