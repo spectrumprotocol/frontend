@@ -17,7 +17,7 @@
       <div class="d-flex" *ngIf="info.bondAmountUstByFarm[farmInfo.tokenSymbol] > 0.01">
         <span class="legend-square bg-{{farmInfo.farmName}}"></span> {{farmInfo.farmName}} farm
         <span class="margin-left-auto">
-          <app-digit [value]="info.bondAmountUstByFarm[farmInfo.tokenSymbol]"></app-digit> UST
+          <app-digit [value]="info.bondAmountUstByFarm[farmInfo.tokenSymbol]" [format]="'1.2-2'"></app-digit> UST
         </span>
       </div>
     </ng-container>
@@ -26,7 +26,7 @@
       <div class="d-flex" *ngIf="getValueByReference(item.valueRef) > 0.01">
         <span class="legend-square bg-{{item.valueRef}}"></span> {{item.title}}
         <span class="margin-left-auto">
-          <app-digit [value]="getValueByReference(item.valueRef)"></app-digit> UST
+          <app-digit [value]="getValueByReference(item.valueRef)" [format]="'1.2-2'"></app-digit> UST
         </span>
       </div>
     </ng-container>

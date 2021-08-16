@@ -88,7 +88,6 @@ export class TxPostComponent implements OnInit {
           if (res2.body.code || res2.body.error) {
             throw { message: 'Transaction failed', data: res2.body.code || res2.body.error };
           }
-          this.info.postTxItem(this.txhash);
           break;
         } else {
           await new Promise(ok => setTimeout(() => ok(null), 1000));
