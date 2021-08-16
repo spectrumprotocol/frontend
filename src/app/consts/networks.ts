@@ -51,7 +51,7 @@ export const networks: Record<string, ISettings> = {
     pylonGov: 'terra1xu8utj38xuw6mjwck4n97enmavlv852zkcvhgp',
     pylonStaking: 'terra19nek85kaqrvzlxygw20jhy08h3ryjf5kg4ep3l',
     pylonToken: 'terra1kcthelkax4j9x8d3ny6sdag0qmxxynl3qtcrpy',
-    pylonFarm: '',
+    pylonFarm: 'terra1r3675psl7s2fe0sfh0vut5z4hrywgyyfdrzg95',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
