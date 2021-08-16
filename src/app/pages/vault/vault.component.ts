@@ -5,11 +5,13 @@ import { InfoService } from '../../services/info.service';
 import { debounce } from 'utils-decorators';
 import { PairStat, PoolInfo } from '../../services/farm_info/farm-info.service';
 import { CONFIG } from '../../consts/config';
-import {MdbDropdownDirective, MdbModalService} from 'mdb-angular-ui-kit';
+import { MdbDropdownDirective, MdbModalService } from 'mdb-angular-ui-kit';
 import { PairInfo } from '../../services/api/terraswap_factory/pair_info';
 import { GovService } from 'src/app/services/api/gov.service';
-import {TotalValueItem} from './your-tvl/your-tvl.component';
-import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import { TotalValueItem } from './your-tvl/your-tvl.component';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { BalancePipe } from 'src/app/pipes/balance.pipe';
+import { LpBalancePipe } from 'src/app/pipes/lp-balance.pipe';
 
 export interface Vault {
   symbol: string;
@@ -35,11 +37,13 @@ export class VaultComponent implements OnInit, OnDestroy {
   private lastSortBy: string;
 
   loading = true;
+  allVaults: Vault[];
   vaults: Vault[];
   search: string;
   showDepositedPoolOnly = false;
   sortBy = 'multiplier';
   UNIT = CONFIG.UNIT;
+  myStaked: string;
   myTvl = 0;
   height: number;
 
@@ -48,6 +52,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   totalValueItems: TotalValueItem[] = [];
 
   constructor(
+    private balancePipe: BalancePipe,
+    private lpBalancePipe: LpBalancePipe,
     private gov: GovService,
     public info: InfoService,
     public terrajs: TerrajsService,
@@ -122,9 +128,10 @@ export class VaultComponent implements OnInit, OnDestroy {
   vaultId = (_: number, item: Vault) => item.symbol;
 
   async openYourTVL() {
-    if (this.cannotOpenYourTVL()){
+    if (this.cannotOpenYourTVL()) {
       return;
     }
+
     this.$gaService.event('CLICK_OPEN_YOUR_TVL');
     this.initTVLowerSection();
     const modal = await import('./your-tvl/your-tvl.component');
@@ -137,7 +144,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     const result = await ref.onClose.toPromise();
   }
 
-  cannotOpenYourTVL(){
+  cannotOpenYourTVL() {
     return this.loading || !this.terrajs.isConnected;
   }
 
@@ -150,15 +157,8 @@ export class VaultComponent implements OnInit, OnDestroy {
       valueRef: 'item1',
       title: 'Total Rewards'
     };
-    // const item2: TotalValueItem = {
-    //   valueRef: 'item2',
-    //   title: 'SPEC balance'
-    // };
-    // const item3: TotalValueItem = {
-    //   valueRef: 'item3',
-    //   title: 'UST balance'
-    // };
-    if (this.totalValueItems.length !== 2){
+
+    if (this.totalValueItems.length !== 2) {
       this.totalValueItems = [item0, item1];
     }
   }
