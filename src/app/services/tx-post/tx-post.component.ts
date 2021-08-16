@@ -5,6 +5,7 @@ import { MdbModalRef } from 'mdb-angular-ui-kit';
 import { CONFIG } from '../../consts/config';
 import { TerrajsService } from '../terrajs.service';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import {InfoService} from '../info.service';
 
 @Component({
   selector: 'app-tx-post',
@@ -27,7 +28,8 @@ export class TxPostComponent implements OnInit {
     private httpClient: HttpClient,
     private modalRef: MdbModalRef<TxPostComponent>,
     private terrajs: TerrajsService,
-    protected $gaService: GoogleAnalyticsService
+    protected $gaService: GoogleAnalyticsService,
+    private info: InfoService
   ) { }
 
   async ngOnInit() {
@@ -86,6 +88,7 @@ export class TxPostComponent implements OnInit {
           if (res2.body.code || res2.body.error) {
             throw { message: 'Transaction failed', data: res2.body.code || res2.body.error };
           }
+          this.info.postTxItem(this.txhash);
           break;
         } else {
           await new Promise(ok => setTimeout(() => ok(null), 1000));

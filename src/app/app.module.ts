@@ -52,6 +52,11 @@ import { LpBalancePipe } from './pipes/lp-balance.pipe';
 import { AnchorFarmInfoService } from './services/farm_info/anchor.farm-info.service';
 import { ConnectOptionsComponent } from './services/connect-options/connect-options.component';
 import { WalletOptionsComponent } from './services/wallet-options/wallet-options.component';
+import {TxHistoryComponent} from './pages/tx-history/tx-history.component';
+import { PylonFarmInfoService } from './services/farm_info/pylon.farm-info.service';
+import {YourTvlComponent} from './pages/vault/your-tvl/your-tvl.component';
+import {UnstakeAllComponent} from './pages/vault/unstake-all/unstake-all.component';
+import {NgxChartsModule} from '@swimlane/ngx-charts';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -95,6 +100,9 @@ registerLocaleData(locale, 'en');
     LpBalancePipe,
     ConnectOptionsComponent,
     WalletOptionsComponent,
+    TxHistoryComponent,
+    YourTvlComponent,
+    UnstakeAllComponent
   ],
     imports: [
         AppRoutingModule,
@@ -108,7 +116,8 @@ registerLocaleData(locale, 'en');
         PrettyJsonModule,
         GraphQLModule,
         NgxGoogleAnalyticsModule.forRoot(CONFIG.GOOGLE_ANALYTICS_ID),
-        NgxGoogleAnalyticsRouterModule
+        NgxGoogleAnalyticsRouterModule,
+        NgxChartsModule,
     ],
   providers: [
     // { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true},
@@ -121,6 +130,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true},
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true},
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true},
+    { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true},
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

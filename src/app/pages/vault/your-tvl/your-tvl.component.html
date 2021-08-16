@@ -1,0 +1,40 @@
+<div class="card p-3">
+  <div class="card-header">
+    <div class="d-flex pb-2">
+      <i class="margin-left-auto margin-top-close-button fas fa-times fa-lg" role="button" (click)="closeModal()"></i>
+    </div>
+    <h5>Your Total Value Locked</h5>
+  </div>
+  <div class="card-body">
+    <div class="d-flex pb-2">
+      <span class="legend-square bg-light"></span> Total
+      <span class="margin-left-auto">
+        <app-digit [value]="info.myTvl"></app-digit> UST
+      </span>
+    </div>
+  <div class="row">
+    <ng-container *ngFor="let farmInfo of info.farmInfos">
+      <div class="d-flex" *ngIf="info.bondAmountUstByFarm[farmInfo.tokenSymbol] > 0.01">
+        <span class="legend-square bg-{{farmInfo.farmName}}"></span> {{farmInfo.farmName}} farm
+        <span class="margin-left-auto">
+          <app-digit [value]="info.bondAmountUstByFarm[farmInfo.tokenSymbol]"></app-digit> UST
+        </span>
+      </div>
+    </ng-container>
+    <div class="pt-2"></div>
+    <ng-container *ngFor="let item of totalValueItems">
+      <div class="d-flex" *ngIf="getValueByReference(item.valueRef) > 0.01">
+        <span class="legend-square bg-{{item.valueRef}}"></span> {{item.title}}
+        <span class="margin-left-auto">
+          <app-digit [value]="getValueByReference(item.valueRef)"></app-digit> UST
+        </span>
+      </div>
+    </ng-container>
+  </div>
+  <div class="d-flex justify-content-center">
+    <ngx-charts-pie-chart [view]="[250, 250]" [results]="info.chartDataList" [scheme]="chartColors" [gradient]="true"
+      [legend]="false" [labels]="false" [doughnut]="false">
+    </ngx-charts-pie-chart>
+  </div>
+</div>
+</div>

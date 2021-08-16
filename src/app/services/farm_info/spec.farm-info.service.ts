@@ -10,6 +10,8 @@ import { FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem }
 @Injectable()
 export class SpecFarmInfoService implements FarmInfoService {
   farmName = 'Spectrum';
+  tokenSymbol = 'SPEC';
+  farmContract = this.terrajs.settings.specFarm;
 
   constructor(
     private gov: GovService,

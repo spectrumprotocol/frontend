@@ -8,6 +8,7 @@ import { PollInfo, PollStatus } from '../../services/api/gov/polls_response';
 import { TokenService } from '../../services/api/token.service';
 import { InfoService } from '../../services/info.service';
 import { TerrajsService } from '../../services/terrajs.service';
+import {GoogleAnalyticsService} from 'ngx-google-analytics';
 
 const LIMIT = 10;
 
@@ -33,9 +34,11 @@ export class GovComponent implements OnInit, OnDestroy {
     private terrajs: TerrajsService,
     private token: TokenService,
     private wallet: WalletService,
+    protected $gaService: GoogleAnalyticsService
   ) { }
 
   ngOnInit() {
+    this.$gaService.event('VIEW_GOV_PAGE');
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         const height = await this.terrajs.getHeight();
@@ -80,5 +83,6 @@ export class GovComponent implements OnInit, OnDestroy {
     });
     this.polls.push(...res.polls);
     this.hasMore = res.polls.length >= LIMIT;
+    this.$gaService.event('VIEW_GOV_PAGE', 'LOAD_MORE_POLL');
   }
 }

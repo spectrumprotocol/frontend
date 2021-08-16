@@ -218,6 +218,14 @@ export class TerrajsService implements OnDestroy {
     return res.result as any;
   }
 
+  async getFCD(path: string, params?: Record<string, string>, headers?: Record<string, string>) {
+    const res = await this.httpClient.get<GetResponse>(`${this.settings.fcd}/${path}`, {
+      params,
+      headers,
+    }).toPromise();
+    return res as any;
+  }
+
   async post(msgs: Msg[] | Msg) {
     if (this.posting) {
       return;

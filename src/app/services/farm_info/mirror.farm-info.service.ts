@@ -14,6 +14,8 @@ import { FarmInfoService, PairStat, PoolInfo, PoolItem } from './farm-info.servi
 export class MirrorFarmInfoService implements FarmInfoService {
 
   farmName = 'Mirror';
+  tokenSymbol = 'MIR';
+  farmContract = this.terrajs.settings.mirrorFarm;
 
   constructor(
     private apollo: Apollo,

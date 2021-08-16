@@ -14,6 +14,8 @@ import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 @Injectable()
 export class AnchorFarmInfoService implements FarmInfoService {
   farmName = 'Anchor';
+  tokenSymbol = 'ANC';
+  farmContract = this.terrajs.settings.anchorFarm;
 
   constructor(
     private gov: GovService,
@@ -87,6 +89,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
 
     return pairs;
 
+    // tslint:disable-next-line:no-shadowed-variable
     function createPairStat(poolApr: number, token: string) {
       const poolInfo = poolInfos[token];
       const stat: PairStat = {

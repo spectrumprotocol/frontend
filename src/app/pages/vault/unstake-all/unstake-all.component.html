@@ -1,0 +1,17 @@
+<div>
+  <span class="fw-bold">Total Reward: </span>
+  <ng-container *ngFor="let key of pendingRewardByFarmTokenKeys">
+    <ng-container *ngIf="info.pendingRewardByFarmToken[key].pending_reward_token > 0.01">
+      <span class="fw-bold text-primary">
+        <app-digit [value]="info.pendingRewardByFarmToken[key].pending_reward_token"></app-digit>
+      </span> {{key}}
+      <i class="fas fa-info-circle info-icon  me-1"
+        mdbTooltip="${{info.pendingRewardByFarmToken[key].pending_reward_ust | number: '1.0-2'}}"></i>
+    </ng-container>
+  </ng-container>
+  <span class="text-muted">($<app-digit [value]="getPendingStakedRewardTotalAmount()"></app-digit>)</span>
+  <button type="button" class="btn btn-outline-primary ms-2" (click)="unstakeAll()"
+    [disabled]="!getPendingStakedRewardTotalAmount()">Claim All</button>
+  <a routerLink="/tx-history" routerLinkActive="active"><button type="button" class="btn btn-outline-light ms-2"><i
+        class="fas fa-history"></i></button></a>
+</div>

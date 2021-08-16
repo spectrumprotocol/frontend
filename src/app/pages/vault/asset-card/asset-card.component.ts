@@ -13,6 +13,7 @@ import { MdbCollapseDirective } from 'mdb-angular-ui-kit';
 import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
 import { debounce } from 'utils-decorators';
+import {UnstakeMsgService} from '../../../services/unstake_msg.service';
 
 @Component({
   selector: 'app-asset-card',
@@ -41,7 +42,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   constructor(
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
-    public info: InfoService
+    public info: InfoService,
+    private unstakeMsgService: UnstakeMsgService
   ) { }
 
   ngOnInit() {
@@ -166,6 +168,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         return this.terrajs.settings.specFarm;
       case 'Anchor':
         return this.terrajs.settings.anchorFarm;
+      case 'Pylon':
+        return this.terrajs.settings.pylonFarm;
     }
   }
 
@@ -249,78 +253,37 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         ]);
         break;
       }
+      case 'Pylon': {
+        this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', 'MINE', this.vault.symbol + '-UST');
+        await this.terrajs.post([
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.terrajs.settings.pylonFarm,
+            {
+              unbond: {
+                asset_token: this.vault.poolInfo.asset_token,
+                amount: times(this.withdrawAmt, CONFIG.UNIT),
+              }
+            }
+          ),
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.vault.pairInfo.liquidity_token, {
+              send: {
+                amount: times(this.withdrawAmt, CONFIG.UNIT),
+                contract: this.vault.pairInfo.contract_addr,
+                msg: toBase64({ withdraw_liquidity: {} }),
+              }
+            })
+        ]);
+        break;
+      }
     }
     this.withdrawAmt = undefined;
   }
 
   async doClaimReward(all?: boolean) {
-    switch (this.vault.poolInfo.farm) {
-      case 'Mirror': {
-        this.$gaService.event('CLICK_CLAIM_REWARD', 'MIRROR', this.vault.symbol + '-UST');
-        await this.terrajs.post([
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.terrajs.settings.gov,
-            {
-              mint: {}
-            }
-          ),
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.terrajs.settings.mirrorFarm,
-            {
-              withdraw: {
-                asset_token: all ? undefined : this.vault.poolInfo.asset_token,
-              }
-            }
-          )
-        ]);
-        break;
-      }
-      case 'Spectrum': {
-        this.$gaService.event('CLICK_CLAIM_REWARD', 'SPEC', this.vault.symbol + '-UST');
-        await this.terrajs.post([
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.terrajs.settings.gov,
-            {
-              mint: {}
-            }
-          ),
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.terrajs.settings.specFarm,
-            {
-              withdraw: {
-                asset_token: all ? undefined : this.vault.poolInfo.asset_token,
-              }
-            }
-          )
-        ]);
-        break;
-      }
-      case 'Anchor': {
-        this.$gaService.event('CLICK_CLAIM_REWARD', 'ANC', this.vault.symbol + '-UST');
-        await this.terrajs.post([
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.terrajs.settings.gov,
-            {
-              mint: {}
-            }
-          ),
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.terrajs.settings.anchorFarm,
-            {
-              withdraw: {
-                asset_token: all ? undefined : this.vault.poolInfo.asset_token,
-              }
-            }
-          )
-        ]);
-        break;
-      }
-    }
+    this.$gaService.event('CLICK_CLAIM_REWARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
+    await this.terrajs.post([this.unstakeMsgService.generateMintMsg(), this.unstakeMsgService.generateWithdrawMsg(this.vault.poolInfo.farm, all, this.vault.poolInfo.asset_token)]);
   }
 }

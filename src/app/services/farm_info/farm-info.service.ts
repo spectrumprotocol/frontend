@@ -6,7 +6,7 @@ import { RewardInfoResponseItem as SpecRewardInfoResponseItem } from '../api/spe
 import { InjectionToken } from '@angular/core';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem;
-export type PoolInfo = PoolItem & { farm: string };
+export type PoolInfo = PoolItem & { farm: string; token_symbol: string };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
 export interface PairStat {
@@ -23,6 +23,8 @@ export const FARM_INFO_SERVICE = new InjectionToken('FARM_INFO_SERVICE');
 
 export interface FarmInfoService {
   farmName: string;
+  tokenSymbol: string;
+  farmContract: string;
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>>;
   queryRewards(): Promise<RewardInfoResponseItem[]>;
