@@ -94,4 +94,8 @@ export class YourTvlComponent implements OnInit, OnDestroy {
   closeModal() {
    this.modalRef.close();
   }
+
+  calcPercent(amount: number) {
+    return amount * 100 / this.info.myTvl;
+  }
 }

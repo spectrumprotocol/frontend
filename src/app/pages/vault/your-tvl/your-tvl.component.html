@@ -10,6 +10,7 @@
       <span class="legend-square bg-light"></span> Total
       <span class="margin-left-auto">
         <app-digit [value]="info.myTvl"></app-digit> UST
+        <div class="d-inline-block your-tvl-percentage"></div>
       </span>
     </div>
   <div class="row">
@@ -18,6 +19,7 @@
         <span class="legend-square bg-{{farmInfo.farmName}}"></span> {{farmInfo.farmName}} farm
         <span class="margin-left-auto">
           <app-digit [value]="info.bondAmountUstByFarm[farmInfo.tokenSymbol]" [format]="'1.2-2'"></app-digit> UST
+          <div class="d-inline-block your-tvl-percentage">(<app-digit [value]="calcPercent(info.bondAmountUstByFarm[farmInfo.tokenSymbol])" [format]="'1.2-2'"></app-digit> %)</div>
         </span>
       </div>
     </ng-container>
@@ -27,6 +29,7 @@
         <span class="legend-square bg-{{item.valueRef}}"></span> {{item.title}}
         <span class="margin-left-auto">
           <app-digit [value]="getValueByReference(item.valueRef)" [format]="'1.2-2'"></app-digit> UST
+          <div class="d-inline-block your-tvl-percentage">(<app-digit [value]="calcPercent(getValueByReference(item.valueRef))" [format]="'1.2-2'"></app-digit> %)</div>
         </span>
       </div>
     </ng-container>
