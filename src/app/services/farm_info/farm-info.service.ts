@@ -25,6 +25,7 @@ export interface FarmInfoService {
   farmName: string;
   tokenSymbol: string;
   getFarmContract(): string;
+  generateWithdrawMsg(all?: boolean, asset_token?: string);
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>>;
   queryRewards(): Promise<RewardInfoResponseItem[]>;

@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {InfoService} from '../../../services/info.service';
-import {MdbModalRef} from 'mdb-angular-ui-kit';
 import {TerrajsService} from '../../../services/terrajs.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
-import {UnstakeMsgService} from '../../../services/unstake_msg.service';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
 
 @Component({
@@ -17,7 +15,6 @@ export class UnstakeAllComponent implements OnInit {
   constructor(
     public info: InfoService,
     private terrajs: TerrajsService,
-    private unstakeMsgService: UnstakeMsgService,
     protected $gaService: GoogleAnalyticsService,
   ) { }
 
@@ -53,9 +50,10 @@ export class UnstakeAllComponent implements OnInit {
     });
     const msgExecuteContractList: MsgExecuteContract[] = [];
     farmNameListThatHavePendingRewards.forEach(farmName => {
-      msgExecuteContractList.push(this.unstakeMsgService.generateWithdrawMsg(farmName, true));
+      const findFarm = this.info.farmInfos.find(f => f.farmName === farmName);
+      msgExecuteContractList.push(findFarm.generateWithdrawMsg(true));
     });
     this.$gaService.event('CLICK_UNSTAKE_ALL_REWARDS');
-    await this.terrajs.post([this.unstakeMsgService.generateMintMsg(), ...msgExecuteContractList]);
+    await this.terrajs.post([this.terrajs.generateMintMsg(), ...msgExecuteContractList]);
   }
 }

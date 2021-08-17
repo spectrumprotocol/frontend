@@ -10,6 +10,7 @@ import { TerraSwapService } from '../api/terraswap.service';
 import { PairInfo } from '../api/terraswap_factory/pair_info';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
+import {MsgExecuteContract} from '@terra-money/terra.js';
 
 @Injectable()
 export class AnchorFarmInfoService implements FarmInfoService {
@@ -27,6 +28,18 @@ export class AnchorFarmInfoService implements FarmInfoService {
 
   getFarmContract() {
     return this.terrajs.settings.anchorFarm;
+  }
+
+  generateWithdrawMsg(all?: boolean, asset_token?: string){
+    return new MsgExecuteContract(
+      this.terrajs.address,
+      this.getFarmContract(),
+      {
+        withdraw: {
+          asset_token: all ? undefined : asset_token,
+        }
+      }
+    );
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {

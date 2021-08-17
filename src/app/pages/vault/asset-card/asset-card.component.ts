@@ -13,7 +13,6 @@ import { MdbCollapseDirective } from 'mdb-angular-ui-kit';
 import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
 import { debounce } from 'utils-decorators';
-import {UnstakeMsgService} from '../../../services/unstake_msg.service';
 
 @Component({
   selector: 'app-asset-card',
@@ -43,7 +42,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
     public info: InfoService,
-    private unstakeMsgService: UnstakeMsgService
   ) { }
 
   ngOnInit() {
@@ -284,6 +282,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   async doClaimReward(all?: boolean) {
     this.$gaService.event('CLICK_CLAIM_REWARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
-    await this.terrajs.post([this.unstakeMsgService.generateMintMsg(), this.unstakeMsgService.generateWithdrawMsg(this.vault.poolInfo.farm, all, this.vault.poolInfo.asset_token)]);
+    const farmInfo = this.info.farmInfos.find(f => f.farmName === this.vault.poolInfo.farm);
+    await this.terrajs.post([this.terrajs.generateMintMsg(), farmInfo.generateWithdrawMsg(all, this.vault.poolInfo.asset_token)]);
   }
 }

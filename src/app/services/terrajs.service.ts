@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Coin, LCDClient, Msg, SyncTxBroadcastResult } from '@terra-money/terra.js';
+import {Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult} from '@terra-money/terra.js';
 import { ISettings, networks } from '../consts/networks';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
@@ -252,6 +252,16 @@ export class TerrajsService implements OnDestroy {
   toDate(height: number) {
     const now = Date.now();
     return new Date(now + (height - this.height) * BLOCK_TIME);
+  }
+
+  generateMintMsg(){
+    return new MsgExecuteContract(
+      this.address,
+      this.settings.gov,
+      {
+        mint: {}
+      }
+    );
   }
 
 }
