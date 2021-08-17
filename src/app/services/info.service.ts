@@ -120,7 +120,7 @@ export class InfoService {
     const tasks = this.farmInfos.map(async farmInfo => {
       const pools = await farmInfo.queryPoolItems();
       for (const pool of pools) {
-        poolInfos[pool.asset_token] = Object.assign(pool, { farm: farmInfo.farmName });
+        poolInfos[pool.asset_token] = Object.assign(pool, { farm: farmInfo.farmName, token_symbol: farmInfo.tokenSymbol });
       }
     });
     await Promise.all(tasks);
@@ -178,8 +178,15 @@ export class InfoService {
     const tasks = this.farmInfos.map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
         .filter(it => it[1].farm === farmInfo.farmName));
-      const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.pairInfos);
-      Object.assign(stat.pairs, pairStats);
+      try {
+        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.pairInfos);
+        Object.assign(stat.pairs, pairStats);
+      } catch (e) {
+        if (!this.stat) {
+          throw e;
+        }
+        Object.assign(stat.pairs, this.stat.pairs);
+      }
     });
     await Promise.all([
       this.refreshGovStat(stat),

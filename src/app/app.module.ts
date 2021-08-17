@@ -52,6 +52,7 @@ import { LpBalancePipe } from './pipes/lp-balance.pipe';
 import { AnchorFarmInfoService } from './services/farm_info/anchor.farm-info.service';
 import { ConnectOptionsComponent } from './services/connect-options/connect-options.component';
 import { WalletOptionsComponent } from './services/wallet-options/wallet-options.component';
+import { PylonFarmInfoService } from './services/farm_info/pylon.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -121,6 +122,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true},
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true},
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true},
+    { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true},
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

@@ -81,6 +81,11 @@
                   &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
                   info.poolResponses[terrajs.settings.anchorToken] |
                   unit: '1.0-2' }})</span>
+                <span class="small text-muted"
+                  *ngIf="vault.poolInfo.farm === 'Pylon' && +info.rewardInfos[vault.assetToken]?.pending_farm_reward">
+                  &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
+                  info.poolResponses[terrajs.settings.pylonToken] |
+                  unit: '1.0-2' }})</span>
               </div>
             </div>
           </div>
@@ -197,6 +202,11 @@
               </div>
             </div>
             <div class="d-grid mt-3">
+              <div class="card-text small text-warning mb-1" *ngIf="depositType === 'stake' && vault.poolInfo.farm !== 'Spectrum'">
+                <i class="fas fa-exclamation-triangle"></i> With auto stake, earned {{vault.poolInfo.token_symbol}} will be staked to earn only Gov APR not Airdrop rewards or
+                other staking incentives. Please unstake your {{vault.poolInfo.token_symbol}} and stake directly to {{vault.poolInfo.farm}} Gov
+                under your address to earn the benefits.
+              </div>
               <button type="submit" class="btn btn-primary" (click)="doDeposit()"
                 [disabled]="depositAmtCtl.invalid">Deposit</button>
               <div class="text-end small fee-remark text-muted" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
@@ -249,7 +259,7 @@
         <mdb-tab title="Unstake gov tokens">
           <div class="small mt-6">
             <span *ngIf="+info.rewardInfos[vault.assetToken]?.locked_spec_reward >= 10">
-              To prevent token dump on platform launch, SPEC token rewards will be locked and released gradually over 50
+              To prevent token dump on platform launch, SPEC token reward will be locked and released gradually over 50
               days.
             </span>
             All your rewards are automatically staked in gov vaults to earn gov income.

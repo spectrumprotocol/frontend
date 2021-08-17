@@ -14,6 +14,7 @@ import { FarmInfoService, PairStat, PoolInfo, PoolItem } from './farm-info.servi
 export class MirrorFarmInfoService implements FarmInfoService {
 
   farmName = 'Mirror';
+  tokenSymbol = 'MIR';
 
   constructor(
     private apollo: Apollo,
