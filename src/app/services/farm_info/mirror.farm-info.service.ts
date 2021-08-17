@@ -15,7 +15,6 @@ export class MirrorFarmInfoService implements FarmInfoService {
 
   farmName = 'Mirror';
   tokenSymbol = 'MIR';
-  farmContract = this.terrajs.settings.mirrorFarm;
 
   constructor(
     private apollo: Apollo,
@@ -25,6 +24,10 @@ export class MirrorFarmInfoService implements FarmInfoService {
     private terrajs: TerrajsService,
     private terraSwap: TerraSwapService,
   ) { }
+
+  getFarmContract() {
+    return this.terrajs.settings.mirrorFarm;
+  }
 
   async queryPoolItems(): Promise<PoolItem[]> {
     const res = await this.mirrorFarm.query({ pools: {} });

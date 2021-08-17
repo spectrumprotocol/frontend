@@ -11,7 +11,6 @@ import { FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem }
 export class SpecFarmInfoService implements FarmInfoService {
   farmName = 'Spectrum';
   tokenSymbol = 'SPEC';
-  farmContract = this.terrajs.settings.specFarm;
 
   constructor(
     private gov: GovService,
@@ -19,6 +18,10 @@ export class SpecFarmInfoService implements FarmInfoService {
     private terrajs: TerrajsService,
     private terraSwap: TerraSwapService,
   ) { }
+
+  getFarmContract() {
+    return this.terrajs.settings.specFarm;
+  }
 
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.specFarm.query({ pools: {} });

@@ -16,7 +16,6 @@ import { firstValueFrom } from 'rxjs';
 export class PylonFarmInfoService implements FarmInfoService {
   farmName = 'Pylon';
   tokenSymbol = 'MINE';
-  farmContract = this.terrajs.settings.pylonFarm;
 
   constructor(
     private gov: GovService,
@@ -26,6 +25,10 @@ export class PylonFarmInfoService implements FarmInfoService {
     private pylonStaking: PylonStakingService,
     private httpClient: HttpClient
   ) { }
+
+  getFarmContract() {
+    return this.terrajs.settings.pylonFarm;
+  }
 
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.pylonFarm.query({ pools: {} });

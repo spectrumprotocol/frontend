@@ -15,7 +15,6 @@ import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 export class AnchorFarmInfoService implements FarmInfoService {
   farmName = 'Anchor';
   tokenSymbol = 'ANC';
-  farmContract = this.terrajs.settings.anchorFarm;
 
   constructor(
     private gov: GovService,
@@ -25,6 +24,10 @@ export class AnchorFarmInfoService implements FarmInfoService {
     private anchorStaking: AnchorStakingService,
     private apollo: Apollo
   ) { }
+
+  getFarmContract() {
+    return this.terrajs.settings.anchorFarm;
+  }
 
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.anchorFarm.query({ pools: {} });

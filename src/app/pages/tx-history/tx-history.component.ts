@@ -44,7 +44,6 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
           this.loading = true;
           if (this.txHistoryList.length === 0){
             await this.info.ensureCoinInfos();
-            await this.info.updateFarmInfoContractAddress();
             await this.populateTxHistory();
           }
           this.loading = false;
@@ -176,17 +175,17 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
             id: item.id
           };
         }
-        else if (lastExecuteMsg.withdraw && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex]?.value?.contract)) {
+        else if (lastExecuteMsg.withdraw && this.info.farmInfos.find(o => o.getFarmContract() === item.tx.value.msg[lastIndex]?.value?.contract)) {
           let descAppend = '';
           for (let index = 0; index < item.tx.value.msg.length; index++){
-            if (this.info.farmInfos.map(farmInfo => farmInfo.farmContract).includes(item.tx.value.msg[index].value?.contract)) {
+            if (this.info.farmInfos.map(farmInfo => farmInfo.getFarmContract()).includes(item.tx.value.msg[index].value?.contract)) {
               const execute_msg = JSON.parse(atob(item.tx.value.msg[index].value.execute_msg));
               const asset_token = this.info.coinInfos[execute_msg.withdraw.asset_token];
               let poolName = 'all pools';
               if (asset_token){
                 poolName = asset_token + '-UST pool';
               }
-              const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[index].value?.contract);
+              const foundFarmContract = this.info.farmInfos.find(o => o.getFarmContract() === item.tx.value.msg[index].value?.contract);
               if (foundFarmContract.tokenSymbol !== 'SPEC'){
                 const farm_amount = +item.logs[index].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'farm_amount')?.value / CONFIG.UNIT ?? 0;
                 const spec_amount = +item.logs[index].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'spec_amount')?.value / CONFIG.UNIT ?? 0;
@@ -208,7 +207,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         }
         else if (lastExecuteMsg.bond){
           const lp = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'share')?.value / CONFIG.UNIT ?? 0;
-          const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === lastExecuteMsg.bond.contract);
+          const foundFarmContract = this.info.farmInfos.find(o => o.getFarmContract() === lastExecuteMsg.bond.contract);
           let native_token_symbol = '';
           let native_token_amount = 0;
           let token_symbol = '';
@@ -242,10 +241,10 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
             id: item.id
           };
         }
-        else if (this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract) && lastExecuteMsg.send?.msg === btoa('{"withdraw_liquidity":{}}')){
+        else if (this.info.farmInfos.find(o => o.getFarmContract() === item.tx.value.msg[lastIndex - 1]?.value?.contract) && lastExecuteMsg.send?.msg === btoa('{"withdraw_liquidity":{}}')){
           const penultimateExecutionMsg = JSON.parse(atob(item.tx.value.msg[lastIndex - 1]?.value?.execute_msg));
           const symbol = this.info.coinInfos[penultimateExecutionMsg.unbond.asset_token];
-          const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract);
+          const foundFarmContract = this.info.farmInfos.find(o => o.getFarmContract() === item.tx.value.msg[lastIndex - 1]?.value?.contract);
           const refund_assets = item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'refund_assets');
           const numberRegExp = new RegExp('(\\d+)');
           const uusdAmount = refund_assets.value ? +(refund_assets.value.split(',')[0].match(numberRegExp)[0]) / CONFIG.UNIT : 0;

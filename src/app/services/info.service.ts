@@ -398,28 +398,6 @@ export class InfoService {
     this.myTvl = tvl;
     this.pendingRewardByFarmToken = pendingRewardByFarmToken;
     this.bondAmountUstByFarm = bondAmountUstByFarm;
-
-  }
-
-
-  async updateFarmInfoContractAddress() {
-    this.farmInfos.map(farm => {
-      switch (farm.tokenSymbol){
-        case 'SPEC':
-          farm.farmContract = this.terrajs.settings.specFarm;
-          break;
-        case 'MIR':
-          farm.farmContract = this.terrajs.settings.mirrorFarm;
-          break;
-        case 'ANC':
-          farm.farmContract = this.terrajs.settings.anchorFarm;
-          break;
-        case 'MINE':
-          farm.farmContract = this.terrajs.settings.pylonFarm;
-          break;
-      }
-    });
-    await Promise.resolve();
   }
 
   async initializeVaultData(connected){
