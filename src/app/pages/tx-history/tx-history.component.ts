@@ -81,7 +81,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         this.txHistoryList.push(txHistory);
       }
     }
-    this.currentTxOffset = txsRes.next
+    this.currentTxOffset = txsRes.next;
     if (this.previousTxHistoryLength === this.txHistoryList.length) {
       await this.populateTxHistory();
     } else {
