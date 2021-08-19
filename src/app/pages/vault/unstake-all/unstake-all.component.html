@@ -1,5 +1,5 @@
 <div>
-  <span class="fw-bold">Total Reward: </span>
+  <span class="fw-bold">Total Rewards: </span>
   <ng-container *ngFor="let item of (info.portfolio?.tokens | keyvalue: asIsOrder); trackBy: key">
     <ng-container *ngIf="item.value['pending_reward_token'] > 0.01">
       <span class="fw-bold text-primary">
