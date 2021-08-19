@@ -26,20 +26,12 @@ export class MirrorFarmInfoService implements FarmInfoService {
     private terraSwap: TerraSwapService,
   ) { }
 
-  getFarmContract() {
+  get farmContract() {
     return this.terrajs.settings.mirrorFarm;
   }
 
-  generateWithdrawMsg(all?: boolean, asset_token?: string){
-    return new MsgExecuteContract(
-      this.terrajs.address,
-      this.getFarmContract(),
-      {
-        withdraw: {
-          asset_token: all ? undefined : asset_token,
-        }
-      }
-    );
+  get farmTokenContract() {
+    return this.terrajs.settings.mirrorToken;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {

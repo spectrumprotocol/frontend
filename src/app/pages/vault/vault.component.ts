@@ -7,11 +7,7 @@ import { PairStat, PoolInfo } from '../../services/farm_info/farm-info.service';
 import { CONFIG } from '../../consts/config';
 import { MdbDropdownDirective, MdbModalService } from 'mdb-angular-ui-kit';
 import { PairInfo } from '../../services/api/terraswap_factory/pair_info';
-import { GovService } from 'src/app/services/api/gov.service';
-import { TotalValueItem } from './your-tvl/your-tvl.component';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { BalancePipe } from 'src/app/pipes/balance.pipe';
-import { LpBalancePipe } from 'src/app/pipes/lp-balance.pipe';
 
 export interface Vault {
   symbol: string;
@@ -49,12 +45,7 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   @ViewChild('dropdown') dropdown: MdbDropdownDirective;
 
-  totalValueItems: TotalValueItem[] = [];
-
   constructor(
-    private balancePipe: BalancePipe,
-    private lpBalancePipe: LpBalancePipe,
-    private gov: GovService,
     public info: InfoService,
     public terrajs: TerrajsService,
     private modalService: MdbModalService,
@@ -133,36 +124,15 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
 
     this.$gaService.event('CLICK_OPEN_YOUR_TVL');
-    this.initTVLowerSection();
     const modal = await import('./your-tvl/your-tvl.component');
     const ref = this.modalService.open(modal.YourTvlComponent, {
       ignoreBackdropClick: false,
-      data: {
-        totalValueItems: this.totalValueItems
-      }
     });
-    const result = await ref.onClose.toPromise();
+    await ref.onClose.toPromise();
   }
 
   cannotOpenYourTVL() {
     return this.loading || !this.terrajs.isConnected;
   }
-
-  initTVLowerSection() {
-    const item0: TotalValueItem = {
-      valueRef: 'item0',
-      title: 'Gov staked SPEC'
-    };
-    const item1: TotalValueItem = {
-      valueRef: 'item1',
-      title: 'Total Rewards'
-    };
-
-    if (this.totalValueItems.length !== 2) {
-      this.totalValueItems = [item0, item1];
-    }
-  }
-
-
 
 }

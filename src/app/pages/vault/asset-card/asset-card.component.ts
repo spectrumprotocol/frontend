@@ -283,6 +283,22 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   async doClaimReward(all?: boolean) {
     this.$gaService.event('CLICK_CLAIM_REWARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
     const farmInfo = this.info.farmInfos.find(f => f.farmName === this.vault.poolInfo.farm);
-    await this.terrajs.post([this.terrajs.generateMintMsg(), farmInfo.generateWithdrawMsg(all, this.vault.poolInfo.asset_token)]);
+    const mintMsg = new MsgExecuteContract(
+      this.terrajs.address,
+      this.terrajs.settings.gov,
+      {
+        mint: {}
+      }
+    );
+    const withdrawMsg = new MsgExecuteContract(
+      this.terrajs.address,
+      farmInfo.farmContract,
+      {
+        withdraw: {
+          asset_token: all ? undefined : this.vault.poolInfo.asset_token,
+        }
+      }
+    );
+    await this.terrajs.post([mintMsg, withdrawMsg]);
   }
 }

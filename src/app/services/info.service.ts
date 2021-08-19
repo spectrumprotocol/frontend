@@ -14,11 +14,10 @@ import { fromEntries } from '../libs/core';
 import { PairInfo } from './api/terraswap_factory/pair_info';
 import { SpecFarmService } from './api/spec-farm.service';
 import { ConfigInfo as SpecFarmConfigInfo } from './api/spec_farm/config_info';
-import {CalcService} from './calc.service';
-import {BalancePipe} from '../pipes/balance.pipe';
-import {LpBalancePipe} from '../pipes/lp-balance.pipe';
-import {Vault} from '../pages/vault/vault.component';
-import {HttpClient} from '@angular/common/http';
+import { BalancePipe } from '../pipes/balance.pipe';
+import { LpBalancePipe } from '../pipes/lp-balance.pipe';
+import { Vault } from '../pages/vault/vault.component';
+import { HttpClient } from '@angular/common/http';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -34,14 +33,16 @@ type PendingReward = {
   pending_reward_ust: number;
 };
 
-type PendingRewardByFarmToken = {
-  [key: string]: PendingReward;
+type PortfolioItem = {
+  bond_amount_ust: number;
 };
 
-export interface ChartData {
-  name: string;
-  value: number;
-}
+export type Portfolio = {
+  total_reward_ust: number;
+  gov: PendingReward;
+  tokens: Map<string, PendingReward>;
+  farms: Map<string, PortfolioItem>;
+};
 
 const HEIGHT_PER_YEAR = 365 * 24 * 60 * 60 * 1000 / BLOCK_TIME;
 
@@ -59,7 +60,6 @@ export class InfoService {
     private terraSwapFactory: TerraSwapFactoryService,
     private token: TokenService,
     private specFarm: SpecFarmService,
-    private calcService: CalcService,
     private balancePipe: BalancePipe,
     private lpBalancePipe: LpBalancePipe,
     private httpClient: HttpClient
@@ -108,22 +108,7 @@ export class InfoService {
   myTvl = 0;
   allVaults: Vault[];
 
-  chartDataList: ChartData[];
-
-  pendingRewardByFarmToken: PendingRewardByFarmToken = {
-    ['GOV_SPEC']: { pending_reward_token: 0, pending_reward_ust: 0},
-    ['SPEC']: { pending_reward_token: 0, pending_reward_ust: 0},
-    ['MIR']: { pending_reward_token: 0, pending_reward_ust: 0},
-    ['ANC']: { pending_reward_token: 0, pending_reward_ust: 0},
-    ['MINE']: { pending_reward_token: 0, pending_reward_ust: 0}
-  };
-
-  bondAmountUstByFarm: Record<string, number> = {
-    SPEC: 0,
-    MIR: 0,
-    ANC: 0,
-    MINE: 0
-  };
+  portfolio: Portfolio;
 
   async refreshBalance(opt: { spec?: boolean; ust?: boolean; lp?: boolean }) {
     if (!this.terrajs.isConnected) {
@@ -312,32 +297,26 @@ export class InfoService {
     this.specFarmConfig = await this.specFarm.query({ config: {} });
   }
 
-  async ensureCw20tokensWhitelist(){
-    if (!this.cw20tokensWhitelist){
+  async ensureCw20tokensWhitelist() {
+    if (!this.cw20tokensWhitelist) {
       this.cw20tokensWhitelist = await this.httpClient.get<object>('https://assets.terra.money/cw20/tokens.json').toPromise();
     }
   }
 
   async updateMyTvl() {
-    const specPoolResponse = this.poolResponses[this.terrajs.settings.specToken];
-    const mirPoolResponse = this.poolResponses[this.terrajs.settings.mirrorToken];
-    const ancPoolResponse = this.poolResponses[this.terrajs.settings.anchorToken];
-    const minePoolResponse = this.poolResponses[this.terrajs.settings.pylonToken];
     let tvl = 0;
-    const pendingRewardByFarmToken: PendingRewardByFarmToken = {
-      ['GOV_SPEC']: { pending_reward_token: 0, pending_reward_ust: 0},
-      ['SPEC']: { pending_reward_token: 0, pending_reward_ust: 0},
-      ['MIR']: { pending_reward_token: 0, pending_reward_ust: 0},
-      ['ANC']: { pending_reward_token: 0, pending_reward_ust: 0},
-      ['MINE']: { pending_reward_token: 0, pending_reward_ust: 0}
+    const portfolio: Portfolio = {
+      total_reward_ust: 0,
+      gov: { pending_reward_token: 0, pending_reward_ust: 0 },
+      tokens: new Map(),
+      farms: new Map(),
     };
-    const bondAmountUstByFarm: Record<string, number> = {
-      SPEC: 0,
-      MIR: 0,
-      ANC: 0,
-      MINE: 0
-    };
+    for (const farmInfo of this.farmInfos) {
+      portfolio.tokens.set(farmInfo.tokenSymbol, { pending_reward_token: 0, pending_reward_ust: 0 });
+      portfolio.farms.set(farmInfo.farmName, { bond_amount_ust: 0 });
+    }
 
+    const specPoolResponse = this.poolResponses[this.terrajs.settings.specToken];
     for (const vault of this.allVaults) {
       const rewardInfo = this.rewardInfos[vault.assetToken];
       if (!rewardInfo) {
@@ -345,62 +324,35 @@ export class InfoService {
       }
       const poolResponse = this.poolResponses[vault.assetToken];
       const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, poolResponse) / CONFIG.UNIT || 0;
-      switch (this.poolInfos[vault.assetToken].farm){
-        case 'Mirror': {
-          bondAmountUstByFarm['MIR'] += bond_amount;
-          break;
-        }
-        case 'Anchor': {
-          bondAmountUstByFarm['ANC'] += bond_amount;
-          break;
-        }
-        case 'Pylon': {
-          bondAmountUstByFarm['MINE'] += bond_amount;
-          break;
-        }
-        case 'Spectrum': {
-          bondAmountUstByFarm['SPEC'] += bond_amount;
-          break;
-        }
-        default: {
-          break;
-        }
-      }
+      const farmInfo = this.farmInfos.find(it => it.farmName === this.poolInfos[vault.assetToken].farm);
+      portfolio.farms.get(farmInfo.farmName).bond_amount_ust += bond_amount;
 
       tvl += bond_amount;
       const pending_reward_spec_ust = +this.balancePipe.transform(rewardInfo.pending_spec_reward, specPoolResponse) / CONFIG.UNIT || 0;
       tvl += pending_reward_spec_ust;
-      pendingRewardByFarmToken['SPEC'].pending_reward_ust += pending_reward_spec_ust;
-      pendingRewardByFarmToken['SPEC'].pending_reward_token += +rewardInfo.pending_spec_reward / CONFIG.UNIT;
-      if (vault.poolInfo.farm === 'Mirror') {
-        const pending_mir_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, mirPoolResponse) / CONFIG.UNIT || 0;
-        tvl += pending_mir_reward_ust;
-        pendingRewardByFarmToken['MIR'].pending_reward_ust += pending_mir_reward_ust;
-        pendingRewardByFarmToken['MIR'].pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
-      } else if (vault.poolInfo.farm === 'Anchor') {
-        const pending_anc_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, ancPoolResponse) / CONFIG.UNIT || 0;
-        tvl += pending_anc_reward_ust;
-        pendingRewardByFarmToken['ANC'].pending_reward_ust += pending_anc_reward_ust;
-        pendingRewardByFarmToken['ANC'].pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
-      } else if (vault.poolInfo.farm === 'Pylon') {
-        const pending_mine_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, minePoolResponse) / CONFIG.UNIT || 0;
-        tvl += pending_mine_reward_ust;
-        pendingRewardByFarmToken['MINE'].pending_reward_ust += pending_mine_reward_ust;
-        pendingRewardByFarmToken['MINE'].pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+      portfolio.tokens.get('SPEC').pending_reward_ust += pending_reward_spec_ust;
+      portfolio.tokens.get('SPEC').pending_reward_token += +rewardInfo.pending_spec_reward / CONFIG.UNIT;
+      portfolio.total_reward_ust += pending_reward_spec_ust;
+      if (vault.poolInfo.farm !== 'Spectrum') {
+        const farmPoolResponse = this.poolResponses[farmInfo.farmTokenContract];
+        const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, farmPoolResponse) / CONFIG.UNIT || 0;
+        tvl += pending_farm_reward_ust;
+        portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_ust += pending_farm_reward_ust;
+        portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+        portfolio.total_reward_ust += pending_farm_reward_ust;
       }
     }
 
     const specGovStaked = this.terrajs.address ? (await this.gov.balance()).balance : 0;
     const gov_spec_staked_ust = +this.balancePipe.transform(specGovStaked, specPoolResponse) / CONFIG.UNIT || 0;
-    pendingRewardByFarmToken['GOV_SPEC'].pending_reward_ust += gov_spec_staked_ust;
-    pendingRewardByFarmToken['GOV_SPEC'].pending_reward_token += +specGovStaked / CONFIG.UNIT;
+    portfolio.gov.pending_reward_ust += gov_spec_staked_ust;
+    portfolio.gov.pending_reward_token += +specGovStaked / CONFIG.UNIT;
     tvl += gov_spec_staked_ust;
     this.myTvl = tvl;
-    this.pendingRewardByFarmToken = pendingRewardByFarmToken;
-    this.bondAmountUstByFarm = bondAmountUstByFarm;
+    this.portfolio = portfolio;
   }
 
-  async initializeVaultData(connected){
+  async initializeVaultData(connected: boolean) {
     this.updateVaults();
 
     const tasks: Promise<any>[] = [];

@@ -102,7 +102,7 @@ registerLocaleData(locale, 'en');
     WalletOptionsComponent,
     TxHistoryComponent,
     YourTvlComponent,
-    UnstakeAllComponent
+    UnstakeAllComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -127,8 +127,8 @@ registerLocaleData(locale, 'en');
       deps: [TerrajsService],
       multi: true
     },
-    { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     TruncatePipe,

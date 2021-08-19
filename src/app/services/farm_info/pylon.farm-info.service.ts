@@ -27,20 +27,12 @@ export class PylonFarmInfoService implements FarmInfoService {
     private httpClient: HttpClient
   ) { }
 
-  getFarmContract() {
+  get farmContract() {
     return this.terrajs.settings.pylonFarm;
   }
 
-  generateWithdrawMsg(all?: boolean, asset_token?: string){
-    return new MsgExecuteContract(
-      this.terrajs.address,
-      this.getFarmContract(),
-      {
-        withdraw: {
-          asset_token: all ? undefined : asset_token,
-        }
-      }
-    );
+  get farmTokenContract() {
+    return this.terrajs.settings.pylonToken;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {

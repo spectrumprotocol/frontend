@@ -24,8 +24,9 @@ export const FARM_INFO_SERVICE = new InjectionToken('FARM_INFO_SERVICE');
 export interface FarmInfoService {
   farmName: string;
   tokenSymbol: string;
-  getFarmContract(): string;
-  generateWithdrawMsg(all?: boolean, asset_token?: string);
+  readonly farmContract: string;
+  readonly farmTokenContract: string;
+
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>>;
   queryRewards(): Promise<RewardInfoResponseItem[]>;

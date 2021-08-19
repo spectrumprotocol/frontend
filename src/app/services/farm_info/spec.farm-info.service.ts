@@ -20,20 +20,12 @@ export class SpecFarmInfoService implements FarmInfoService {
     private terraSwap: TerraSwapService,
   ) { }
 
-  getFarmContract() {
+  get farmContract() {
     return this.terrajs.settings.specFarm;
   }
 
-  generateWithdrawMsg(all?: boolean, asset_token?: string){
-    return new MsgExecuteContract(
-      this.terrajs.address,
-      this.getFarmContract(),
-      {
-        withdraw: {
-          asset_token: all ? undefined : asset_token,
-        }
-      }
-    );
+  get farmTokenContract() {
+    return this.terrajs.settings.specToken;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {

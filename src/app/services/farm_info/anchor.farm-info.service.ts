@@ -10,7 +10,6 @@ import { TerraSwapService } from '../api/terraswap.service';
 import { PairInfo } from '../api/terraswap_factory/pair_info';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
 
 @Injectable()
 export class AnchorFarmInfoService implements FarmInfoService {
@@ -26,20 +25,12 @@ export class AnchorFarmInfoService implements FarmInfoService {
     private apollo: Apollo
   ) { }
 
-  getFarmContract() {
+  get farmContract() {
     return this.terrajs.settings.anchorFarm;
   }
 
-  generateWithdrawMsg(all?: boolean, asset_token?: string){
-    return new MsgExecuteContract(
-      this.terrajs.address,
-      this.getFarmContract(),
-      {
-        withdraw: {
-          asset_token: all ? undefined : asset_token,
-        }
-      }
-    );
+  get farmTokenContract() {
+    return this.terrajs.settings.anchorToken;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
@@ -49,7 +40,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
-    const rewardInfoTask = this.anchorStaking.query({staker_info: {block_height: +height, staker: this.terrajs.settings.anchorFarm}});
+    const rewardInfoTask = this.anchorStaking.query({ staker_info: { block_height: +height, staker: this.terrajs.settings.anchorFarm } });
     const farmConfigTask = this.anchorFarm.query({ config: {} });
     const apollo = this.apollo.use(this.terrajs.settings.anchorGraph);
     const anchorStatTask = apollo.query<any>({

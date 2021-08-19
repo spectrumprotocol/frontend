@@ -1,12 +1,12 @@
-import {AfterContentInit, AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {ChartData, InfoService} from '../../../services/info.service';
-import {Subscription} from 'rxjs/dist/types';
-import {TerrajsService} from '../../../services/terrajs.service';
-import {MdbModalRef} from 'mdb-angular-ui-kit';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { InfoService } from '../../../services/info.service';
+import { Subscription } from 'rxjs';
+import { TerrajsService } from '../../../services/terrajs.service';
+import { MdbModalRef } from 'mdb-angular-ui-kit';
 
-export interface TotalValueItem {
-  title: string;
-  valueRef: string;
+interface ChartData {
+  name: string;
+  value: number;
 }
 
 @Component({
@@ -17,11 +17,11 @@ export interface TotalValueItem {
 export class YourTvlComponent implements OnInit, OnDestroy {
 
   loading = false;
-  totalValueItems: TotalValueItem[] = [];
+  chartDataList: ChartData[];
 
   // MIRROR, SPEC, ANCHOR, PYLON, totalValueItem 0-3
   chartColors = {
-    domain: ['#232C45', '#fc5185', '#3bac3b', '#00cfda', '#ED7B84', '#f5dbcb', '#D6D5B3', '#7EB77F']
+    domain: ['#fc5185', '#232C45', '#3bac3b', '#00cfda', '#ED7B84', '#f5dbcb', '#D6D5B3', '#7EB77F']
   };
 
   private connected: Subscription;
@@ -37,12 +37,12 @@ export class YourTvlComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
-        if (connected && !this.info.chartDataList && this.totalValueItems.length !== 0){
+        if (connected && !this.chartDataList) {
           this.refreshChartDataList();
         }
       });
-    this.heightChanged = this.terrajs.heightChanged.subscribe(async i => {
-      if (this.terrajs.isConnected && this.totalValueItems.length !== 0) {
+    this.heightChanged = this.terrajs.heightChanged.subscribe(async _ => {
+      if (this.terrajs.isConnected) {
         this.refreshChartDataList();
       }
     });
@@ -53,49 +53,24 @@ export class YourTvlComponent implements OnInit, OnDestroy {
     this.heightChanged.unsubscribe();
   }
 
-  sumAutoStakedFarmRewardsUST(){
-    const keys = Object.keys(this.info.pendingRewardByFarmToken);
-    let sum = 0;
-    keys.map(key => {
-      sum = sum + this.info.pendingRewardByFarmToken[key].pending_reward_ust;
-    });
-    sum = sum - this.info.pendingRewardByFarmToken['GOV_SPEC'].pending_reward_ust;
-    return sum;
-  }
-
-
-  getValueByReference(item: string){
-    switch (item){
-      case('item0'):
-        return this.info.pendingRewardByFarmToken['GOV_SPEC'].pending_reward_ust;
-      case('item1'):
-        return this.sumAutoStakedFarmRewardsUST();
-      // case('item2'):
-      //   return +this.info.userSpecAmount;
-      // case('item3'):
-      //   return +this.info.userUstAmount;
+  refreshChartDataList() {
+    if (!this.info.portfolio) {
+      return;
     }
-  }
-
-  refreshChartDataList(){
     const chartDataListTemp: ChartData[] = [];
-    this.info.farmInfos.forEach(farmInfo => {
+    for (const farmInfo of this.info.farmInfos) {
       chartDataListTemp.push({
         name: farmInfo.farmName,
-        value: this.info.bondAmountUstByFarm[farmInfo.tokenSymbol]
+        value: this.info.portfolio?.farms.get(farmInfo.farmName).bond_amount_ust,
       });
-    });
-    this.totalValueItems.forEach(item => {
-      chartDataListTemp.push({name: item.title, value: this.getValueByReference(item.valueRef)});
-    });
-    this.info.chartDataList = chartDataListTemp;
+    }
+
+    chartDataListTemp.push({ name: 'Gov staked SPEC', value: this.info.portfolio?.gov.pending_reward_ust });
+    chartDataListTemp.push({ name: 'Total Rewards', value: this.info.portfolio?.total_reward_ust });
+    this.chartDataList = chartDataListTemp;
   }
 
   closeModal() {
-   this.modalRef.close();
-  }
-
-  calcPercent(amount: number) {
-    return amount * 100 / this.info.myTvl;
+    this.modalRef.close();
   }
 }
