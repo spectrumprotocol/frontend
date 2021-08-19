@@ -150,7 +150,13 @@ export class InfoService {
     const tasks = this.farmInfos.map(async farmInfo => {
       const pools = await farmInfo.queryPoolItems();
       for (const pool of pools) {
-        poolInfos[pool.asset_token] = Object.assign(pool, { farm: farmInfo.farmName, token_symbol: farmInfo.tokenSymbol });
+        poolInfos[pool.asset_token] = Object.assign(pool,
+          {
+            farm: farmInfo.farmName,
+            token_symbol: farmInfo.tokenSymbol,
+            farmContract: farmInfo.farmContract,
+            farmTokenContract: farmInfo.farmTokenContract,
+          });
       }
     });
     await Promise.all(tasks);

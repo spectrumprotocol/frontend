@@ -145,7 +145,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
           bond: {
             assets,
             compound_rate: this.depositType === 'compound' ? '1' : undefined,
-            contract: this.poolContract(),
+            contract: this.vault.poolInfo.farmContract,
             slippage_tolerance: '0.005'
           }
         },
@@ -158,131 +158,37 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.depositType = undefined;
   }
 
-  private poolContract() {
-    switch (this.vault.poolInfo.farm) {
-      case 'Mirror':
-        return this.terrajs.settings.mirrorFarm;
-      case 'Spectrum':
-        return this.terrajs.settings.specFarm;
-      case 'Anchor':
-        return this.terrajs.settings.anchorFarm;
-      case 'Pylon':
-        return this.terrajs.settings.pylonFarm;
-    }
-  }
-
   async doWithdraw() {
     if (this.formWithdraw.invalid) {
       return;
     }
-    switch (this.vault.poolInfo.farm) {
-      case 'Mirror': {
-        this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', 'MIRROR', this.vault.symbol + '-UST');
-        await this.terrajs.post([
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.terrajs.settings.mirrorFarm,
-            {
-              unbond: {
-                asset_token: this.vault.poolInfo.asset_token,
-                amount: times(this.withdrawAmt, CONFIG.UNIT),
-              }
-            }
-          ),
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.vault.pairInfo.liquidity_token, {
-            send: {
-              amount: times(this.withdrawAmt, CONFIG.UNIT),
-              contract: this.vault.pairInfo.contract_addr,
-              msg: toBase64({ withdraw_liquidity: {} }),
-            }
-          })
-        ]);
-        break;
-      }
-      case 'Spectrum': {
-        this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', 'SPEC', this.vault.symbol + '-UST');
-        await this.terrajs.post([
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.terrajs.settings.specFarm,
-            {
-              unbond: {
-                asset_token: this.vault.poolInfo.asset_token,
-                amount: times(this.withdrawAmt, CONFIG.UNIT),
-              }
-            }
-          ),
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.vault.pairInfo.liquidity_token, {
-            send: {
-              amount: times(this.withdrawAmt, CONFIG.UNIT),
-              contract: this.vault.pairInfo.contract_addr,
-              msg: toBase64({ withdraw_liquidity: {} }),
-            }
-          })
-        ]);
-        break;
-      }
-      case 'Anchor': {
-        this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', 'ANC', this.vault.symbol + '-UST');
-        await this.terrajs.post([
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.terrajs.settings.anchorFarm,
-            {
-              unbond: {
-                asset_token: this.vault.poolInfo.asset_token,
-                amount: times(this.withdrawAmt, CONFIG.UNIT),
-              }
-            }
-          ),
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.vault.pairInfo.liquidity_token, {
-              send: {
-                amount: times(this.withdrawAmt, CONFIG.UNIT),
-                contract: this.vault.pairInfo.contract_addr,
-                msg: toBase64({ withdraw_liquidity: {} }),
-              }
-            })
-        ]);
-        break;
-      }
-      case 'Pylon': {
-        this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', 'MINE', this.vault.symbol + '-UST');
-        await this.terrajs.post([
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.terrajs.settings.pylonFarm,
-            {
-              unbond: {
-                asset_token: this.vault.poolInfo.asset_token,
-                amount: times(this.withdrawAmt, CONFIG.UNIT),
-              }
-            }
-          ),
-          new MsgExecuteContract(
-            this.terrajs.address,
-            this.vault.pairInfo.liquidity_token, {
-              send: {
-                amount: times(this.withdrawAmt, CONFIG.UNIT),
-                contract: this.vault.pairInfo.contract_addr,
-                msg: toBase64({ withdraw_liquidity: {} }),
-              }
-            })
-        ]);
-        break;
-      }
-    }
+    this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', this.vault.poolInfo.farm.toUpperCase(), this.vault.symbol + '-UST');
+    await this.terrajs.post([
+      new MsgExecuteContract(
+        this.terrajs.address,
+        this.vault.poolInfo.farmContract,
+        {
+          unbond: {
+            asset_token: this.vault.poolInfo.asset_token,
+            amount: times(this.withdrawAmt, CONFIG.UNIT),
+          }
+        }
+      ),
+      new MsgExecuteContract(
+        this.terrajs.address,
+        this.vault.pairInfo.liquidity_token, {
+        send: {
+          amount: times(this.withdrawAmt, CONFIG.UNIT),
+          contract: this.vault.pairInfo.contract_addr,
+          msg: toBase64({ withdraw_liquidity: {} }),
+        }
+      })
+    ]);
     this.withdrawAmt = undefined;
   }
 
   async doClaimReward(all?: boolean) {
     this.$gaService.event('CLICK_CLAIM_REWARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
-    const farmInfo = this.info.farmInfos.find(f => f.farmName === this.vault.poolInfo.farm);
     const mintMsg = new MsgExecuteContract(
       this.terrajs.address,
       this.terrajs.settings.gov,
@@ -292,7 +198,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     );
     const withdrawMsg = new MsgExecuteContract(
       this.terrajs.address,
-      farmInfo.farmContract,
+      this.vault.poolInfo.farmContract,
       {
         withdraw: {
           asset_token: all ? undefined : this.vault.poolInfo.asset_token,

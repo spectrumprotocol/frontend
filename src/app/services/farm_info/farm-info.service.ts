@@ -6,7 +6,7 @@ import { RewardInfoResponseItem as SpecRewardInfoResponseItem } from '../api/spe
 import { InjectionToken } from '@angular/core';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem;
-export type PoolInfo = PoolItem & { farm: string; token_symbol: string };
+export type PoolInfo = PoolItem & { farm: string; token_symbol: string; farmTokenContract: string; farmContract: string };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
 export interface PairStat {
