@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Coin, Coins, MsgExecuteContract, MsgInstantiateContract, MsgMigrateContract, MsgUpdateContractOwner } from '@terra-money/terra.js';
+import { Coin, Coins, MsgExecuteContract, MsgInstantiateContract, MsgMigrateContract, MsgUpdateContractAdmin } from '@terra-money/terra.js';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 
 @Injectable({
@@ -19,13 +19,13 @@ export class WasmService {
     return this.terrajs.get(`wasm/contracts/${contract}/store/raw`, { key, subKey });
   }
 
-  instantiate(codeId: number, initMsg: object, migratable?: boolean, opts?: ExecuteOptions) {
+  instantiate(codeId: number, admin: string, initMsg: object, opts?: ExecuteOptions) {
     return this.terrajs.post(new MsgInstantiateContract(
       this.terrajs.address,
+      admin,
       codeId,
       initMsg,
-      new Coins(opts?.coin ? [Coin.fromData(opts.coin)] : []),
-      migratable
+      new Coins(opts?.coin ? [Coin.fromData(opts.coin)] : [])
     ));
   }
 
@@ -48,7 +48,7 @@ export class WasmService {
   }
 
   updateOwner(contract: string, newOwner: string) {
-    return this.terrajs.post(new MsgUpdateContractOwner(
+    return this.terrajs.post(new MsgUpdateContractAdmin(
       this.terrajs.address,
       newOwner,
       contract

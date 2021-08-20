@@ -53,9 +53,16 @@ const testnet: NetworkInfo = {
   lcd: 'https://tequila-lcd.terra.dev',
 };
 
+const bombay: NetworkInfo = {
+  name: 'bombay',
+  chainID: 'bombay-10',
+  lcd: 'https://bombay-lcd.terra.dev',
+};
+
 const walletConnectChainIds: Record<number, NetworkInfo> = {
   0: testnet,
   1: mainnet,
+  3: bombay,
 };
 
 @Injectable({
@@ -95,7 +102,7 @@ export class TerrajsService implements OnDestroy {
   }
 
   async checkInstalled() {
-    await checkAvailableExtension(1500);
+    await checkAvailableExtension(1500, true);
     const types = await firstValueFrom(this.walletController.availableInstallTypes());
     return types.length === 0;
   }
