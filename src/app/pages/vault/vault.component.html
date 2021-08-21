@@ -48,9 +48,6 @@
       </div>
     </div>
     <div class="row pt-3">
-      <div class="notice border border-primary text-center">🗳️ New vaults are coming! Stake your SPEC at <a routerLink="/gov">Gov</a>, and exercise your vote! (more on roadmap <a href="https://spectrum-protocol.medium.com/spectrum-protocol-50-day-roadmap-c24e758ae207" target="_blank">here</a>)</div>
-    </div>
-    <div class="row pt-3">
       <div class="notice border border-primary text-center">⚡ Spectrum Protocol is being audited, please use your own discretion before investing. (<a href="https://docs.spec.finance/transparency" target="_blank">more details</a>)</div>
     </div>
 
@@ -97,7 +94,6 @@
       <ng-container *ngFor="let vault of vaults; trackBy: vaultId">
         <app-asset-card [vault]="vault"></app-asset-card>
       </ng-container>
-      <div class="text-center" *ngIf="vaults?.length">More vaults soon...</div>
     </div>
   </div>
 </main>
