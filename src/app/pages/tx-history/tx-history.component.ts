@@ -195,10 +195,10 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         if (farmInfo.tokenSymbol !== 'SPEC') {
           const farm_amount = +item.logs[index].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'farm_amount')?.value / CONFIG.UNIT ?? 0;
           const spec_amount = +item.logs[index].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'spec_amount')?.value / CONFIG.UNIT ?? 0;
-          descAppend = descAppend + `Unstaked rewards from ${farmInfo?.farmName} farm, ${poolName}, ${farm_amount} ${farmInfo.tokenSymbol}, ${spec_amount} SPEC <br>`;
+          descAppend = descAppend + `Unstaked rewards from ${farmInfo?.farm} farm, ${poolName}, ${farm_amount} ${farmInfo.tokenSymbol}, ${spec_amount} SPEC <br>`;
         } else {
           const spec_amount = +item.logs[index].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'amount')?.value / CONFIG.UNIT ?? 0;
-          descAppend = descAppend + `Unstaked rewards from ${farmInfo?.farmName} farm, ${poolName}, ${spec_amount} SPEC <br>`;
+          descAppend = descAppend + `Unstaked rewards from ${farmInfo?.farm} farm, ${poolName}, ${spec_amount} SPEC <br>`;
         }
       }
 
@@ -238,7 +238,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       }
 
       return {
-        desc: `Deposited ${lp} ${token_symbol}-${native_token_symbol} LP (${token_amount} ${token_symbol}, ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc}) to ${foundFarmContract?.farmName} farm`,
+        desc: `Deposited ${lp} ${token_symbol}-${native_token_symbol} LP (${token_amount} ${token_symbol}, ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc}) to ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',
@@ -253,7 +253,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const uusdAmount = refund_assets.value ? +(refund_assets.value.split(',')[0].match(numberRegExp)[0]) / CONFIG.UNIT : 0;
       const tokenAmount = refund_assets.value ? +(refund_assets.value.split(',')[1].match(numberRegExp)[0]) / CONFIG.UNIT : 0;
       return {
-        desc: `Withdrawn ${(+lastExecuteMsg.send.amount / CONFIG.UNIT)} ${symbol}-UST LP (${tokenAmount} ${symbol}, ${uusdAmount} UST) from ${foundFarmContract?.farmName} farm`,
+        desc: `Withdrawn ${(+lastExecuteMsg.send.amount / CONFIG.UNIT)} ${symbol}-UST LP (${tokenAmount} ${symbol}, ${uusdAmount} UST) from ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',

@@ -19,6 +19,9 @@ export class UnstakeAllComponent {
   ) { }
 
   async unstakeAll() {
+    if (!this.info.portfolio?.total_reward_ust){
+      return;
+    }
     const rewardInfosKeys = Object.keys(this.info.rewardInfos);
     const rewardInfosKeysThatHavePendingRewards: string[] = [];
     for (const key of rewardInfosKeys) {
@@ -32,7 +35,7 @@ export class UnstakeAllComponent {
     }
     const msgExecuteContractList: MsgExecuteContract[] = [];
     for (const farmName of farmNameListThatHavePendingRewards) {
-      const findFarm = this.info.farmInfos.find(f => f.farmName === farmName);
+      const findFarm = this.info.farmInfos.find(f => f.farm === farmName);
       msgExecuteContractList.push(new MsgExecuteContract(
         this.terrajs.address,
         findFarm.farmContract,

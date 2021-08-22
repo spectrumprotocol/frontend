@@ -60,8 +60,8 @@ export class YourTvlComponent implements OnInit, OnDestroy {
     const chartDataListTemp: ChartData[] = [];
     for (const farmInfo of this.info.farmInfos) {
       chartDataListTemp.push({
-        name: farmInfo.farmName,
-        value: this.info.portfolio?.farms.get(farmInfo.farmName).bond_amount_ust,
+        name: farmInfo.farm,
+        value: this.info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust,
       });
     }
 

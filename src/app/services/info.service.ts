@@ -152,7 +152,7 @@ export class InfoService {
       for (const pool of pools) {
         poolInfos[pool.asset_token] = Object.assign(pool,
           {
-            farm: farmInfo.farmName,
+            farm: farmInfo.farm,
             token_symbol: farmInfo.tokenSymbol,
             farmContract: farmInfo.farmContract,
             farmTokenContract: farmInfo.farmTokenContract,
@@ -213,7 +213,7 @@ export class InfoService {
     await this.ensurePairInfos();
     const tasks = this.farmInfos.map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
-        .filter(it => it[1].farm === farmInfo.farmName));
+        .filter(it => it[1].farm === farmInfo.farm));
       try {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.pairInfos);
         Object.assign(stat.pairs, pairStats);
@@ -264,6 +264,7 @@ export class InfoService {
       const rewards = await farmInfo.queryRewards();
       for (const reward of rewards) {
         rewardInfos[reward.asset_token] = reward;
+        rewardInfos[reward.asset_token].farm = farmInfo.farm;
       }
     });
     await Promise.all(tasks);
@@ -319,7 +320,7 @@ export class InfoService {
     };
     for (const farmInfo of this.farmInfos) {
       portfolio.tokens.set(farmInfo.tokenSymbol, { pending_reward_token: 0, pending_reward_ust: 0 });
-      portfolio.farms.set(farmInfo.farmName, { bond_amount_ust: 0 });
+      portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
     }
 
     const specPoolResponse = this.poolResponses[this.terrajs.settings.specToken];
@@ -330,8 +331,8 @@ export class InfoService {
       }
       const poolResponse = this.poolResponses[vault.assetToken];
       const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, poolResponse) / CONFIG.UNIT || 0;
-      const farmInfo = this.farmInfos.find(it => it.farmName === this.poolInfos[vault.assetToken].farm);
-      portfolio.farms.get(farmInfo.farmName).bond_amount_ust += bond_amount;
+      const farmInfo = this.farmInfos.find(it => it.farm === this.poolInfos[vault.assetToken].farm);
+      portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
       tvl += bond_amount;
       const pending_reward_spec_ust = +this.balancePipe.transform(rewardInfo.pending_spec_reward, specPoolResponse) / CONFIG.UNIT || 0;

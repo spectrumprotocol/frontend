@@ -14,7 +14,7 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
-  farmName = 'Pylon';
+  farm = 'Pylon';
   tokenSymbol = 'MINE';
 
   constructor(

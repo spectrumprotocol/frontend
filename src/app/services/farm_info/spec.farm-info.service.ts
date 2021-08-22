@@ -10,7 +10,7 @@ import {MsgExecuteContract} from '@terra-money/terra.js';
 
 @Injectable()
 export class SpecFarmInfoService implements FarmInfoService {
-  farmName = 'Spectrum';
+  farm = 'Spectrum';
   tokenSymbol = 'SPEC';
 
   constructor(

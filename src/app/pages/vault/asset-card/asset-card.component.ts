@@ -207,4 +207,25 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     );
     await this.terrajs.post([mintMsg, withdrawMsg]);
   }
+
+  doMoveToGov(all?: boolean) {
+    if (!all){
+      console.log(this.info.rewardInfos[this.vault.assetToken]?.pending_spec_reward);
+      if (this.vault.poolInfo.farm !== 'Spectrum'){
+        console.log(this.info.rewardInfos[this.vault.assetToken]?.pending_farm_reward);
+      }
+    } else {
+      const rewardInfosKeys = Object.keys(this.info.rewardInfos);
+      let pending_spec_reward = 0;
+      let pending_farm_reward = 0;
+      for (const key of rewardInfosKeys){
+        if (this.info.rewardInfos[key].farm === this.vault.poolInfo.farm){
+          pending_spec_reward += +this.info.rewardInfos[key].pending_spec_reward;
+          pending_farm_reward += +this.info.rewardInfos[key].pending_farm_reward;
+        }
+      }
+      console.log(pending_spec_reward);
+      console.log(pending_farm_reward);
+    }
+  }
 }

@@ -14,7 +14,7 @@ import {MsgExecuteContract} from '@terra-money/terra.js';
 @Injectable()
 export class MirrorFarmInfoService implements FarmInfoService {
 
-  farmName = 'Mirror';
+  farm = 'Mirror';
   tokenSymbol = 'MIR';
 
   constructor(

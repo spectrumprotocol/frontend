@@ -13,7 +13,7 @@ import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 
 @Injectable()
 export class AnchorFarmInfoService implements FarmInfoService {
-  farmName = 'Anchor';
+  farm = 'Anchor';
   tokenSymbol = 'ANC';
 
   constructor(
