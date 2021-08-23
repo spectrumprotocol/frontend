@@ -7,6 +7,7 @@ import { PairInfo } from '../api/terraswap_factory/pair_info';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem } from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
 
 @Injectable()
 export class SpecFarmInfoService implements FarmInfoService {
@@ -77,6 +78,20 @@ export class SpecFarmInfoService implements FarmInfoService {
       it['stake_bond_amount'] = it.bond_amount;
     }
     return rewardInfo.reward_infos;
+  }
+
+  getStakeGovMsg(amount: string): MsgExecuteContract {
+    return new MsgExecuteContract(
+      this.terrajs.address,
+      this.terrajs.settings.specToken,
+      {
+        send: {
+          contract: this.terrajs.settings.gov,
+          amount,
+          msg: toBase64({stake_tokens: {}})
+        }
+      }
+    );
   }
 
 }

@@ -10,6 +10,8 @@ import { TerraSwapService } from '../api/terraswap.service';
 import { PairInfo } from '../api/terraswap_factory/pair_info';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
 
 @Injectable()
 export class AnchorFarmInfoService implements FarmInfoService {
@@ -120,6 +122,20 @@ export class AnchorFarmInfoService implements FarmInfoService {
       }
     });
     return rewardInfo.reward_infos;
+  }
+
+  getStakeGovMsg(amount: string): MsgExecuteContract {
+    return new MsgExecuteContract(
+      this.terrajs.address,
+      this.terrajs.settings.anchorToken,
+      {
+          send: {
+            contract: this.terrajs.settings.anchorGov,
+            amount,
+            msg: toBase64({stake_voting_tokens: {}})
+          }
+      }
+    );
   }
 
 }

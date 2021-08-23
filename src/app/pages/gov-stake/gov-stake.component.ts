@@ -76,6 +76,7 @@ export class GovStakeComponent implements OnInit, OnDestroy {
 
     if (this.type === 'Stake') {
       this.$gaService.event('CLICK_STAKE_SPEC');
+      // TODO refactor code
       await this.token.handle(this.terrajs.settings.specToken, {
         send: {
           amount: times(this.amount, CONFIG.UNIT),
