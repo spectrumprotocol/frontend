@@ -10,6 +10,7 @@ import { TokenService } from '../../services/api/token.service';
 import { TerrajsService } from '../../services/terrajs.service';
 import {CONFIG} from '../../consts/config';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import {InfoService} from '../../services/info.service';
 
 @Component({
   selector: 'app-gov-stake',
@@ -32,7 +33,8 @@ export class GovStakeComponent implements OnInit, OnDestroy {
     private router: Router,
     private terrajs: TerrajsService,
     private token: TokenService,
-    protected $gaService: GoogleAnalyticsService
+    protected $gaService: GoogleAnalyticsService,
+    private info: InfoService
   ) { }
 
   ngOnInit(): void {
@@ -76,16 +78,8 @@ export class GovStakeComponent implements OnInit, OnDestroy {
 
     if (this.type === 'Stake') {
       this.$gaService.event('CLICK_STAKE_SPEC');
-      // TODO refactor code
-      await this.token.handle(this.terrajs.settings.specToken, {
-        send: {
-          amount: times(this.amount, CONFIG.UNIT),
-          contract: this.terrajs.settings.gov,
-          msg: toBase64({
-            stake_tokens: {}
-          })
-        }
-      });
+      const stakeMsg = this.info.farmInfos.find(farmInfo => farmInfo.farm === 'Spectrum').getStakeGovMsg(times(this.amount, CONFIG.UNIT));
+      await this.terrajs.post(stakeMsg);
     } else {
       this.$gaService.event('CLICK_UNSTAKE_SPEC');
       await this.gov.handle({
