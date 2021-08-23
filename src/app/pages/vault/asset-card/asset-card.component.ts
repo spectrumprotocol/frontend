@@ -231,17 +231,20 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       console.log(pending_spec_reward);
       console.log(pending_farm_reward);
     }
-    const msgs: MsgExecuteContract[] = [];
-    msgs.push(this.getWithdrawMsg(all));
-    if (pending_spec_reward > 0){
-      const foundSpecFarm = this.info.farmInfos.find(farmInfo => farmInfo.farm === 'Spectrum');
-      msgs.push(foundSpecFarm.getStakeGovMsg((pending_spec_reward).toString()));
+    if (pending_spec_reward > 0 || pending_farm_reward > 0){
+      const msgs: MsgExecuteContract[] = [];
+      msgs.push(this.getWithdrawMsg(all));
+      if (pending_spec_reward > 0){
+        const foundSpecFarm = this.info.farmInfos.find(farmInfo => farmInfo.farm === 'Spectrum');
+        msgs.push(foundSpecFarm.getStakeGovMsg((pending_spec_reward).toString()));
+      }
+      if (pending_farm_reward > 0){
+        const foundFarm = this.info.farmInfos.find(farmInfo => farmInfo.farm === this.vault.poolInfo.farm);
+        msgs.push(foundFarm.getStakeGovMsg(pending_farm_reward.toString()));
+      }
+      console.log(msgs)
+      await this.terrajs.post(msgs);
     }
-    if (pending_farm_reward > 0){
-      const foundFarm = this.info.farmInfos.find(farmInfo => farmInfo.farm === this.vault.poolInfo.farm);
-      msgs.push(foundFarm.getStakeGovMsg(pending_farm_reward.toString()));
-    }
-    console.log(msgs)
-    await this.terrajs.post(msgs);
+
   }
 }
