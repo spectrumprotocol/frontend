@@ -5,6 +5,7 @@ import { CONFIG } from '../../consts/config';
 import { InfoService } from '../../services/info.service';
 import { CalcService } from '../../services/calc.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { roundSixDecimal } from 'src/app/libs/math';
 
 interface TxHistory {
   desc: string;
@@ -33,7 +34,6 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     public info: InfoService,
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
-    private calcService: CalcService
   ) { }
 
   async ngOnInit() {
@@ -103,7 +103,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     if (lastExecuteMsg.swap && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specPool) {
       const ustOffer = +item.tx.value.msg[lastIndex]?.value?.coins[0].amount / CONFIG.UNIT;
       const return_amount = +item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'return_amount').value / CONFIG.UNIT;
-      const price = this.calcService.roundSixDecimal((ustOffer / return_amount).toString());
+      const price = roundSixDecimal(ustOffer / return_amount);
       return {
         desc: `Bought ${return_amount} SPEC for ${ustOffer} UST at price ${price} UST`,
         txhash: item.txhash,
@@ -121,7 +121,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         offer_token = this.info.cw20tokensWhitelist[this.terrajs?.network?.name ?? 'mainnet'][offer_asset_info_token_contract]?.symbol;
       }
       const return_amount = return_amount_list[return_amount_list.length - 1]?.value / CONFIG.UNIT ?? 0;
-      const price = this.calcService.roundSixDecimal((offer_amount / return_amount).toString());
+      const price = roundSixDecimal(offer_amount / return_amount);
       return {
         desc: `Bought ${return_amount} SPEC for ${offer_amount} ${offer_token} at price ${price} ${offer_token}`,
         txhash: item.txhash,
@@ -134,7 +134,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const offer_amount = +lastExecuteMsg.execute_swap_operations.offer_amount / CONFIG.UNIT ?? 0;
       const return_amount_list = item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.filter(o => o.key === 'return_amount');
       const return_amount = return_amount_list[return_amount_list.length - 1]?.value / CONFIG.UNIT ?? 0;
-      const price = this.calcService.roundSixDecimal((offer_amount / return_amount).toString());
+      const price = roundSixDecimal(offer_amount / return_amount);
       return {
         desc: `Bought ${return_amount} SPEC for ${offer_amount} ${offer_denom} at price ${price} ${offer_denom}`,
         txhash: item.txhash,
@@ -145,7 +145,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     } else if (lastExecuteMsg.send?.msg && JSON.parse(atob(lastExecuteMsg.send?.msg))?.swap && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specToken) {
       const offer_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT ?? 0;
       const return_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT ?? 0;
-      const price = this.calcService.roundSixDecimal((return_amount / offer_amount).toString());
+      const price = roundSixDecimal(return_amount / offer_amount);
       return {
         desc: `Sold ${offer_amount} SPEC for ${return_amount} UST at price ${price} UST`,
         txhash: item.txhash,
@@ -167,7 +167,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         last_ask_asset = swap_coin.value.match(alphabetRegExp)[0];
         return_amount = +(swap_coin.value.match(numberRegExp)[0]) / CONFIG.UNIT ?? 0;
       }
-      const price = this.calcService.roundSixDecimal((return_amount / offer_amount).toString());
+      const price = roundSixDecimal(return_amount / offer_amount);
       return {
         desc: `Sold ${offer_amount} SPEC for ${return_amount} ${last_ask_asset} at price ${price} ${last_ask_asset}`,
         txhash: item.txhash,
@@ -195,10 +195,10 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         if (farmInfo.tokenSymbol !== 'SPEC') {
           const farm_amount = +item.logs[index].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'farm_amount')?.value / CONFIG.UNIT ?? 0;
           const spec_amount = +item.logs[index].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'spec_amount')?.value / CONFIG.UNIT ?? 0;
-          descAppend = descAppend + `Unstaked rewards from ${farmInfo?.farmName} farm, ${poolName}, ${farm_amount} ${farmInfo.tokenSymbol}, ${spec_amount} SPEC <br>`;
+          descAppend = descAppend + `Unstaked rewards from ${farmInfo?.farm} farm, ${poolName}, ${farm_amount} ${farmInfo.tokenSymbol}, ${spec_amount} SPEC <br>`;
         } else {
           const spec_amount = +item.logs[index].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'amount')?.value / CONFIG.UNIT ?? 0;
-          descAppend = descAppend + `Unstaked rewards from ${farmInfo?.farmName} farm, ${poolName}, ${spec_amount} SPEC <br>`;
+          descAppend = descAppend + `Unstaked rewards from ${farmInfo?.farm} farm, ${poolName}, ${spec_amount} SPEC <br>`;
         }
       }
 
@@ -238,7 +238,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       }
 
       return {
-        desc: `Deposited ${lp} ${token_symbol}-${native_token_symbol} LP (${token_amount} ${token_symbol}, ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc}) to ${foundFarmContract?.farmName} farm`,
+        desc: `Deposited ${lp} ${token_symbol}-${native_token_symbol} LP (${token_amount} ${token_symbol}, ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc}) to ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',
@@ -253,7 +253,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const uusdAmount = refund_assets.value ? +(refund_assets.value.split(',')[0].match(numberRegExp)[0]) / CONFIG.UNIT : 0;
       const tokenAmount = refund_assets.value ? +(refund_assets.value.split(',')[1].match(numberRegExp)[0]) / CONFIG.UNIT : 0;
       return {
-        desc: `Withdrawn ${(+lastExecuteMsg.send.amount / CONFIG.UNIT)} ${symbol}-UST LP (${tokenAmount} ${symbol}, ${uusdAmount} UST) from ${foundFarmContract?.farmName} farm`,
+        desc: `Withdrawn ${(+lastExecuteMsg.send.amount / CONFIG.UNIT)} ${symbol}-UST LP (${tokenAmount} ${symbol}, ${uusdAmount} UST) from ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',

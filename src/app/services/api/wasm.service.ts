@@ -43,7 +43,7 @@ export class WasmService {
       this.terrajs.address,
       contract,
       newCodeId,
-      migrateMsg
+      migrateMsg,
     ));
   }
 

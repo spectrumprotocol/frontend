@@ -42,7 +42,7 @@
                 unit: '1.0-2' }})</span>
             </div>
             <div class="fs-6 mt-2">LP Deposited</div>
-            <div class="fs-5">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: '1.0-2'}}
+            <div class="fs-5">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: '1.0-6'}}
               <i class="fas fa-info-circle info-icon" [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo"
                 *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"></i>
               <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
@@ -52,9 +52,7 @@
             </div>
           </div>
           <div class="col-12 col-sm-6 col-md-4">
-            <div class="fs-6 mt-2">Staked SPEC <i class="fas fa-info-circle info-icon"
-                mdbTooltip="During platform launch SPEC reward will be locked and release 2% per day"
-                *ngIf="height < info.specFarmConfig?.lock_end"></i></div>
+            <div class="fs-6 mt-2">Staked SPEC</div>
             <div class="fs-5"><span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10"
                 class="fas fa-chevron-up animate-up text-success"></span>
               {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit: '1.0-2'}}
@@ -71,8 +69,7 @@
                     mdbTooltip="{{vault.symbol}} will be earned from auto-stake strategy. If you select auto-compound, LP will be earned."></i></span>
               </div>
               <div class="fs-5">{{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit: '1.0-2'}}
-                <span class="small text-muted"
-                  *ngIf="+info.rewardInfos[vault.assetToken]?.pending_farm_reward">
+                <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.pending_farm_reward">
                   &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
                   info.poolResponses[vault.poolInfo.farmTokenContract] |
                   unit: '1.0-2' }})</span>
@@ -192,9 +189,12 @@
               </div>
             </div>
             <div class="d-grid mt-3">
-              <div class="card-text small text-warning mb-1" *ngIf="depositType === 'stake' && vault.poolInfo.farm !== 'Spectrum'">
-                <i class="fas fa-exclamation-triangle"></i> With auto stake, earned {{vault.poolInfo.token_symbol}} will be staked to earn only Gov APR not Airdrop rewards or
-                other staking incentives. Please unstake your {{vault.poolInfo.token_symbol}} and stake directly to {{vault.poolInfo.farm}} Gov
+              <div class="card-text small text-warning mb-1"
+                *ngIf="depositType === 'stake' && vault.poolInfo.farm !== 'Spectrum'">
+                <i class="fas fa-exclamation-triangle"></i> With auto stake, earned {{vault.poolInfo.token_symbol}} will
+                be staked to earn only Gov APR not Airdrop rewards or
+                other staking incentives. Please unstake your {{vault.poolInfo.token_symbol}} and stake directly to
+                {{vault.poolInfo.farm}} Gov
                 under your address to earn the benefits.
               </div>
               <button type="submit" class="btn btn-primary" (click)="doDeposit()"
@@ -248,32 +248,12 @@
         </mdb-tab>
         <mdb-tab title="Unstake gov tokens">
           <div class="small mt-6">
-            <span *ngIf="+info.rewardInfos[vault.assetToken]?.locked_spec_reward >= 10">
-              To prevent token dump on platform launch, SPEC token reward will be locked and released gradually over 50
-              days.
-            </span>
             All your rewards are automatically staked in gov vaults to earn gov income.
           </div>
           <div class="row mt-3">
             <div class="col">Staked SPEC</div>
             <div class="col text-end">
               {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}</div>
-          </div>
-          <div *ngIf="+info.rewardInfos[vault.assetToken]?.locked_spec_reward >= 10">
-            <div class="row">
-              <div class="col">Locked SPEC</div>
-              <div class="col text-end">
-                {{info.rewardInfos[vault.assetToken]?.locked_spec_reward | unit }}</div>
-            </div>
-            <div class="row">
-              <div class="col">Unlocking progress
-                <i class="fas fa-info-circle info-icon"
-                  [mdbTooltip]="'100% unlocked on ' + (info.specFarmConfig.lock_end | toDate | date) + ' (' + (info.specFarmConfig.lock_end | toDate | timeago) + ')'"></i>
-              </div>
-              <div class="col text-end">
-                {{ 1 - +info.rewardInfos[vault.assetToken]?.locked_spec_share /
-                +info.rewardInfos[vault.assetToken]?.accum_spec_share | percent }}</div>
-            </div>
           </div>
           <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
             <div class="col">Staked <span *ngIf="vault.poolInfo.farm === 'Mirror'">MIR</span>
@@ -282,17 +262,39 @@
             <div class="col text-end">
               {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit }}</div>
           </div>
-          <div class="d-grid mt-3" *ngIf="vault.poolInfo.farm === 'Spectrum'">
-            <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake unlocked SPEC</button>
+          <div class="mt-3 row g-2" *ngIf="vault.poolInfo.farm === 'Spectrum'">
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake SPEC</button>
+            </div>
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doMoveToGov()">Move SPEC to Gov</button>
+            </div>
           </div>
-          <div class="d-grid mt-3" *ngIf="vault.poolInfo.farm === 'Mirror'">
-            <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake MIR + unlocked SPEC</button>
-            <button type="submit" class="btn btn-primary mt-2" (click)="doClaimReward(true)">Unstake MIR + unlocked SPEC
-              from all Mirror pools</button>
+          <div class="mt-3 row g-2" *ngIf="vault.poolInfo.farm === 'Mirror'">
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake MIR + SPEC</button>
+            </div>
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doMoveToGov()">Move MIR + SPEC to Govs</button>
+            </div>
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doClaimReward(true)">Unstake MIR + SPEC
+                from all Mirror pools</button>
+            </div>
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doMoveToGov(true)">Move MIR + SPEC
+                from all Mirror pools to Govs</button>
+            </div>
           </div>
-          <div class="d-grid mt-3" *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'">
-            <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake {{vault.symbol}} + unlocked
-              SPEC</button>
+          <div class="mt-3 row g-2" *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'">
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake {{vault.symbol}} +
+                SPEC</button>
+            </div>
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doMoveToGov()">Move {{vault.symbol}} +
+                SPEC to Govs</button>
+            </div>
           </div>
         </mdb-tab>
       </mdb-tabs>

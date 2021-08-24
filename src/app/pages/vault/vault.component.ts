@@ -54,10 +54,11 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.showDepositedPoolOnly = localStorage.getItem('deposit') === 'true';
-    this.refresh();
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         this.loading = true;
+        this.info.updateVaults();
+        this.refresh();
         await this.info.initializeVaultData(connected);
         this.refresh();
         this.loading = false;

@@ -11,10 +11,12 @@ import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
 
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
-  farmName = 'Pylon';
+  farm = 'Pylon';
   tokenSymbol = 'MINE';
 
   constructor(
@@ -99,6 +101,20 @@ export class PylonFarmInfoService implements FarmInfoService {
       }
     });
     return rewardInfo.reward_infos;
+  }
+  
+  getStakeGovMsg(amount: string): MsgExecuteContract {
+    return new MsgExecuteContract(
+      this.terrajs.address,
+      this.terrajs.settings.pylonToken,
+      {
+        send: {
+          contract: this.terrajs.settings.pylonGov,
+          amount,
+          msg: toBase64({stake_voting_tokens: {}})
+        }
+      }
+    );
   }
 
 }

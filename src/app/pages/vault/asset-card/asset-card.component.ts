@@ -4,7 +4,7 @@ import { Coin, Coins, Denom, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../consts/animations';
 import { CONFIG } from '../../../consts/config';
 import { toBase64 } from '../../../libs/base64';
-import { gt, times } from '../../../libs/math';
+import { floor, gt, times } from '../../../libs/math';
 import { TerrajsService } from '../../../services/terrajs.service';
 import { Vault } from '../vault.component';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -187,6 +187,18 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.withdrawAmt = undefined;
   }
 
+  getWithdrawMsg(all?: boolean): MsgExecuteContract {
+    return new MsgExecuteContract(
+      this.terrajs.address,
+      this.vault.poolInfo.farmContract,
+      {
+        withdraw: {
+          asset_token: all ? undefined : this.vault.poolInfo.asset_token,
+        }
+      }
+    );
+  }
+
   async doClaimReward(all?: boolean) {
     this.$gaService.event('CLICK_CLAIM_REWARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
     const mintMsg = new MsgExecuteContract(
@@ -196,15 +208,40 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         mint: {}
       }
     );
-    const withdrawMsg = new MsgExecuteContract(
-      this.terrajs.address,
-      this.vault.poolInfo.farmContract,
-      {
-        withdraw: {
-          asset_token: all ? undefined : this.vault.poolInfo.asset_token,
+    await this.terrajs.post([mintMsg, this.getWithdrawMsg(all)]);
+  }
+
+  async doMoveToGov(all?: boolean) {
+    let pending_spec_reward = 0;
+    let pending_farm_reward = 0;
+    if (!all) {
+      pending_spec_reward = +this.info.rewardInfos[this.vault.assetToken]?.pending_spec_reward;
+      if (this.vault.poolInfo.farm !== 'Spectrum') {
+        pending_farm_reward = +this.info.rewardInfos[this.vault.assetToken]?.pending_farm_reward;
+      }
+    } else {
+      const rewardInfosKeys = Object.keys(this.info.rewardInfos);
+
+      for (const key of rewardInfosKeys) {
+        if (this.info.rewardInfos[key].farm === this.vault.poolInfo.farm) {
+          pending_spec_reward += +this.info.rewardInfos[key].pending_spec_reward;
+          pending_farm_reward += +this.info.rewardInfos[key].pending_farm_reward;
         }
       }
-    );
-    await this.terrajs.post([mintMsg, withdrawMsg]);
+    }
+    if (pending_spec_reward > 0 || pending_farm_reward > 0) {
+      const msgs: MsgExecuteContract[] = [];
+      msgs.push(this.getWithdrawMsg(all));
+      if (pending_spec_reward > 0) {
+        const foundSpecFarm = this.info.farmInfos.find(farmInfo => farmInfo.farm === 'Spectrum');
+        msgs.push(foundSpecFarm.getStakeGovMsg(floor(pending_spec_reward)));
+      }
+      if (pending_farm_reward > 0) {
+        const foundFarm = this.info.farmInfos.find(farmInfo => farmInfo.farm === this.vault.poolInfo.farm);
+        msgs.push(foundFarm.getStakeGovMsg(floor(pending_farm_reward)));
+      }
+      await this.terrajs.post(msgs);
+    }
+
   }
 }

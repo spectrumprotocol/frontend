@@ -10,8 +10,22 @@
     </ng-container>
   </ng-container>
   <span class="text-muted">($<app-digit [value]="info.portfolio?.total_reward_ust"></app-digit>)</span>
-  <button type="button" class="btn btn-outline-primary ms-2" (click)="unstakeAll()"
-    [disabled]="!info.portfolio?.total_reward_ust">Claim All</button>
+
+  <div mdbDropdown class="btn-group">
+    <button
+      class="btn btn-outline-primary ms-2 dropdown-toggle"
+      type="button"
+      mdbDropdownToggle
+      aria-expanded="false"
+    >
+      Claim All
+    </button>
+    <ul mdbDropdownMenu class="dropdown-menu">
+      <li><a role="button" class="dropdown-item" (click)="unstakeAll()">Unstake all</a></li>
+      <li><a role="button" class="dropdown-item" href="#" title="Move staked SPEC from vault to SPEC Gov, auto-staked MIR to stake in Mirror Gov, and etc.">Move staked rewards to Govs</a></li>
+    </ul>
+  </div>
+
   <a routerLink="/tx-history" routerLinkActive="active"><button type="button" class="btn btn-outline-light ms-2"><i
         class="fas fa-history"></i></button></a>
 </div>

@@ -15,11 +15,11 @@
     </div>
   <div class="row">
     <ng-container *ngFor="let farmInfo of info.farmInfos">
-      <div class="d-flex" *ngIf="info.portfolio?.farms.get(farmInfo.farmName).bond_amount_ust > 0.01">
-        <span class="legend-square bg-{{farmInfo.farmName}}"></span> {{farmInfo.farmName}} farm
+      <div class="d-flex" *ngIf="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust > 0.01">
+        <span class="legend-square bg-{{farmInfo.farm}}"></span> {{farmInfo.farm}} farm
         <span class="margin-left-auto">
-          <app-digit [value]="info.portfolio?.farms.get(farmInfo.farmName).bond_amount_ust" [format]="'1.2-2'"></app-digit> UST
-          <div class="your-tvl-percentage">(<app-digit [value]="info.portfolio?.farms.get(farmInfo.farmName).bond_amount_ust * 100 / info.myTvl" [format]="'1.2-2'"></app-digit> %)</div>
+          <app-digit [value]="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust" [format]="'1.2-2'"></app-digit> UST
+          <div class="your-tvl-percentage">(<app-digit [value]="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust * 100 / info.myTvl" [format]="'1.2-2'"></app-digit> %)</div>
         </span>
       </div>
     </ng-container>
