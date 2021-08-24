@@ -360,8 +360,6 @@ export class InfoService {
   }
 
   async initializeVaultData(connected: boolean) {
-    this.updateVaults();
-
     const tasks: Promise<any>[] = [];
     tasks.push(this.ensureCoinInfos());
     tasks.push(this.refreshStat());
