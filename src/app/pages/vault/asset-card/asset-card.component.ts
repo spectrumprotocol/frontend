@@ -199,16 +199,19 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     );
   }
 
-  async doClaimReward(all?: boolean) {
-    this.$gaService.event('CLICK_CLAIM_REWARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
-    const mintMsg = new MsgExecuteContract(
+  getMintMsg(): MsgExecuteContract{
+    return new MsgExecuteContract(
       this.terrajs.address,
       this.terrajs.settings.gov,
       {
         mint: {}
       }
     );
-    await this.terrajs.post([mintMsg, this.getWithdrawMsg(all)]);
+  }
+
+  async doClaimReward(all?: boolean) {
+    this.$gaService.event('CLICK_CLAIM_REWARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
+    await this.terrajs.post([this.getMintMsg(), this.getWithdrawMsg(all)]);
   }
 
   async doMoveToGov(all?: boolean) {
@@ -231,7 +234,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       }
     }
     if (pending_spec_reward > 0 || pending_farm_reward > 0) {
-      const msgs: MsgExecuteContract[] = [];
+      const msgs: MsgExecuteContract[] = [this.getMintMsg()];
       msgs.push(this.getWithdrawMsg(all));
       if (pending_spec_reward > 0) {
         const foundSpecFarm = this.info.farmInfos.find(farmInfo => farmInfo.farm === 'Spectrum');
