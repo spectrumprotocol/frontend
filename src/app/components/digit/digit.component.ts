@@ -11,7 +11,7 @@ export class DigitComponent implements AfterViewInit, OnChanges {
   value: number;
 
   @Input()
-  format = '1.0-2';
+  format = '1.2-2';
 
   @Input()
   duration = 1000;
