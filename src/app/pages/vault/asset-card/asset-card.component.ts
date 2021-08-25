@@ -212,6 +212,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   async doMoveToGov(all?: boolean) {
+    this.$gaService.event('CLICK_MOVE_TO_GOV_ASSET_CARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
     let pending_spec_reward = 0;
     let pending_farm_reward = 0;
     if (!all) {
