@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { InfoService } from '../../../services/info.service';
 import { TerrajsService } from '../../../services/terrajs.service';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { KeyValue } from '@angular/common';
-import {CONFIG} from '../../../consts/config';
-import {floor, times} from '../../../libs/math';
+import { CONFIG } from '../../../consts/config';
+import { floor, times } from '../../../libs/math';
 
 @Component({
   selector: 'app-unstake-all',
@@ -53,23 +52,23 @@ export class UnstakeAllComponent {
     return [mintMsg, ...msgExecuteContractList];
   }
 
-  async unstakeAll(){
+  async unstakeAll() {
     this.$gaService.event('CLICK_UNSTAKE_ALL_REWARDS');
-    if (!this.info.portfolio?.total_reward_ust){
+    if (!this.info.portfolio?.total_reward_ust) {
       return;
     }
     await this.terrajs.post(this.getUnstakeAllMsg());
   }
 
-  async doMoveToGov(){
+  async doMoveToGov() {
     this.$gaService.event('CLICK_MOVE_STAKED_REWARD_TO_GOV');
-    if (!this.info.portfolio?.total_reward_ust){
+    if (!this.info.portfolio?.total_reward_ust) {
       return;
     }
     let msg: MsgExecuteContract[] = this.getUnstakeAllMsg();
-    for (const token of this.info.portfolio.tokens){
+    for (const token of this.info.portfolio.tokens) {
       const foundFarmInfo = this.info.farmInfos.find(farmInfo => farmInfo.tokenSymbol === token[0]);
-      if (foundFarmInfo && token[1].pending_reward_token > 0){
+      if (foundFarmInfo && token[1].pending_reward_token > 0) {
         msg = [...msg, foundFarmInfo.getStakeGovMsg(floor(times(token[1].pending_reward_token, CONFIG.UNIT)))];
       }
     }
