@@ -320,13 +320,15 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
           const executeMsg = JSON.parse(atob(item.tx.value.msg[i]?.value?.execute_msg));
           if (executeMsg.withdraw){
             const matchFarmInfo = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === item.tx.value.msg[i]?.value?.contract);
-            descTemp += `From ${matchFarmInfo.farm} vault`;
-            if (executeMsg.withdraw?.asset_token){
-              descTemp += `, pool ${this.info.coinInfos[executeMsg.withdraw?.asset_token]}-UST`;
-            } else {
-              descTemp += `, all pools`;
+            if (matchFarmInfo){
+              descTemp += `From ${matchFarmInfo.farm} vault`;
+              if (executeMsg.withdraw?.asset_token){
+                descTemp += `, pool ${this.info.coinInfos[executeMsg.withdraw?.asset_token]}-UST`;
+              } else {
+                descTemp += `, all pools`;
+              }
+              descTemp += `<br>`;
             }
-            descTemp += `<br>`;
           }
           else if (executeMsg?.send?.amount){
             const executeMsgForCompare = JSON.parse(JSON.stringify(executeMsg)); // hack way to clone object without referencing
