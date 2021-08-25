@@ -309,6 +309,31 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Gov',
         id: item.id
       };
+    } else if (item.tx.value.msg.length >= 3
+      && lastExecuteMsg.send
+      && JSON.parse(atob(item.tx.value.msg[0]?.value?.execute_msg)).mint
+      && item.tx.value.msg[0]?.value?.contract === this.terrajs.settings.gov
+      && JSON.parse(atob(item.tx.value.msg[1]?.value?.execute_msg)).withdraw
+    ) {
+      let descTemp = '';
+      for (let i = 2; i <= lastIndex; i++){
+          const executeMsg = JSON.parse(atob(item.tx.value.msg[i]?.value?.execute_msg));
+          if (executeMsg?.send?.amount){
+            const executeMsgForCompare = JSON.parse(JSON.stringify(executeMsg)); // hack way to clone object without referencing
+            executeMsgForCompare.send.amount = '0';
+            const matchFarmInfo = this.info.farmInfos.find(farmInfo => JSON.stringify(farmInfo.getStakeGovMsg('0').execute_msg) === JSON.stringify(executeMsgForCompare));
+            if (matchFarmInfo){
+              descTemp += `Move auto-staked ${executeMsg.send.amount / CONFIG.UNIT} ${matchFarmInfo.tokenSymbol} from Spectrum Vault to ${matchFarmInfo.farm} Gov <br>`;
+            }
+          }
+        }
+      return {
+        desc: descTemp,
+        txhash: item.txhash,
+        timestamp: new Date(item.timestamp),
+        action: 'Farm',
+        id: item.id
+      };
     }
   }
 
