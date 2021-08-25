@@ -5,7 +5,7 @@ import { MsgExecuteContract } from '@terra-money/terra.js';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { KeyValue } from '@angular/common';
 import {CONFIG} from '../../../consts/config';
-import {times} from '../../../libs/math';
+import {floor, times} from '../../../libs/math';
 
 @Component({
   selector: 'app-unstake-all',
@@ -70,7 +70,7 @@ export class UnstakeAllComponent {
     for (const token of this.info.portfolio.tokens){
       const foundFarmInfo = this.info.farmInfos.find(farmInfo => farmInfo.tokenSymbol === token[0]);
       if (foundFarmInfo && token[1].pending_reward_token > 0){
-        msg = [...msg, foundFarmInfo.getStakeGovMsg(times(token[1].pending_reward_token, CONFIG.UNIT))];
+        msg = [...msg, foundFarmInfo.getStakeGovMsg(floor(times(token[1].pending_reward_token, CONFIG.UNIT)))];
       }
     }
     await this.terrajs.post(msg);
