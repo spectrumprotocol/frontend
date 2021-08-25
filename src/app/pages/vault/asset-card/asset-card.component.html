@@ -126,8 +126,16 @@
                 <div class="col text-end">{{info.poolResponses[vault.assetToken] | price | number }} UST</div>
               </div>
               <div class="row">
-                <div class="col">LP from TX</div>
-                <div class="col text-end">{{lpFromTx | number }} LP</div>
+                <div class="col">Gross LP</div>
+                <div *ngIf="+grossLp > 0" class="col text-end">{{grossLp | number }} LP</div>
+              </div>
+              <div *ngIf="depositFee !== '0'" class="row">
+                <div class="col">Deposit Fee (&lt;0.1%)</div>
+                <div *ngIf="+depositFee > 0" class="col text-end">{{depositFee | number }} LP</div>
+              </div>
+              <div class="row">
+                <div class="col">Net LP</div>
+                <div *ngIf="+netLp > 0" class="col text-end">{{netLp | number }} LP</div>
               </div>
             </div>
             <div class="mt-3" *ngIf="vault.poolInfo.auto_compound">

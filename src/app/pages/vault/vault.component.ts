@@ -38,6 +38,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   search: string;
   showDepositedPoolOnly = false;
   sortBy = 'multiplier';
+  activeFarm = 'All';
   UNIT = CONFIG.UNIT;
   myStaked: string;
   myTvl = 0;
@@ -92,7 +93,7 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   @debounce(250)
   refresh() {
-    let vaults = this.info.allVaults;
+    let vaults = this.activeFarm === "All" ? this.info.allVaults : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm);
     if (this.lastSortBy !== this.sortBy) {
       switch (this.sortBy) {
         case 'multiplier':
