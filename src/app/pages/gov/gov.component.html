@@ -61,14 +61,14 @@
                     <div class="card-footer">
                         <div class="row">
                             <div class="col-md-4 col-6 ps-1 pe-1">
-                                <p class="small">Voting Staked</p>
+                                <p class="small">Staked in Gov</p>
                                 <h5 class="card-title">
                                     <app-digit [value]="myStaked / UNIT"></app-digit><span class="d-none d-md-inline">
                                         SPEC</span>
                                 </h5>
                             </div>
                             <div class="col-md-4 col-6 ps-1 pe-1 border-start">
-                                <p class="small">Non-Voting Staked</p>
+                                <p class="small">Staked in vaults</p>
                                 <h5 class="card-title">
                                     <app-digit [value]="+info.portfolio?.tokens.get('SPEC').pending_reward_token">
                                     </app-digit><span class="d-none d-md-inline"> SPEC</span>

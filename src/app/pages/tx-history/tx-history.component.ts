@@ -240,7 +240,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       }
 
       return {
-        desc: `Deposited ${lp} ${token_symbol}-${native_token_symbol} LP (${token_amount} ${token_symbol}, ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc}) to ${foundFarmContract?.farm} farm`,
+        desc: `Deposited ${token_amount} ${token_symbol} + ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc} (${lp} LP before deposit fee) to ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',
