@@ -8,28 +8,22 @@
 export type QueryMsg =
   | {
       balance: {
-        address: HumanAddr;
-        height: number;
+        address: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       config: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       state: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       shares: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     };
-export type HumanAddr = string;

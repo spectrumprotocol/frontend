@@ -101,7 +101,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const lastExecuteMsg = JSON.parse(atob(item.tx.value.msg[lastIndex]?.value?.execute_msg));
+    const lastExecuteMsg = item.tx.value.msg[lastIndex]?.value?.execute_msg;
     if (lastExecuteMsg.swap && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specPool) {
       const ustOffer = +item.tx.value.msg[lastIndex]?.value?.coins[0].amount / CONFIG.UNIT;
       const return_amount = +item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'return_amount').value / CONFIG.UNIT;
@@ -113,11 +113,11 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Trade',
         id: item.id
       };
-    } else if (lastExecuteMsg.send?.msg && JSON.parse(atob(lastExecuteMsg.send?.msg))?.execute_swap_operations?.operations[1]?.terra_swap?.ask_asset_info?.token?.contract_addr === this.terrajs.settings.specToken) {
+    } else if (lastExecuteMsg.send?.msg && lastExecuteMsg.send?.msg?.execute_swap_operations?.operations[1]?.terra_swap?.ask_asset_info?.token?.contract_addr === this.terrajs.settings.specToken) {
       const return_amount_list = item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.filter(o => o.key === 'return_amount');
-      const offer_amount = +(JSON.parse(atob(lastExecuteMsg.send?.msg))?.execute_swap_operations.offer_amount) / CONFIG.UNIT ?? 0;
+      const offer_amount = +lastExecuteMsg.send?.msg?.execute_swap_operations.offer_amount / CONFIG.UNIT ?? 0;
       let offer_token;
-      const offer_asset_info_token_contract = JSON.parse(atob(lastExecuteMsg.send?.msg))?.execute_swap_operations?.operations[0]?.terra_swap?.offer_asset_info?.token?.contract_addr;
+      const offer_asset_info_token_contract = lastExecuteMsg.send?.msg?.execute_swap_operations?.operations[0]?.terra_swap?.offer_asset_info?.token?.contract_addr;
       if (offer_asset_info_token_contract) {
         await this.info.ensureCw20tokensWhitelist();
         offer_token = this.info.cw20tokensWhitelist[this.terrajs?.network?.name ?? 'mainnet'][offer_asset_info_token_contract]?.symbol;
@@ -144,7 +144,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Trade',
         id: item.id
       };
-    } else if (lastExecuteMsg.send?.msg && JSON.parse(atob(lastExecuteMsg.send?.msg))?.swap && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specToken) {
+    } else if (lastExecuteMsg.send?.msg && lastExecuteMsg.send?.msg?.swap && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specToken) {
       const offer_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT ?? 0;
       const return_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT ?? 0;
       const price = roundSixDecimal(return_amount / offer_amount);
@@ -155,7 +155,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Trade',
         id: item.id
       };
-    } else if (lastExecuteMsg.send?.msg && JSON.parse(atob(lastExecuteMsg.send?.msg))?.execute_swap_operations && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specToken) {
+    } else if (lastExecuteMsg.send?.msg && lastExecuteMsg.send?.msg?.execute_swap_operations && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specToken) {
       const return_amount_list = item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.filter(o => o.key === 'return_amount');
       const ask_asset_list = item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.filter(o => o.key === 'ask_asset');
       const offer_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT ?? 0;
@@ -184,7 +184,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         if (!farmInfo) {
           continue;
         }
-        const execute_msg = JSON.parse(atob(item.tx.value.msg[index].value.execute_msg));
+        const execute_msg = item.tx.value.msg[index].value.execute_msg;
         const asset_token = this.info.coinInfos[execute_msg.withdraw.asset_token];
         let poolName: string;
         if (asset_token) {
@@ -247,7 +247,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         id: item.id
       };
     } else if (lastExecuteMsg.send?.msg === btoa('{"withdraw_liquidity":{}}') && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
-      const penultimateExecutionMsg = JSON.parse(atob(item.tx.value.msg[lastIndex - 1]?.value?.execute_msg));
+      const penultimateExecutionMsg = item.tx.value.msg[lastIndex - 1]?.value?.execute_msg;
       const symbol = this.info.coinInfos[penultimateExecutionMsg.unbond.asset_token];
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract);
       const refund_assets = item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'refund_assets');
@@ -269,7 +269,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Gov',
         id: item.id
       };
-    } else if (lastExecuteMsg.poll_vote && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.platform) {
+    } else if (lastExecuteMsg.poll_vote && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.gov) {
       return {
         desc: 'Voted Poll ' + lastExecuteMsg.poll_vote.poll_id,
         txhash: item.txhash,
@@ -277,7 +277,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Gov',
         id: item.id
       };
-    } else if (lastExecuteMsg.poll_execute && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.platform) {
+    } else if (lastExecuteMsg.poll_execute && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.gov) {
       return {
         desc: 'Executed Poll ' + lastExecuteMsg.poll_execute.poll_id,
         txhash: item.txhash,
@@ -286,7 +286,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         id: item.id
       };
     } else if (lastExecuteMsg.withdraw && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.gov) {
-      const executeMsgLvl2 = JSON.parse(atob(item.tx.value.msg[lastIndex]?.value.execute_msg));
+      const executeMsgLvl2 = item.tx.value.msg[lastIndex]?.value.execute_msg;
       return {
         desc: 'Unstaked from Gov ' + (+executeMsgLvl2.withdraw.amount / CONFIG.UNIT) + ' SPEC',
         txhash: item.txhash,
@@ -294,8 +294,8 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Gov',
         id: item.id
       };
-    } else if (lastExecuteMsg.send && JSON.parse(atob(JSON.parse(atob(item.tx.value.msg[lastIndex]?.value?.execute_msg)).send.msg)).poll_start && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
-      const poll_start = JSON.parse(atob(JSON.parse(atob(item.tx.value.msg[lastIndex]?.value?.execute_msg)).send.msg)).poll_start;
+    } else if (lastExecuteMsg.send && JSON.parse(atob(item.tx.value.msg[lastIndex]?.value?.execute_msg.send.msg)).poll_start && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
+      const poll_start = JSON.parse(atob(item.tx.value.msg[lastIndex]?.value?.execute_msg.send.msg)).poll_start;
       return {
         desc: 'Created Poll ' + poll_start.title,
         txhash: item.txhash,
@@ -303,7 +303,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Gov',
         id: item.id
       };
-    } else if (lastExecuteMsg.poll_end && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.platform) {
+    } else if (lastExecuteMsg.poll_end && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.gov) {
       return {
         desc: 'Ended Poll ' + lastExecuteMsg.poll_end.poll_id,
         txhash: item.txhash,
@@ -313,13 +313,13 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       };
     } else if (item.tx.value.msg.length >= 3
       && lastExecuteMsg.send
-      && JSON.parse(atob(item.tx.value.msg[0]?.value?.execute_msg)).mint
+      && item.tx.value.msg[0]?.value?.execute_msg.mint
       && item.tx.value.msg[0]?.value?.contract === this.terrajs.settings.gov
-      && JSON.parse(atob(item.tx.value.msg[1]?.value?.execute_msg)).withdraw
+      && item.tx.value.msg[1]?.value?.execute_msg.withdraw
     ) {
       let descTemp = '';
       for (let i = 1; i <= lastIndex; i++) {
-        const executeMsg = JSON.parse(atob(item.tx.value.msg[i]?.value?.execute_msg));
+        const executeMsg = item.tx.value.msg[i]?.value?.execute_msg;
         if (executeMsg.withdraw) {
           const matchFarmInfo = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === item.tx.value.msg[i]?.value?.contract);
           if (matchFarmInfo) {

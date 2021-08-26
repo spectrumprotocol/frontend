@@ -42,9 +42,8 @@ export class GovComponent implements OnInit, OnDestroy {
     this.$gaService.event('VIEW_GOV_PAGE');
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
-        const height = await this.terrajs.getHeight();
         const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
-        const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform, height);
+        const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
         Promise.all([task1, task2])
           .then(it => this.supply = +it[0].total_supply - +it[1].staked_amount - +it[1].unstaked_amount);
         this.gov.config()

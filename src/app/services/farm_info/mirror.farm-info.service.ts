@@ -120,11 +120,9 @@ export class MirrorFarmInfoService implements FarmInfoService {
   }
 
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const height = await this.terrajs.getHeight();
     const rewardInfo = await this.mirrorFarm.query({
       reward_info: {
         staker_addr: this.terrajs.address,
-        height,
       }
     });
     return rewardInfo.reward_infos;

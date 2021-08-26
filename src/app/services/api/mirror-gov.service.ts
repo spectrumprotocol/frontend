@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { memoize } from 'utils-decorators';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { ConfigResponse } from './mirror_gov/config_response';
 import { HandleMsg } from './mirror_gov/handle_msg';

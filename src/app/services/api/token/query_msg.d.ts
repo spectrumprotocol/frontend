@@ -8,46 +8,39 @@
 export type QueryMsg =
   | {
       balance: {
-        address: HumanAddr;
+        address: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       token_info: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       minter: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       allowance: {
-        owner: HumanAddr;
-        spender: HumanAddr;
+        owner: string;
+        spender: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       all_allowances: {
         limit?: number | null;
-        owner: HumanAddr;
-        start_after?: HumanAddr | null;
+        owner: string;
+        start_after?: string | null;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       all_accounts: {
         limit?: number | null;
-        start_after?: HumanAddr | null;
+        start_after?: string | null;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     };
-export type HumanAddr = string;

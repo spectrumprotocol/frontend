@@ -11,24 +11,23 @@
  * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
  */
 export type Decimal = string;
-export type HumanAddr = string;
 
 export interface ConfigInfo {
   base_denom: string;
   community_fee: Decimal;
-  controller?: HumanAddr | null;
+  controller: string;
   controller_fee: Decimal;
   deposit_fee: Decimal;
   lock_end: number;
   lock_start: number;
-  mirror_gov: HumanAddr;
-  mirror_staking: HumanAddr;
-  mirror_token: HumanAddr;
-  owner: HumanAddr;
-  platform?: HumanAddr | null;
+  mirror_gov: string;
+  mirror_staking: string;
+  mirror_token: string;
+  owner: string;
+  platform: string;
   platform_fee: Decimal;
-  spectrum_gov: HumanAddr;
-  spectrum_token: HumanAddr;
-  terraswap_factory: HumanAddr;
+  spectrum_gov: string;
+  spectrum_token: string;
+  terraswap_factory: string;
   [k: string]: unknown;
 }

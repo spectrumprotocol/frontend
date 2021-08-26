@@ -5,7 +5,6 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
 /**
  * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
  *
@@ -14,21 +13,21 @@ export type HumanAddr = string;
 export type Decimal = string;
 
 export interface ConfigInfo {
-  anchor_gov: HumanAddr;
-  anchor_staking: HumanAddr;
-  anchor_token: HumanAddr;
+  anchor_gov: string;
+  anchor_staking: string;
+  anchor_token: string;
   base_denom: string;
   community_fee: Decimal;
-  controller?: HumanAddr | null;
+  controller: string;
   controller_fee: Decimal;
   deposit_fee: Decimal;
   lock_end: number;
   lock_start: number;
-  owner: HumanAddr;
-  platform?: HumanAddr | null;
+  owner: string;
+  platform: string;
   platform_fee: Decimal;
-  spectrum_gov: HumanAddr;
-  spectrum_token: HumanAddr;
-  terraswap_factory: HumanAddr;
+  spectrum_gov: string;
+  spectrum_token: string;
+  terraswap_factory: string;
   [k: string]: unknown;
 }

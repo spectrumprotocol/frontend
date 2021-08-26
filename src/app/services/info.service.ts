@@ -249,8 +249,7 @@ export class InfoService {
   private async refreshGovStat(stat: Stat) {
     const poolTask = this.refreshPool();
 
-    const height = await this.terrajs.getHeight();
-    const state = await this.gov.query({ state: { height } });
+    const state = await this.gov.query({ state: { } });
     stat.govStaked = state.total_staked;
 
     await poolTask;
@@ -381,6 +380,9 @@ export class InfoService {
     }
     this.allVaults = [];
     for (const key of Object.keys(this.poolInfos)) {
+      if (!this.poolInfos[key]) {
+        continue;
+      }
       const pairStat = this.stat?.pairs[key];
       const poolApr = pairStat?.poolApr || 0;
       const poolApy = pairStat?.poolApy || 0;

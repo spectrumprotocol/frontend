@@ -5,11 +5,10 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
 export type VoteOption = "yes" | "no";
 
 export interface VotersResponse {
-  voters: [HumanAddr, VoterInfo][];
+  voters: [string, VoterInfo][];
   [k: string]: unknown;
 }
 export interface VoterInfo {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { ConfigInfo } from './spec_farm/config_info';
-import { HandleMsg } from './spec_farm/handle_msg';
+import { ExecuteMsg } from './spec_farm/execute_msg';
 import { PoolsResponse } from './spec_farm/pools_response';
 import { QueryMsg } from './spec_farm/query_msg';
 import { RewardInfoResponse } from './spec_farm/reward_info_response';
@@ -26,7 +26,7 @@ export class SpecFarmService {
     return this.wasm.query(this.terrajs.settings.specFarm, msg);
   }
 
-  handle(msg: HandleMsg, opts?: ExecuteOptions) {
+  handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
     return this.wasm.execute(this.terrajs.settings.specFarm, msg, opts);
   }
 }

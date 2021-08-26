@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { ConfigInfo } from './pylon_farm/config_info';
-import { HandleMsg } from './pylon_farm/handle_msg';
+import { ExecuteMsg } from './pylon_farm/execute_msg';
 import { PoolsResponse } from './pylon_farm/pools_response';
 import { QueryMsg } from './pylon_farm/query_msg';
 import { RewardInfoResponse } from './pylon_farm/reward_info_response';
@@ -26,7 +26,7 @@ export class PylonFarmService {
     return this.wasm.query(this.terrajs.settings.pylonFarm, msg);
   }
 
-  handle(msg: HandleMsg, opts?: ExecuteOptions) {
+  handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
     return this.wasm.execute(this.terrajs.settings.pylonFarm, msg, opts);
   }
 }

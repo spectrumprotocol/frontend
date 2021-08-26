@@ -5,11 +5,9 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
-
 export interface ConfigInfo {
-  owner: HumanAddr;
-  spectrum_gov: HumanAddr;
-  spectrum_token: HumanAddr;
+  owner: string;
+  spectrum_gov: string;
+  spectrum_token: string;
   [k: string]: unknown;
 }

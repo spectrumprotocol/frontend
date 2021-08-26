@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { ConfigInfo } from './anchor_farm/config_info';
-import { HandleMsg } from './anchor_farm/handle_msg';
+import { ExecuteMsg } from './anchor_farm/execute_msg';
 import { PoolsResponse } from './anchor_farm/pools_response';
 import { QueryMsg } from './anchor_farm/query_msg';
 import { RewardInfoResponse } from './anchor_farm/reward_info_response';
@@ -26,7 +26,7 @@ export class AnchorFarmService {
     return this.wasm.query(this.terrajs.settings.anchorFarm, msg);
   }
 
-  handle(msg: HandleMsg, opts?: ExecuteOptions) {
+  handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
     return this.wasm.execute(this.terrajs.settings.anchorFarm, msg, opts);
   }
 }

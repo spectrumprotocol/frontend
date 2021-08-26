@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
-import { HandleMsg } from './staker/handle_msg';
+import { ExecuteMsg } from './staker/execute_msg';
 import { WasmService } from './wasm.service';
 
 @Injectable({
@@ -13,7 +13,7 @@ export class StakerService {
     private wasm: WasmService,
   ) { }
 
-  handle(msg: HandleMsg, opts?: ExecuteOptions) {
+  handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
     return this.wasm.execute(this.terrajs.settings.staker, msg, opts);
   }
 }

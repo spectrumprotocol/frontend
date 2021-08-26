@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { BoardsResponse } from './platform/boards_response';
 import { ConfigInfo } from './platform/config_info';
-import { HandleMsg } from './platform/handle_msg';
+import { ExecuteMsg } from './platform/execute_msg';
 import { PollInfo, PollsResponse } from './platform/polls_response';
 import { QueryMsg } from './platform/query_msg';
 import { StateInfo } from './platform/state_info';
@@ -29,7 +29,7 @@ export class PlatformService {
     return this.wasm.query(this.terrajs.settings.platform, msg);
   }
 
-  handle(msg: HandleMsg, opts?: ExecuteOptions) {
+  handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
     return this.wasm.execute(this.terrajs.settings.platform, msg, opts);
   }
 }

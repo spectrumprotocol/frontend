@@ -5,8 +5,20 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+/**
+ * A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.
+ *
+ * # Examples
+ *
+ * Use `from` to create instances of this and `u128` to get the value out:
+ *
+ * ``` # use cosmwasm_std::Uint128; let a = Uint128::from(123u128); assert_eq!(a.u128(), 123);
+ *
+ * let b = Uint128::from(42u64); assert_eq!(b.u128(), 42);
+ *
+ * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
+ */
 export type Uint128 = string;
-export type HumanAddr = string;
 /**
  * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
  *
@@ -20,13 +32,13 @@ export interface ConfigInfo {
   mint_end: number;
   mint_per_block: Uint128;
   mint_start: number;
-  owner: HumanAddr;
+  owner: string;
   proposal_deposit: Uint128;
   quorum: Decimal;
-  spec_token?: HumanAddr | null;
+  spec_token?: string | null;
   threshold: Decimal;
   voting_period: number;
-  warchest_address?: HumanAddr | null;
+  warchest_address?: string | null;
   warchest_ratio: Decimal;
   [k: string]: unknown;
 }

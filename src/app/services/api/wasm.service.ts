@@ -19,10 +19,10 @@ export class WasmService {
     return this.terrajs.get(`wasm/contracts/${contract}/store/raw`, { key, subKey });
   }
 
-  instantiate(codeId: number, admin: string, initMsg: object, opts?: ExecuteOptions) {
+  instantiate(codeId: number, initMsg: object, opts?: ExecuteOptions) {
     return this.terrajs.post(new MsgInstantiateContract(
       this.terrajs.address,
-      admin,
+      this.terrajs.address,
       codeId,
       initMsg,
       new Coins(opts?.coin ? [Coin.fromData(opts.coin)] : [])

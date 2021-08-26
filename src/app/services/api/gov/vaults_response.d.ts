@@ -5,14 +5,12 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
-
 export interface VaultsResponse {
   vaults: VaultInfo[];
   [k: string]: unknown;
 }
 export interface VaultInfo {
-  address: HumanAddr;
+  address: string;
   weight: number;
   [k: string]: unknown;
 }

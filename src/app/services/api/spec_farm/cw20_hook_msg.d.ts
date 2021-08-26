@@ -7,10 +7,8 @@
 
 export type Cw20HookMsg = {
   bond: {
-    asset_token: HumanAddr;
-    staker_addr?: HumanAddr | null;
+    asset_token: string;
+    staker_addr?: string | null;
     [k: string]: unknown;
   };
-  [k: string]: unknown;
 };
-export type HumanAddr = string;

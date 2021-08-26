@@ -9,7 +9,7 @@ import { toBase64 } from '../../libs/base64';
 import { times } from '../../libs/math';
 import { GovService } from '../../services/api/gov.service';
 import { ConfigInfo } from '../../services/api/gov/config_info';
-import { ExecuteMsg } from '../../services/api/gov/polls_response';
+import { PollExecuteMsg } from '../../services/api/gov/polls_response';
 import { TokenService } from '../../services/api/token.service';
 import { TerrajsService } from '../../services/terrajs.service';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
@@ -25,7 +25,7 @@ export class GovPollNewComponent implements OnInit, OnDestroy {
   title: string;
   description: string;
   link: string;
-  executeMsgs: ExecuteMsg[] = [];
+  executeMsgs: PollExecuteMsg[] = [];
   amount: number;
   connected: Subscription;
   maxAmount = 0;
@@ -71,7 +71,7 @@ export class GovPollNewComponent implements OnInit, OnDestroy {
 
     try {
       const obj = JSON.parse(msg);
-      this.executeMsgs[i].msg = JSON.stringify(obj, undefined, 2);
+      this.executeMsgs[i].execute.msg = JSON.stringify(obj, undefined, 2);
     } catch (e) { }
   }
 
@@ -107,7 +107,7 @@ export class GovPollNewComponent implements OnInit, OnDestroy {
     const getMsg = ($type: string) => {
       switch ($type) {
         case 'govConfig':
-          const { spec_token, ...config } = this.config;
+          const { spec_token, mint_per_block, mint_start, mint_end, owner, warchest_ratio, warchest_address, ...config } = this.config;
           return {
             execute: {
               contract: this.terrajs.settings.gov,

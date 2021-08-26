@@ -5,15 +5,26 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
+/**
+ * A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.
+ *
+ * # Examples
+ *
+ * Use `from` to create instances of this and `u128` to get the value out:
+ *
+ * ``` # use cosmwasm_std::Uint128; let a = Uint128::from(123u128); assert_eq!(a.u128(), 123);
+ *
+ * let b = Uint128::from(42u64); assert_eq!(b.u128(), 42);
+ *
+ * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
+ */
 export type Uint128 = string;
-export type ExecuteMsg = {
+export type PollExecuteMsg = {
   execute: {
-    contract: HumanAddr;
+    contract: string;
     msg: string;
     [k: string]: unknown;
   };
-  [k: string]: unknown;
 };
 export type PollStatus = "in_progress" | "passed" | "rejected" | "executed" | "expired";
 
@@ -22,11 +33,11 @@ export interface PollsResponse {
   [k: string]: unknown;
 }
 export interface PollInfo {
-  creator: HumanAddr;
+  creator: string;
   deposit_amount: Uint128;
   description: string;
   end_height: number;
-  execute_msgs: ExecuteMsg[];
+  execute_msgs: PollExecuteMsg[];
   id: number;
   link?: string | null;
   no_votes: Uint128;

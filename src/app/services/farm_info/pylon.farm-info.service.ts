@@ -93,11 +93,9 @@ export class PylonFarmInfoService implements FarmInfoService {
   }
 
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const height = await this.terrajs.getHeight();
     const rewardInfo = await this.pylonFarm.query({
       reward_info: {
         staker_addr: this.terrajs.address,
-        height: +height,
       }
     });
     return rewardInfo.reward_infos;

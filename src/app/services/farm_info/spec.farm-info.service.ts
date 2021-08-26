@@ -67,11 +67,9 @@ export class SpecFarmInfoService implements FarmInfoService {
   }
 
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const height = await this.terrajs.getHeight();
     const rewardInfo = await this.specFarm.query({
       reward_info: {
         staker_addr: this.terrajs.address,
-        height,
       }
     });
     for (const it of rewardInfo.reward_infos) {

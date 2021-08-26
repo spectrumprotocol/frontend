@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { ConfigInfo } from './mirror_farm/config_info';
-import { HandleMsg } from './mirror_farm/handle_msg';
+import { ExecuteMsg } from './mirror_farm/execute_msg';
 import { PoolsResponse } from './mirror_farm/pools_response';
 import { QueryMsg } from './mirror_farm/query_msg';
 import { RewardInfoResponse } from './mirror_farm/reward_info_response';
@@ -26,7 +26,7 @@ export class MirrorFarmService {
     return this.wasm.query(this.terrajs.settings.mirrorFarm, msg);
   }
 
-  handle(msg: HandleMsg, opts?: ExecuteOptions) {
+  handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
     return this.wasm.execute(this.terrajs.settings.mirrorFarm, msg, opts);
   }
 }
