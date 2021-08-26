@@ -65,8 +65,8 @@ export class YourTvlComponent implements OnInit, OnDestroy {
       });
     }
 
-    chartDataListTemp.push({ name: 'Gov staked SPEC', value: this.info.portfolio?.gov.pending_reward_ust });
-    chartDataListTemp.push({ name: 'Total Rewards', value: this.info.portfolio?.total_reward_ust });
+    chartDataListTemp.push({ name: 'SPEC staked in Gov', value: this.info.portfolio?.gov.pending_reward_ust });
+    chartDataListTemp.push({ name: 'Total staked in vaults', value: this.info.portfolio?.total_reward_ust });
     this.chartDataList = chartDataListTemp;
   }
 

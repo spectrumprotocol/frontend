@@ -33,7 +33,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   depositType: string;
   withdrawAmt: number;
   amountUST: number;
-  lpFromTx: string;
+  grossLp: string;
+  depositFee: string;
+  netLp: string;
   height: number;
 
   private heightChanged: Subscription;
@@ -76,23 +78,32 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   async depositChanged() {
     if (!this.depositAmt) {
       this.amountUST = undefined;
-      this.lpFromTx = undefined;
+      this.grossLp = undefined;
+      this.depositFee = undefined;
+      this.netLp = undefined;
     }
     const pool = this.info.poolResponses[this.vault.assetToken];
     const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
-    this.lpFromTx = gt(pool.total_share, 0)
-      ? BigNumber.minimum(
-        new BigNumber(this.amountUST).times(pool.total_share).div(ust.amount),
-        new BigNumber(this.depositAmt).times(pool.total_share).div(asset.amount)).toString()
-      : new BigNumber(this.depositAmt)
-        .times(this.amountUST)
-        .sqrt()
-        .toString();
     const amountUST = new BigNumber(this.depositAmt)
       .times(this.UNIT)
       .times(ust.amount)
       .div(asset.amount)
       .integerValue();
+
+    const grossLp = gt(pool.total_share, 0)
+      ? BigNumber.minimum(
+        new BigNumber(this.amountUST).times(pool.total_share).div(ust.amount),
+        new BigNumber(this.depositAmt).times(pool.total_share).div(asset.amount))
+      : new BigNumber(this.depositAmt)
+        .times(this.amountUST)
+        .sqrt();
+    const depositTVL = new BigNumber(amountUST).multipliedBy('2');
+    const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
+      grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy('0.001'));
+    this.netLp = grossLp.minus(depositFee).toString();
+    this.grossLp = grossLp.toString();
+    this.depositFee = depositFee.toString();
+
     const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountUST.toString(), denom: 'uusd' }));
     this.amountUST = amountUST.plus(tax.amount.toString())
       .div(this.UNIT)
@@ -154,7 +165,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     ]);
     this.depositAmt = undefined;
     this.amountUST = undefined;
-    this.lpFromTx = undefined;
+    this.netLp = undefined;
+    this.depositFee = undefined;
+    this.netLp = undefined;
     this.depositType = undefined;
   }
 
@@ -199,19 +212,23 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     );
   }
 
-  async doClaimReward(all?: boolean) {
-    this.$gaService.event('CLICK_CLAIM_REWARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
-    const mintMsg = new MsgExecuteContract(
+  getMintMsg(): MsgExecuteContract {
+    return new MsgExecuteContract(
       this.terrajs.address,
       this.terrajs.settings.gov,
       {
         mint: {}
       }
     );
-    await this.terrajs.post([mintMsg, this.getWithdrawMsg(all)]);
+  }
+
+  async doClaimReward(all?: boolean) {
+    this.$gaService.event('CLICK_CLAIM_REWARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
+    await this.terrajs.post([this.getMintMsg(), this.getWithdrawMsg(all)]);
   }
 
   async doMoveToGov(all?: boolean) {
+    this.$gaService.event('CLICK_MOVE_TO_GOV_ASSET_CARD', this.vault.poolInfo.farm, this.vault.symbol + '-UST');
     let pending_spec_reward = 0;
     let pending_farm_reward = 0;
     if (!all) {
@@ -230,7 +247,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       }
     }
     if (pending_spec_reward > 0 || pending_farm_reward > 0) {
-      const msgs: MsgExecuteContract[] = [];
+      const msgs: MsgExecuteContract[] = [this.getMintMsg()];
       msgs.push(this.getWithdrawMsg(all));
       if (pending_spec_reward > 0) {
         const foundSpecFarm = this.info.farmInfos.find(farmInfo => farmInfo.farm === 'Spectrum');

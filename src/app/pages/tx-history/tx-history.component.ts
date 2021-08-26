@@ -3,7 +3,6 @@ import { TerrajsService } from '../../services/terrajs.service';
 import { Subscription } from 'rxjs';
 import { CONFIG } from '../../consts/config';
 import { InfoService } from '../../services/info.service';
-import { CalcService } from '../../services/calc.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { roundSixDecimal } from 'src/app/libs/math';
 
@@ -76,6 +75,9 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     };
     const txsRes = await this.terrajs.getFCD('v1/txs', queryParams);
     for (const item of txsRes.txs) {
+      if (item.code) {
+        continue;
+      }
       const txHistory = await this.processTxItem(item);
       if (txHistory) {
         this.txHistoryList.push(txHistory);
@@ -238,7 +240,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       }
 
       return {
-        desc: `Deposited ${lp} ${token_symbol}-${native_token_symbol} LP (${token_amount} ${token_symbol}, ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc}) to ${foundFarmContract?.farm} farm`,
+        desc: `Deposited ${token_amount} ${token_symbol} + ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc} (${lp} LP before deposit fee) to ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',
@@ -307,6 +309,43 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Gov',
+        id: item.id
+      };
+    } else if (item.tx.value.msg.length >= 3
+      && lastExecuteMsg.send
+      && JSON.parse(atob(item.tx.value.msg[0]?.value?.execute_msg)).mint
+      && item.tx.value.msg[0]?.value?.contract === this.terrajs.settings.gov
+      && JSON.parse(atob(item.tx.value.msg[1]?.value?.execute_msg)).withdraw
+    ) {
+      let descTemp = '';
+      for (let i = 1; i <= lastIndex; i++) {
+        const executeMsg = JSON.parse(atob(item.tx.value.msg[i]?.value?.execute_msg));
+        if (executeMsg.withdraw) {
+          const matchFarmInfo = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === item.tx.value.msg[i]?.value?.contract);
+          if (matchFarmInfo) {
+            descTemp += `From ${matchFarmInfo.farm} vault`;
+            if (executeMsg.withdraw?.asset_token) {
+              descTemp += `, pool ${this.info.coinInfos[executeMsg.withdraw?.asset_token]}-UST`;
+            } else {
+              descTemp += `, all pools`;
+            }
+            descTemp += `<br>`;
+          }
+        }
+        else if (executeMsg?.send?.amount) {
+          const executeMsgForCompare = JSON.parse(JSON.stringify(executeMsg)); // hack way to clone object without referencing
+          executeMsgForCompare.send.amount = '0';
+          const matchFarmInfo = this.info.farmInfos.find(farmInfo => JSON.stringify(farmInfo.getStakeGovMsg('0').execute_msg) === JSON.stringify(executeMsgForCompare));
+          if (matchFarmInfo) {
+            descTemp += `Move auto-staked ${executeMsg.send.amount / CONFIG.UNIT} ${matchFarmInfo.tokenSymbol} to ${matchFarmInfo.farm} Gov<br>`;
+          }
+        }
+      }
+      return {
+        desc: descTemp,
+        txhash: item.txhash,
+        timestamp: new Date(item.timestamp),
+        action: 'Farm',
         id: item.id
       };
     }
