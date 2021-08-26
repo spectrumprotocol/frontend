@@ -6,7 +6,8 @@
                 <span>Stake your SPEC here, all changes in Spectrum must be done through SPEC stakers.</span>
             </div>
             <div class="col-4 text-end">
-                <a class="btn btn-secondary" href="https://github.com/spectrumprotocol/contracts/issues" target="_blank">Join Forum</a>
+                <a class="btn btn-secondary" href="https://github.com/spectrumprotocol/contracts/issues"
+                    target="_blank">Join Forum</a>
                 <button type="button" class="btn btn-primary ms-3 mt-3" routerLink="/gov/poll/new">Create Poll</button>
             </div>
         </div>
@@ -20,7 +21,10 @@
                                     Total Staked <i class="fas fa-info-circle info-icon"
                                         mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
                                 </p>
-                                <h5 class="card-title"><app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit> SPEC (<app-digit [value]="supply ? +info.stat?.govStaked * 100 / supply : 0"></app-digit>%)</h5>
+                                <h5 class="card-title">
+                                    <app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit> SPEC (<app-digit
+                                        [value]="supply ? +info.stat?.govStaked * 100 / supply : 0"></app-digit>%)
+                                </h5>
                             </div>
                         </div>
                     </div>
@@ -31,7 +35,9 @@
                                     Circulation Supply <i class="fas fa-info-circle info-icon"
                                         mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
                                 </p>
-                                <h5 class="card-title"><app-digit [value]="+supply / UNIT"></app-digit> SPEC</h5>
+                                <h5 class="card-title">
+                                    <app-digit [value]="+supply / UNIT"></app-digit> SPEC
+                                </h5>
                             </div>
                         </div>
                     </div>
@@ -39,7 +45,7 @@
             </div>
             <div class="col-md-8">
                 <div class="card text-center box-right">
-                    <div class="card-body">
+                    <div class="card-body pb-0">
                         <img src="/assets/logo.png" class="logo" />
                         <h5 class="card-title">Spectrum Token (SPEC)</h5>
                         <h2 class="text-primary">{{ info.stat?.govApr | percent }} APR</h2>
@@ -48,16 +54,32 @@
                                 mdbTooltip="SPEC staking return from vault fee"></i>
                         </p>
                         <button type="button" class="btn btn-primary" routerLink="/gov/stake">Manage Stake</button>
+                        <div class="d-md-none pt-2 pb-1"><span class="small">Stakable </span><span class="h5">
+                                <app-digit [value]="+info.userSpecAmount || 0"></app-digit>
+                            </span></div>
                     </div>
                     <div class="card-footer">
                         <div class="row">
-                            <div class="col-6">
-                                <p class="small">Staked SPEC</p>
-                                <h5 class="card-title"><app-digit [value]="myStaked / UNIT"></app-digit> SPEC</h5>
+                            <div class="col-md-4 col-6 ps-1 pe-1">
+                                <p class="small">Staked in Gov</p>
+                                <h5 class="card-title">
+                                    <app-digit [value]="myStaked / UNIT"></app-digit><span class="d-none d-md-inline">
+                                        SPEC</span>
+                                </h5>
                             </div>
-                            <div class="col-6 border-start">
-                                <p class="small">Stakable SPEC</p>
-                                <h5 class="card-title"><app-digit [value]="+info.userSpecAmount || 0"></app-digit> SPEC</h5>
+                            <div class="col-md-4 col-6 ps-1 pe-1 border-start">
+                                <p class="small">Staked in vaults</p>
+                                <h5 class="card-title">
+                                    <app-digit [value]="+info.portfolio?.tokens.get('SPEC').pending_reward_token">
+                                    </app-digit><span class="d-none d-md-inline"> SPEC</span>
+                                </h5>
+                            </div>
+                            <div class="d-none d-md-inline col-md-4 ps-1 pe-1 border-start">
+                                <p class="small">Stakable</p>
+                                <h5 class="card-title">
+                                    <app-digit [value]="+info.userSpecAmount || 0"></app-digit><span
+                                        class="d-none d-md-inline"> SPEC</span>
+                                </h5>
                             </div>
                         </div>
                     </div>
@@ -83,10 +105,12 @@
         </div>
         <div class="row pt-3 g-4" *ngIf="config && info.stat?.govStaked">
             <div class="col-md-6" *ngFor="let poll of polls">
-                <app-poll-item [poll]="poll" [config]="config" [staked]="+info.stat.govStaked" link="gov"></app-poll-item>
+                <app-poll-item [poll]="poll" [config]="config" [staked]="+info.stat.govStaked" link="gov">
+                </app-poll-item>
             </div>
             <div class="d-grid gap-2 col-6 mx-auto">
-                <button type="button" class="btn btn-outline-default border-1" *ngIf="hasMore" (click)="pollMore()">More</button>
+                <button type="button" class="btn btn-outline-default border-1" *ngIf="hasMore"
+                    (click)="pollMore()">More</button>
             </div>
         </div>
     </div>

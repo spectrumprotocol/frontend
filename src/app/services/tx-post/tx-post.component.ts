@@ -4,8 +4,7 @@ import { Msg } from '@terra-money/terra.js';
 import { MdbModalRef } from 'mdb-angular-ui-kit';
 import { CONFIG } from '../../consts/config';
 import { TerrajsService } from '../terrajs.service';
-import {GoogleAnalyticsService} from 'ngx-google-analytics';
-import {InfoService} from '../info.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 @Component({
   selector: 'app-tx-post',
@@ -28,8 +27,7 @@ export class TxPostComponent implements OnInit {
     private httpClient: HttpClient,
     private modalRef: MdbModalRef<TxPostComponent>,
     private terrajs: TerrajsService,
-    protected $gaService: GoogleAnalyticsService,
-    private info: InfoService
+    protected $gaService: GoogleAnalyticsService
   ) { }
 
   async ngOnInit() {

@@ -11,8 +11,8 @@ import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
 
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
@@ -43,7 +43,7 @@ export class PylonFarmInfoService implements FarmInfoService {
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
-    const rewardInfoTask = this.pylonStaking.query({staker_info: {block_height: +height, staker: this.terrajs.settings.pylonFarm}});
+    const rewardInfoTask = this.pylonStaking.query({ staker_info: { block_height: +height, staker: this.terrajs.settings.pylonFarm } });
     const farmConfigTask = this.pylonFarm.query({ config: {} });
 
     // action
@@ -102,7 +102,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     });
     return rewardInfo.reward_infos;
   }
-  
+
   getStakeGovMsg(amount: string): MsgExecuteContract {
     return new MsgExecuteContract(
       this.terrajs.address,
@@ -111,7 +111,7 @@ export class PylonFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.pylonGov,
           amount,
-          msg: toBase64({stake_voting_tokens: {}})
+          msg: toBase64({ stake_voting_tokens: {} })
         }
       }
     );
