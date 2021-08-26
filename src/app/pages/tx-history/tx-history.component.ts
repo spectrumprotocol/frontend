@@ -239,8 +239,10 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         autoCompoundDesc = `auto-compound ${compoundPercentage}% mode`;
       }
 
+      const lpAmount = token_symbol === 'SPEC' ? `(${lp} LP)` : `(${lp} LP before deposit fee)`;
+
       return {
-        desc: `Deposited ${token_amount} ${token_symbol} + ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc} (${lp} LP before deposit fee) to ${foundFarmContract?.farm} farm`,
+        desc: `Deposited ${token_amount} ${token_symbol} + ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc} ${lpAmount} to ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',
@@ -269,7 +271,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Gov',
         id: item.id
       };
-    } else if (lastExecuteMsg.poll_vote && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.platform) {
+    } else if (lastExecuteMsg.poll_vote && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.gov) {
       return {
         desc: 'Voted Poll ' + lastExecuteMsg.poll_vote.poll_id,
         txhash: item.txhash,
@@ -277,7 +279,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Gov',
         id: item.id
       };
-    } else if (lastExecuteMsg.poll_execute && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.platform) {
+    } else if (lastExecuteMsg.poll_execute && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.gov) {
       return {
         desc: 'Executed Poll ' + lastExecuteMsg.poll_execute.poll_id,
         txhash: item.txhash,
@@ -303,7 +305,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Gov',
         id: item.id
       };
-    } else if (lastExecuteMsg.poll_end && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.platform) {
+    } else if (lastExecuteMsg.poll_end && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.gov) {
       return {
         desc: 'Ended Poll ' + lastExecuteMsg.poll_end.poll_id,
         txhash: item.txhash,

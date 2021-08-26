@@ -1,11 +1,11 @@
 <main>
     <div class="container py-5">
         <div class="row">
-            <div class="col-8">
+            <div class="col-7">
                 <h2>Governance</h2>
                 <span>Stake your SPEC here, all changes in Spectrum must be done through SPEC stakers.</span>
             </div>
-            <div class="col-4 text-end">
+            <div class="col-5 text-end">
                 <a class="btn btn-secondary" href="https://github.com/spectrumprotocol/contracts/issues"
                     target="_blank">Join Forum</a>
                 <button type="button" class="btn btn-primary ms-3 mt-3" routerLink="/gov/poll/new">Create Poll</button>
@@ -68,7 +68,7 @@
                                 </h5>
                             </div>
                             <div class="col-md-4 col-6 ps-1 pe-1 border-start">
-                                <p class="small">Staked in vaults</p>
+                                <p class="small">Staked in Vaults</p>
                                 <h5 class="card-title">
                                     <app-digit [value]="+info.portfolio?.tokens.get('SPEC').pending_reward_token">
                                     </app-digit><span class="d-none d-md-inline"> SPEC</span>

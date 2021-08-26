@@ -32,7 +32,7 @@
       </span>
     </div>
     <div class="d-flex" *ngIf="info.portfolio?.total_reward_ust > 0.01">
-      <span class="legend-square bg-item1"></span> Total staked in vaults
+      <span class="legend-square bg-item1"></span> Total staked in Vaults
       <span class="margin-left-auto">
         <app-digit [duration]=300 [value]="info.portfolio?.total_reward_ust" [format]="'1.2-2'"></app-digit> UST
         <div class="your-tvl-percentage">(<app-digit [duration]=300 [value]="info.portfolio?.total_reward_ust * 100 / info.myTvl" [format]="'1.2-2'"></app-digit> %)</div>
