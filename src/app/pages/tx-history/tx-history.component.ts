@@ -239,8 +239,10 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         autoCompoundDesc = `auto-compound ${compoundPercentage}% mode`;
       }
 
+      const lpAmount = token_symbol === 'SPEC' ? `(${lp} LP)` : `(${lp} LP before deposit fee)`;
+
       return {
-        desc: `Deposited ${token_amount} ${token_symbol} + ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc} (${lp} LP before deposit fee) to ${foundFarmContract?.farm} farm`,
+        desc: `Deposited ${token_amount} ${token_symbol} + ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc} ${lpAmount} to ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',

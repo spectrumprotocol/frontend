@@ -124,8 +124,8 @@
       </div>
     </div>
 
-    <div *ngIf="loading" class="text-center pt-3"><span class="spinner-grow spinner-grow-sm" role="status"
-        aria-hidden="true"></span> Loading...</div>
+    <div *ngIf="loading" class="d-flex align-items-center justify-content-center pt-3"><span
+        class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...</div>
 
     <div *ngIf="!loading" class="d-flex justify-content-between pt-3">
       <div class="d-flex justify-content-start align-items-end">
@@ -139,7 +139,7 @@
       </div>
     </div>
 
-    <div class="row pt-3 g-3">
+    <div class="row pt-2 g-3">
       <ng-container *ngFor="let vault of vaults; trackBy: vaultId">
         <app-asset-card [vault]="vault"></app-asset-card>
       </ng-container>
