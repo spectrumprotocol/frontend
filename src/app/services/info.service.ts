@@ -14,6 +14,10 @@ import { fromEntries } from '../libs/core';
 import { PairInfo } from './api/terraswap_factory/pair_info';
 import { SpecFarmService } from './api/spec-farm.service';
 import { ConfigInfo as SpecFarmConfigInfo } from './api/spec_farm/config_info';
+import { BalancePipe } from '../pipes/balance.pipe';
+import { LpBalancePipe } from '../pipes/lp-balance.pipe';
+import { Vault } from '../pages/vault/vault.component';
+import { HttpClient } from '@angular/common/http';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -24,41 +28,41 @@ export interface Stat {
   govApr: number;
 }
 
+type PendingReward = {
+  pending_reward_token: number;
+  pending_reward_ust: number;
+};
+
+type PortfolioItem = {
+  bond_amount_ust: number;
+};
+
+export type Portfolio = {
+  total_reward_ust: number;
+  gov: PendingReward;
+  tokens: Map<string, PendingReward>;
+  farms: Map<string, PortfolioItem>;
+};
+
 const HEIGHT_PER_YEAR = 365 * 24 * 60 * 60 * 1000 / BLOCK_TIME;
 
 @Injectable({
   providedIn: 'root'
 })
 export class InfoService {
-  userUstAmount: string;
-  userSpecAmount: string;
-  userSpecLpAmount: string;
-
-  specPoolInfo: PoolResponse;
-  specPrice: string;
-
-  private poolInfoNetwork: string;
-  poolInfos: Record<string, PoolInfo>;
-  pairInfos: Record<string, PairInfo> = {};
-  coinInfos: Record<string, string> = {};
-
-  stat: Stat;
-
-  rewardInfos: Record<string, RewardInfoResponseItem> = {};
-  tokenBalances: Record<string, string> = {};
-  poolResponses: Record<string, PoolResponse> = {};
-
-  specFarmConfig: SpecFarmConfigInfo;
 
   constructor(
     private bankService: BankService,
-    @Inject(FARM_INFO_SERVICE) private farmInfos: FarmInfoService[],
+    @Inject(FARM_INFO_SERVICE) public farmInfos: FarmInfoService[],
     private gov: GovService,
     private terrajs: TerrajsService,
     private terraSwap: TerraSwapService,
     private terraSwapFactory: TerraSwapFactoryService,
     private token: TokenService,
     private specFarm: SpecFarmService,
+    private balancePipe: BalancePipe,
+    private lpBalancePipe: LpBalancePipe,
+    private httpClient: HttpClient
   ) {
     try {
       const poolJson = localStorage.getItem('poolInfos');
@@ -79,6 +83,32 @@ export class InfoService {
       }
     } catch (e) { }
   }
+  userUstAmount: string;
+  userSpecAmount: string;
+  userSpecLpAmount: string;
+
+  specPoolInfo: PoolResponse;
+  specPrice: string;
+
+  private poolInfoNetwork: string;
+  poolInfos: Record<string, PoolInfo>;
+  pairInfos: Record<string, PairInfo> = {};
+  coinInfos: Record<string, string> = {};
+
+  stat: Stat;
+
+  rewardInfos: Record<string, RewardInfoResponseItem> = {};
+  tokenBalances: Record<string, string> = {};
+  poolResponses: Record<string, PoolResponse> = {};
+
+  specFarmConfig: SpecFarmConfigInfo;
+
+  cw20tokensWhitelist: any;
+
+  myTvl = 0;
+  allVaults: Vault[];
+
+  portfolio: Portfolio;
 
   async refreshBalance(opt: { spec?: boolean; ust?: boolean; lp?: boolean }) {
     if (!this.terrajs.isConnected) {
@@ -120,7 +150,13 @@ export class InfoService {
     const tasks = this.farmInfos.map(async farmInfo => {
       const pools = await farmInfo.queryPoolItems();
       for (const pool of pools) {
-        poolInfos[pool.asset_token] = Object.assign(pool, { farm: farmInfo.farmName, token_symbol: farmInfo.tokenSymbol });
+        poolInfos[pool.asset_token] = Object.assign(pool,
+          {
+            farm: farmInfo.farm,
+            token_symbol: farmInfo.tokenSymbol,
+            farmContract: farmInfo.farmContract,
+            farmTokenContract: farmInfo.farmTokenContract,
+          });
       }
     });
     await Promise.all(tasks);
@@ -177,7 +213,7 @@ export class InfoService {
     await this.ensurePairInfos();
     const tasks = this.farmInfos.map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
-        .filter(it => it[1].farm === farmInfo.farmName));
+        .filter(it => it[1].farm === farmInfo.farm));
       try {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.pairInfos);
         Object.assign(stat.pairs, pairStats);
@@ -228,6 +264,7 @@ export class InfoService {
       const rewards = await farmInfo.queryRewards();
       for (const reward of rewards) {
         rewardInfos[reward.asset_token] = reward;
+        rewardInfos[reward.asset_token].farm = farmInfo.farm;
       }
     });
     await Promise.all(tasks);
@@ -267,4 +304,108 @@ export class InfoService {
     this.specFarmConfig = await this.specFarm.query({ config: {} });
   }
 
+  async ensureCw20tokensWhitelist() {
+    if (!this.cw20tokensWhitelist) {
+      this.cw20tokensWhitelist = await this.httpClient.get<object>('https://assets.terra.money/cw20/tokens.json').toPromise();
+    }
+  }
+
+  async updateMyTvl() {
+    let tvl = 0;
+    const portfolio: Portfolio = {
+      total_reward_ust: 0,
+      gov: { pending_reward_token: 0, pending_reward_ust: 0 },
+      tokens: new Map(),
+      farms: new Map(),
+    };
+    for (const farmInfo of this.farmInfos) {
+      portfolio.tokens.set(farmInfo.tokenSymbol, { pending_reward_token: 0, pending_reward_ust: 0 });
+      portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
+    }
+
+    const specPoolResponse = this.poolResponses[this.terrajs.settings.specToken];
+    for (const vault of this.allVaults) {
+      const rewardInfo = this.rewardInfos[vault.assetToken];
+      if (!rewardInfo) {
+        continue;
+      }
+      const poolResponse = this.poolResponses[vault.assetToken];
+      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, poolResponse) / CONFIG.UNIT || 0;
+      const farmInfo = this.farmInfos.find(it => it.farm === this.poolInfos[vault.assetToken].farm);
+      portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
+
+      tvl += bond_amount;
+      const pending_reward_spec_ust = +this.balancePipe.transform(rewardInfo.pending_spec_reward, specPoolResponse) / CONFIG.UNIT || 0;
+      tvl += pending_reward_spec_ust;
+      portfolio.tokens.get('SPEC').pending_reward_ust += pending_reward_spec_ust;
+      portfolio.tokens.get('SPEC').pending_reward_token += +rewardInfo.pending_spec_reward / CONFIG.UNIT;
+      portfolio.total_reward_ust += pending_reward_spec_ust;
+      if (vault.poolInfo.farm !== 'Spectrum') {
+        const farmPoolResponse = this.poolResponses[farmInfo.farmTokenContract];
+        const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, farmPoolResponse) / CONFIG.UNIT || 0;
+        tvl += pending_farm_reward_ust;
+        portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_ust += pending_farm_reward_ust;
+        portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+        portfolio.total_reward_ust += pending_farm_reward_ust;
+      }
+    }
+
+    const specGovStaked = this.terrajs.address ? (await this.gov.balance()).balance : 0;
+    const gov_spec_staked_ust = +this.balancePipe.transform(specGovStaked, specPoolResponse) / CONFIG.UNIT || 0;
+    portfolio.gov.pending_reward_ust += gov_spec_staked_ust;
+    portfolio.gov.pending_reward_token += +specGovStaked / CONFIG.UNIT;
+    tvl += gov_spec_staked_ust;
+    this.myTvl = tvl;
+    this.portfolio = portfolio;
+  }
+
+  async initializeVaultData(connected: boolean) {
+    const tasks: Promise<any>[] = [];
+    tasks.push(this.ensureCoinInfos());
+    tasks.push(this.refreshStat());
+    tasks.push(this.refreshLock());
+    if (connected) {
+      tasks.push(this.refreshRewardInfos());
+      tasks.push(this.refreshPoolInfo());
+    }
+
+    await Promise.all(tasks);
+    this.updateVaults();
+    await this.updateMyTvl();
+  }
+
+  updateVaults() {
+    const token = this.terrajs.settings.specToken;
+    if (!this.coinInfos?.[token]) {
+      return;
+    }
+    this.allVaults = [];
+    for (const key of Object.keys(this.poolInfos)) {
+      const pairStat = this.stat?.pairs[key];
+      const poolApr = pairStat?.poolApr || 0;
+      const poolApy = pairStat?.poolApy || 0;
+      const specApr = pairStat?.specApr || 0;
+      const govApr = this.stat?.govApr || 0;
+      const specApy = specApr + specApr * govApr / 2;
+      const compoundApy = poolApy + specApy;
+      const farmApr = pairStat?.farmApr || 0;
+      const farmApy = poolApr + poolApr * farmApr / 2;
+      const stakeApy = farmApy + specApy;
+      const apy = Math.max(compoundApy, stakeApy);
+
+      const vault: Vault = {
+        symbol: this.coinInfos[key],
+        assetToken: key,
+        pairStat,
+        poolInfo: this.poolInfos[key],
+        pairInfo: this.pairInfos[key],
+        specApy,
+        farmApy,
+        compoundApy,
+        stakeApy,
+        apy,
+      };
+      this.allVaults.push(vault);
+    }
+  }
 }

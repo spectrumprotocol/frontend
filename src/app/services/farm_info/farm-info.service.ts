@@ -4,9 +4,10 @@ import { PoolItem as MirrorPoolItem } from '../api/mirror_farm/pools_response';
 import { RewardInfoResponseItem as MirrorRewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
 import { RewardInfoResponseItem as SpecRewardInfoResponseItem } from '../api/spec_farm/reward_info_response';
 import { InjectionToken } from '@angular/core';
+import {MsgExecuteContract} from '@terra-money/terra.js';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem;
-export type PoolInfo = PoolItem & { farm: string; token_symbol: string };
+export type PoolInfo = PoolItem & { farm: string; token_symbol: string; farmTokenContract: string; farmContract: string };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
 export interface PairStat {
@@ -22,9 +23,13 @@ export interface PairStat {
 export const FARM_INFO_SERVICE = new InjectionToken('FARM_INFO_SERVICE');
 
 export interface FarmInfoService {
-  farmName: string;
+  farm: string;
   tokenSymbol: string;
+  readonly farmContract: string;
+  readonly farmTokenContract: string;
+
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>>;
   queryRewards(): Promise<RewardInfoResponseItem[]>;
+  getStakeGovMsg(amount: string): MsgExecuteContract;
 }

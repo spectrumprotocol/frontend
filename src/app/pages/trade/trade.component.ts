@@ -5,7 +5,7 @@ import { TerraSwapService } from '../../services/api/terraswap.service';
 import { TerrajsService } from '../../services/terrajs.service';
 import { CalcService } from '../../services/calc.service';
 import { InfoService } from '../../services/info.service';
-import { div, lte, times } from '../../libs/math';
+import { div, floor18Decimal, floorSixDecimal, lte, times } from '../../libs/math';
 import { CONFIG } from '../../consts/config';
 import { Coin, Coins, Denom, MsgExecuteContract } from '@terra-money/terra.js';
 import { debounce } from 'utils-decorators';
@@ -73,7 +73,7 @@ export class TradeComponent implements OnInit, OnDestroy {
   }
 
   setMaxBuyUST() {
-    this.amountBuyUST = parseFloat(this.calcService.floorSixDecimal(this.infoService.userUstAmount));
+    this.amountBuyUST = parseFloat(floorSixDecimal(this.infoService.userUstAmount));
     this.refreshBuySPECInfo('UST');
   }
 
@@ -102,9 +102,9 @@ export class TradeComponent implements OnInit, OnDestroy {
       }
       const simulateSwapUSTtoSPECResult = (await this.terraSwapService.query(this.terrajs.settings.specPool, simulateSwapUSTtoSPEC));
       this.amountBuySPEC = parseFloat(div(simulateSwapUSTtoSPECResult.return_amount, CONFIG.UNIT));
-      this.beliefPriceBuy = this.calcService.floor18Decimal(times(div(this.amountBuyUST, simulateSwapUSTtoSPECResult.return_amount), CONFIG.UNIT));
+      this.beliefPriceBuy = floor18Decimal(times(div(this.amountBuyUST, simulateSwapUSTtoSPECResult.return_amount), CONFIG.UNIT));
       // console.log(this.beliefPriceBuy)
-      this.expectedPriceBuySPEC = this.calcService.floorSixDecimal(this.beliefPriceBuy);
+      this.expectedPriceBuySPEC = floorSixDecimal(this.beliefPriceBuy);
       this.refreshMinimumReceived();
     } else if (inputCoin === 'SPEC') {
       const reverseSimulateSwapUSTtoSPEC = {
@@ -131,8 +131,8 @@ export class TradeComponent implements OnInit, OnDestroy {
       }
       const reverseSimulateSwapUSTtoSPECResult = (await this.terraSwapService.query(this.terrajs.settings.specPool, reverseSimulateSwapUSTtoSPEC));
       this.amountBuyUST = parseFloat(div(reverseSimulateSwapUSTtoSPECResult.offer_amount, CONFIG.UNIT));
-      this.beliefPriceBuy = this.calcService.floor18Decimal(div(div(reverseSimulateSwapUSTtoSPECResult.offer_amount, this.amountBuySPEC), CONFIG.UNIT));
-      this.expectedPriceBuySPEC = this.calcService.floorSixDecimal(this.beliefPriceBuy);
+      this.beliefPriceBuy = floor18Decimal(div(div(reverseSimulateSwapUSTtoSPECResult.offer_amount, this.amountBuySPEC), CONFIG.UNIT));
+      this.expectedPriceBuySPEC = floorSixDecimal(this.beliefPriceBuy);
       this.refreshMinimumReceived();
     }
   }
@@ -211,8 +211,8 @@ export class TradeComponent implements OnInit, OnDestroy {
       }
       const simulateSwapUSTtoSPECResult = (await this.terraSwapService.query(this.terrajs.settings.specPool, simulateSwapSPECtoUST));
       this.amountSellUST = parseFloat(div(simulateSwapUSTtoSPECResult.return_amount, CONFIG.UNIT));
-      this.beliefPriceSell = this.calcService.floor18Decimal(times(div(1, div(simulateSwapUSTtoSPECResult.return_amount, this.amountSellSPEC)), CONFIG.UNIT));
-      this.expectedPriceSellSPEC = this.calcService.floor18Decimal(div(this.amountSellUST, this.amountSellSPEC));
+      this.beliefPriceSell = floor18Decimal(times(div(1, div(simulateSwapUSTtoSPECResult.return_amount, this.amountSellSPEC)), CONFIG.UNIT));
+      this.expectedPriceSellSPEC = floor18Decimal(div(this.amountSellUST, this.amountSellSPEC));
       this.refreshMinimumReceived();
     }
     else if (inputCoin === 'UST') {
@@ -238,9 +238,9 @@ export class TradeComponent implements OnInit, OnDestroy {
       }
       const reverseSimulateSwapSPECtoUSTResult = (await this.terraSwapService.query(this.terrajs.settings.specPool, reverseSimulateSwapSPECtoUST));
       this.amountSellSPEC = parseFloat(div(reverseSimulateSwapSPECtoUSTResult.offer_amount, CONFIG.UNIT));
-      this.beliefPriceSell = this.calcService.floor18Decimal(div(div(1, div(this.amountSellUST, reverseSimulateSwapSPECtoUSTResult.offer_amount)), CONFIG.UNIT));
+      this.beliefPriceSell = floor18Decimal(div(div(1, div(this.amountSellUST, reverseSimulateSwapSPECtoUSTResult.offer_amount)), CONFIG.UNIT));
       // console.log(this.beliefPriceSell)
-      this.expectedPriceSellSPEC = this.calcService.floor18Decimal(div(this.amountSellUST, this.amountSellSPEC));
+      this.expectedPriceSellSPEC = floor18Decimal(div(this.amountSellUST, this.amountSellSPEC));
       this.refreshMinimumReceived();
       this.formSellSpec.form.markAsPristine();
       this.formSellSpec.form.markAsUntouched();

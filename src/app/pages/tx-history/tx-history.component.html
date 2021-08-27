@@ -1,0 +1,40 @@
+<main>
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-12">
+        <h2><a class="fas fa-angle-left" routerLink="/vault" ></a> Transaction History</h2>
+      </div>
+    </div>
+    <div class="card mt-3">
+      <div class="card-body">
+    <table class="table table-hover">
+      <thead></thead>
+      <tbody>
+      <tr *ngFor="let txHistory of txHistoryList">
+        <td>
+          <a class="link-no-decoration" href='https://finder.extraterrestrial.money/{{terrajs.settings.chainID}}/tx/{{txHistory.txhash}}' target="_blank">
+            <div class="d-flex flex-column">
+              <div class="table-font-size2">{{txHistory.action}}</div>
+              <div class="d-flex justify-content-between table-font-size1 fw-bold">
+                <div [innerHTML]="txHistory.desc"></div>
+                <div>{{txHistory.timestamp | date:'EEE, LLL d YYYY, H:mm aa'}}</div>
+              </div>
+            </div>
+          </a>
+        </td>
+      </tr>
+      </tbody>
+      <tfoot>
+      </tfoot>
+    </table>
+    <div class="text-center pb-2">
+      <span *ngIf="loading && terrajs.isConnected"><span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...</span>
+      <span *ngIf="!loading && txHistoryList.length === 0 && terrajs.isConnected">No Spectrum Protocol transaction history available</span>
+      <span *ngIf="!terrajs.isConnected">Please connect wallet first</span>
+    </div>
+    <div *ngIf="currentTxOffset !== undefined && !loading" class="d-flex justify-content-center">
+      <button type="button" class="btn btn-outline-default border-1" (click)="loadMore()">
+        <span *ngIf="!loading && currentTxOffset !== undefined">More</span>
+      </button>
+    </div>
+  </div>

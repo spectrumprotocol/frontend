@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Coin, LCDClient, Msg, SyncTxBroadcastResult } from '@terra-money/terra.js';
+import { Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult } from '@terra-money/terra.js';
 import { ISettings, networks } from '../consts/networks';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
@@ -216,6 +216,14 @@ export class TerrajsService implements OnDestroy {
     }).toPromise();
     this.height = +res.height;
     return res.result as any;
+  }
+
+  async getFCD(path: string, params?: Record<string, string>, headers?: Record<string, string>) {
+    const res = await this.httpClient.get<GetResponse>(`${this.settings.fcd}/${path}`, {
+      params,
+      headers,
+    }).toPromise();
+    return res as any;
   }
 
   async post(msgs: Msg[] | Msg) {

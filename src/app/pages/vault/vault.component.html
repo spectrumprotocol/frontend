@@ -23,8 +23,11 @@
       <div class="col-12 col-md-4">
         <div class="card box-left">
           <div class="card-body">
-            <p class="card-text">
+            <p class="d-flex card-text mb-3">
               SPEC Price
+              <a class="margin-left-auto text-light small"
+                href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" target="_blank"><i
+                  class="fas fa-chart-line"></i>&nbsp;<span class="text-underline">Chart</span></a>
             </p>
             <h5 class="card-title">
               <app-digit [value]="+info.specPrice"></app-digit> UST
@@ -35,23 +38,28 @@
       <div class="col-12 col-md-4">
         <div class="card box-left bg-primary">
           <div class="card-body">
-            <p class="card-text">
+            <div class="d-flex card-text mb-3">
               Your TVL <i class="fas fa-info-circle info-icon"
                 mdbTooltip="Your provided liquidity, staked rewards, and staked SPEC"></i>
-            </p>
+              <a role="button" class="margin-left-auto text-light small" *ngIf="!cannotOpenYourTVL()"
+                (click)="openYourTVL()"><i class="fas fa-chart-pie"></i>&nbsp;<span
+                  class="text-underline">Details</span></a>
+            </div>
             <h5 class="card-title">
-              <span *ngIf="+myTvl" class="fas fa-chevron-up animate-up text-success"></span>&nbsp;<app-digit
-                [value]="myTvl"></app-digit> UST
+              <span *ngIf="+info.myTvl" class="fas fa-chevron-up animate-up text-success"></span>&nbsp;<app-digit
+                [value]="info.myTvl"></app-digit> UST
             </h5>
           </div>
         </div>
       </div>
     </div>
     <div class="row pt-3">
-      <div class="notice border border-primary text-center">⚡ Spectrum Protocol is being audited, please use your own discretion before investing. (<a href="https://docs.spec.finance/transparency" target="_blank">more details</a>)</div>
+      <div class="notice border border-primary text-center">⚡ Spectrum Protocol is being audited, please use your own
+        discretion before investing. (<a href="https://docs.spec.finance/transparency" target="_blank">more details</a>)
+      </div>
     </div>
 
-    <div class="d-flex flex-column flex-sm-row pt-4 pb-1">
+    <div class="d-flex flex-column flex-sm-row pt-3">
       <div class="p2 flex-md-grow-1 me-3">
         <div class="input-group">
           <span class="input-group-text border-0" id="search-addon"><i class="fas fa-search"></i></span>
@@ -60,37 +68,78 @@
         </div>
       </div>
 
+
       <div class="p2 pt-2 pt-sm-0">
-        <div class="input-group">
-          <div mdbDropdown class="dropdown" #dropdown>
-            <button mdbDropdownToggle class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false">
-              Sort by
-            </button>
-            <ul mdbDropdownMenu class="dropdown-menu dropdown-menu-end">
-              <li>
-                <a class="dropdown-item" [class.active]="sortBy === 'multiplier'"
-                  (click)="sortBy = 'multiplier'; refresh()">Default</a>
-              </li>
-              <li>
-                <a class="dropdown-item" [class.active]="sortBy === 'apy'" (click)="sortBy = 'apy'; refresh()">APY%</a>
-              </li>
-              <li>
-                <a class="dropdown-item" [class.active]="sortBy === 'tvl'" (click)="sortBy = 'tvl'; refresh()">TVL</a>
-              </li>
-            </ul>
+        <div class="d-flex flex-row">
+
+
+          <div class="me-3">
+            <div mdbDropdown class="dropdown" #dropdown>
+              <button mdbDropdownToggle class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false">
+                <i class="fas fa-filter"></i> {{activeFarm}} {{ activeFarm === "All" ? "Farms" : "Farm"}}
+              </button>
+              <ul mdbDropdownMenu class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item cursor-pointer" [class.active]="activeFarm === 'All'"
+                    (click)="activeFarm = 'All'; refresh()">All</a>
+                </li>
+                <li>
+                  <a *ngFor="let farmInfo of info.farmInfos" class="dropdown-item cursor-pointer"
+                    [class.active]="activeFarm === farmInfo.farm"
+                    (click)="activeFarm = farmInfo.farm; refresh()">{{farmInfo.farm}}</a>
+                </li>
+
+              </ul>
+            </div>
           </div>
-          <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" id="showDepositedPoolOnly"
-              [(ngModel)]="showDepositedPoolOnly" (change)="refresh();memoize('deposit')" />&nbsp;<label
-              for="showDepositedPoolOnly">Deposited only</label>
+
+          <div class="input-group">
+            <div mdbDropdown class="dropdown" #dropdown>
+              <button mdbDropdownToggle class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false">
+                <i class="fas fa-sort-amount-up-alt"></i> Sort by
+              </button>
+              <ul mdbDropdownMenu class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item cursor-pointer" [class.active]="sortBy === 'multiplier'"
+                    (click)="sortBy = 'multiplier'; refresh()">Default</a>
+                </li>
+                <li>
+                  <a class="dropdown-item cursor-pointer" [class.active]="sortBy === 'apy'"
+                    (click)="sortBy = 'apy'; refresh()">APY%</a>
+                </li>
+                <li>
+                  <a class="dropdown-item cursor-pointer" [class.active]="sortBy === 'tvl'"
+                    (click)="sortBy = 'tvl'; refresh()">TVL</a>
+                </li>
+              </ul>
+            </div>
+            <div class="input-group-text">
+              <input class="form-check-input mt-0" type="checkbox" id="showDepositedPoolOnly"
+                [(ngModel)]="showDepositedPoolOnly" (change)="refresh();memoize('deposit')" />&nbsp;<label
+                for="showDepositedPoolOnly">Deposited only</label>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
 
-    <div class="row pt-3 g-3">
-      <div *ngIf="loading" class="text-center"><span class="spinner-grow spinner-grow-sm" role="status"
-          aria-hidden="true"></span> Loading...</div>
+    <div *ngIf="loading" class="d-flex align-items-center justify-content-center pt-3"><span
+        class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...</div>
+
+    <div *ngIf="!loading" class="d-flex justify-content-between pt-3">
+      <div class="d-flex justify-content-start align-items-end">
+        <div class="d-none d-md-flex">
+          <span class="fw-bold text-light"><i class="fas fa-hashtag text-primary"></i> {{vaults.length}} {{
+            vaults.length > 1 ? "Vaults" : "Vault"}}</span>
+        </div>
+      </div>
+      <div *ngIf="terrajs.isConnected" class="d-flex justify-content-end">
+        <app-unstake-all></app-unstake-all>
+      </div>
+    </div>
+
+    <div class="row pt-2 g-3">
       <ng-container *ngFor="let vault of vaults; trackBy: vaultId">
         <app-asset-card [vault]="vault"></app-asset-card>
       </ng-container>

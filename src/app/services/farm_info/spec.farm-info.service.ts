@@ -6,10 +6,12 @@ import { TerraSwapService } from '../api/terraswap.service';
 import { PairInfo } from '../api/terraswap_factory/pair_info';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem } from './farm-info.service';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
 
 @Injectable()
 export class SpecFarmInfoService implements FarmInfoService {
-  farmName = 'Spectrum';
+  farm = 'Spectrum';
   tokenSymbol = 'SPEC';
 
   constructor(
@@ -18,6 +20,14 @@ export class SpecFarmInfoService implements FarmInfoService {
     private terrajs: TerrajsService,
     private terraSwap: TerraSwapService,
   ) { }
+
+  get farmContract() {
+    return this.terrajs.settings.specFarm;
+  }
+
+  get farmTokenContract() {
+    return this.terrajs.settings.specToken;
+  }
 
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.specFarm.query({ pools: {} });
@@ -68,6 +78,20 @@ export class SpecFarmInfoService implements FarmInfoService {
       it['stake_bond_amount'] = it.bond_amount;
     }
     return rewardInfo.reward_infos;
+  }
+
+  getStakeGovMsg(amount: string): MsgExecuteContract {
+    return new MsgExecuteContract(
+      this.terrajs.address,
+      this.terrajs.settings.specToken,
+      {
+        send: {
+          contract: this.terrajs.settings.gov,
+          amount,
+          msg: toBase64({stake_tokens: {}})
+        }
+      }
+    );
   }
 
 }

@@ -4,7 +4,7 @@ import { Msg } from '@terra-money/terra.js';
 import { MdbModalRef } from 'mdb-angular-ui-kit';
 import { CONFIG } from '../../consts/config';
 import { TerrajsService } from '../terrajs.service';
-import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 @Component({
   selector: 'app-tx-post',

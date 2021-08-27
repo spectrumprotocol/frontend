@@ -6,8 +6,8 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { VaultComponent } from './pages/vault/vault.component';
 import { MenubarComponent } from './menubar/menubar.component';
-import { HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
-import {ClipboardModule} from '@angular/cdk/clipboard';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { ModalComponent } from './services/modal/modal.component';
 import { NotifyComponent } from './services/notify/notify.component';
 import { LoaderComponent } from './services/loader/loader.component';
@@ -16,7 +16,7 @@ import { GovComponent } from './pages/gov/gov.component';
 import { PollItemComponent } from './pages/gov/poll-item/poll-item.component';
 import { TerrajsService } from './services/terrajs.service';
 import { DigitComponent } from './components/digit/digit.component';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GovStakeComponent } from './pages/gov-stake/gov-stake.component';
 import { MaxValidator } from './directives/max.directive';
 import { MinValidator } from './directives/min.directive';
@@ -41,8 +41,8 @@ import { FARM_INFO_SERVICE } from './services/farm_info/farm-info.service';
 import { MirrorFarmInfoService } from './services/farm_info/mirror.farm-info.service';
 import { SpecFarmInfoService } from './services/farm_info/spec.farm-info.service';
 import { RewardInfoPipe } from './pipes/reward-info.pipe';
-import {NgxGoogleAnalyticsModule, NgxGoogleAnalyticsRouterModule} from 'ngx-google-analytics';
-import {CONFIG} from './consts/config';
+import { NgxGoogleAnalyticsModule, NgxGoogleAnalyticsRouterModule } from 'ngx-google-analytics';
+import { CONFIG } from './consts/config';
 import { FooterComponent } from './footer/footer.component';
 import { LpSplitPipe } from './pipes/lp-split.pipe';
 import { PricePipe } from './pipes/price.pipe';
@@ -52,6 +52,10 @@ import { LpBalancePipe } from './pipes/lp-balance.pipe';
 import { AnchorFarmInfoService } from './services/farm_info/anchor.farm-info.service';
 import { ConnectOptionsComponent } from './services/connect-options/connect-options.component';
 import { WalletOptionsComponent } from './services/wallet-options/wallet-options.component';
+import { TxHistoryComponent } from './pages/tx-history/tx-history.component';
+import { YourTvlComponent } from './pages/vault/your-tvl/your-tvl.component';
+import { UnstakeAllComponent } from './pages/vault/unstake-all/unstake-all.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { PylonFarmInfoService } from './services/farm_info/pylon.farm-info.service';
 
 // alter default decimal to 6
@@ -96,21 +100,25 @@ registerLocaleData(locale, 'en');
     LpBalancePipe,
     ConnectOptionsComponent,
     WalletOptionsComponent,
+    TxHistoryComponent,
+    YourTvlComponent,
+    UnstakeAllComponent,
   ],
-    imports: [
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        BrowserModule,
-        ClipboardModule,
-        FormsModule,
-        HttpClientModule,
-        MdbModule,
-        ReactiveFormsModule,
-        PrettyJsonModule,
-        GraphQLModule,
-        NgxGoogleAnalyticsModule.forRoot(CONFIG.GOOGLE_ANALYTICS_ID),
-        NgxGoogleAnalyticsRouterModule
-    ],
+  imports: [
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    BrowserModule,
+    ClipboardModule,
+    FormsModule,
+    HttpClientModule,
+    MdbModule,
+    ReactiveFormsModule,
+    PrettyJsonModule,
+    GraphQLModule,
+    NgxGoogleAnalyticsModule.forRoot(CONFIG.GOOGLE_ANALYTICS_ID),
+    NgxGoogleAnalyticsRouterModule,
+    NgxChartsModule,
+  ],
   providers: [
     // { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true},
     {
@@ -119,10 +127,10 @@ registerLocaleData(locale, 'en');
       deps: [TerrajsService],
       multi: true
     },
-    { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true},
-    { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true},
-    { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true},
-    { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true},
+    { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

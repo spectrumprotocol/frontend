@@ -10,6 +10,7 @@ import { GovService } from '../../services/api/gov.service';
 import { ConfigInfo } from '../../services/api/gov/config_info';
 import { PollInfo } from '../../services/api/gov/polls_response';
 import { TerrajsService } from '../../services/terrajs.service';
+import {GoogleAnalyticsService} from 'ngx-google-analytics';
 
 @Component({
   selector: 'app-gov-poll-detail',
@@ -43,11 +44,12 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     public terrajs: TerrajsService,
+    protected $gaService: GoogleAnalyticsService,
   ) { }
 
   async ngOnInit() {
     const poll_id = +this.route.snapshot.paramMap.get('id');
-
+    this.$gaService.event('VIEW_GOV_POLL', poll_id.toString());
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         const height = await this.terrajs.getHeight();
@@ -111,7 +113,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
         vote
       }
     });
-
+    this.$gaService.event('VOTE_GOV_POLL', poll_id.toString(), vote);
     this.router.navigateByUrl('/gov');
   }
 

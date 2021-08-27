@@ -8,6 +8,7 @@ import { PollInfo, PollStatus } from '../../services/api/gov/polls_response';
 import { TokenService } from '../../services/api/token.service';
 import { InfoService } from '../../services/info.service';
 import { TerrajsService } from '../../services/terrajs.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 const LIMIT = 10;
 
@@ -23,6 +24,7 @@ export class GovComponent implements OnInit, OnDestroy {
   config: ConfigInfo;
   supply = 0;
   myStaked = 0;
+  myPendingReward = 0;
   filteredStatus = '' as PollStatus;
   UNIT = CONFIG.UNIT;
   private connected: Subscription;
@@ -33,9 +35,11 @@ export class GovComponent implements OnInit, OnDestroy {
     private terrajs: TerrajsService,
     private token: TokenService,
     private wallet: WalletService,
+    protected $gaService: GoogleAnalyticsService
   ) { }
 
   ngOnInit() {
+    this.$gaService.event('VIEW_GOV_PAGE');
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         const height = await this.terrajs.getHeight();
@@ -46,11 +50,13 @@ export class GovComponent implements OnInit, OnDestroy {
         this.gov.config()
           .then(it => this.config = it);
         this.info.refreshStat();
-
         this.pollReset();
         if (connected) {
           this.gov.balance()
             .then(it => this.myStaked = +it.balance);
+          this.info.updateVaults();
+          await this.info.initializeVaultData(connected);
+          await this.info.updateMyTvl();
         }
       });
   }
@@ -80,5 +86,6 @@ export class GovComponent implements OnInit, OnDestroy {
     });
     this.polls.push(...res.polls);
     this.hasMore = res.polls.length >= LIMIT;
+    this.$gaService.event('VIEW_GOV_PAGE', 'LOAD_MORE_POLL');
   }
 }

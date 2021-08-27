@@ -40,7 +40,6 @@
   color: rgb(4, 180, 48);
 }
 
-
 .badge-deposited {
   top: 0;
   left: 0;
@@ -79,4 +78,9 @@
 .fee-remark {
   position: relative;
   transform: translate(15px, 15px);
+}
+
+.spinner-small {
+  height: 0.75rem;
+  width: 0.75rem;
 }

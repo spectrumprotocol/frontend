@@ -29,8 +29,8 @@ export class UrlPipe implements PipeTransform {
         }
         switch (symbol) {
           case 'SPEC': return '/trade';
-          case 'ANC': return 'https://app.anchorprotocol.com/gov/trade/buy';
-          case 'TTN': return 'https://app.anchorprotocol.com/gov/trade/buy';
+          case 'ANC': return 'https://app.anchorprotocol.com/trade/buy';
+          case 'TTN': return 'https://app.anchorprotocol.com/trade/buy';
           case 'MINE': return 'https://app.pylon.money/trade/buy';
           default: return 'https://terra.mirror.finance/trade#buy';
         }
