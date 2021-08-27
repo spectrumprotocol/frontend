@@ -73,8 +73,10 @@
         <div class="d-flex flex-row">
 
 
+
+
           <div class="me-3">
-            <div mdbDropdown class="dropdown" #dropdown>
+            <div mdbDropdown class="dropdown" #dropdownFarmFilter>
               <button mdbDropdownToggle class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false">
                 <i class="fas fa-filter"></i> {{activeFarm}} {{ activeFarm === "All" ? "Farms" : "Farm"}}
               </button>
@@ -94,7 +96,7 @@
           </div>
 
           <div class="input-group">
-            <div mdbDropdown class="dropdown" #dropdown>
+            <div mdbDropdown class="dropdown" #dropdownSortBy>
               <button mdbDropdownToggle class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false">
                 <i class="fas fa-sort-amount-up-alt"></i> Sort by
               </button>
