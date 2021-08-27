@@ -10,21 +10,17 @@ export type QueryMsg =
       config: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       pool_info: {
-        asset_token: HumanAddr;
+        asset_token: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       reward_info: {
-        asset_token?: HumanAddr | null;
-        staker_addr: HumanAddr;
+        asset_token?: string | null;
+        staker_addr: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     };
-export type HumanAddr = string;

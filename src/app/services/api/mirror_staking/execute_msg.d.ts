@@ -11,65 +11,67 @@ export type ExecuteMsg =
     }
   | {
       update_config: {
-        effective_delay?: number | null;
-        expiration_period?: number | null;
         owner?: string | null;
-        proposal_deposit?: Uint128 | null;
-        quorum?: Decimal | null;
-        snapshot_period?: number | null;
-        threshold?: Decimal | null;
-        voter_weight?: Decimal | null;
-        voting_period?: number | null;
+        premium_min_update_interval?: number | null;
+        short_reward_contract?: string | null;
         [k: string]: unknown;
       };
     }
   | {
-      cast_vote: {
+      register_asset: {
+        asset_token: string;
+        staking_token: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      unbond: {
         amount: Uint128;
-        poll_id: number;
-        vote: VoteOption;
+        asset_token: string;
         [k: string]: unknown;
       };
     }
   | {
-      withdraw_voting_tokens: {
-        amount?: Uint128 | null;
+      withdraw: {
+        asset_token?: string | null;
         [k: string]: unknown;
       };
     }
   | {
-      withdraw_voting_rewards: {
-        poll_id?: number | null;
+      auto_stake: {
+        assets: [Asset, Asset];
+        slippage_tolerance?: Decimal | null;
         [k: string]: unknown;
       };
     }
   | {
-      stake_voting_rewards: {
-        poll_id?: number | null;
+      auto_stake_hook: {
+        asset_token: string;
+        prev_staking_token_amount: Uint128;
+        staker_addr: string;
+        staking_token: string;
         [k: string]: unknown;
       };
     }
   | {
-      end_poll: {
-        poll_id: number;
+      adjust_premium: {
+        asset_tokens: string[];
         [k: string]: unknown;
       };
     }
   | {
-      execute_poll: {
-        poll_id: number;
+      increase_short_token: {
+        amount: Uint128;
+        asset_token: string;
+        staker_addr: string;
         [k: string]: unknown;
       };
     }
   | {
-      expire_poll: {
-        poll_id: number;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      snapshot_poll: {
-        poll_id: number;
+      decrease_short_token: {
+        amount: Uint128;
+        asset_token: string;
+        staker_addr: string;
         [k: string]: unknown;
       };
     };
@@ -94,12 +96,27 @@ export type Uint128 = string;
  */
 export type Binary = string;
 /**
+ * AssetInfo contract_addr is usually passed from the cw20 hook so we can trust the contract_addr is properly validated.
+ */
+export type AssetInfo =
+  | {
+      token: {
+        contract_addr: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      native_token: {
+        denom: string;
+        [k: string]: unknown;
+      };
+    };
+/**
  * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
  *
  * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
  */
 export type Decimal = string;
-export type VoteOption = "yes" | "no" | "abstain";
 
 /**
  * Cw20ReceiveMsg should be de/serialized under `Receive()` variant in a ExecuteMsg
@@ -108,5 +125,10 @@ export interface Cw20ReceiveMsg {
   amount: Uint128;
   msg: Binary;
   sender: string;
+  [k: string]: unknown;
+}
+export interface Asset {
+  amount: Uint128;
+  info: AssetInfo;
   [k: string]: unknown;
 }

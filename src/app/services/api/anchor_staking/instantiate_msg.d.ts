@@ -19,18 +19,10 @@
  * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
  */
 export type Uint128 = string;
-export type VoteOption = "yes" | "no" | "abstain";
 
-export interface StakerResponse {
-  balance: Uint128;
-  locked_balance: [number, VoterInfo][];
-  pending_voting_rewards: Uint128;
-  share: Uint128;
-  withdrawable_polls: [number, Uint128][];
-  [k: string]: unknown;
-}
-export interface VoterInfo {
-  balance: Uint128;
-  vote: VoteOption;
+export interface InstantiateMsg {
+  anchor_token: string;
+  distribution_schedule: [number, number, Uint128][];
+  staking_token: string;
   [k: string]: unknown;
 }

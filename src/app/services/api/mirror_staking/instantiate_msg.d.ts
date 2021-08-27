@@ -5,14 +5,14 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-/**
- * We currently take no arguments for migrations
- */
-export interface MigrateMsg {
+export interface InstantiateMsg {
   base_denom: string;
   mint_contract: string;
+  mirror_token: string;
   oracle_contract: string;
+  owner: string;
   premium_min_update_interval: number;
+  short_reward_contract: string;
   terraswap_factory: string;
   [k: string]: unknown;
 }

@@ -10,15 +10,25 @@ export type ExecuteMsg =
       receive: Cw20ReceiveMsg;
     }
   | {
+      execute_poll_msgs: {
+        poll_id: number;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      register_contracts: {
+        anchor_token: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
       update_config: {
-        effective_delay?: number | null;
-        expiration_period?: number | null;
         owner?: string | null;
         proposal_deposit?: Uint128 | null;
         quorum?: Decimal | null;
         snapshot_period?: number | null;
         threshold?: Decimal | null;
-        voter_weight?: Decimal | null;
+        timelock_period?: number | null;
         voting_period?: number | null;
         [k: string]: unknown;
       };
@@ -38,18 +48,6 @@ export type ExecuteMsg =
       };
     }
   | {
-      withdraw_voting_rewards: {
-        poll_id?: number | null;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      stake_voting_rewards: {
-        poll_id?: number | null;
-        [k: string]: unknown;
-      };
-    }
-  | {
       end_poll: {
         poll_id: number;
         [k: string]: unknown;
@@ -57,12 +55,6 @@ export type ExecuteMsg =
     }
   | {
       execute_poll: {
-        poll_id: number;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      expire_poll: {
         poll_id: number;
         [k: string]: unknown;
       };
@@ -99,7 +91,7 @@ export type Binary = string;
  * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
  */
 export type Decimal = string;
-export type VoteOption = "yes" | "no" | "abstain";
+export type VoteOption = "yes" | "no";
 
 /**
  * Cw20ReceiveMsg should be de/serialized under `Receive()` variant in a ExecuteMsg

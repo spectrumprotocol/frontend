@@ -5,15 +5,14 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
-
 export interface ConfigResponse {
   base_denom: string;
-  mint_contract: HumanAddr;
-  mirror_token: HumanAddr;
-  oracle_contract: HumanAddr;
-  owner: HumanAddr;
+  mint_contract: string;
+  mirror_token: string;
+  oracle_contract: string;
+  owner: string;
   premium_min_update_interval: number;
-  terraswap_factory: HumanAddr;
+  short_reward_contract: string;
+  terraswap_factory: string;
   [k: string]: unknown;
 }
