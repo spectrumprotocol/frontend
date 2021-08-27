@@ -44,7 +44,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   myTvl = 0;
   height: number;
 
-  @ViewChild('dropdown') dropdown: MdbDropdownDirective;
+  @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
+  @ViewChild('dropdownSortBy') dropdownSortBy: MdbDropdownDirective;
 
   constructor(
     public info: InfoService,
@@ -93,7 +94,7 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   @debounce(250)
   refresh() {
-    let vaults = this.activeFarm === "All" ? this.info.allVaults : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm);
+    let vaults = this.activeFarm === 'All' ? this.info.allVaults : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm);
     if (this.lastSortBy !== this.sortBy) {
       switch (this.sortBy) {
         case 'multiplier':
@@ -115,7 +116,8 @@ export class VaultComponent implements OnInit, OnDestroy {
       vaults = vaults.filter(it => it.symbol.toLowerCase().includes(this.search.toLowerCase()));
     }
     this.vaults = vaults;
-    this.dropdown.hide();
+    this.dropdownFarmFilter.hide();
+    this.dropdownSortBy.hide();
   }
 
   vaultId = (_: number, item: Vault) => item.symbol;

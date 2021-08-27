@@ -42,7 +42,7 @@
                 unit: '1.0-2' }})</span>
             </div>
             <div class="fs-6 mt-2">LP Deposited</div>
-            <div class="fs-5">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: '1.0-6'}}
+            <div class="fs-5">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: '1.0-5'}}
               <i class="fas fa-info-circle info-icon" [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo"
                 *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"></i>
               <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
