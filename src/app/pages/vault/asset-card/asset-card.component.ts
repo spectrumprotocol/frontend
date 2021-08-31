@@ -157,7 +157,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
             assets,
             compound_rate: this.depositType === 'compound' ? '1' : undefined,
             contract: this.vault.poolInfo.farmContract,
-            slippage_tolerance: '0.005'
+            slippage_tolerance: '0.01'
           }
         },
         new Coins([new Coin(Denom.USD, ustAmount)])
