@@ -59,7 +59,7 @@
       </div>
     </div>
 
-    <div class="d-flex flex-column flex-sm-row pt-3">
+    <div class="d-flex flex-column flex-md-row pt-3">
       <div class="p2 flex-md-grow-1 me-3">
         <div class="input-group">
           <span class="input-group-text border-0" id="search-addon"><i class="fas fa-search"></i></span>
@@ -69,7 +69,7 @@
       </div>
 
 
-      <div class="p2 pt-2 pt-sm-0">
+      <div class="p2 pt-2 pt-md-0">
         <div class="d-flex flex-row">
 
 
@@ -85,10 +85,10 @@
                   <a class="dropdown-item cursor-pointer" [class.active]="activeFarm === 'All'"
                     (click)="activeFarm = 'All'; refresh()">All</a>
                 </li>
-                <li>
-                  <a *ngFor="let farmInfo of info.farmInfos" class="dropdown-item cursor-pointer"
+                <li *ngFor="let farmInfo of info.farmInfos">
+                  <a  class="dropdown-item cursor-pointer"
                     [class.active]="activeFarm === farmInfo.farm"
-                    (click)="activeFarm = farmInfo.farm; refresh()">{{farmInfo.farm}}</a>
+                    (click)="activeFarm = farmInfo.farm; refresh()"> <img [src]="farmInfo.farm | url:'icon'" class="farm-logo"> {{farmInfo.farm}}</a>
                 </li>
 
               </ul>
