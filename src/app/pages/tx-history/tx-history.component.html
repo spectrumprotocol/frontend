@@ -28,7 +28,7 @@
       </tfoot>
     </table>
     <div class="text-center pb-2">
-      <span *ngIf="loading && terrajs.isConnected"><span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Loading...</span>
+      <span class="d-flex align-items-center justify-content-center" *ngIf="loading && terrajs.isConnected"><span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...</span>
       <span *ngIf="!loading && txHistoryList.length === 0 && terrajs.isConnected">No Spectrum Protocol transaction history available</span>
       <span *ngIf="!terrajs.isConnected">Please connect wallet first</span>
     </div>
