@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { AfterContentInit, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-digit',
   templateUrl: './digit.component.html',
   styleUrls: ['./digit.component.scss']
 })
-export class DigitComponent implements AfterViewInit, OnChanges {
+export class DigitComponent implements AfterContentInit, OnChanges {
 
   @Input()
   value: number;
@@ -42,7 +42,7 @@ export class DigitComponent implements AfterViewInit, OnChanges {
     step();
   }
 
-  ngAfterViewInit() {
+  ngAfterContentInit() {
     if (this.value) {
       this.counterFunc(this.value, this.duration);
     }

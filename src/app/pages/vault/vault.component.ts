@@ -68,7 +68,10 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.lastSortBy = undefined;
       });
     this.heightChanged = this.terrajs.heightChanged.subscribe(async i => {
-      if (i % 3 === 0) {
+      if (this.loading) {
+        return;
+      }
+      if (i % 10 === 0) {
         await this.info.refreshStat();
       }
       if (i && this.terrajs.isConnected) {
