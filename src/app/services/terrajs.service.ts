@@ -8,6 +8,7 @@ import { filter, startWith } from 'rxjs/operators';
 import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus } from '@terra-money/wallet-provider';
 import { checkAvailableExtension } from '@terra-money/wallet-provider/utils/checkAvailableExtension';
 import { ModalService } from './modal.service';
+import { throttleAsync } from 'utils-decorators';
 
 export const BLOCK_TIME = 6500; // 6.5s
 export const DEFAULT_NETWORK = 'mainnet';
@@ -209,6 +210,7 @@ export class TerrajsService implements OnDestroy {
     location.reload();
   }
 
+  @throttleAsync(20)
   async get(path: string, params?: Record<string, string>, headers?: Record<string, string>) {
     const res = await this.httpClient.get<GetResponse>(`${this.settings.lcd}/${path}`, {
       params,

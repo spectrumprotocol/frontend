@@ -6,11 +6,11 @@ import { MirrorFarmService } from '../api/mirror-farm.service';
 import { MirrorStakingService } from '../api/mirror-staking.service';
 import { RewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
 import { TerraSwapService } from '../api/terraswap.service';
-import { PairInfo } from '../api/terraswap_factory/pair_info';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo, PoolItem } from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
+import { PoolResponse } from '../api/terraswap_pair/pool_response';
 
 @Injectable()
 export class MirrorFarmInfoService implements FarmInfoService {
@@ -40,7 +40,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     return res.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
     // fire query
     const rewardInfoTask = this.mirrorStaking.query({
       reward_info: {
@@ -87,7 +87,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     const govConfig = await this.gov.config();
     const communityFeeRate = +farmConfig.community_fee * (1 - +govConfig.warchest_ratio);
     const tasks = rewardInfos.reward_infos.map(async it => {
-      const p = await this.terraSwap.query(pairInfos[it.asset_token].contract_addr, { pool: {} });
+      const p = poolResponses[it.asset_token];
       const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
       if (!uusd) {
         return;

@@ -13,7 +13,6 @@ import { FarmInfoService, FARM_INFO_SERVICE, PairStat, PoolInfo, RewardInfoRespo
 import { fromEntries } from '../libs/core';
 import { PairInfo } from './api/terraswap_factory/pair_info';
 import { SpecFarmService } from './api/spec-farm.service';
-import { ConfigInfo as SpecFarmConfigInfo } from './api/spec_farm/config_info';
 import { BalancePipe } from '../pipes/balance.pipe';
 import { LpBalancePipe } from '../pipes/lp-balance.pipe';
 import { Vault } from '../pages/vault/vault.component';
@@ -100,8 +99,6 @@ export class InfoService {
   rewardInfos: Record<string, RewardInfoResponseItem> = {};
   tokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
-
-  specFarmConfig: SpecFarmConfigInfo;
 
   cw20tokensWhitelist: any;
 
@@ -210,12 +207,12 @@ export class InfoService {
       govApr: 0,
     };
     await this.refreshPoolInfos();
-    await this.ensurePairInfos();
+    await this.refreshPoolResponses();
     const tasks = this.farmInfos.map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
         .filter(it => it[1].farm === farmInfo.farm));
       try {
-        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.pairInfos);
+        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses);
         Object.assign(stat.pairs, pairStats);
       } catch (e) {
         if (!this.stat) {
@@ -271,7 +268,7 @@ export class InfoService {
     this.rewardInfos = rewardInfos;
   }
 
-  async refreshPoolInfo(assetToken?: string) {
+  async refreshPoolResponses(assetToken?: string) {
     if (assetToken) {
       const pairInfo = this.pairInfos[assetToken];
       const tasks: Promise<any>[] = [];
@@ -288,8 +285,10 @@ export class InfoService {
         .map(async key => {
           const pairInfo = this.pairInfos[key];
           const tasks: Promise<any>[] = [];
-          tasks.push(this.token.balance(key)
-            .then(it => tokenBalances[key] = it.balance));
+          if (this.terrajs.address) {
+            tasks.push(this.token.balance(key)
+              .then(it => tokenBalances[key] = it.balance));
+          }
           tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
             .then(it => poolResponses[key] = it));
           await Promise.all(tasks);
@@ -298,10 +297,6 @@ export class InfoService {
       this.tokenBalances = tokenBalances;
       this.poolResponses = poolResponses;
     }
-  }
-
-  async refreshLock() {
-    this.specFarmConfig = await this.specFarm.query({ config: {} });
   }
 
   async ensureCw20tokensWhitelist() {
@@ -363,10 +358,8 @@ export class InfoService {
     const tasks: Promise<any>[] = [];
     tasks.push(this.ensureCoinInfos());
     tasks.push(this.refreshStat());
-    tasks.push(this.refreshLock());
     if (connected) {
       tasks.push(this.refreshRewardInfos());
-      tasks.push(this.refreshPoolInfo());
     }
 
     await Promise.all(tasks);
