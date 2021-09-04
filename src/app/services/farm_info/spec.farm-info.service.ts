@@ -3,11 +3,11 @@ import BigNumber from 'bignumber.js';
 import { GovService } from '../api/gov.service';
 import { SpecFarmService } from '../api/spec-farm.service';
 import { TerraSwapService } from '../api/terraswap.service';
-import { PairInfo } from '../api/terraswap_factory/pair_info';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem } from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
+import { PoolResponse } from '../api/terraswap_pair/pool_response';
 
 @Injectable()
 export class SpecFarmInfoService implements FarmInfoService {
@@ -34,16 +34,15 @@ export class SpecFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.specFarm)?.weight || 0;
 
     const pairs: Record<string, PairStat> = {};
     const tasks = Object.keys(poolInfos).map(async key => {
-      const pairInfo = pairInfos[key];
       const poolInfo = poolInfos[key];
-      const p = await this.terraSwap.query(pairInfo.contract_addr, { pool: {} });
+      const p = poolResponses[key];
       const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
       if (!uusd) {
         return;

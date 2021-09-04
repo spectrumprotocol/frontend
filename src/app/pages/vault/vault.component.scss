@@ -4,6 +4,15 @@
     margin: 0 auto;
 }
 
+.farm-logo {
+    height: 1.5rem;
+    width: auto;
+}
+
+.search-bar::placeholder {
+    color: #bdbdbd;
+}
+
 .animate-up {
     -webkit-animation: mover 1s infinite alternate;
     animation: mover 1s infinite alternate;

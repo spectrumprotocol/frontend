@@ -17,10 +17,14 @@ export class UrlPipe implements PipeTransform {
           return `${MIRROR_ICON_URL}/${symbol.slice(1)}.png`;
         }
         switch (symbol) {
+          case 'Spectrum': return '/assets/SPEC.png';
           case 'SPEC': return '/assets/SPEC.png';
+          case 'Anchor': return 'https://whitelist.anchorprotocol.com/logo/ANC.png';
           case 'ANC': return 'https://whitelist.anchorprotocol.com/logo/ANC.png';
           case 'TTN': return 'https://whitelist.anchorprotocol.com/logo/ANC.png';
+          case 'Pylon': return 'https://assets.pylon.rocks/logo/MINE.png';
           case 'MINE': return 'https://assets.pylon.rocks/logo/MINE.png';
+          case 'Mirror': return `https://whitelist.mirror.finance/icon/MIR.png`;
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':

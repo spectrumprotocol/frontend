@@ -6,13 +6,13 @@ import { PoolItem } from '../api/pylon_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { GovService } from '../api/gov.service';
 import { TerraSwapService } from '../api/terraswap.service';
-import { PairInfo } from '../api/terraswap_factory/pair_info';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
+import { PoolResponse } from '../api/terraswap_pair/pool_response';
 
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
@@ -41,7 +41,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
     const rewardInfoTask = this.pylonStaking.query({ staker_info: { block_height: +height, staker: this.terrajs.settings.pylonFarm } });
     const farmConfigTask = this.pylonFarm.query({ config: {} });
@@ -61,7 +61,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     const farmConfig = await farmConfigTask;
     const govConfig = await this.gov.config();
     const communityFeeRate = +farmConfig.community_fee * (1 - +govConfig.warchest_ratio);
-    const p = await this.terraSwap.query(pairInfos[this.terrajs.settings.pylonToken].contract_addr, { pool: {} });
+    const p = poolResponses[this.terrajs.settings.pylonToken];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;

@@ -50,7 +50,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.terrajs.getHeight().then(h => this.height = h);
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
       if (this.terrajs.isConnected && this.belowSection && !this.belowSection.collapsed) {
-        await this.info.refreshPoolInfo(this.vault.assetToken);
+        await this.info.refreshPoolResponses(this.vault.assetToken);
         if (this.depositAmt) {
           this.depositChanged();
         }
@@ -157,7 +157,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
             assets,
             compound_rate: this.depositType === 'compound' ? '1' : undefined,
             contract: this.vault.poolInfo.farmContract,
-            slippage_tolerance: '0.005'
+            slippage_tolerance: '0.01'
           }
         },
         new Coins([new Coin(Denom.USD, ustAmount)])
