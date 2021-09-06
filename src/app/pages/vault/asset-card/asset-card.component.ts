@@ -50,7 +50,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.terrajs.getHeight().then(h => this.height = h);
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
       if (this.terrajs.isConnected && this.belowSection && !this.belowSection.collapsed) {
-        await this.info.refreshPoolResponses(this.vault.assetToken);
+        await this.info.refreshPoolResponse(this.vault.assetToken);
         if (this.depositAmt) {
           this.depositChanged();
         }

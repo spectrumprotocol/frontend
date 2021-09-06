@@ -17,6 +17,7 @@ import { BalancePipe } from '../pipes/balance.pipe';
 import { LpBalancePipe } from '../pipes/lp-balance.pipe';
 import { Vault } from '../pages/vault/vault.component';
 import { HttpClient } from '@angular/common/http';
+import { memoize } from 'utils-decorators';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -80,6 +81,14 @@ export class InfoService {
       if (statJson) {
         this.stat = JSON.parse(statJson);
       }
+      const poolResponseJson = localStorage.getItem('poolResponses');
+      if (poolResponseJson) {
+        this.poolResponses = JSON.parse(poolResponseJson);
+      }
+      const rewardInfoJson = localStorage.getItem('rewardInfos');
+      if (rewardInfoJson) {
+        this.rewardInfos = JSON.parse(rewardInfoJson);
+      }
     } catch (e) { }
   }
   userUstAmount: string;
@@ -142,6 +151,7 @@ export class InfoService {
     this.poolInfoNetwork = this.terrajs.settings.chainID;
   }
 
+  @memoize(1000)
   async refreshPoolInfos() {
     const poolInfos: Record<string, PoolInfo> = {};
     const tasks = this.farmInfos.map(async farmInfo => {
@@ -266,37 +276,40 @@ export class InfoService {
     });
     await Promise.all(tasks);
     this.rewardInfos = rewardInfos;
+    localStorage.setItem('rewardInfos', JSON.stringify(rewardInfos));
   }
 
-  async refreshPoolResponses(assetToken?: string) {
-    if (assetToken) {
-      const pairInfo = this.pairInfos[assetToken];
-      const tasks: Promise<any>[] = [];
-      tasks.push(this.token.balance(assetToken)
-        .then(it => this.tokenBalances[assetToken] = it.balance));
-      tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-        .then(it => this.poolResponses[assetToken] = it));
-      await Promise.all(tasks);
-    } else {
-      await this.ensurePairInfos();
-      const tokenBalances: Record<string, string> = {};
-      const poolResponses: Record<string, PoolResponse> = {};
-      const vaultsTasks = Object.keys(this.poolInfos)
-        .map(async key => {
-          const pairInfo = this.pairInfos[key];
-          const tasks: Promise<any>[] = [];
-          if (this.terrajs.address) {
-            tasks.push(this.token.balance(key)
-              .then(it => tokenBalances[key] = it.balance));
-          }
-          tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-            .then(it => poolResponses[key] = it));
-          await Promise.all(tasks);
-        });
-      await Promise.all(vaultsTasks);
-      this.tokenBalances = tokenBalances;
-      this.poolResponses = poolResponses;
-    }
+  async refreshPoolResponse(assetToken: string) {
+    const pairInfo = this.pairInfos[assetToken];
+    const tasks: Promise<any>[] = [];
+    tasks.push(this.token.balance(assetToken)
+      .then(it => this.tokenBalances[assetToken] = it.balance));
+    tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
+      .then(it => this.poolResponses[assetToken] = it));
+    await Promise.all(tasks);
+  }
+
+  @memoize(1000)
+  async refreshPoolResponses() {
+    await this.ensurePairInfos();
+    const tokenBalances: Record<string, string> = {};
+    const poolResponses: Record<string, PoolResponse> = {};
+    const vaultsTasks = Object.keys(this.poolInfos)
+      .map(async key => {
+        const pairInfo = this.pairInfos[key];
+        const tasks: Promise<any>[] = [];
+        if (this.terrajs.address) {
+          tasks.push(this.token.balance(key)
+            .then(it => tokenBalances[key] = it.balance));
+        }
+        tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
+          .then(it => poolResponses[key] = it));
+        await Promise.all(tasks);
+      });
+    await Promise.all(vaultsTasks);
+    this.tokenBalances = tokenBalances;
+    this.poolResponses = poolResponses;
+    localStorage.setItem('poolResponses', JSON.stringify(poolResponses));
   }
 
   async ensureCw20tokensWhitelist() {
