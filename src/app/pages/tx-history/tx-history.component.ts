@@ -25,7 +25,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
   loading = true;
 
   currentTxOffset = 0;
-  offsetTxLimit = 50;
+  offsetTxLimit = 100;
   txHistoryList: TxHistory[] = [];
   previousTxHistoryLength = 0;
 
