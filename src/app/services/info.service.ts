@@ -294,20 +294,19 @@ export class InfoService {
     await this.ensurePairInfos();
     const tokenBalances: Record<string, string> = {};
     const poolResponses: Record<string, PoolResponse> = {};
-    const vaultsTasks = Object.keys(this.poolInfos)
-      .map(async key => {
-        const pairInfo = this.pairInfos[key];
-        const tasks: Promise<any>[] = [];
-        if (this.terrajs.address) {
-          tasks.push(this.token.balance(key)
-            .then(it => tokenBalances[key] = it.balance));
-        }
-        tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-          .then(it => poolResponses[key] = it));
-        await Promise.all(tasks);
-      });
-    await Promise.all(vaultsTasks);
-    this.tokenBalances = tokenBalances;
+    const tokenTasks: Promise<any>[] = [];
+    const poolTasks: Promise<any>[] = [];
+    for (const key of Object.keys(this.poolInfos)) {
+      const pairInfo = this.pairInfos[key];
+      if (this.terrajs.address) {
+        tokenTasks.push(this.token.balance(key)
+          .then(it => tokenBalances[key] = it.balance));
+      }
+      poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
+        .then(it => poolResponses[key] = it));
+    }
+    Promise.all(tokenTasks).then(() => this.tokenBalances = tokenBalances);
+    await Promise.all(poolTasks);
     this.poolResponses = poolResponses;
     localStorage.setItem('poolResponses', JSON.stringify(poolResponses));
   }
@@ -319,6 +318,10 @@ export class InfoService {
   }
 
   async updateMyTvl() {
+    if (!this.terrajs.address) {
+      this.rewardInfos = {};
+    }
+
     let tvl = 0;
     const portfolio: Portfolio = {
       total_reward_ust: 0,
