@@ -57,7 +57,7 @@ export const networks: Record<string, ISettings> = {
     mirrorGraph: 'mirror',
     anchorGraph: 'anchor',
     pylonAPI: 'https://api.pylon.money',
-    chainID: 'columbus-4',
+    chainID: 'columbus-5',
   },
   testnet: {
     specToken: 'terra1kvsxd94ue6f4rtchv2l6me5k07uh26s7637cza',
