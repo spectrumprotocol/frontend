@@ -25,7 +25,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
   loading = true;
 
   currentTxOffset = 0;
-  offsetTxLimit = 50;
+  offsetTxLimit = 100;
   txHistoryList: TxHistory[] = [];
   previousTxHistoryLength = 0;
 
@@ -120,7 +120,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const offer_asset_info_token_contract = lastExecuteMsg.send?.msg?.execute_swap_operations?.operations[0]?.terra_swap?.offer_asset_info?.token?.contract_addr;
       if (offer_asset_info_token_contract) {
         await this.info.ensureCw20tokensWhitelist();
-        offer_token = this.info.cw20tokensWhitelist[this.terrajs?.network?.name ?? 'mainnet'][offer_asset_info_token_contract]?.symbol;
+        offer_token = this.info.cw20tokensWhitelist[this.terrajs?.network?.name ?? 'mainnet'][offer_asset_info_token_contract]?.symbol ?? offer_asset_info_token_contract;
       }
       const return_amount = return_amount_list[return_amount_list.length - 1]?.value / CONFIG.UNIT ?? 0;
       const price = roundSixDecimal(offer_amount / return_amount);
@@ -161,7 +161,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const offer_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT ?? 0;
       let return_amount = +return_amount_list[return_amount_list.length - 1].value / CONFIG.UNIT ?? 0;
       await this.info.ensureCw20tokensWhitelist();
-      let last_ask_asset = this.info.cw20tokensWhitelist[this.terrajs?.network?.name ?? 'mainnet'][ask_asset_list[ask_asset_list.length - 1].value]?.symbol;
+      let last_ask_asset = this.info.cw20tokensWhitelist[this.terrajs?.network?.name ?? 'mainnet'][ask_asset_list[ask_asset_list.length - 1].value]?.symbol ?? ask_asset_list[ask_asset_list.length - 1].value;
       if (!last_ask_asset) {
         const swap_coin = item.logs[lastIndex].events?.find(o => o.type === 'swap')?.attributes?.find(o => o.key === 'swap_coin');
         const numberRegExp = new RegExp('(\\d+)');
