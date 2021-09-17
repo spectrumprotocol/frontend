@@ -68,13 +68,13 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.lastSortBy = undefined;
       });
     this.heightChanged = this.terrajs.heightChanged.subscribe(async i => {
-      if (this.loading) {
+      if (this.loading || !i) {
         return;
       }
       if (i % 10 === 0) {
         await this.info.refreshStat();
       }
-      if (i && this.terrajs.isConnected) {
+      if (this.terrajs.isConnected) {
         await this.info.refreshRewardInfos();
         if (this.showDepositedPoolOnly) {
           this.refresh();
