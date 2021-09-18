@@ -12,6 +12,7 @@ export type ExecuteMsg =
         compound_rate?: Decimal | null;
         contract: string;
         slippage_tolerance?: Decimal | null;
+        staker_addr?: string | null;
         [k: string]: unknown;
       };
     }
@@ -23,6 +24,29 @@ export type ExecuteMsg =
         prev_staking_token_amount: Uint128;
         staker_addr: string;
         staking_token: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      zap_to_bond: {
+        belief_price?: Decimal | null;
+        compound_rate?: Decimal | null;
+        contract: string;
+        max_spread?: Decimal | null;
+        pair_asset: AssetInfo;
+        provide_asset: Asset;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      zap_to_bond_hook: {
+        asset_token: string;
+        bond_asset: Asset;
+        compound_rate?: Decimal | null;
+        contract: string;
+        prev_asset_token_amount: Uint128;
+        slippage_tolerance?: Decimal | null;
+        staker_addr: string;
         [k: string]: unknown;
       };
     };
