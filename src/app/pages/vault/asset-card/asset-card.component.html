@@ -156,20 +156,25 @@
             <div class="mt-3" *ngIf="vault.poolInfo.auto_compound">
               <span class="btn-group">
                 <button type="button" class="btn"
+                  [ngClass]="depositType === 'stake' ? 'btn-primary': 'btn-outline-primary'"
+                  (click)="depositType = 'stake'">Auto Stake</button>
+                <button type="button" class="btn"
                   [ngClass]="depositType === 'compound' ? 'btn-primary': 'btn-outline-primary'"
                   (click)="depositType = 'compound'">Auto Compound</button>
                 <button type="button" class="btn"
-                  [ngClass]="depositType === 'stake' ? 'btn-primary': 'btn-outline-primary'"
-                  (click)="depositType = 'stake'">Auto Stake</button>
+                  [ngClass]="depositType === 'mixed' ? 'btn-primary': 'btn-outline-primary'"
+                  (click)="depositType = 'mixed'">Mixed</button>
               </span>
               <div class="invalid-feedback-custom" *ngIf="!depositType && formDeposit.submitted">
                 Please select auto-farm mode
               </div>
               <div class="mt-3">
                 <span class="side-note" *ngIf="depositType === 'compound'">With auto compound, your reward will be
-                  automatically sold and provide to pool to earn even more reward.</span>
-                <span class="side-note" *ngIf="depositType === 'stake'">When auto stake, your reward will be
+                  automatically sold and provided to pool to earn even more reward.</span>
+                <span class="side-note" *ngIf="depositType === 'stake'">With auto stake, your reward will be
                   automatically staked to gov to earn from gov income.</span>
+                <span class="side-note" *ngIf="depositType === 'mixed'">With mixed auto compound and auto stake, your reward will be
+                  automatically sold and provided to pool to earn even more reward, and staked to gov to earn from gov income.</span>
               </div>
             </div>
             <div class="mt-3" *ngIf="depositType || !vault.poolInfo.auto_compound" @fade>
@@ -210,6 +215,51 @@
                   <div class="col text-end">{{vault.stakeApy | percent }}</div>
                 </div>
               </div>
+
+              <div *ngIf="depositType === 'mixed' && vault.poolInfo.auto_compound">
+                <div class="d-flex flex-row justify-content-between">
+                  <div class="d-flex">
+                    <div class="input-group">
+                      <input type="number" name="autoStakePercent" class="form-control input-compound-stake" [value]="100-auto_compound_percent" (change)="inputAutoCompoundPercent($event, true)">
+                    </div>
+                    <span class="input-compound-stake-percent">%</span>
+                  </div>
+                  <div class="slider-compound-stake flex-grow-1 custom-slider">
+                    <ngx-slider [(value)]="auto_compound_percent" [options]="ngx_slider_option"></ngx-slider>
+                  </div>
+                  <div class="d-flex">
+                    <div class="input-group">
+                      <input type="number" name="autoStakePercent" class="form-control input-compound-stake" [value]="auto_compound_percent"  (change)="inputAutoCompoundPercent($event, false)">
+                    </div>
+                    <span class="input-compound-stake-percent">%</span>
+                  </div>
+                </div>
+                <div class="d-flex flex-row mb-2">
+                  <span class="desc-slider margin-right-auto">Auto Stake</span>
+                  <span class="desc-slider">Auto Compound</span>
+                </div>
+                <div class="row">
+                  <div class="col">Pool APR from {{ vault.poolInfo.farm }}</div>
+                  <div class="col text-end">{{vault.pairStat?.poolApr || 0 | percent }}</div>
+                </div>
+                <div class="row" *ngIf="auto_compound_percent > 0">
+                  <div class="col">Pool APY from auto compound</div>
+                  <div class="col text-end">{{getMixedAutoCompoundAPY() || 0 | percent }}</div>
+                </div>
+                <div class="row" *ngIf="100 - auto_compound_percent > 0">
+                  <div class="col">Pool APY from auto stake</div>
+                  <div class="col text-end">{{getMixedAutoStakeAPY() | percent }}</div>
+                </div>
+                <div class="row">
+                  <div class="col">SPEC Reward</div>
+                  <div class="col text-end">{{vault.specApy | percent }}</div>
+                </div>
+                <div class="row">
+                  <div class="col">Total APY</div>
+                  <div class="col text-end">{{getMixedTotalAPY() | percent }}</div>
+                </div>
+              </div>
+
             </div>
             <div class="d-grid mt-3">
               <div class="card-text small text-warning mb-1"

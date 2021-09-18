@@ -84,3 +84,54 @@
   height: 0.75rem;
   width: 0.75rem;
 }
+
+::ng-deep {
+  .custom-slider .ngx-slider{
+    .ngx-slider-bar {
+      background: $white;
+      height: 2px;
+    }
+    .ngx-slider-pointer {
+      width: 14px;
+      height: 14px;
+      top: auto;
+      bottom: -3px;
+      background-color: $spectrum;
+      &:focus{
+        outline-style: none !important;
+        outline-width: 0 !important;
+      }
+      &:after{
+        display: none;
+      }
+    }
+    .ngx-slider-bubble {
+      display: none;
+
+    }
+  }
+}
+
+.desc-slider{
+  font-size: 0.8em;
+}
+
+.input-compound-stake{
+  width: 3em !important;
+  padding-left: unset !important;
+  padding-right: unset !important;
+  text-align: center !important;
+}
+
+.input-compound-stake-percent{
+  padding-left: 0.4em;
+  padding-top: 0.4rem;
+}
+
+
+.slider-compound-stake{
+
+  margin-top: -1.2em;
+  padding-left: 1em;
+  padding-right: 1em;
+}

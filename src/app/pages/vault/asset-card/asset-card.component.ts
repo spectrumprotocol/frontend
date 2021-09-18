@@ -13,6 +13,7 @@ import { MdbCollapseDirective } from 'mdb-angular-ui-kit';
 import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
 import { debounce } from 'utils-decorators';
+import {Options as NgxSliderOptions} from '@angular-slider/ngx-slider';
 
 @Component({
   selector: 'app-asset-card',
@@ -39,6 +40,26 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   height: number;
 
   private heightChanged: Subscription;
+  auto_compound_percent = 50;
+  ngx_slider_option: NgxSliderOptions = {
+    animate: false,
+    step: 1,
+    tickStep: 10,
+    floor: 0,
+    ceil: 100,
+    showTicksValues: false,
+    hideLimitLabels: true,
+    // showTicks: true
+
+
+    // stepsArray: [
+    //   { value: 0, legend: 'Auto Stake' },
+    //   { value: 25 },
+    //   { value: 50 },
+    //   { value: 75 },
+    //   { value: 100, legend: 'Auto Compound' },
+    // ]
+  };
 
   constructor(
     public terrajs: TerrajsService,
@@ -120,6 +141,16 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.$gaService.event('CLICK_DEPOSIT_LP_VAULT', this.depositType, this.vault.symbol + '-UST');
     const assetAmount = times(this.depositAmt, this.UNIT);
     const ustAmount = times(this.amountUST, this.UNIT);
+    let auto_compound_ratio;
+    if (this.depositType === 'compound'){
+      auto_compound_ratio = '1';
+    } else if (this.depositType === 'stake'){
+      auto_compound_ratio = undefined;
+    } else if (this.depositType === 'mixed'){
+      auto_compound_ratio = (this.auto_compound_percent / 100).toString();
+    } else {
+      return;
+    }
     const asset = {
       amount: assetAmount,
       info: {
@@ -155,7 +186,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         {
           bond: {
             assets,
-            compound_rate: this.depositType === 'compound' ? '1' : undefined,
+            compound_rate: auto_compound_ratio,
             contract: this.vault.poolInfo.farmContract,
             slippage_tolerance: '0.01'
           }
@@ -261,4 +292,36 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     }
 
   }
+
+  inputAutoCompoundPercent(event: any, reversed: boolean) {
+    let value;
+    if (!event?.target?.value){
+      value = 0;
+    } else {
+      value = +event.target.value;
+    }
+    if (reversed){
+      value = 100 - +event.target.value;
+    }
+    if (value < 0 && reversed){
+      this.auto_compound_percent = 0;
+    } else if (event.target.value > 100 && reversed){
+      this.auto_compound_percent = 100;
+    } else {
+      this.auto_compound_percent = value;
+    }
+  }
+
+  getMixedAutoCompoundAPY(){
+    return this.vault.pairStat?.poolApr + (this.vault.pairStat?.poolApy - this.vault.pairStat?.poolApr) * this.auto_compound_percent / 100;
+  }
+
+  getMixedAutoStakeAPY(){
+    return this.vault.pairStat?.poolApr + (this.vault.farmApy - this.vault.pairStat?.poolApr) * (100 - this.auto_compound_percent) / 100;
+  }
+
+  getMixedTotalAPY() {
+    return this.vault.specApy + this.getMixedAutoCompoundAPY() * this.auto_compound_percent / 100 + this.getMixedAutoStakeAPY() * (100 - this.auto_compound_percent) / 100;
+  }
+
 }
