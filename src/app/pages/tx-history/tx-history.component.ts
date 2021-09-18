@@ -213,6 +213,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       };
     } else if (lastExecuteMsg.bond) {
       const lp = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'share')?.value / CONFIG.UNIT ?? 0;
+      const taxAmount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'tax_amount')?.value ?? 0;
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === lastExecuteMsg.bond.contract);
       let native_token_symbol = '';
       let native_token_amount = 0;
@@ -222,7 +223,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         for (const asset of lastExecuteMsg.bond?.assets) {
           if (asset.info?.native_token?.denom === 'uusd') {
             native_token_symbol = 'UST';
-            native_token_amount = (+asset.amount) / CONFIG.UNIT;
+            native_token_amount = (+asset.amount - +taxAmount) / CONFIG.UNIT;
           } else if (asset.info?.token) {
             token_symbol = this.info.coinInfos[asset.info?.token.contract_addr];
             token_amount = (+asset.amount) / CONFIG.UNIT;
@@ -254,8 +255,8 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract);
       const refund_assets = item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'refund_assets');
       const numberRegExp = new RegExp('(\\d+)');
-      const uusdAmount = refund_assets.value ? +(refund_assets.value.split(',')[0].match(numberRegExp)[0]) / CONFIG.UNIT : 0;
-      const tokenAmount = refund_assets.value ? +(refund_assets.value.split(',')[1].match(numberRegExp)[0]) / CONFIG.UNIT : 0;
+      const tokenAmount = refund_assets.value ? +(refund_assets.value.split(',')[0].match(numberRegExp)[0]) / CONFIG.UNIT : 0;
+      const uusdAmount = refund_assets.value ? +(refund_assets.value.split(',')[1].match(numberRegExp)[0]) / CONFIG.UNIT : 0;
       return {
         desc: `Withdrawn ${(+lastExecuteMsg.send.amount / CONFIG.UNIT)} ${symbol}-UST LP (${tokenAmount} ${symbol}, ${uusdAmount} UST) from ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
