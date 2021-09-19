@@ -28,7 +28,7 @@ const DEPOSIT_FEE = '0.001';
 export class AssetCardComponent implements OnInit, OnDestroy {
 
   @Input() vault: Vault;
-  @ViewChild('formDepositTokenUST') formDeposit: NgForm;
+  @ViewChild('formDeposit') formDeposit: NgForm;
   @ViewChild('formWithdraw') formWithdraw: NgForm;
   @ViewChild('belowSection') belowSection: MdbCollapseDirective;
 
