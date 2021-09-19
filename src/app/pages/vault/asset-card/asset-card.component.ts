@@ -32,6 +32,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   depositTokenAmtTokenUST: number;
   depositUSTAmountTokenUST: number;
+  depositLPAmtLP: number;
 
   depositType: string;
   depositMode = 'tokenust';
@@ -52,16 +53,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     ceil: 100,
     showTicksValues: false,
     hideLimitLabels: true,
-    // showTicks: true
-
-
-    // stepsArray: [
-    //   { value: 0, legend: 'Auto Stake' },
-    //   { value: 25 },
-    //   { value: 50 },
-    //   { value: 75 },
-    //   { value: 100, legend: 'Auto Compound' },
-    // ]
   };
 
   constructor(
@@ -86,7 +77,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.heightChanged.unsubscribe();
   }
 
-  setMaxDeposit() {
+  setMaxDepositUSTToken() {
     this.depositTokenAmtTokenUST = +this.info.tokenBalances?.[this.vault.assetToken] / CONFIG.UNIT;
     this.depositChanged();
   }
@@ -327,4 +318,12 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     return this.vault.specApy + this.getMixedAutoCompoundAPY() * this.auto_compound_percent / 100 + this.getMixedAutoStakeAPY() * (100 - this.auto_compound_percent) / 100;
   }
 
+  depositLPChanged() {
+
+  }
+
+  setMaxDepositLP() {
+    this.depositLPAmtLP = +this.info.lpTokenBalances?.[this.vault.lpToken] / CONFIG.UNIT;
+    this.depositLPChanged();
+  }
 }
