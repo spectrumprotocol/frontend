@@ -24,16 +24,19 @@ import {Options as NgxSliderOptions} from '@angular-slider/ngx-slider';
 export class AssetCardComponent implements OnInit, OnDestroy {
 
   @Input() vault: Vault;
-  @ViewChild('formDeposit') formDeposit: NgForm;
+  @ViewChild('formDepositTokenUST') formDeposit: NgForm;
   @ViewChild('formWithdraw') formWithdraw: NgForm;
   @ViewChild('belowSection') belowSection: MdbCollapseDirective;
 
   UNIT = CONFIG.UNIT;
 
-  depositAmt: number;
+  depositTokenAmtTokenUST: number;
+  depositUSTAmountTokenUST: number;
+
   depositType: string;
+  depositMode = 'tokenust';
+
   withdrawAmt: number;
-  amountUST: number;
   grossLp: string;
   depositFee: string;
   netLp: string;
@@ -72,7 +75,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
       if (this.terrajs.isConnected && this.belowSection && !this.belowSection.collapsed) {
         await this.info.refreshPoolResponse(this.vault.assetToken);
-        if (this.depositAmt) {
+        if (this.depositTokenAmtTokenUST) {
           this.depositChanged();
         }
       }
@@ -84,7 +87,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   setMaxDeposit() {
-    this.depositAmt = +this.info.tokenBalances?.[this.vault.assetToken] / CONFIG.UNIT;
+    this.depositTokenAmtTokenUST = +this.info.tokenBalances?.[this.vault.assetToken] / CONFIG.UNIT;
     this.depositChanged();
   }
 
@@ -97,15 +100,15 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   @debounce(250)
   async depositChanged() {
-    if (!this.depositAmt) {
-      this.amountUST = undefined;
+    if (!this.depositTokenAmtTokenUST) {
+      this.depositUSTAmountTokenUST = undefined;
       this.grossLp = undefined;
       this.depositFee = undefined;
       this.netLp = undefined;
     }
     const pool = this.info.poolResponses[this.vault.assetToken];
     const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
-    const amountUST = new BigNumber(this.depositAmt)
+    const amountUST = new BigNumber(this.depositTokenAmtTokenUST)
       .times(this.UNIT)
       .times(ust.amount)
       .div(asset.amount)
@@ -113,10 +116,10 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
     const grossLp = gt(pool.total_share, 0)
       ? BigNumber.minimum(
-        new BigNumber(this.amountUST).times(pool.total_share).div(ust.amount),
-        new BigNumber(this.depositAmt).times(pool.total_share).div(asset.amount))
-      : new BigNumber(this.depositAmt)
-        .times(this.amountUST)
+        new BigNumber(this.depositUSTAmountTokenUST).times(pool.total_share).div(ust.amount),
+        new BigNumber(this.depositTokenAmtTokenUST).times(pool.total_share).div(asset.amount))
+      : new BigNumber(this.depositTokenAmtTokenUST)
+        .times(this.depositUSTAmountTokenUST)
         .sqrt();
     const depositTVL = new BigNumber(amountUST).multipliedBy('2');
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
@@ -126,7 +129,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.depositFee = depositFee.toString();
 
     const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountUST.toString(), denom: 'uusd' }));
-    this.amountUST = amountUST.plus(tax.amount.toString())
+    this.depositUSTAmountTokenUST = amountUST.plus(tax.amount.toString())
       .div(this.UNIT)
       .toNumber();
   }
@@ -139,8 +142,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       return;
     }
     this.$gaService.event('CLICK_DEPOSIT_LP_VAULT', this.depositType, this.vault.symbol + '-UST');
-    const assetAmount = times(this.depositAmt, this.UNIT);
-    const ustAmount = times(this.amountUST, this.UNIT);
+    const assetAmount = times(this.depositTokenAmtTokenUST, this.UNIT);
+    const ustAmount = times(this.depositUSTAmountTokenUST, this.UNIT);
     let auto_compound_ratio;
     if (this.depositType === 'compound'){
       auto_compound_ratio = '1';
@@ -194,8 +197,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         new Coins([new Coin(Denom.USD, ustAmount)])
       )
     ]);
-    this.depositAmt = undefined;
-    this.amountUST = undefined;
+    this.depositTokenAmtTokenUST = undefined;
+    this.depositUSTAmountTokenUST = undefined;
     this.netLp = undefined;
     this.depositFee = undefined;
     this.netLp = undefined;
