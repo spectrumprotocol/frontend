@@ -3,6 +3,7 @@
   <div class="card-body">
     <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
       class="badge bg-primary position-absolute badge-deposited">Deposited</span>
+<!--    TODO update logic to include LP, UST or remove depositable, or change wording to sth like Have Token/LP Depositable -->
     <span *ngIf="+info.tokenBalances[vault.assetToken] >= 10"
       class="badge bg-info position-absolute badge-depositable">Depositable</span>
     <div class="row asset-card-info" (click)="belowSection.toggle()" aria-expanded="false" aria-controls="belowSection">
@@ -82,6 +83,7 @@
     <div class="mt-3 bg-dark p-3 spec-form" mdbCollapse #belowSection="mdbCollapse">
       <mdb-tabs [fill]="true">
         <mdb-tab title="Deposit">
+<!--          TODO figure out pt-3, pl-3-->
           <span class="btn-group p-3">
             <button type="button" class="btn"
                     [ngClass]="depositMode === 'tokenust' ? 'btn-primary': 'btn-outline-primary'"
@@ -91,7 +93,7 @@
                     (click)="depositMode = 'lp'">LP</button>
             <button type="button" class="btn"
                     [ngClass]="depositMode === 'ust' ? 'btn-primary': 'btn-outline-primary'"
-                        (click)="depositMode = 'ust'">UST</button>
+                    (click)="depositMode = 'ust'">UST</button>
           </span>
           <div [hidden]="depositMode !== 'tokenust'">
             <form class="needs-validation p-3" novalidate #formDepositTokenUST="ngForm">
@@ -291,6 +293,17 @@
               </div>
             </div>
           </form>
+          </div>
+          <div [hidden]="depositMode !== 'lp'">
+            <form class="needs-validation p-3" novalidate #formDepositLP="ngForm">
+              <div class="small">
+                Already have LP token? Deposit here, or
+                <a href="https://app.terraswap.io/#Provide" target="_blank">Provide/Withdraw LP</a>
+              </div>
+              <div class="text-end small mt-3 text-muted">
+                <span>Balance: {{+info.lpTokenBalances[vault.lpToken] | unit}} {{ vault.symbol }}-UST LP</span>
+              </div>
+            </form>
           </div>
         </mdb-tab>
         <mdb-tab title="Withdraw">

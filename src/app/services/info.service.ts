@@ -107,6 +107,7 @@ export class InfoService {
 
   rewardInfos: Record<string, RewardInfoResponseItem> = {};
   tokenBalances: Record<string, string> = {};
+  lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
 
   cw20tokensWhitelist: any;
@@ -292,19 +293,24 @@ export class InfoService {
   async refreshPoolResponses() {
     await this.ensurePairInfos();
     const tokenBalances: Record<string, string> = {};
+    const lpTokenBalances: Record<string, string> = {};
     const poolResponses: Record<string, PoolResponse> = {};
     const tokenTasks: Promise<any>[] = [];
+    const lpTokenTasks: Promise<any>[] = [];
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
       const pairInfo = this.pairInfos[key];
       if (this.terrajs.address) {
         tokenTasks.push(this.token.balance(key)
           .then(it => tokenBalances[key] = it.balance));
+        lpTokenTasks.push(this.token.balance(pairInfo.liquidity_token)
+          .then(it => lpTokenBalances[pairInfo.liquidity_token] = it.balance));
       }
       poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
         .then(it => poolResponses[key] = it));
     }
     Promise.all(tokenTasks).then(() => this.tokenBalances = tokenBalances);
+    Promise.all(lpTokenTasks).then(() => this.lpTokenBalances = lpTokenBalances);
     await Promise.all(poolTasks);
     this.poolResponses = poolResponses;
     localStorage.setItem('poolResponses', JSON.stringify(poolResponses));
@@ -407,6 +413,7 @@ export class InfoService {
       const vault: Vault = {
         symbol: this.coinInfos[key],
         assetToken: key,
+        lpToken: this.pairInfos[key].liquidity_token,
         pairStat,
         poolInfo: this.poolInfos[key],
         pairInfo: this.pairInfos[key],
