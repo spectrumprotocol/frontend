@@ -330,7 +330,10 @@
                 under your address to earn the benefits.
               </div>
               <button type="submit" class="btn btn-primary" (click)="doDeposit()"
-                [disabled]="depositTokenAmtTokenUSTCtl.invalid">Deposit</button>
+                [disabled]="(depositMode==='tokenust' && depositTokenAmtTokenUSTCtl.invalid)
+                      || (depositMode==='lp' && depositLPAmtLPCtl.invalid)"
+              >Deposit</button>
+<!--              TODO deposit UST Ctl-->
               <div class="text-end small fee-remark text-muted" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
                 <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">
                   * fees applied

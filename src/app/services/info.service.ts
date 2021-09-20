@@ -413,7 +413,7 @@ export class InfoService {
       const vault: Vault = {
         symbol: this.coinInfos[key],
         assetToken: key,
-        lpToken: this.pairInfos[key].liquidity_token,
+        lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
         poolInfo: this.poolInfos[key],
         pairInfo: this.pairInfos[key],

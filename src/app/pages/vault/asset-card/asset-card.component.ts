@@ -15,6 +15,7 @@ import BigNumber from 'bignumber.js';
 import { debounce } from 'utils-decorators';
 import {Options as NgxSliderOptions} from '@angular-slider/ngx-slider';
 import {LpBalancePipe} from '../../../pipes/lp-balance.pipe';
+import {TokenService} from '../../../services/api/token.service';
 
 const DEPOSIT_FEE = '0.001';
 
@@ -38,8 +39,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   depositUSTAmountTokenUST: number;
   depositLPAmtLP: number;
 
-  depositType: string;
-  depositMode = 'tokenust';
+  depositType: 'compound'|'stake'|'mixed';
+  depositMode: 'tokenust'|'lp'|'ust' = 'tokenust';
 
   withdrawAmt: number;
   grossLpTokenUST: string;
@@ -67,7 +68,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
     public info: InfoService,
-    private lpBalancePipe: LpBalancePipe
+    private lpBalancePipe: LpBalancePipe,
+    private tokenService: TokenService
   ) { }
 
   ngOnInit() {
@@ -135,15 +137,14 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   async doDeposit() {
-    if (this.formDeposit.invalid) {
-      return;
-    }
+    // if (this.formDeposit.invalid) {
+    //   return;
+    // }
     if (this.vault.poolInfo.auto_compound && !this.depositType) {
       return;
     }
-    this.$gaService.event('CLICK_DEPOSIT_LP_VAULT', this.depositType, this.vault.symbol + '-UST');
-    const assetAmount = times(this.depositTokenAmtTokenUST, this.UNIT);
-    const ustAmount = times(this.depositUSTAmountTokenUST, this.UNIT);
+    this.$gaService.event('CLICK_DEPOSIT_LP_VAULT', `${this.depositType}, ${this.depositMode}`, this.vault.symbol + '-UST');
+
     let auto_compound_ratio;
     if (this.depositType === 'compound'){
       auto_compound_ratio = '1';
@@ -154,49 +155,68 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     } else {
       return;
     }
-    const asset = {
-      amount: assetAmount,
-      info: {
-        token: {
-          contract_addr: this.vault.assetToken,
-        }
-      }
-    };
-    const ust = {
-      amount: ustAmount,
-      info: {
-        native_token: {
-          denom: Denom.USD
-        }
-      }
-    };
-    const pool = this.info.poolResponses[this.vault.assetToken];
-    const assets = pool.assets[0].info.native_token ? [ust, asset] : [asset, ust];
-    await this.terrajs.post([
-      new MsgExecuteContract(
-        this.terrajs.address,
-        this.vault.assetToken,
-        {
-          increase_allowance: {
-            amount: assetAmount,
-            spender: this.terrajs.settings.staker,
+
+    if (this.depositMode === 'tokenust'){
+      const assetAmount = times(this.depositTokenAmtTokenUST, this.UNIT);
+      const ustAmount = times(this.depositUSTAmountTokenUST, this.UNIT);
+      const asset = {
+        amount: assetAmount,
+        info: {
+          token: {
+            contract_addr: this.vault.assetToken,
           }
         }
-      ),
-      new MsgExecuteContract(
-        this.terrajs.address,
-        this.terrajs.settings.staker,
-        {
-          bond: {
-            assets,
-            compound_rate: auto_compound_ratio,
-            contract: this.vault.poolInfo.farmContract,
-            slippage_tolerance: '0.01'
+      };
+      const ust = {
+        amount: ustAmount,
+        info: {
+          native_token: {
+            denom: Denom.USD
           }
-        },
-        new Coins([new Coin(Denom.USD, ustAmount)])
-      )
-    ]);
+        }
+      };
+      const pool = this.info.poolResponses[this.vault.assetToken];
+      const assets = pool.assets[0].info.native_token ? [ust, asset] : [asset, ust];
+      await this.terrajs.post([
+        new MsgExecuteContract(
+          this.terrajs.address,
+          this.vault.assetToken,
+          {
+            increase_allowance: {
+              amount: assetAmount,
+              spender: this.terrajs.settings.staker,
+            }
+          }
+        ),
+        new MsgExecuteContract(
+          this.terrajs.address,
+          this.terrajs.settings.staker,
+          {
+            bond: {
+              assets,
+              compound_rate: auto_compound_ratio,
+              contract: this.vault.poolInfo.farmContract,
+              slippage_tolerance: '0.01'
+            }
+          },
+          new Coins([new Coin(Denom.USD, ustAmount)])
+        )
+      ]);
+    } else if (this.depositMode === 'lp'){
+      const lpAmount = times(this.depositLPAmtLP, this.UNIT);
+      const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farm === this.vault.poolInfo.farm)?.farmContract;
+      await this.tokenService.handle(this.vault.lpToken, {
+        send: {
+          amount: lpAmount,
+          contract: farmContract,
+          msg: toBase64({bond: {
+              asset_token: this.vault.assetToken,
+              compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
+            }})
+        }
+      });
+    }
+
     this.depositTokenAmtTokenUST = undefined;
     this.depositUSTAmountTokenUST = undefined;
     this.netLpTokenUST = undefined;
