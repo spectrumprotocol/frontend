@@ -117,6 +117,6 @@ export const networks: Record<string, ISettings> = {
     mirrorGraph: 'mirrorTest',
     anchorGraph: 'anchorTest',
     pylonAPI: 'https://api.dev.pylon.rocks',
-    chainID: 'bombay-10',
+    chainID: 'bombay-11',
   },
 };
