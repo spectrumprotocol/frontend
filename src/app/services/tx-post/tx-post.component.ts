@@ -65,7 +65,7 @@ export class TxPostComponent implements OnInit {
       this.loadingMsg = 'Broadcasting...';
       const postMsg = {
         msgs: this.msgs,
-        fee: this.signMsg.auth_info.fee,
+        fee: this.signMsg.fee,
         gasPrices: `${this.terrajs.lcdClient.config.gasPrices['uusd']}uusd`,
       };
       const res = await this.terrajs.walletController.post(postMsg);

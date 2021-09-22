@@ -38,6 +38,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   depositTokenAmtTokenUST: number;
   depositUSTAmountTokenUST: number;
   depositLPAmtLP: number;
+  depositUSTAmtUST: number;
 
   depositType: 'compound'|'stake'|'mixed';
   depositMode: 'tokenust'|'lp'|'ust' = 'tokenust';
@@ -49,6 +50,10 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   depositFeeLp: string;
   netLpLp: string;
+
+  grossLpUST: string;
+  depositFeeUST: string;
+  netLpUST: string;
 
   height: number;
 
@@ -371,5 +376,14 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   setMaxDepositLP() {
     this.depositLPAmtLP = +this.info.lpTokenBalances?.[this.vault.lpToken] / CONFIG.UNIT;
     this.depositLPChanged();
+  }
+
+  depositUSTChanged() {
+
+  }
+
+  setMaxDepositUST() {
+    this.depositUSTAmtUST = +this.info.userUstAmount / CONFIG.UNIT;
+    this.depositUSTChanged();
   }
 }

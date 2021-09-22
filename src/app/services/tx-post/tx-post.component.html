@@ -28,7 +28,7 @@
             <div class="col-6 small">Fee <i class="fas fa-info-circle info-icon"
                     mdbTooltip="Fee paid to terra chain to execute this transaction"></i></div>
             <div class="col-6 text-end small">
-                {{ signMsg.auth_info.fee.amount.get('uusd').amount.toString() | unit }} UST
+                {{ signMsg.fee.amount.get('uusd').amount.toString() | unit }} UST
             </div>
         </div>
     </div>
