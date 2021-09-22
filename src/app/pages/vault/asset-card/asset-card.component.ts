@@ -148,7 +148,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     let auto_compound_ratio;
     if (this.depositType === 'compound'){
       auto_compound_ratio = '1';
-    } else if (this.depositType === 'stake'){
+    } else if (this.depositType === 'stake' || !this.vault.poolInfo.auto_compound){
       auto_compound_ratio = undefined;
     } else if (this.depositType === 'mixed'){
       auto_compound_ratio = (this.auto_compound_percent / 100).toString();
