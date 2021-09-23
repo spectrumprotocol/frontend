@@ -383,7 +383,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   setMaxDepositUST() {
-    this.depositUSTAmtUST = +this.info.userUstAmount / CONFIG.UNIT;
+    this.depositUSTAmtUST = +this.info.userUstAmount;
     this.depositUSTChanged();
   }
 }
