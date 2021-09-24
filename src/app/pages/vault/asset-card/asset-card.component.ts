@@ -465,11 +465,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       const pool = this.info.poolResponses[this.vault.assetToken];
       const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
       const halfUST = div(this.depositUSTAmtUST, 2);
-      const amountUST = new BigNumber(halfUST)
-        .times(this.UNIT)
-        .times(ust.amount)
-        .div(asset.amount)
-        .integerValue();
 
       const grossLp = gt(pool.total_share, 0)
         ? BigNumber.minimum(
