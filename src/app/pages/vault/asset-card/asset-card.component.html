@@ -113,7 +113,7 @@
                          [(ngModel)]="depositTokenAmtTokenUST" [min]="0.000001" [max]="+info.tokenBalances[vault.assetToken] / UNIT"
                          [step]="0.000001" required #depositTokenAmtTokenUSTCtl="ngModel" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'"
                          [class.is-invalid]="(formDeposit.submitted || depositTokenAmtTokenUSTCtl.touched) && depositTokenAmtTokenUSTCtl.invalid"
-                         (ngModelChange)="depositChanged()" />
+                         (ngModelChange)="depositTokenUSTChanged()" />
                   <button class="btn btn-outline-primary last" type="button" (click)="setMaxDepositUSTToken()">
                     Max
                   </button>
@@ -188,7 +188,7 @@
               <div class="input-group">
                 <span class="input-group-text">UST</span>
                 <input type="number" class="form-control fix-height-use-with-button" name="depositUSTAmtUST"
-                       [(ngModel)]="depositUSTAmtUST" [min]="0.000001" [max]="+info.userUstAmount / UNIT"
+                       [(ngModel)]="depositUSTAmtUST" [min]="0.000001" [max]="+info.userUstAmount"
                        [step]="0.000001" required #depositUSTAmtUSTCtl="ngModel" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'"
                        [class.is-invalid]="(formDeposit.submitted || depositUSTAmtUSTCtl.touched) && depositUSTAmtUSTCtl.invalid"
                        (ngModelChange)="depositUSTChanged()" />
