@@ -4,7 +4,7 @@ import { Coin, Coins, Denom, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../consts/animations';
 import { CONFIG } from '../../../consts/config';
 import { toBase64 } from '../../../libs/base64';
-import {div, floor, gt, times} from '../../../libs/math';
+import {div, floor, floor18Decimal, floorSixDecimal, gt, times} from '../../../libs/math';
 import { TerrajsService } from '../../../services/terrajs.service';
 import { Vault } from '../vault.component';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -56,6 +56,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   depositFeeUST: string;
   netLpUST: string;
 
+  depositUSTBeliefPriceBuy: string;
+
   height: number;
 
   private heightChanged: Subscription;
@@ -69,6 +71,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     showTicksValues: false,
     hideLimitLabels: true,
   };
+
 
   constructor(
     public terrajs: TerrajsService,
@@ -224,6 +227,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       });
     } else if (this.depositMode === 'ust'){
       const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farm === this.vault.poolInfo.farm)?.farmContract;
+      const depositUST = times(this.depositUSTAmtUST, CONFIG.UNIT);
+      const coin = new Coin(Denom.USD, depositUST);
       const msgs = [new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.staker, {
         zap_to_bond: {
           contract: farmContract,
@@ -233,7 +238,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
                 denom: Denom.USD
               }
             },
-            amount: this.depositUSTAmtUST.toString()
+            amount: depositUST
           },
           pair_asset: {
             token: {
@@ -243,12 +248,12 @@ export class AssetCardComponent implements OnInit, OnDestroy {
               denom: Denom.USD
             }
           },
-          // belief_price,
-          max_spread: 0.01,
-          compound_rate: auto_compound_ratio,
-        }
-        }
+          belief_price: this.depositUSTBeliefPriceBuy,
+          max_spread: '0.01',
+          compound_rate: auto_compound_ratio
+        }}, new Coins([coin])
       )];
+      console.log(msgs);
       await this.terrajs.post(msgs);
     }
 
@@ -427,7 +432,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     await this.info.ensureCw20Pairs();
     const poolAddresses = Object.keys(this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet']);
     let foundPoolAddress;
-    // console.log(Object.keys(this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet']));\
     for (const poolAddress of poolAddresses){
       const pair = this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet'][poolAddress];
       if (pair[0] === this.vault.assetToken || pair[1] === this.vault.assetToken){
@@ -435,24 +439,23 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         break;
       }
     }
-    // const test = this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet'].findIndex(o => o[0] === this.vault.assetToken || o[1] === this.vault.assetToken);
-    console.log(this.vault.assetToken);
-    console.log(foundPoolAddress);
-    const simulateSwapUSTtoToken = {
-      simulation: {
-        offer_asset: {
-          amount: times(div(this.depositUSTAmtUST, 2), CONFIG.UNIT),
-          info: {
-            native_token: {
-              denom: Denom.USD
+    if (foundPoolAddress){
+      const buyAmount = div(this.depositUSTAmtUST, 2);
+      const simulateSwapUSTtoToken = {
+        simulation: {
+          offer_asset: {
+            amount: times(buyAmount, CONFIG.UNIT),
+            info: {
+              native_token: {
+                denom: Denom.USD
+              }
             }
           }
         }
-      }
-    };
-    const simulateSwapUSTtoTokenResult = (await this.terraSwapService.query(foundPoolAddress, simulateSwapUSTtoToken));
-    console.log(simulateSwapUSTtoTokenResult);
-
+      };
+      const simulateSwapUSTtoTokenResult = (await this.terraSwapService.query(foundPoolAddress, simulateSwapUSTtoToken));
+      this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(buyAmount, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT));
+    }
   }
 
   setMaxDepositUST() {

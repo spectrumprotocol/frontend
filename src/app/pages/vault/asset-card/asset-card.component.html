@@ -199,8 +199,8 @@
 
               <div class="mt-3 pool-info" *ngIf="depositUSTAmtUST && depositMode==='ust'" @fade>
                 <div class="row">
-                  <div class="col">Terraswap Price</div>
-                  <div class="col text-end">{{info.poolResponses[vault.assetToken] | price | number }} UST</div>
+                  <div class="col">Expected Price</div>
+                  <div class="col text-end">{{depositUSTBeliefPriceBuy | number:'0.0-6' }} UST</div>
                 </div>
                 <div class="row">
                   <div class="col">Gross LP</div>
