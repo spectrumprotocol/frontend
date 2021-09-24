@@ -445,12 +445,12 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       }
     }
+    const halfUST = div(this.depositUSTAmtUST, 2);
     if (this.depositUSTFoundPoolAddress){
-      const buyAmount = div(this.depositUSTAmtUST, 2);
       const simulateSwapUSTtoToken = {
         simulation: {
           offer_asset: {
-            amount: times(buyAmount, CONFIG.UNIT),
+            amount: times(halfUST, CONFIG.UNIT),
             info: {
               native_token: {
                 denom: Denom.USD
@@ -460,12 +460,11 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       };
       const simulateSwapUSTtoTokenResult = await this.terraSwapService.query(this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken);
-      this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(buyAmount, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT));
+      this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(halfUST, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT));
 
       const pool = this.info.poolResponses[this.vault.assetToken];
       const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
-      const halfUST = div(this.depositUSTAmtUST, 2);
-
+      
       const grossLp = gt(pool.total_share, 0)
         ? BigNumber.minimum(
           new BigNumber(halfUST).times(pool.total_share).div(ust.amount),
