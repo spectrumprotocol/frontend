@@ -11,7 +11,7 @@ export type ExecuteMsg =
         assets: [Asset, Asset];
         compound_rate?: Decimal | null;
         contract: string;
-        slippage_tolerance?: Decimal | null;
+        slippage_tolerance: Decimal;
         staker_addr?: string | null;
         [k: string]: unknown;
       };
@@ -32,7 +32,7 @@ export type ExecuteMsg =
         belief_price?: Decimal | null;
         compound_rate?: Decimal | null;
         contract: string;
-        max_spread?: Decimal | null;
+        max_spread: Decimal;
         pair_asset: AssetInfo;
         provide_asset: Asset;
         [k: string]: unknown;
@@ -45,8 +45,15 @@ export type ExecuteMsg =
         compound_rate?: Decimal | null;
         contract: string;
         prev_asset_token_amount: Uint128;
-        slippage_tolerance?: Decimal | null;
+        slippage_tolerance: Decimal;
         staker_addr: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      update_config: {
+        insert_allowlist?: string[] | null;
+        remove_allowlist?: string[] | null;
         [k: string]: unknown;
       };
     };
