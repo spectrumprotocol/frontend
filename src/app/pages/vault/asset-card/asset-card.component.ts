@@ -57,6 +57,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   netLpUST: string;
 
   depositUSTBeliefPriceBuy: string;
+  depositUSTFoundPoolAddress: string;
 
   height: number;
 
@@ -423,6 +424,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.depositLPChanged();
   }
 
+  @debounce(250)
   async depositUSTChanged() {
     //TODO
     // const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: depositTVL.toString(), denom: 'uusd' }));
@@ -431,15 +433,16 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     //   .toNumber();
     await this.info.ensureCw20Pairs();
     const poolAddresses = Object.keys(this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet']);
-    let foundPoolAddress;
-    for (const poolAddress of poolAddresses){
-      const pair = this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet'][poolAddress];
-      if (pair[0] === this.vault.assetToken || pair[1] === this.vault.assetToken){
-        foundPoolAddress = poolAddress;
-        break;
+    if (!this.depositUSTFoundPoolAddress){
+      for (const poolAddress of poolAddresses){
+        const pair = this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet'][poolAddress];
+        if (pair[0] === this.vault.assetToken || pair[1] === this.vault.assetToken){
+          this.depositUSTFoundPoolAddress = poolAddress;
+          break;
+        }
       }
     }
-    if (foundPoolAddress){
+    if (this.depositUSTFoundPoolAddress){
       const buyAmount = div(this.depositUSTAmtUST, 2);
       const simulateSwapUSTtoToken = {
         simulation: {
@@ -453,7 +456,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
           }
         }
       };
-      const simulateSwapUSTtoTokenResult = (await this.terraSwapService.query(foundPoolAddress, simulateSwapUSTtoToken));
+      const simulateSwapUSTtoTokenResult = (await this.terraSwapService.query((this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken));
       this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(buyAmount, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT));
     }
   }
