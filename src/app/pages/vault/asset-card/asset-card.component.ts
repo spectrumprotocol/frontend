@@ -456,7 +456,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
           }
         }
       };
-      const simulateSwapUSTtoTokenResult = (await this.terraSwapService.query((this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken));
+      const simulateSwapUSTtoTokenResult = await this.terraSwapService.query(this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken);
       this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(buyAmount, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT));
     }
   }
