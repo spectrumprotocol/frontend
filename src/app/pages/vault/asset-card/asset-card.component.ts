@@ -408,7 +408,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       this.netLpLp = undefined;
     }
     const grossLp = new BigNumber(this.depositLPAmtLP);
-    const depositTVL = new BigNumber(this.lpBalancePipe.transform(this.depositLPAmtLP.toString() ?? '0', this.info.poolResponses[this.vault.assetToken]));
+    const depositTVL = new BigNumber(this.lpBalancePipe.transform(this.depositLPAmtLP ?? '0', this.info.poolResponses[this.vault.assetToken]));
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
       grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
     this.netLpLp = grossLp.minus(depositFee).toString();
