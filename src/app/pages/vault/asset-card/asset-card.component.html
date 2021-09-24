@@ -265,7 +265,6 @@
               </div>
             </div>
 
-            <!--              TODO common start-->
             <div *ngIf="vault.poolInfo.auto_compound" class="mt-3">
               <span class="btn-group">
                 <button (click)="depositType = 'stake'" [ngClass]="depositType === 'stake' ? 'btn-primary': 'btn-outline-primary'"
@@ -384,17 +383,15 @@
                 under your address to earn the benefits.
               </div>
               <button (click)="doDeposit()" [disabled]="(depositMode==='tokenust' && depositTokenAmtTokenUSTCtl.invalid)
-                      || (depositMode==='lp' && depositLPAmtLPCtl.invalid)" class="btn btn-primary"
+                      || (depositMode==='lp' && depositLPAmtLPCtl.invalid) || (depositMode==='ust' && depositUSTAmtUSTCtl.invalid)" class="btn btn-primary"
                       type="submit"
               >Deposit</button>
-              <!--              TODO deposit UST Ctl-->
               <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" class="text-end small fee-remark text-muted">
                 <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">
                   * fees applied
                 </a>
               </div>
             </div>
-            <!--              TODO common stop-->
           </form>
 
 
