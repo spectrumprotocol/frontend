@@ -63,7 +63,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   height: number;
 
   private heightChanged: Subscription;
-  auto_compound_percent = 50;
+  auto_compound_percent_deposit = 50;
+  auto_compound_percent_reallocate = 50;
   ngx_slider_option: NgxSliderOptions = {
     animate: false,
     step: 1,
@@ -164,7 +165,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     } else if (this.depositType === 'stake' || !this.vault.poolInfo.auto_compound){
       auto_compound_ratio = undefined;
     } else if (this.depositType === 'mixed'){
-      auto_compound_ratio = (this.auto_compound_percent / 100).toString();
+      auto_compound_ratio = (this.auto_compound_percent_deposit / 100).toString();
     } else {
       return;
     }
@@ -369,8 +370,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   }
 
-  inputAutoCompoundPercent(event: any, reversed: boolean) {
+  inputAutoCompoundPercent(event: any, reversed: boolean, target: string) {
     let value;
+    let newValue;
     if (!event?.target?.value){
       value = 0;
     } else {
@@ -380,24 +382,29 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       value = 100 - +event.target.value;
     }
     if (value < 0 && reversed){
-      this.auto_compound_percent = 0;
+      newValue = 0;
     } else if (event.target.value > 100 && reversed){
-      this.auto_compound_percent = 100;
+      newValue = 100;
     } else {
-      this.auto_compound_percent = value;
+      newValue = value;
+    }
+    if (target === 'deposit'){
+      this.auto_compound_percent_deposit = newValue;
+    } else if (target === 'reallocate'){
+      this.auto_compound_percent_reallocate = newValue;
     }
   }
 
   getMixedAutoCompoundAPY(){
-    return this.vault.pairStat?.poolApr + (this.vault.pairStat?.poolApy - this.vault.pairStat?.poolApr) * this.auto_compound_percent / 100;
+    return this.vault.pairStat?.poolApr + (this.vault.pairStat?.poolApy - this.vault.pairStat?.poolApr) * this.auto_compound_percent_deposit / 100;
   }
 
   getMixedAutoStakeAPY(){
-    return this.vault.pairStat?.poolApr + (this.vault.farmApy - this.vault.pairStat?.poolApr) * (100 - this.auto_compound_percent) / 100;
+    return this.vault.pairStat?.poolApr + (this.vault.farmApy - this.vault.pairStat?.poolApr) * (100 - this.auto_compound_percent_deposit) / 100;
   }
 
   getMixedTotalAPY() {
-    return this.vault.specApy + this.getMixedAutoCompoundAPY() * this.auto_compound_percent / 100 + this.getMixedAutoStakeAPY() * (100 - this.auto_compound_percent) / 100;
+    return this.vault.specApy + this.getMixedAutoCompoundAPY() * this.auto_compound_percent_deposit / 100 + this.getMixedAutoStakeAPY() * (100 - this.auto_compound_percent_deposit) / 100;
   }
 
   @debounce(250)
@@ -464,7 +471,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
       const pool = this.info.poolResponses[this.vault.assetToken];
       const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
-      
+
       const grossLp = gt(pool.total_share, 0)
         ? BigNumber.minimum(
           new BigNumber(halfUST).times(pool.total_share).div(ust.amount),
@@ -489,5 +496,15 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   setMaxDepositUST() {
     this.depositUSTAmtUST = +this.info.userUstAmount;
     this.depositUSTChanged();
+  }
+
+  //TODO beautify percent or move to tooltip?
+  //TODO fix LP deposit not show
+  calcStakeOrCompoundRatio(mode: string) {
+    if (mode === 'stake'){
+      return new BigNumber(this.info.rewardInfos[this.vault.assetToken]?.stake_bond_amount as string).div(this.info.rewardInfos[this.vault.assetToken]?.bond_amount).toNumber();
+    } else if (mode === 'compound'){
+      return new BigNumber(this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount as string).div(this.info.rewardInfos[this.vault.assetToken]?.bond_amount).toNumber();
+    }
   }
 }

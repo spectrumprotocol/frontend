@@ -330,16 +330,16 @@
                 <div class="d-flex flex-row justify-content-between">
                   <div class="d-flex">
                     <div class="input-group">
-                      <input (change)="inputAutoCompoundPercent($event, true)" [value]="100-auto_compound_percent" class="form-control input-compound-stake" name="autoStakePercent" type="number">
+                      <input (change)="inputAutoCompoundPercent($event, true, 'deposit')" [value]="100-auto_compound_percent_deposit" class="form-control input-compound-stake" name="autoStakePercent" type="number">
                     </div>
                     <span class="input-compound-stake-percent">%</span>
                   </div>
                   <div class="slider-compound-stake flex-grow-1 custom-slider">
-                    <ngx-slider [(value)]="auto_compound_percent" [options]="ngx_slider_option"></ngx-slider>
+                    <ngx-slider [(value)]="auto_compound_percent_deposit" [options]="ngx_slider_option"></ngx-slider>
                   </div>
                   <div class="d-flex">
                     <div class="input-group">
-                      <input (change)="inputAutoCompoundPercent($event, false)" [value]="auto_compound_percent" class="form-control input-compound-stake" name="autoCompoundPercent"  type="number">
+                      <input (change)="inputAutoCompoundPercent($event, false, 'deposit')" [value]="auto_compound_percent_deposit" class="form-control input-compound-stake" name="autoCompoundPercent" type="number">
                     </div>
                     <span class="input-compound-stake-percent">%</span>
                   </div>
@@ -352,11 +352,11 @@
                   <div class="col">Pool APR from {{ vault.poolInfo.farm }}</div>
                   <div class="col text-end">{{vault.pairStat?.poolApr || 0 | percent }}</div>
                 </div>
-                <div *ngIf="auto_compound_percent > 0" class="row">
+                <div *ngIf="auto_compound_percent_deposit > 0" class="row">
                   <div class="col">Pool APY from auto compound</div>
                   <div class="col text-end">{{getMixedAutoCompoundAPY() || 0 | percent }}</div>
                 </div>
-                <div *ngIf="100 - auto_compound_percent > 0" class="row">
+                <div *ngIf="100 - auto_compound_percent_deposit > 0" class="row">
                   <div class="col">Pool APY from auto stake</div>
                   <div class="col text-end">{{getMixedAutoStakeAPY() | percent }}</div>
                 </div>
@@ -430,6 +430,50 @@
             <div class="d-grid mt-3">
               <button (click)="doWithdraw()" [disabled]="withdrawAmtCtl.invalid" class="btn btn-primary"
                       type="submit">Withdraw</button>
+            </div>
+          </form>
+        </mdb-tab>
+        <mdb-tab title="Reallocate" *ngIf="vault.poolInfo.auto_compound">
+          <form #formReallocate="ngForm" class="needs-validation p-3" novalidate>
+            <div class="small mb-3">
+              Reallocate auto-stake and auto-compound ratio of deposited {{ vault.symbol }}-UST LP
+            </div>
+            <div class="d-flex flex-row justify-content-between">
+              <div class="d-flex">
+                <div class="input-group">
+                  <input (change)="inputAutoCompoundPercent($event, true, 'reallocate')" [value]="100-auto_compound_percent_reallocate" class="form-control input-compound-stake" name="autoStakePercentReallocate" type="number">
+                </div>
+                <span class="input-compound-stake-percent">%</span>
+              </div>
+              <div class="slider-compound-stake flex-grow-1 custom-slider">
+                <ngx-slider [(value)]="auto_compound_percent_reallocate" [options]="ngx_slider_option"></ngx-slider>
+              </div>
+              <div class="d-flex">
+                <div class="input-group">
+                  <input (change)="inputAutoCompoundPercent($event, false, 'reallocate')" [value]="auto_compound_percent_reallocate" class="form-control input-compound-stake" name="autoCompoundPercentReallocate"  type="number">
+                </div>
+                <span class="input-compound-stake-percent">%</span>
+              </div>
+            </div>
+            <div class="d-flex flex-row mb-2">
+              <span class="desc-slider margin-right-auto">Auto Stake</span>
+              <span class="desc-slider">Auto Compound</span>
+            </div>
+            <div class="row">
+              <div class="col">Current auto-stake LP</div>
+              <div class="col text-end">{{+info.rewardInfos[vault.assetToken]?.stake_bond_amount || '0' | unit: '1.0-6'}} LP ({{calcStakeOrCompoundRatio('stake') | percent}})</div>
+            </div>
+            <div class="row">
+              <div class="col">Current auto-compound LP</div>
+              <div class="col text-end">{{+info.rewardInfos[vault.assetToken]?.auto_bond_amount || '0' | unit: '1.0-6'}} LP ({{calcStakeOrCompoundRatio('compound') | percent}})</div>
+            </div>
+            <div class="row">
+              <div class="col">New auto-stake LP</div>
+              <div class="col text-end"></div>
+            </div>
+            <div class="row">
+              <div class="col">New auto-compound LP</div>
+              <div class="col text-end"></div>
             </div>
           </form>
         </mdb-tab>
