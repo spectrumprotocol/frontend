@@ -83,8 +83,8 @@
     <div #belowSection="mdbCollapse" class="mt-3 bg-dark p-3 spec-form" mdbCollapse>
       <mdb-tabs [fill]="true">
         <mdb-tab title="Deposit">
-          <!--          TODO figure out pt-3, pl-3-->
-          <span class="btn-group p-3">
+          <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
+            <span class="btn-group">
             <button (click)="depositMode = 'tokenust'" [ngClass]="depositMode === 'tokenust' ? 'btn-primary': 'btn-outline-primary'"
                     class="btn"
                     type="button">Token + UST</button>
@@ -95,8 +95,7 @@
                     class="btn"
                     type="button">UST</button>
           </span>
-          <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
-            <div [hidden]="depositMode !== 'tokenust'">
+            <div [hidden]="depositMode !== 'tokenust'" class="mt-3">
               <div class="small">
                 Need more {{ vault.symbol }}? <a [href]="vault.symbol | url:'trade'" target="_blank">Buy</a><span
                 *ngIf="vault.symbol.startsWith('m')">
@@ -170,7 +169,7 @@
               </div>
 
             </div>
-            <div [hidden]="depositMode !== 'lp'">
+            <div [hidden]="depositMode !== 'lp'" class="mt-3">
               <div class="small">
                 Already have LP token? Deposit here, or
                 <a href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
@@ -210,8 +209,7 @@
                 </div>
               </div>
             </div>
-
-            <div [hidden]="depositMode !== 'ust'">
+            <div [hidden]="depositMode !== 'ust'" class="mt-3">
               <div class="small">
                 Auto buy {{ vault.symbol }} by half and deposit.
               </div>
