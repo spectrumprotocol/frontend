@@ -516,7 +516,20 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     }
   }
 
-  doReallocate() {
-
+  async doReallocate() {
+    const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farm === this.vault.poolInfo.farm)?.farmContract;
+    const msgs = [new MsgExecuteContract(
+      this.terrajs.address,
+      farmContract,
+      {
+        update_bond: {
+          asset_token: this.vault.poolInfo.asset_token,
+          amount_to_stake: floor(this.calcNewStakeOrCompoundAmount('stake')),
+          amount_to_auto: floor(this.calcNewStakeOrCompoundAmount('compound'))
+        }
+      }
+    )];
+    console.log(msgs);
+    await this.terrajs.post(msgs);
   }
 }
