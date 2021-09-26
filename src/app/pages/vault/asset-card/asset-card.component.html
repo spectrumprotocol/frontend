@@ -463,14 +463,14 @@
               <div class="col">Current auto-stake LP</div>
               <div class="col text-end">
                 {{+info.rewardInfos[vault.assetToken]?.stake_bond_amount || '0' | unit: '1.0-6'}} LP
-                <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.stake_bond_amount > 10">({{calcStakeOrCompoundRatio('stake') | percent}})</span>
+                <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.stake_bond_amount > 10">({{calcStakeOrCompoundRatio('stake') | percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="row">
               <div class="col">Current auto-compound LP</div>
               <div class="col text-end">
                 {{+info.rewardInfos[vault.assetToken]?.auto_bond_amount || '0' | unit: '1.0-6'}} LP
-                <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.auto_bond_amount > 10">({{calcStakeOrCompoundRatio('compound') | percent}})</span>
+                <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.auto_bond_amount > 10">({{calcStakeOrCompoundRatio('compound') | percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="row">
