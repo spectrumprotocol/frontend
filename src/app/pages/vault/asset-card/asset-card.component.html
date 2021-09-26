@@ -461,19 +461,35 @@
             </div>
             <div class="row">
               <div class="col">Current auto-stake LP</div>
-              <div class="col text-end">{{+info.rewardInfos[vault.assetToken]?.stake_bond_amount || '0' | unit: '1.0-6'}} LP ({{calcStakeOrCompoundRatio('stake') | percent}})</div>
+              <div class="col text-end">
+                {{+info.rewardInfos[vault.assetToken]?.stake_bond_amount || '0' | unit: '1.0-6'}} LP
+                <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.stake_bond_amount > 10">({{calcStakeOrCompoundRatio('stake') | percent}})</span>
+              </div>
             </div>
             <div class="row">
               <div class="col">Current auto-compound LP</div>
-              <div class="col text-end">{{+info.rewardInfos[vault.assetToken]?.auto_bond_amount || '0' | unit: '1.0-6'}} LP ({{calcStakeOrCompoundRatio('compound') | percent}})</div>
+              <div class="col text-end">
+                {{+info.rewardInfos[vault.assetToken]?.auto_bond_amount || '0' | unit: '1.0-6'}} LP
+                <span class="small text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.auto_bond_amount > 10">({{calcStakeOrCompoundRatio('compound') | percent}})</span>
+              </div>
             </div>
             <div class="row">
               <div class="col">New auto-stake LP</div>
-              <div class="col text-end"></div>
+              <div class="col text-end">
+                {{calcNewStakeOrCompoundAmount('stake') || '0' | unit: '1.0-6'}} LP
+                <span class="small text-muted" *ngIf="+calcNewStakeOrCompoundAmount('stake') > 10">({{(100 - auto_compound_percent_reallocate) / 100 | percent:'0.2-2'}})</span>
+              </div>
             </div>
             <div class="row">
               <div class="col">New auto-compound LP</div>
-              <div class="col text-end"></div>
+              <div class="col text-end">
+                {{calcNewStakeOrCompoundAmount('compound') || '0' | unit: '1.0-6'}} LP
+                <span class="small text-muted" *ngIf="+calcNewStakeOrCompoundAmount('compound') > 10">({{auto_compound_percent_reallocate / 100 | percent:'0.2-2'}})</span>
+              </div>
+            </div>
+            <div class="d-grid mt-3">
+              <button (click)="doReallocate()" [disabled]="+info.rewardInfos[vault.assetToken]?.bond_amount < 10" class="btn btn-primary"
+                      type="submit">Reallocate</button>
             </div>
           </form>
         </mdb-tab>

@@ -415,7 +415,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       this.netLpLp = undefined;
     }
     const grossLp = new BigNumber(this.depositLPAmtLP);
-    const depositTVL = new BigNumber(this.lpBalancePipe.transform(this.depositLPAmtLP ?? '0', this.info.poolResponses[this.vault.assetToken]));
+    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositLPAmtLP, CONFIG.UNIT) ?? '0', this.info.poolResponses[this.vault.assetToken]));
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
       grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
     this.netLpLp = grossLp.minus(depositFee).toString();
@@ -498,13 +498,25 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.depositUSTChanged();
   }
 
-  //TODO beautify percent or move to tooltip?
-  //TODO fix LP deposit not show
   calcStakeOrCompoundRatio(mode: string) {
     if (mode === 'stake'){
       return new BigNumber(this.info.rewardInfos[this.vault.assetToken]?.stake_bond_amount as string).div(this.info.rewardInfos[this.vault.assetToken]?.bond_amount).toNumber();
     } else if (mode === 'compound'){
       return new BigNumber(this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount as string).div(this.info.rewardInfos[this.vault.assetToken]?.bond_amount).toNumber();
     }
+  }
+
+  calcNewStakeOrCompoundAmount(mode: string){
+    if (+this.info.rewardInfos[this.vault.assetToken]?.bond_amount < 10){
+      return 0;
+    } else if (mode === 'stake'){
+      return times(this.info.rewardInfos[this.vault.assetToken]?.bond_amount, (100 - this.auto_compound_percent_reallocate) / 100);
+    } else if (mode === 'compound'){
+      return times(this.info.rewardInfos[this.vault.assetToken]?.bond_amount, (this.auto_compound_percent_reallocate) / 100);
+    }
+  }
+
+  doReallocate() {
+
   }
 }
