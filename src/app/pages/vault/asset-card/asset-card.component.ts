@@ -529,7 +529,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       }
     )];
-    console.log(msgs);
     await this.terrajs.post(msgs);
   }
 }
