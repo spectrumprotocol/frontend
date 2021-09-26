@@ -87,7 +87,7 @@
             <span class="btn-group">
             <button (click)="depositMode = 'tokenust'" [ngClass]="depositMode === 'tokenust' ? 'btn-primary': 'btn-outline-primary'"
                     class="btn"
-                    type="button">Token + UST</button>
+                    type="button">{{vault.symbol}} + UST</button>
             <button (click)="depositMode = 'lp'" [ngClass]="depositMode === 'lp' ? 'btn-primary': 'btn-outline-primary'"
                     class="btn"
                     type="button">LP</button>
