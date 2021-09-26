@@ -27,6 +27,7 @@ export interface ISettings {
   anchorGraph: string;
   pylonAPI: string;
   chainID: string;
+  finder: string;
 }
 export const networks: Record<string, ISettings> = {
   mainnet: {
@@ -58,6 +59,7 @@ export const networks: Record<string, ISettings> = {
     anchorGraph: 'anchor',
     pylonAPI: 'https://api.pylon.money',
     chainID: 'columbus-5',
+    finder: 'finder.extraterrestrial.money',
   },
   testnet: {
     specToken: 'terra1kvsxd94ue6f4rtchv2l6me5k07uh26s7637cza',
@@ -88,6 +90,7 @@ export const networks: Record<string, ISettings> = {
     anchorGraph: 'anchorTest',
     pylonAPI: 'https://api.dev.pylon.rocks',
     chainID: 'tequila-0004',
+    finder: 'finder.terra.money',
   },
   bombay: {
     specToken: 'terra1kvsxd94ue6f4rtchv2l6me5k07uh26s7637cza',
@@ -118,5 +121,6 @@ export const networks: Record<string, ISettings> = {
     anchorGraph: 'anchorTest',
     pylonAPI: 'https://api.dev.pylon.rocks',
     chainID: 'bombay-11',
+    finder: 'finder.terra.money',
   },
 };
