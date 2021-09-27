@@ -3,9 +3,6 @@
   <div class="card-body">
     <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
           class="badge bg-primary position-absolute badge-deposited">Deposited</span>
-    <!--    TODO update logic to include LP, UST or remove depositable, or change wording to sth like Have Token/LP Depositable -->
-    <span *ngIf="+info.tokenBalances[vault.assetToken] >= 10"
-          class="badge bg-info position-absolute badge-depositable">Depositable</span>
     <div (click)="belowSection.toggle()" aria-controls="belowSection" aria-expanded="false" class="row asset-card-info">
       <div class="col-12 col-md-3 text-center">
         <div class="p-2">
