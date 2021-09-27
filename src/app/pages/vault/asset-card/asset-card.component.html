@@ -82,16 +82,16 @@
         <mdb-tab title="Deposit">
           <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
             <span class="btn-group">
-            <button (click)="depositMode = 'tokenust'" [ngClass]="depositMode === 'tokenust' ? 'btn-primary': 'btn-outline-primary'"
-                    class="btn"
-                    type="button">{{vault.symbol}} + UST</button>
-            <button (click)="depositMode = 'lp'" [ngClass]="depositMode === 'lp' ? 'btn-primary': 'btn-outline-primary'"
-                    class="btn"
-                    type="button">LP</button>
-            <button (click)="depositMode = 'ust'" [ngClass]="depositMode === 'ust' ? 'btn-primary': 'btn-outline-primary'"
-                    class="btn"
-                    type="button">UST</button>
-          </span>
+              <button (click)="depositMode = 'tokenust'" [ngClass]="depositMode === 'tokenust' ? 'btn-primary': 'btn-outline-primary'"
+                      class="btn"
+                      type="button">{{vault.symbol}} + UST</button>
+              <button (click)="depositMode = 'lp'" [ngClass]="depositMode === 'lp' ? 'btn-primary': 'btn-outline-primary'"
+                      class="btn"
+                      type="button">LP</button>
+              <button (click)="depositMode = 'ust'" [ngClass]="depositMode === 'ust' ? 'btn-primary': 'btn-outline-primary'"
+                      class="btn"
+                      type="button">UST</button>
+            </span>
             <div [hidden]="depositMode !== 'tokenust'" class="mt-3">
               <div class="small">
                 Need more {{ vault.symbol }}? <a [href]="vault.symbol | url:'trade'" target="_blank">Buy</a><span
@@ -389,10 +389,17 @@
             </div>
           </form>
 
-
         </mdb-tab>
         <mdb-tab title="Withdraw">
           <form #formWithdraw="ngForm" class="needs-validation p-3" novalidate>
+            <span class="btn-group">
+              <button (click)="withdrawMode = 'tokenust'" [ngClass]="withdrawMode === 'tokenust' ? 'btn-primary': 'btn-outline-primary'"
+                      class="btn"
+                      type="button">{{vault.symbol}} + UST</button>
+              <button (click)="withdrawMode = 'lp'" [ngClass]="withdrawMode === 'lp' ? 'btn-primary': 'btn-outline-primary'"
+                      class="btn"
+                      type="button">LP</button>
+            </span>
             <div class="text-end small mt-3 text-muted">
               <span>Deposited: {{ info.rewardInfos[vault.assetToken]?.bond_amount || 0 | unit }} {{
                 vault.symbol }}-UST LP</span>
@@ -421,7 +428,8 @@
                 Receive
               </div>
               <div>
-                {{ withdrawAmt | lpSplit: info.poolResponses[vault.assetToken]: vault.symbol }}
+                <span *ngIf="withdrawMode === 'tokenust'">{{ withdrawAmt | lpSplit: info.poolResponses[vault.assetToken]: vault.symbol }}</span>
+                <span *ngIf="withdrawMode === 'lp'">{{ withdrawAmt | number }} {{vault.symbol}}-UST LP</span>
               </div>
             </div>
             <div class="d-grid mt-3">

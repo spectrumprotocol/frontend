@@ -44,6 +44,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   depositType: 'compound'|'stake'|'mixed';
   depositMode: 'tokenust'|'lp'|'ust' = 'tokenust';
+  withdrawMode: 'tokenust'|'lp' = 'tokenust';
 
   withdrawAmt: number;
   grossLpTokenUST: string;
@@ -74,6 +75,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     showTicksValues: false,
     hideLimitLabels: true,
   };
+
 
 
   constructor(
@@ -284,27 +286,31 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       return;
     }
     this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', this.vault.poolInfo.farm.toUpperCase(), this.vault.symbol + '-UST');
-    await this.terrajs.post([
-      new MsgExecuteContract(
-        this.terrajs.address,
-        this.vault.poolInfo.farmContract,
-        {
-          unbond: {
-            asset_token: this.vault.poolInfo.asset_token,
-            amount: times(this.withdrawAmt, CONFIG.UNIT),
-          }
+    const unbond =  new MsgExecuteContract(
+      this.terrajs.address,
+      this.vault.poolInfo.farmContract,
+      {
+        unbond: {
+          asset_token: this.vault.poolInfo.asset_token,
+          amount: times(this.withdrawAmt, CONFIG.UNIT),
         }
-      ),
-      new MsgExecuteContract(
-        this.terrajs.address,
-        this.vault.pairInfo.liquidity_token, {
+      }
+    );
+    const withdrawLp = new MsgExecuteContract(
+      this.terrajs.address,
+      this.vault.pairInfo.liquidity_token, {
         send: {
           amount: times(this.withdrawAmt, CONFIG.UNIT),
           contract: this.vault.pairInfo.contract_addr,
           msg: toBase64({ withdraw_liquidity: {} }),
         }
-      })
-    ]);
+      }
+    );
+    if (this.withdrawMode === 'tokenust'){
+      await this.terrajs.post([unbond, withdrawLp]);
+    } else if (this.withdrawMode === 'lp'){
+      await this.terrajs.post([unbond]);
+    }
     this.withdrawAmt = undefined;
   }
 
