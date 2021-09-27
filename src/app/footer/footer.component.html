@@ -1,12 +1,14 @@
 <!-- Footer -->
 <footer class="text-center text-muted">
     <!-- Section: Social media -->
-    <section class="container d-flex justify-content-center justify-content-lg-between pb-4">
-        <!-- Left -->
-        <div class="me-5 d-none d-lg-block">
-            <!-- <span class="text-success fs-5">●</span><span> Latest Block: {{height}}</span> -->
-        </div>
-        <!-- Left -->
+    <section
+      class="container d-flex flex-md-row flex-column-reverse justify-content-center justify-content-lg-between align-items-center pb-4">
+      <!-- Left -->
+      <div class="d-flex justify-content-center">
+        <div *ngIf="router.url !== '/vaults'" class="d-inline-block">Audited by <a href="https://github.com/HalbornSecurity/PublicReports/blob/master/CosmWasm%20Smart%20Contract%20Audits/Spectrum_Protocol_CosmWasm_Smart_Contract_Security_Audit_Halborn_Report_v1_1.pdf" target="_blank"><img
+              src="assets/halborn_logo.svg" alt="Halborn" class="platform-logo-halborn"></a></div>
+      </div>
+      <!-- Left -->
 
         <!-- Right -->
         <div class="d-flex justify-content-between">
