@@ -287,6 +287,8 @@ export class InfoService {
       .then(it => this.tokenBalances[assetToken] = it.balance));
     tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
       .then(it => this.poolResponses[assetToken] = it));
+    tasks.push(this.token.balance(pairInfo.liquidity_token)
+      .then(it => this.lpTokenBalances[pairInfo.liquidity_token] = it.balance));
     await Promise.all(tasks);
   }
 
