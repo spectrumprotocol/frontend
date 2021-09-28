@@ -104,7 +104,14 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const lastExecuteMsg = item.tx.value.msg[lastIndex]?.value?.execute_msg;
+    const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    let lastExecuteMsg;
+    if (base64regex.test(item.tx.value.msg[lastIndex]?.value?.execute_msg)){
+      lastExecuteMsg = JSON.parse(atob(item.tx.value.msg[lastIndex]?.value?.execute_msg));
+    } else {
+      lastExecuteMsg = item.tx.value.msg[lastIndex]?.value?.execute_msg;
+    }
+
     if (lastExecuteMsg.swap && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specPool) {
       const ustOffer = +item.tx.value.msg[lastIndex]?.value?.coins[0].amount / CONFIG.UNIT;
       const return_amount = +item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'return_amount').value / CONFIG.UNIT;
@@ -251,7 +258,13 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         id: item.id
       };
     } else if (lastExecuteMsg.send?.msg === btoa('{"withdraw_liquidity":{}}') && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
-      const penultimateExecutionMsg = item.tx.value.msg[lastIndex - 1]?.value?.execute_msg;
+      let penultimateExecutionMsg;
+      if (base64regex.test(item.tx.value.msg[lastIndex - 1]?.value?.execute_msg)){
+        penultimateExecutionMsg = JSON.parse(atob(item.tx.value.msg[lastIndex - 1]?.value?.execute_msg));
+      } else {
+        penultimateExecutionMsg = item.tx.value.msg[lastIndex - 1]?.value?.execute_msg;
+      }
+      console.log(penultimateExecutionMsg)
       const symbol = this.info.coinInfos[penultimateExecutionMsg.unbond.asset_token];
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract);
       const refund_assets = item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'refund_assets');
