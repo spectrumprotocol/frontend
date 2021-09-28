@@ -192,7 +192,12 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         if (!farmInfo) {
           continue;
         }
-        const execute_msg = item.tx.value.msg[index].value.execute_msg;
+        let execute_msg;
+        if (base64regex.test(item.tx.value.msg[index].value.execute_msg)){
+          execute_msg = JSON.parse(atob(item.tx.value.msg[index].value.execute_msg));
+        } else {
+          execute_msg = item.tx.value.msg[index].value.execute_msg;
+        }
         const asset_token = this.info.coinInfos[execute_msg.withdraw.asset_token];
         let poolName: string;
         if (asset_token) {
@@ -264,7 +269,6 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       } else {
         penultimateExecutionMsg = item.tx.value.msg[lastIndex - 1]?.value?.execute_msg;
       }
-      console.log(penultimateExecutionMsg)
       const symbol = this.info.coinInfos[penultimateExecutionMsg.unbond.asset_token];
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract);
       const refund_assets = item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'refund_assets');
@@ -306,7 +310,12 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         id: item.id
       };
     } else if (lastExecuteMsg.withdraw && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.gov) {
-      const executeMsgLvl2 = item.tx.value.msg[lastIndex]?.value.execute_msg;
+      let executeMsgLvl2;
+      if (base64regex.test(item.tx.value.msg[lastIndex]?.value.execute_msg)){
+        executeMsgLvl2 = JSON.parse(atob(item.tx.value.msg[lastIndex]?.value.execute_msg));
+      } else {
+        executeMsgLvl2 = item.tx.value.msg[lastIndex]?.value.execute_msg;
+      }
       return {
         desc: 'Unstaked from Gov ' + (+executeMsgLvl2.withdraw.amount / CONFIG.UNIT) + ' SPEC',
         txhash: item.txhash,
@@ -314,7 +323,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Gov',
         id: item.id
       };
-    } else if (lastExecuteMsg.send && JSON.parse(atob(item.tx.value.msg[lastIndex]?.value?.execute_msg.send.msg)).poll_start && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
+    } else if (lastExecuteMsg.send && lastExecuteMsg.send.msg.poll_start && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
       const poll_start = JSON.parse(atob(item.tx.value.msg[lastIndex]?.value?.execute_msg.send.msg)).poll_start;
       return {
         desc: 'Created Poll ' + poll_start.title,
