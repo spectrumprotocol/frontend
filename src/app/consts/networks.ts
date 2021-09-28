@@ -120,7 +120,7 @@ export const networks: Record<string, ISettings> = {
     mirrorGraph: 'mirrorTest',
     anchorGraph: 'anchorTest',
     pylonAPI: 'https://api.dev.pylon.rocks',
-    chainID: 'bombay-11',
+    chainID: 'bombay-12',
     finder: 'finder.terra.money',
   },
 };
