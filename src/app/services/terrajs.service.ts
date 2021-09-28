@@ -56,7 +56,7 @@ const testnet: NetworkInfo = {
 
 const bombay: NetworkInfo = {
   name: 'bombay',
-  chainID: 'bombay-11',
+  chainID: 'bombay-12',
   lcd: 'https://bombay-lcd.terra.dev',
 };
 
