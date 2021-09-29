@@ -7,11 +7,12 @@ import { CalcService } from '../../services/calc.service';
 import { InfoService } from '../../services/info.service';
 import { div, floor18Decimal, floorSixDecimal, lte, times } from '../../libs/math';
 import { CONFIG } from '../../consts/config';
-import { Coin, Coins, Denom, MsgExecuteContract } from '@terra-money/terra.js';
+import { Coin, Coins, MsgExecuteContract } from '@terra-money/terra.js';
 import { debounce } from 'utils-decorators';
 import { toBase64 } from '../../libs/base64';
 import { fade } from '../../consts/animations';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import {Denom} from '../../consts/denom';
 
 @Component({
   selector: 'app-trade',
