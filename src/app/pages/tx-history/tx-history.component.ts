@@ -318,7 +318,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         id: item.id
       };
     } else if (lastExecuteMsg.send && lastExecuteMsg.send.msg.poll_start && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
-      const poll_start = JSON.parse(atob(item.tx.value.msg[lastIndex]?.value?.execute_msg.send.msg)).poll_start;
+      const poll_start = this.ensureBase64toObject(this.ensureBase64toObject(item.tx.value.msg[lastIndex]?.value?.execute_msg)?.send?.msg)?.poll_start;
       return {
         desc: 'Created Poll ' + poll_start.title,
         txhash: item.txhash,
@@ -336,13 +336,13 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       };
     } else if (item.tx.value.msg.length >= 3
       && lastExecuteMsg.send
-      && item.tx.value.msg[0]?.value?.execute_msg.mint
+      && this.ensureBase64toObject(item.tx.value.msg[0]?.value?.execute_msg)?.mint
       && item.tx.value.msg[0]?.value?.contract === this.terrajs.settings.gov
-      && item.tx.value.msg[1]?.value?.execute_msg.withdraw
+      && this.ensureBase64toObject(item.tx.value.msg[1]?.value?.execute_msg)?.withdraw
     ) {
       let descTemp = '';
       for (let i = 1; i <= lastIndex; i++) {
-        const executeMsg = item.tx.value.msg[i]?.value?.execute_msg;
+        const executeMsg = this.ensureBase64toObject(item.tx.value.msg[i]?.value?.execute_msg);
         if (executeMsg.withdraw) {
           const matchFarmInfo = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === item.tx.value.msg[i]?.value?.contract);
           if (matchFarmInfo) {
