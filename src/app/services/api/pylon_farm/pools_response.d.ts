@@ -5,13 +5,25 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
 /**
  * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
  *
  * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
  */
 export type Decimal = string;
+/**
+ * A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.
+ *
+ * # Examples
+ *
+ * Use `from` to create instances of this and `u128` to get the value out:
+ *
+ * ``` # use cosmwasm_std::Uint128; let a = Uint128::from(123u128); assert_eq!(a.u128(), 123);
+ *
+ * let b = Uint128::from(42u64); assert_eq!(b.u128(), 42);
+ *
+ * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
+ */
 export type Uint128 = string;
 
 export interface PoolsResponse {
@@ -19,14 +31,14 @@ export interface PoolsResponse {
   [k: string]: unknown;
 }
 export interface PoolItem {
-  asset_token: HumanAddr;
+  asset_token: string;
   auto_compound: boolean;
   auto_spec_share_index: Decimal;
   farm_share: Uint128;
   farm_share_index: Decimal;
   reinvest_allowance: Uint128;
   stake_spec_share_index: Decimal;
-  staking_token: HumanAddr;
+  staking_token: string;
   state_spec_share_index: Decimal;
   total_auto_bond_share: Uint128;
   total_stake_bond_amount: Uint128;

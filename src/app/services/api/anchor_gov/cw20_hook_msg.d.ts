@@ -10,19 +10,16 @@ export type Cw20HookMsg =
       stake_voting_tokens: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       create_poll: {
         description: string;
-        execute_msgs?: ExecuteMsg[] | null;
+        execute_msgs?: PollExecuteMsg[] | null;
         link?: string | null;
         title: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     };
-export type HumanAddr = string;
 /**
  * Binary is a wrapper around Vec<u8> to add base64 de/serialization with serde. It also adds some helper methods to help encode inline.
  *
@@ -30,8 +27,8 @@ export type HumanAddr = string;
  */
 export type Binary = string;
 
-export interface ExecuteMsg {
-  contract: HumanAddr;
+export interface PollExecuteMsg {
+  contract: string;
   msg: Binary;
   order: number;
   [k: string]: unknown;

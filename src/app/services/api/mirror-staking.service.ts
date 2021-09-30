@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { ConfigResponse } from './mirror_staking/config_response';
-import { HandleMsg } from './mirror_staking/handle_msg';
+import { ExecuteMsg } from './mirror_staking/execute_msg';
 import { PoolInfoResponse } from './mirror_staking/pool_info_response';
 import { QueryMsg } from './mirror_staking/query_msg';
 import { RewardInfoResponse } from './mirror_staking/reward_info_response';
@@ -24,7 +24,7 @@ export class MirrorStakingService {
     return this.wasm.query(this.terrajs.settings.mirrorStaking, msg);
   }
 
-  handle(msg: HandleMsg, opts?: ExecuteOptions) {
+  handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
     return this.wasm.execute(this.terrajs.settings.mirrorStaking, msg, opts);
   }
 }

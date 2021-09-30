@@ -24,9 +24,10 @@ export interface ISettings {
   lcd: string;
   fcd: string;
   mirrorGraph: string;
-  anchorGraph: string;
+  anchorAPI: string;
   pylonAPI: string;
   chainID: string;
+  finder: string;
 }
 export const networks: Record<string, ISettings> = {
   mainnet: {
@@ -55,9 +56,10 @@ export const networks: Record<string, ISettings> = {
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
-    anchorGraph: 'anchor',
+    anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
-    chainID: 'columbus-4',
+    chainID: 'columbus-5',
+    finder: 'finder.extraterrestrial.money',
   },
   testnet: {
     specToken: 'terra1kvsxd94ue6f4rtchv2l6me5k07uh26s7637cza',
@@ -82,11 +84,12 @@ export const networks: Record<string, ISettings> = {
     pylonStaking: 'terra17av0lfhqymusm6j9jpepzerg6u54q57jp7xnrz',
     pylonToken: 'terra1lqm5tutr5xcw9d5vc4457exa3ghd4sr9mzwdex',
     pylonFarm: 'terra1hgjp2yjqe7ngzsx283tm7ch8xcsvk5c8mdj2tw',
-    lcd: 'https://tequila-lcd.terra.dev',
-    fcd: 'https://tequila-fcd.terra.dev',
+    lcd: 'https://bombay-lcd.terra.dev',
+    fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
-    anchorGraph: 'anchorTest',
+    anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
-    chainID: 'tequila-0004',
+    chainID: 'bombay-12',
+    finder: 'finder.terra.money',
   },
 };

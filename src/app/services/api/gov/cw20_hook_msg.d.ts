@@ -9,26 +9,22 @@ export type Cw20HookMsg =
   | {
       poll_start: {
         description: string;
-        execute_msgs: ExecuteMsg[];
+        execute_msgs: PollExecuteMsg[];
         link?: string | null;
         title: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       stake_tokens: {
-        staker_addr?: HumanAddr | null;
+        staker_addr?: string | null;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     };
-export type ExecuteMsg = {
+export type PollExecuteMsg = {
   execute: {
-    contract: HumanAddr;
+    contract: string;
     msg: string;
     [k: string]: unknown;
   };
-  [k: string]: unknown;
 };
-export type HumanAddr = string;

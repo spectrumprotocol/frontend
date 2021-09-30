@@ -9,5 +9,4 @@ export type Cw20HookMsg = {
   bond: {
     [k: string]: unknown;
   };
-  [k: string]: unknown;
 };

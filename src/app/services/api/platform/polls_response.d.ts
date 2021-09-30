@@ -5,14 +5,12 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
-export type ExecuteMsg = {
+export type PollExecuteMsg = {
   execute: {
-    contract: HumanAddr;
+    contract: string;
     msg: string;
     [k: string]: unknown;
   };
-  [k: string]: unknown;
 };
 export type PollStatus = "in_progress" | "passed" | "rejected" | "executed" | "expired";
 
@@ -21,10 +19,10 @@ export interface PollsResponse {
   [k: string]: unknown;
 }
 export interface PollInfo {
-  creator: HumanAddr;
+  creator: string;
   description: string;
   end_height: number;
-  execute_msgs: ExecuteMsg[];
+  execute_msgs: PollExecuteMsg[];
   id: number;
   link?: string | null;
   no_votes: number;

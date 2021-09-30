@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Coin, Coins, MsgExecuteContract, MsgInstantiateContract, MsgMigrateContract, MsgUpdateContractOwner } from '@terra-money/terra.js';
+import { Coin, Coins, MsgExecuteContract, MsgInstantiateContract, MsgMigrateContract, MsgUpdateContractAdmin } from '@terra-money/terra.js';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 
 @Injectable({
@@ -19,15 +19,13 @@ export class WasmService {
     return this.terrajs.get(`wasm/contracts/${contract}/store/raw`, { key, subKey });
   }
 
-  instantiate(codeId: number, initMsg: object, sender: string, admin: string, migratable?: boolean, opts?: ExecuteOptions) {
+  instantiate(codeId: number, initMsg: object, opts?: ExecuteOptions) {
     return this.terrajs.post(new MsgInstantiateContract(
+      this.terrajs.address,
       this.terrajs.address,
       codeId,
       initMsg,
-      new Coins(opts?.coin ? [Coin.fromData(opts.coin)] : []),
-      migratable,
-      sender,
-      admin
+      new Coins(opts?.coin ? [Coin.fromData(opts.coin)] : [])
     ));
   }
 
@@ -40,18 +38,17 @@ export class WasmService {
     ));
   }
 
-  migrate(contract: string, newCodeId: number, migrateMsg: object, admin: string) {
+  migrate(contract: string, newCodeId: number, migrateMsg: object) {
     return this.terrajs.post(new MsgMigrateContract(
       this.terrajs.address,
       contract,
       newCodeId,
       migrateMsg,
-      admin
     ));
   }
 
   updateOwner(contract: string, newOwner: string) {
-    return this.terrajs.post(new MsgUpdateContractOwner(
+    return this.terrajs.post(new MsgUpdateContractAdmin(
       this.terrajs.address,
       newOwner,
       contract

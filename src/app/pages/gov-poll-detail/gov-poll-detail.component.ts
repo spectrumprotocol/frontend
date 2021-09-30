@@ -52,12 +52,12 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
     this.$gaService.event('VIEW_GOV_POLL', poll_id.toString());
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
-        const height = await this.terrajs.getHeight();
-        const stateTask = this.gov.query({ state: { height } })
+        const stateTask = this.gov.query({ state: { } })
           .then(it => this.staked = +it.total_staked);
         const configTask = this.gov.config()
           .then(it => this.config = it);
         const pollTask = this.gov.query({ poll: { poll_id } });
+        const height = await this.terrajs.getHeight();
         Promise.all([stateTask, configTask, pollTask])
           .then(([state, config, poll]) => this.resetPoll(poll, connected, height));
       });

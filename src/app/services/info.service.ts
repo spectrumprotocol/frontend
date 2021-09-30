@@ -6,7 +6,6 @@ import { TerraSwapService } from './api/terraswap.service';
 import { PoolResponse } from './api/terraswap_pair/pool_response';
 import { div, plus, times } from '../libs/math';
 import { CONFIG } from '../consts/config';
-import { Denom } from '@terra-money/terra.js';
 import { TerraSwapFactoryService } from './api/terraswap-factory.service';
 import { GovService } from './api/gov.service';
 import { FarmInfoService, FARM_INFO_SERVICE, PairStat, PoolInfo, RewardInfoResponseItem } from './farm_info/farm-info.service';
@@ -18,6 +17,7 @@ import { LpBalancePipe } from '../pipes/lp-balance.pipe';
 import { Vault } from '../pages/vault/vault.component';
 import { HttpClient } from '@angular/common/http';
 import { memoize } from 'utils-decorators';
+import {Denom} from '../consts/denom';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -256,8 +256,7 @@ export class InfoService {
   private async refreshGovStat(stat: Stat) {
     const poolTask = this.refreshPool();
 
-    const height = await this.terrajs.getHeight();
-    const state = await this.gov.query({ state: { height } });
+    const state = await this.gov.query({ state: { } });
     stat.govStaked = state.total_staked;
 
     await poolTask;
@@ -390,6 +389,9 @@ export class InfoService {
     }
     this.allVaults = [];
     for (const key of Object.keys(this.poolInfos)) {
+      if (!this.poolInfos[key]) {
+        continue;
+      }
       const pairStat = this.stat?.pairs[key];
       const poolApr = pairStat?.poolApr || 0;
       const poolApy = pairStat?.poolApy || 0;

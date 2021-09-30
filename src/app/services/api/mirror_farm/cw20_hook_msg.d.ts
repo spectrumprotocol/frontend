@@ -7,14 +7,12 @@
 
 export type Cw20HookMsg = {
   bond: {
-    asset_token: HumanAddr;
+    asset_token: string;
     compound_rate?: Decimal | null;
-    staker_addr?: HumanAddr | null;
+    staker_addr?: string | null;
     [k: string]: unknown;
   };
-  [k: string]: unknown;
 };
-export type HumanAddr = string;
 /**
  * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
  *

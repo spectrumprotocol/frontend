@@ -10,27 +10,23 @@ export type QueryMsg =
       config: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       state: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       staker: {
-        address: HumanAddr;
+        address: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       poll: {
         poll_id: number;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       polls: {
@@ -40,18 +36,15 @@ export type QueryMsg =
         start_after?: number | null;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       voters: {
         limit?: number | null;
         order_by?: OrderBy | null;
         poll_id: number;
-        start_after?: HumanAddr | null;
+        start_after?: string | null;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     };
-export type HumanAddr = string;
-export type PollStatus = "in_progress" | "passed" | "rejected" | "executed" | "expired";
+export type PollStatus = "in_progress" | "passed" | "rejected" | "executed" | "expired" | "failed";
 export type OrderBy = "asc" | "desc";

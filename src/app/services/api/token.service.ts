@@ -4,7 +4,7 @@ import { AllowanceResponse } from './token/allowance_response';
 import { AllAccountsResponse } from './token/all_accounts_response';
 import { AllAllowancesResponse } from './token/all_allowances_response';
 import { BalanceResponse } from './token/balance_response';
-import { HandleMsg } from './token/handle_msg';
+import { ExecuteMsg } from './token/execute_msg';
 import { MinterResponse } from './token/minter_response';
 import { QueryMsg } from './token/query_msg';
 import { TokenInfoResponse } from './token/token_info_response';
@@ -38,7 +38,7 @@ export class TokenService {
     return this.wasm.query(contract, msg);
   }
 
-  handle(contract: string, msg: HandleMsg, opts?: ExecuteOptions) {
+  handle(contract: string, msg: ExecuteMsg, opts?: ExecuteOptions) {
     return this.wasm.execute(contract, msg, opts);
   }
 }

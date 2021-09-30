@@ -15,7 +15,7 @@
                         <div class="row gy-3">
                             <div class="col-12">
                                 <h6 class="card-subtitle">Creator</h6>
-                                <a [href]="'https://finder.extraterrestrial.money/' + terrajs.settings.chainID + '/account/' + poll.creator"
+                                <a href="https://{{terrajs.settings.finder}}/{{terrajs.settings.chainID}}/account/{{poll.creator}}"
                                     target="_blank">{{ poll.creator }}</a>
                             </div>
                             <div class="col-12">
@@ -29,7 +29,7 @@
                             <div class="col-12" *ngFor="let item of poll.execute_msgs || []; let i = index">
                                 <h6 class="card-subtitle">Execution message {{i + 1}}</h6>
                                 <span>Contract Address: </span><a
-                                    [href]="'https://finder.extraterrestrial.money/' + terrajs.settings.chainID + '/address/' + item.execute.contract"
+                                    href="https://{{terrajs.settings.finder}}/{{terrajs.settings.chainID}}/address/{{item.execute.contract}}"
                                     target="_blank">{{ item.execute.contract }}</a>
                                 <pre class="json" [innerHtml]="item.execute.msg | jsonParse | prettyjson:2"></pre>
                             </div>

@@ -3,7 +3,7 @@ import { memoize } from 'utils-decorators';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { BalanceResponse } from './gov/balance_response';
 import { ConfigInfo } from './gov/config_info';
-import { HandleMsg } from './gov/handle_msg';
+import { ExecuteMsg } from './gov/execute_msg';
 import { PollInfo, PollsResponse } from './gov/polls_response';
 import { QueryMsg } from './gov/query_msg';
 import { StateInfo } from './gov/state_info';
@@ -21,11 +21,10 @@ export class GovService {
     private wasm: WasmService,
   ) { }
 
-  balance(address?: string, height?: number) {
+  balance(address?: string) {
     return this.query({
       balance: {
         address: address || this.terrajs.address,
-        height,
       }
     });
   }
@@ -51,7 +50,7 @@ export class GovService {
     return this.wasm.query(this.terrajs.settings.gov, msg);
   }
 
-  handle(msg: HandleMsg, opts?: ExecuteOptions) {
+  handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
     return this.wasm.execute(this.terrajs.settings.gov, msg, opts);
   }
 }

@@ -5,7 +5,6 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
 /**
  * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
  *
@@ -16,7 +15,7 @@ export type Decimal = string;
 export interface ConfigInfo {
   effective_delay: number;
   expiration_period: number;
-  owner: HumanAddr;
+  owner: string;
   quorum: Decimal;
   threshold: Decimal;
   voting_period: number;

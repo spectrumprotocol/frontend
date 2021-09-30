@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 import { MdbModalService } from 'mdb-angular-ui-kit';
 import { filter, startWith } from 'rxjs/operators';
-import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus } from '@terra-money/wallet-provider';
+import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus, getChainOptions } from '@terra-money/wallet-provider';
 import { checkAvailableExtension } from '@terra-money/wallet-provider/utils/checkAvailableExtension';
 import { ModalService } from './modal.service';
 import { throttleAsync } from 'utils-decorators';
@@ -42,23 +42,6 @@ interface ConnectedState {
   wallets?: WalletInfo[];
 }
 
-const mainnet: NetworkInfo = {
-  name: 'mainnet',
-  chainID: 'columbus-4',
-  lcd: 'https://lcd.terra.dev',
-};
-
-const testnet: NetworkInfo = {
-  name: 'testnet',
-  chainID: 'tequila-0004',
-  lcd: 'https://tequila-lcd.terra.dev',
-};
-
-const walletConnectChainIds: Record<number, NetworkInfo> = {
-  0: testnet,
-  1: mainnet,
-};
-
 @Injectable({
   providedIn: 'root'
 })
@@ -80,13 +63,15 @@ export class TerrajsService implements OnDestroy {
     private modal: ModalService,
     private modalService: MdbModalService,
   ) {
-    this.walletController = new WalletController({
-      defaultNetwork: mainnet,
-      walletConnectChainIds,
-      connectorOpts: {
-        bridge: 'https://walletconnect.terra.dev/'
-      },
-      waitingChromeExtensionInstallCheck: 1000
+    getChainOptions().then(chainOptions => {
+      this.walletController = new WalletController({
+        defaultNetwork: chainOptions.defaultNetwork,
+        walletConnectChainIds: chainOptions.walletConnectChainIds,
+        connectorOpts: {
+          bridge: 'https://walletconnect.terra.dev/'
+        },
+        waitingChromeExtensionInstallCheck: 1000
+      });
     });
     this.subscription = this.heightChanged.subscribe(() => this.height++);
   }
@@ -95,15 +80,22 @@ export class TerrajsService implements OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  private async getWalletController() {
+    while (!this.walletController) {
+      await new Promise(ok => setTimeout(() => ok('')));
+    }
+    return this.walletController;
+  }
+
   async checkInstalled() {
-    await checkAvailableExtension(1500);
-    const types = await firstValueFrom(this.walletController.availableInstallTypes());
+    await checkAvailableExtension(1500, true);
+    const types = await firstValueFrom((await this.getWalletController()).availableInstallTypes());
     return types.length === 0;
   }
 
-  getConnectTypes() {
-    return firstValueFrom(this.walletController.availableConnectTypes())
-      .then(it => it.filter(t => t !== 'READONLY'));
+  async getConnectTypes() {
+    const types = firstValueFrom((await this.getWalletController()).availableConnectTypes());
+    return (await types).filter(t => t !== 'READONLY');
   }
 
   async getHeight(force?: boolean): Promise<number> {

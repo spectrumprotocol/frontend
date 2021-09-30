@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { GovService } from '../api/gov.service';
 import { SpecFarmService } from '../api/spec-farm.service';
-import { TerraSwapService } from '../api/terraswap.service';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem } from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
@@ -18,7 +17,6 @@ export class SpecFarmInfoService implements FarmInfoService {
     private gov: GovService,
     private specFarm: SpecFarmService,
     private terrajs: TerrajsService,
-    private terraSwap: TerraSwapService,
   ) { }
 
   get farmContract() {
@@ -66,11 +64,9 @@ export class SpecFarmInfoService implements FarmInfoService {
   }
 
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const height = await this.terrajs.getHeight();
     const rewardInfo = await this.specFarm.query({
       reward_info: {
         staker_addr: this.terrajs.address,
-        height,
       }
     });
     for (const it of rewardInfo.reward_infos) {

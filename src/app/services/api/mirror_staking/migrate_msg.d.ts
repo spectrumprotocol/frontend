@@ -5,16 +5,14 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
-
 /**
  * We currently take no arguments for migrations
  */
 export interface MigrateMsg {
   base_denom: string;
-  mint_contract: HumanAddr;
-  oracle_contract: HumanAddr;
+  mint_contract: string;
+  oracle_contract: string;
   premium_min_update_interval: number;
-  terraswap_factory: HumanAddr;
+  terraswap_factory: string;
   [k: string]: unknown;
 }

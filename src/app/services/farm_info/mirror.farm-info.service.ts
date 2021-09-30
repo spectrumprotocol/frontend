@@ -5,7 +5,6 @@ import { GovService } from '../api/gov.service';
 import { MirrorFarmService } from '../api/mirror-farm.service';
 import { MirrorStakingService } from '../api/mirror-staking.service';
 import { RewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
-import { TerraSwapService } from '../api/terraswap.service';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo, PoolItem } from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
@@ -24,7 +23,6 @@ export class MirrorFarmInfoService implements FarmInfoService {
     private mirrorFarm: MirrorFarmService,
     private mirrorStaking: MirrorStakingService,
     private terrajs: TerrajsService,
-    private terraSwap: TerraSwapService,
   ) { }
 
   get farmContract() {
@@ -120,11 +118,9 @@ export class MirrorFarmInfoService implements FarmInfoService {
   }
 
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const height = await this.terrajs.getHeight();
     const rewardInfo = await this.mirrorFarm.query({
       reward_info: {
         staker_addr: this.terrajs.address,
-        height,
       }
     });
     return rewardInfo.reward_infos;

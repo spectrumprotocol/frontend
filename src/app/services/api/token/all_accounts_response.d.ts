@@ -5,9 +5,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
-
 export interface AllAccountsResponse {
-  accounts: HumanAddr[];
+  accounts: string[];
   [k: string]: unknown;
 }

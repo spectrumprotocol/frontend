@@ -10,26 +10,20 @@ export type QueryMsg =
       config: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       pools: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       reward_info: {
-        height: number;
-        staker_addr: HumanAddr;
+        staker_addr: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       state: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     };
-export type HumanAddr = string;

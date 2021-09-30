@@ -5,37 +5,33 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HandleMsg =
+export type ExecuteMsg =
   | {
       poll_end: {
         poll_id: number;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       poll_execute: {
         poll_id: number;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       poll_expire: {
         poll_id: number;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       poll_start: {
         description: string;
-        execute_msgs: ExecuteMsg[];
+        execute_msgs: PollExecuteMsg[];
         link?: string | null;
         title: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       poll_vote: {
@@ -43,37 +39,32 @@ export type HandleMsg =
         vote: VoteOption;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       update_config: {
         effective_delay?: number | null;
         expiration_period?: number | null;
-        owner?: HumanAddr | null;
+        owner?: string | null;
         quorum?: Decimal | null;
         threshold?: Decimal | null;
         voting_period?: number | null;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       upsert_board: {
-        address: HumanAddr;
+        address: string;
         weight: number;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     };
-export type ExecuteMsg = {
+export type PollExecuteMsg = {
   execute: {
-    contract: HumanAddr;
+    contract: string;
     msg: string;
     [k: string]: unknown;
   };
-  [k: string]: unknown;
 };
-export type HumanAddr = string;
 export type VoteOption = "yes" | "no";
 /**
  * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0

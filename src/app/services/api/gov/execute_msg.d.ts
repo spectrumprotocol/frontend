@@ -5,33 +5,29 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HandleMsg =
+export type ExecuteMsg =
   | {
       mint: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       poll_end: {
         poll_id: number;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       poll_execute: {
         poll_id: number;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       poll_expire: {
         poll_id: number;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       poll_vote: {
@@ -40,46 +36,50 @@ export type HandleMsg =
         vote: VoteOption;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       receive: Cw20ReceiveMsg;
-      [k: string]: unknown;
     }
   | {
       update_config: {
         effective_delay?: number | null;
         expiration_period?: number | null;
-        mint_end?: number | null;
-        mint_per_block?: Uint128 | null;
-        mint_start?: number | null;
-        owner?: HumanAddr | null;
+        owner?: string | null;
         proposal_deposit?: Uint128 | null;
         quorum?: Decimal | null;
-        spec_token?: HumanAddr | null;
+        spec_token?: string | null;
         threshold?: Decimal | null;
         voting_period?: number | null;
-        warchest_address?: HumanAddr | null;
-        warchest_ratio?: Decimal | null;
+        warchest_address?: string | null;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       upsert_vault: {
-        vault_address: HumanAddr;
+        vault_address: string;
         weight: number;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       withdraw: {
         amount?: Uint128 | null;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     };
+/**
+ * A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.
+ *
+ * # Examples
+ *
+ * Use `from` to create instances of this and `u128` to get the value out:
+ *
+ * ``` # use cosmwasm_std::Uint128; let a = Uint128::from(123u128); assert_eq!(a.u128(), 123);
+ *
+ * let b = Uint128::from(42u64); assert_eq!(b.u128(), 42);
+ *
+ * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
+ */
 export type Uint128 = string;
 export type VoteOption = "yes" | "no";
 /**
@@ -88,7 +88,6 @@ export type VoteOption = "yes" | "no";
  * This is only needed as serde-json-{core,wasm} has a horrible encoding for Vec<u8>
  */
 export type Binary = string;
-export type HumanAddr = string;
 /**
  * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
  *
@@ -97,11 +96,11 @@ export type HumanAddr = string;
 export type Decimal = string;
 
 /**
- * Cw20ReceiveMsg should be de/serialized under `Receive()` variant in a HandleMsg
+ * Cw20ReceiveMsg should be de/serialized under `Receive()` variant in a ExecuteMsg
  */
 export interface Cw20ReceiveMsg {
   amount: Uint128;
-  msg?: Binary | null;
-  sender: HumanAddr;
+  msg: Binary;
+  sender: string;
   [k: string]: unknown;
 }

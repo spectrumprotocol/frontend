@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { BalanceResponse } from './wallet/balance_response';
 import { ConfigInfo } from './wallet/config_info';
-import { HandleMsg } from './wallet/handle_msg';
+import { ExecuteMsg } from './wallet/execute_msg';
 import { QueryMsg } from './wallet/query_msg';
 import { SharesResponse } from './wallet/shares_response';
 import { StateInfo } from './wallet/state_info';
@@ -18,11 +18,10 @@ export class WalletService {
     private wasm: WasmService,
   ) { }
 
-  balance(contract: string, address: string, height: number) {
+  balance(contract: string, address: string) {
     return this.query(contract, {
       balance: {
         address: address || this.terrajs.address,
-        height,
       }
     });
   }
@@ -35,7 +34,7 @@ export class WalletService {
     return this.wasm.query(contract, msg);
   }
 
-  handle(contract: string, msg: HandleMsg, opts?: ExecuteOptions) {
+  handle(contract: string, msg: ExecuteMsg, opts?: ExecuteOptions) {
     return this.wasm.execute(contract, msg, opts);
   }
 }

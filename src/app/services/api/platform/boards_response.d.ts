@@ -5,14 +5,12 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HumanAddr = string;
-
 export interface BoardsResponse {
   boards: BoardInfo[];
   [k: string]: unknown;
 }
 export interface BoardInfo {
-  address: HumanAddr;
+  address: string;
   weight: number;
   [k: string]: unknown;
 }

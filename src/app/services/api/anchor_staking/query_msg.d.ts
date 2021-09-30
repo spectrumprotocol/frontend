@@ -10,21 +10,17 @@ export type QueryMsg =
       config: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       state: {
         block_height?: number | null;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   | {
       staker_info: {
         block_height?: number | null;
-        staker: HumanAddr;
+        staker: string;
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     };
-export type HumanAddr = string;

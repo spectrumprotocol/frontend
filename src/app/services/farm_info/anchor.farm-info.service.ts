@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
 import BigNumber from 'bignumber.js';
 import { AnchorFarmService } from '../api/anchor-farm.service';
 import { AnchorStakingService } from '../api/anchor-staking.service';
 import { PoolItem } from '../api/anchor_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/anchor_farm/reward_info_response';
 import { GovService } from '../api/gov.service';
-import { TerraSwapService } from '../api/terraswap.service';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class AnchorFarmInfoService implements FarmInfoService {
@@ -22,9 +21,8 @@ export class AnchorFarmInfoService implements FarmInfoService {
     private gov: GovService,
     private anchorFarm: AnchorFarmService,
     private terrajs: TerrajsService,
-    private terraSwap: TerraSwapService,
     private anchorStaking: AnchorStakingService,
-    private apollo: Apollo
+    private httpClient: HttpClient,
   ) { }
 
   get farmContract() {
@@ -44,38 +42,18 @@ export class AnchorFarmInfoService implements FarmInfoService {
     const height = await this.terrajs.getHeight();
     const rewardInfoTask = this.anchorStaking.query({ staker_info: { block_height: +height, staker: this.terrajs.settings.anchorFarm } });
     const farmConfigTask = this.anchorFarm.query({ config: {} });
-    const apollo = this.apollo.use(this.terrajs.settings.anchorGraph);
-    const anchorStatTask = apollo.query<any>({
-      query: gql`query {
-        borrowerDistributionAPYs: AnchorBorrowerDistributionAPYs(
-          Order: DESC
-          Limit: 1
-        ) {
-          Height
-          Timestamp
-          DistributionAPY
-        }
-        govRewards: AnchorGovRewardRecords(Order: DESC, Limit: 1) {
-          CurrentAPY
-          Timestamp
-          Height
-        }
-        lpRewards: AnchorLPRewards(Order: DESC, Limit: 1) {
-          Height
-          Timestamp
-          APY
-        }
-      }`
-    }).toPromise();
+    const anchorStatTask = this.httpClient.get<any>(this.terrajs.settings.anchorAPI + '/ust-lp-reward').toPromise();
+    const anchorGovTask = this.httpClient.get<any>(this.terrajs.settings.anchorAPI + '/gov-reward').toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.anchorFarm)?.weight || 0;
     const anchorStat = await anchorStatTask;
+    const anchorGov = await anchorGovTask;
     const pairs: Record<string, PairStat> = {};
 
-    const poolApr = +(anchorStat.data.lpRewards[0].APY || 0);
+    const poolApr = +(anchorStat?.apy || 0);
     pairs[this.terrajs.settings.anchorToken] = createPairStat(poolApr, this.terrajs.settings.anchorToken);
 
     const rewardInfo = await rewardInfoTask;
@@ -104,7 +82,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 365 + 1) ** 365 - 1,
-        farmApr: anchorStat.data.govRewards[0].CurrentAPY,
+        farmApr: +(anchorGov?.current_apy || 0),
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
@@ -114,11 +92,9 @@ export class AnchorFarmInfoService implements FarmInfoService {
   }
 
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const height = await this.terrajs.getHeight(true);
     const rewardInfo = await this.anchorFarm.query({
       reward_info: {
         staker_addr: this.terrajs.address,
-        height: +height + 2,
       }
     });
     return rewardInfo.reward_infos;
