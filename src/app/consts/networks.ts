@@ -24,7 +24,7 @@ export interface ISettings {
   lcd: string;
   fcd: string;
   mirrorGraph: string;
-  anchorGraph: string;
+  anchorAPI: string;
   pylonAPI: string;
   chainID: string;
   finder: string;
@@ -56,7 +56,7 @@ export const networks: Record<string, ISettings> = {
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
-    anchorGraph: 'anchor',
+    anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
     chainID: 'columbus-5',
     finder: 'finder.extraterrestrial.money',
@@ -87,7 +87,7 @@ export const networks: Record<string, ISettings> = {
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
-    anchorGraph: 'anchorTest',
+    anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
     chainID: 'bombay-12',
     finder: 'finder.terra.money',

@@ -98,12 +98,14 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       : new BigNumber(this.depositAmt)
         .times(this.amountUST)
         .sqrt();
-    const depositTVL = new BigNumber(amountUST).multipliedBy('2');
-    const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
-      grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy('0.001'));
-    this.netLp = grossLp.minus(depositFee).toString();
+    if (this.vault.pairStat) {
+      const depositTVL = new BigNumber(amountUST).multipliedBy('2');
+      const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
+        grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy('0.001'));
+      this.netLp = grossLp.minus(depositFee).toString();
+      this.depositFee = depositFee.toString();
+    }
     this.grossLp = grossLp.toString();
-    this.depositFee = depositFee.toString();
 
     const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountUST.toString(), denom: 'uusd' }));
     this.amountUST = amountUST.plus(tax.amount.toString())
