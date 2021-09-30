@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Coin, Coins, Denom, MsgExecuteContract } from '@terra-money/terra.js';
+import { Coin, Coins, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../consts/animations';
 import { CONFIG } from '../../../consts/config';
 import { toBase64 } from '../../../libs/base64';
@@ -20,6 +20,7 @@ import {TerraSwapService} from '../../../services/api/terraswap.service';
 import {StakerService} from '../../../services/api/staker.service';
 
 const DEPOSIT_FEE = '0.001';
+import {Denom} from '../../../consts/denom';
 
 @Component({
   selector: 'app-asset-card',
