@@ -471,7 +471,6 @@
             </div>
           </form>
         </mdb-tab>
-<!--        //TODO bring back zap button-->
         <mdb-tab title="Unstake gov tokens">
           <div class="small mt-6">
             All your rewards are automatically staked in gov vaults to earn gov income.
@@ -488,17 +487,39 @@
             <div class="col text-end">
               {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit }}</div>
           </div>
-          <div *ngIf="vault.poolInfo.farm === 'Spectrum'" class="d-grid mt-3">
-            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake SPEC</button>
+          <div class="mt-3 row g-2" *ngIf="vault.poolInfo.farm === 'Spectrum'">
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake SPEC</button>
+            </div>
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doMoveToGov()">Move SPEC to Gov</button>
+            </div>
           </div>
-          <div *ngIf="vault.poolInfo.farm === 'Mirror'" class="d-grid mt-3">
-            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake MIR + SPEC</button>
-            <button (click)="doClaimReward(true)" class="btn btn-secondary mt-2" type="submit">Unstake MIR + SPEC
-              from ALL Mirror vaults</button>
+          <div class="mt-3 row g-2" *ngIf="vault.poolInfo.farm === 'Mirror'">
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake MIR + SPEC</button>
+            </div>
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doMoveToGov()">Move MIR + SPEC to Govs</button>
+            </div>
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doClaimReward(true)">Unstake MIR + SPEC
+                from all Mirror pools</button>
+            </div>
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doMoveToGov(true)">Move MIR + SPEC
+                from all Mirror pools to Govs</button>
+            </div>
           </div>
-          <div *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'" class="d-grid mt-3">
-            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake {{vault.symbol}} +
-              SPEC</button>
+          <div class="mt-3 row g-2" *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'">
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doClaimReward()">Unstake {{vault.symbol}} +
+                SPEC</button>
+            </div>
+            <div class="d-grid col-md-6">
+              <button type="submit" class="btn btn-primary" (click)="doMoveToGov()">Move {{vault.symbol}} +
+                SPEC to Govs</button>
+            </div>
           </div>
         </mdb-tab>
       </mdb-tabs>
