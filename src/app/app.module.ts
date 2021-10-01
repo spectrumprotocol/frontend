@@ -132,7 +132,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

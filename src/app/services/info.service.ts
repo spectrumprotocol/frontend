@@ -6,7 +6,6 @@ import { TerraSwapService } from './api/terraswap.service';
 import { PoolResponse } from './api/terraswap_pair/pool_response';
 import { div, plus, times } from '../libs/math';
 import { CONFIG } from '../consts/config';
-import { Denom } from '@terra-money/terra.js';
 import { TerraSwapFactoryService } from './api/terraswap-factory.service';
 import { GovService } from './api/gov.service';
 import { FarmInfoService, FARM_INFO_SERVICE, PairStat, PoolInfo, RewardInfoResponseItem } from './farm_info/farm-info.service';
@@ -18,6 +17,7 @@ import { LpBalancePipe } from '../pipes/lp-balance.pipe';
 import { Vault } from '../pages/vault/vault.component';
 import { HttpClient } from '@angular/common/http';
 import { memoize } from 'utils-decorators';
+import {Denom} from '../consts/denom';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -287,6 +287,8 @@ export class InfoService {
       .then(it => this.tokenBalances[assetToken] = it.balance));
     tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
       .then(it => this.poolResponses[assetToken] = it));
+    tasks.push(this.token.balance(pairInfo.liquidity_token)
+      .then(it => this.lpTokenBalances[pairInfo.liquidity_token] = it.balance));
     await Promise.all(tasks);
   }
 

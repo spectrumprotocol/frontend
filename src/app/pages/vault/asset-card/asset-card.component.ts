@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Coin, Coins, Denom, MsgExecuteContract } from '@terra-money/terra.js';
+import { Coin, Coins, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../consts/animations';
 import { CONFIG } from '../../../consts/config';
 import { toBase64 } from '../../../libs/base64';
@@ -20,6 +20,7 @@ import {TerraSwapService} from '../../../services/api/terraswap.service';
 import {StakerService} from '../../../services/api/staker.service';
 
 const DEPOSIT_FEE = '0.001';
+import {Denom} from '../../../consts/denom';
 
 @Component({
   selector: 'app-asset-card',
@@ -44,6 +45,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   depositType: 'compound'|'stake'|'mixed';
   depositMode: 'tokenust'|'lp'|'ust' = 'tokenust';
+  withdrawMode: 'tokenust'|'lp' = 'tokenust';
 
   withdrawAmt: number;
   grossLpTokenUST: string;
@@ -63,7 +65,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   height: number;
 
   private heightChanged: Subscription;
-  auto_compound_percent = 50;
+  auto_compound_percent_deposit = 50;
+  auto_compound_percent_reallocate = 50;
   ngx_slider_option: NgxSliderOptions = {
     animate: false,
     step: 1,
@@ -73,6 +76,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     showTicksValues: false,
     hideLimitLabels: true,
   };
+
 
 
   constructor(
@@ -164,7 +168,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     } else if (this.depositType === 'stake' || !this.vault.poolInfo.auto_compound){
       auto_compound_ratio = undefined;
     } else if (this.depositType === 'mixed'){
-      auto_compound_ratio = (this.auto_compound_percent / 100).toString();
+      auto_compound_ratio = (this.auto_compound_percent_deposit / 100).toString();
     } else {
       return;
     }
@@ -283,27 +287,31 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       return;
     }
     this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', this.vault.poolInfo.farm.toUpperCase(), this.vault.symbol + '-UST');
-    await this.terrajs.post([
-      new MsgExecuteContract(
-        this.terrajs.address,
-        this.vault.poolInfo.farmContract,
-        {
-          unbond: {
-            asset_token: this.vault.poolInfo.asset_token,
-            amount: times(this.withdrawAmt, CONFIG.UNIT),
-          }
+    const unbond =  new MsgExecuteContract(
+      this.terrajs.address,
+      this.vault.poolInfo.farmContract,
+      {
+        unbond: {
+          asset_token: this.vault.poolInfo.asset_token,
+          amount: times(this.withdrawAmt, CONFIG.UNIT),
         }
-      ),
-      new MsgExecuteContract(
-        this.terrajs.address,
-        this.vault.pairInfo.liquidity_token, {
+      }
+    );
+    const withdrawLp = new MsgExecuteContract(
+      this.terrajs.address,
+      this.vault.pairInfo.liquidity_token, {
         send: {
           amount: times(this.withdrawAmt, CONFIG.UNIT),
           contract: this.vault.pairInfo.contract_addr,
           msg: toBase64({ withdraw_liquidity: {} }),
         }
-      })
-    ]);
+      }
+    );
+    if (this.withdrawMode === 'tokenust'){
+      await this.terrajs.post([unbond, withdrawLp]);
+    } else if (this.withdrawMode === 'lp'){
+      await this.terrajs.post([unbond]);
+    }
     this.withdrawAmt = undefined;
   }
 
@@ -369,8 +377,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   }
 
-  inputAutoCompoundPercent(event: any, reversed: boolean) {
+  inputAutoCompoundPercent(event: any, reversed: boolean, target: string) {
     let value;
+    let newValue;
     if (!event?.target?.value){
       value = 0;
     } else {
@@ -380,24 +389,29 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       value = 100 - +event.target.value;
     }
     if (value < 0 && reversed){
-      this.auto_compound_percent = 0;
+      newValue = 0;
     } else if (event.target.value > 100 && reversed){
-      this.auto_compound_percent = 100;
+      newValue = 100;
     } else {
-      this.auto_compound_percent = value;
+      newValue = value;
+    }
+    if (target === 'deposit'){
+      this.auto_compound_percent_deposit = newValue;
+    } else if (target === 'reallocate'){
+      this.auto_compound_percent_reallocate = newValue;
     }
   }
 
   getMixedAutoCompoundAPY(){
-    return this.vault.pairStat?.poolApr + (this.vault.pairStat?.poolApy - this.vault.pairStat?.poolApr) * this.auto_compound_percent / 100;
+    return this.vault.pairStat?.poolApr + (this.vault.pairStat?.poolApy - this.vault.pairStat?.poolApr) * this.auto_compound_percent_deposit / 100;
   }
 
   getMixedAutoStakeAPY(){
-    return this.vault.pairStat?.poolApr + (this.vault.farmApy - this.vault.pairStat?.poolApr) * (100 - this.auto_compound_percent) / 100;
+    return this.vault.pairStat?.poolApr + (this.vault.farmApy - this.vault.pairStat?.poolApr) * (100 - this.auto_compound_percent_deposit) / 100;
   }
 
   getMixedTotalAPY() {
-    return this.vault.specApy + this.getMixedAutoCompoundAPY() * this.auto_compound_percent / 100 + this.getMixedAutoStakeAPY() * (100 - this.auto_compound_percent) / 100;
+    return this.vault.specApy + this.getMixedAutoCompoundAPY() * this.auto_compound_percent_deposit / 100 + this.getMixedAutoStakeAPY() * (100 - this.auto_compound_percent_deposit) / 100;
   }
 
   @debounce(250)
@@ -408,7 +422,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       this.netLpLp = undefined;
     }
     const grossLp = new BigNumber(this.depositLPAmtLP);
-    const depositTVL = new BigNumber(this.lpBalancePipe.transform(this.depositLPAmtLP ?? '0', this.info.poolResponses[this.vault.assetToken]));
+    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositLPAmtLP, CONFIG.UNIT) ?? '0', this.info.poolResponses[this.vault.assetToken]));
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
       grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
     this.netLpLp = grossLp.minus(depositFee).toString();
@@ -445,12 +459,12 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       }
     }
+    const halfUST = div(this.depositUSTAmtUST, 2);
     if (this.depositUSTFoundPoolAddress){
-      const buyAmount = div(this.depositUSTAmtUST, 2);
       const simulateSwapUSTtoToken = {
         simulation: {
           offer_asset: {
-            amount: times(buyAmount, CONFIG.UNIT),
+            amount: times(halfUST, CONFIG.UNIT),
             info: {
               native_token: {
                 denom: Denom.USD
@@ -460,11 +474,10 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       };
       const simulateSwapUSTtoTokenResult = await this.terraSwapService.query(this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken);
-      this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(buyAmount, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT));
+      this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(halfUST, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT));
 
       const pool = this.info.poolResponses[this.vault.assetToken];
       const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
-      const halfUST = div(this.depositUSTAmtUST, 2);
 
       const grossLp = gt(pool.total_share, 0)
         ? BigNumber.minimum(
@@ -490,5 +503,39 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   setMaxDepositUST() {
     this.depositUSTAmtUST = +this.info.userUstAmount;
     this.depositUSTChanged();
+  }
+
+  calcStakeOrCompoundRatio(mode: string) {
+    if (mode === 'stake'){
+      return new BigNumber(this.info.rewardInfos[this.vault.assetToken]?.stake_bond_amount as string).div(this.info.rewardInfos[this.vault.assetToken]?.bond_amount).toNumber();
+    } else if (mode === 'compound'){
+      return new BigNumber(this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount as string).div(this.info.rewardInfos[this.vault.assetToken]?.bond_amount).toNumber();
+    }
+  }
+
+  calcNewStakeOrCompoundAmount(mode: string){
+    if (+this.info.rewardInfos[this.vault.assetToken]?.bond_amount < 10){
+      return 0;
+    } else if (mode === 'stake'){
+      return times(this.info.rewardInfos[this.vault.assetToken]?.bond_amount, (100 - this.auto_compound_percent_reallocate) / 100);
+    } else if (mode === 'compound'){
+      return times(this.info.rewardInfos[this.vault.assetToken]?.bond_amount, (this.auto_compound_percent_reallocate) / 100);
+    }
+  }
+
+  async doReallocate() {
+    const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farm === this.vault.poolInfo.farm)?.farmContract;
+    const msgs = [new MsgExecuteContract(
+      this.terrajs.address,
+      farmContract,
+      {
+        update_bond: {
+          asset_token: this.vault.poolInfo.asset_token,
+          amount_to_stake: floor(this.calcNewStakeOrCompoundAmount('stake')),
+          amount_to_auto: floor(this.calcNewStakeOrCompoundAmount('compound'))
+        }
+      }
+    )];
+    await this.terrajs.post(msgs);
   }
 }

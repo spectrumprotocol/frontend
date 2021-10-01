@@ -70,7 +70,7 @@ export class TxPostComponent implements OnInit {
       };
       const res = await this.terrajs.walletController.post(postMsg);
       this.txhash = res.result.txhash;
-      this.link = this.txhash && `https://finder.extraterrestrial.money/${this.terrajs.settings.chainID}/tx/${this.txhash}`;
+      this.link = this.txhash && `https://${this.terrajs.settings.finder}/${this.terrajs.settings.chainID}/tx/${this.txhash}`;
       if (!res.success) {
         throw res;
       }
