@@ -107,6 +107,9 @@ export class VaultComponent implements OnInit, OnDestroy {
         case 'apy':
           vaults.sort((a, b) => b.apy - a.apy);
           break;
+        case 'dpr':
+          vaults.sort((a, b) => (b.pairStat?.dpr || 0) - (a.pairStat?.dpr || 0));
+          break;
         case 'tvl':
           vaults.sort((a, b) => (+b.pairStat?.tvl || 0) - (+a.pairStat?.tvl || 0));
           break;
@@ -127,20 +130,12 @@ export class VaultComponent implements OnInit, OnDestroy {
   vaultId = (_: number, item: Vault) => item.symbol;
 
   async openYourTVL() {
-    if (this.cannotOpenYourTVL()) {
-      return;
-    }
-
     this.$gaService.event('CLICK_OPEN_YOUR_TVL');
     const modal = await import('./your-tvl/your-tvl.component');
     const ref = this.modalService.open(modal.YourTvlComponent, {
       ignoreBackdropClick: false,
     });
     await ref.onClose.toPromise();
-  }
-
-  cannotOpenYourTVL() {
-    return this.loading || !this.terrajs.isConnected;
   }
 
 }

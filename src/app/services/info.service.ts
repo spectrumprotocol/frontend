@@ -59,7 +59,6 @@ export class InfoService {
     private terraSwap: TerraSwapService,
     private terraSwapFactory: TerraSwapFactoryService,
     private token: TokenService,
-    private specFarm: SpecFarmService,
     private balancePipe: BalancePipe,
     private lpBalancePipe: LpBalancePipe,
     private httpClient: HttpClient
@@ -247,6 +246,7 @@ export class InfoService {
     const ustPerYear = +specPerHeight * HEIGHT_PER_YEAR * +this.specPrice;
     for (const pair of Object.values(stat.pairs)) {
       pair.specApr = ustPerYear * pair.multiplier / totalWeight / +pair.tvl;
+      pair.dpr = (pair.poolApr + pair.specApr) / 365;
       stat.vaultFee += pair.vaultFee;
       stat.tvl = plus(stat.tvl, pair.tvl);
     }
