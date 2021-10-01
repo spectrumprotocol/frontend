@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Coin, Coins, Denom, MsgExecuteContract } from '@terra-money/terra.js';
+import { Coin, Coins, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../consts/animations';
 import { CONFIG } from '../../../consts/config';
 import { toBase64 } from '../../../libs/base64';
@@ -13,6 +13,7 @@ import { MdbCollapseDirective } from 'mdb-angular-ui-kit';
 import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
 import { debounce } from 'utils-decorators';
+import {Denom} from '../../../consts/denom';
 
 @Component({
   selector: 'app-asset-card',
@@ -97,12 +98,14 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       : new BigNumber(this.depositAmt)
         .times(this.amountUST)
         .sqrt();
-    const depositTVL = new BigNumber(amountUST).multipliedBy('2');
-    const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
-      grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy('0.001'));
-    this.netLp = grossLp.minus(depositFee).toString();
+    if (this.vault.pairStat) {
+      const depositTVL = new BigNumber(amountUST).multipliedBy('2');
+      const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
+        grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy('0.001'));
+      this.netLp = grossLp.minus(depositFee).toString();
+      this.depositFee = depositFee.toString();
+    }
     this.grossLp = grossLp.toString();
-    this.depositFee = depositFee.toString();
 
     const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountUST.toString(), denom: 'uusd' }));
     this.amountUST = amountUST.plus(tax.amount.toString())
