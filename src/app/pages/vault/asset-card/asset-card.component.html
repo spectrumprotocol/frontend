@@ -100,7 +100,7 @@
                     <li><a class="dropdown-item" (click)="depositMode = 'tokenust'; dropdown1.hide()" [class.active]="depositMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
                     <li><a class="dropdown-item" (click)="depositMode = 'lp'; dropdown1.hide()" [class.active]="depositMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
                     <li><a class="dropdown-item" (click)="depositMode = 'ust'; dropdown1.hide()" [class.active]="depositMode === 'ust'">UST</a></li>
-                  </ul>  
+                  </ul>
                 </div>
                 <input #depositTokenAmtTokenUSTCtl="ngModel" (ngModelChange)="depositTokenUSTChanged()" [(ngModel)]="depositTokenAmtTokenUST"
                        [class.is-invalid]="(formDeposit.submitted || depositTokenAmtTokenUSTCtl.touched) && depositTokenAmtTokenUSTCtl.invalid" [max]="+info.tokenBalances[vault.assetToken] / UNIT" [min]="0.000001"
@@ -181,7 +181,7 @@
                     <li><a class="dropdown-item" (click)="depositMode = 'tokenust'; dropdown2.hide()" [class.active]="depositMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
                     <li><a class="dropdown-item" (click)="depositMode = 'lp'; dropdown2.hide()" [class.active]="depositMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
                     <li><a class="dropdown-item" (click)="depositMode = 'ust'; dropdown2.hide()" [class.active]="depositMode === 'ust'">UST</a></li>
-                  </ul>  
+                  </ul>
                 </div>
                 <input #depositLPAmtLPCtl="ngModel" (ngModelChange)="depositLPChanged()" [(ngModel)]="depositLPAmtLP"
                        [class.is-invalid]="(formDeposit.submitted || depositLPAmtLPCtl.touched) && depositLPAmtLPCtl.invalid" [max]="+info.lpTokenBalances[vault.lpToken] / UNIT" [min]="0.000001"
@@ -229,7 +229,7 @@
                     <li><a class="dropdown-item" (click)="depositMode = 'tokenust'; dropdown3.hide()" [class.active]="depositMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
                     <li><a class="dropdown-item" (click)="depositMode = 'lp'; dropdown3.hide()" [class.active]="depositMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
                     <li><a class="dropdown-item" (click)="depositMode = 'ust'; dropdown3.hide()" [class.active]="depositMode === 'ust'">UST</a></li>
-                  </ul>  
+                  </ul>
                 </div>
                 <input #depositUSTAmtUSTCtl="ngModel" (ngModelChange)="depositUSTChanged()" [(ngModel)]="depositUSTAmtUST"
                        [class.is-invalid]="(formDeposit.submitted || depositUSTAmtUSTCtl.touched) && depositUSTAmtUSTCtl.invalid" [max]="+info.userUstAmount" [min]="0.000001"
@@ -479,8 +479,8 @@
                 </button>
                 <ul mdbDropdownMenu class="dropdown-menu">
                   <li><a class="dropdown-item" (click)="withdrawMode = 'tokenust'; dropdown4.hide()" [class.active]="withdrawMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
-                  <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdown4.hide()" [class.active]="withdrawMode === 'lp'">LP</a></li>
-                </ul>  
+                  <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdown4.hide()" [class.active]="withdrawMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
+                </ul>
               </div>
             <input #withdrawAmtCtl="ngModel" [(ngModel)]="withdrawAmt" [class.is-invalid]="(formWithdraw.submitted || withdrawAmtCtl.touched) && withdrawAmtCtl.invalid"
                      [max]="+info.rewardInfos[vault.assetToken]?.bond_amount / UNIT" [min]="0.000001"
