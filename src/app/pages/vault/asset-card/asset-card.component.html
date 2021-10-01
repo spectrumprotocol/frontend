@@ -33,12 +33,8 @@
             <div class="fs-5">{{vault.pairStat?.tvl || 0 | unit: '1.0-2' }} UST</div>
           </div>
           <div class="col-12 col-sm-6 col-md-4">
-            <div class="fs-6 mt-2">{{ vault.symbol }} Balance</div>
-            <div class="fs-5">{{info.tokenBalances[vault.assetToken] || '0' | unit: '1.0-2' }}
-              <span *ngIf="+info.tokenBalances[vault.assetToken] >= 10" class="small text-muted">
-                &nbsp;(${{ info.tokenBalances[vault.assetToken] || '0' | balance: info.poolResponses[vault.assetToken] |
-                unit: '1.0-2' }})</span>
-            </div>
+            <div class="fs-6 mt-2">Daily rate</div>
+            <div class="fs-5">{{ vault.pairStat?.dpr || 0 | percent }}</div>
             <div class="fs-6 mt-2">LP Deposited</div>
             <div class="fs-5">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: '1.0-5'}}
               <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10" [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo"
@@ -284,7 +280,7 @@
                 <button (click)="depositType = 'compound'" [ngClass]="depositType === 'compound' ? 'btn-primary': 'btn-outline-primary'"
                         class="btn"
                         type="button">Auto Compound</button>
-                <button (click)="depositType = 'mixed'" [ngClass]="depositType === 'mixed' ? 'btn-primary': 'btn-outline-primary'"
+                <button (click)="depositType = 'mixed'; autoCompoundChanged()" [ngClass]="depositType === 'mixed' ? 'btn-primary': 'btn-outline-primary'"
                         class="btn"
                         type="button">Mixed</button>
               </span>
@@ -348,7 +344,7 @@
                     <span class="input-compound-stake-percent">%</span>
                   </div>
                   <div class="slider-compound-stake flex-grow-1 custom-slider">
-                    <ngx-slider [(value)]="auto_compound_percent_deposit" [options]="ngx_slider_option"></ngx-slider>
+                    <ngx-slider [(value)]="auto_compound_percent_deposit" [options]="ngx_slider_option" (valueChange)="autoCompoundChanged()"></ngx-slider>
                   </div>
                   <div class="d-flex">
                     <div class="input-group">
@@ -365,13 +361,9 @@
                   <div class="col">Pool APR from {{ vault.poolInfo.farm }}</div>
                   <div class="col text-end">{{vault.pairStat?.poolApr || 0 | percent }}</div>
                 </div>
-                <div *ngIf="auto_compound_percent_deposit > 0" class="row">
-                  <div class="col">Pool APY from auto compound</div>
-                  <div class="col text-end">{{getMixedAutoCompoundAPY() || 0 | percent }}</div>
-                </div>
-                <div *ngIf="100 - auto_compound_percent_deposit > 0" class="row">
-                  <div class="col">Pool APY from auto stake</div>
-                  <div class="col text-end">{{getMixedAutoStakeAPY() | percent }}</div>
+                <div class="row">
+                  <div class="col">Pool APY from mixed</div>
+                  <div class="col text-end">{{vault['mixApy'] || 0 | percent }}</div>
                 </div>
                 <div class="row">
                   <div class="col">SPEC Reward</div>
@@ -379,7 +371,7 @@
                 </div>
                 <div class="row">
                   <div class="col">Total APY</div>
-                  <div class="col text-end">{{getMixedTotalAPY() | percent }}</div>
+                  <div class="col text-end">{{vault['totalMixApy'] | percent }}</div>
                 </div>
               </div>
 
@@ -436,27 +428,27 @@
               <div class="col">Current auto-stake LP</div>
               <div class="col text-end">
                 {{+info.rewardInfos[vault.assetToken]?.stake_bond_amount || '0' | unit: '1.0-6'}} LP
-                <span class="small text-muted">({{calcStakeOrCompoundRatio('stake') || 0 | percent:'0.2-2'}})</span>
+                <span class="small text-muted">({{+info.rewardInfos[vault.assetToken]?.stake_bond_amount / +info.rewardInfos[vault.assetToken]?.bond_amount || 0 | percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="row">
               <div class="col">Current auto-compound LP</div>
               <div class="col text-end">
                 {{+info.rewardInfos[vault.assetToken]?.auto_bond_amount || '0' | unit: '1.0-6'}} LP
-                <span class="small text-muted">({{calcStakeOrCompoundRatio('compound') || 0 | percent:'0.2-2'}})</span>
+                <span class="small text-muted">({{+info.rewardInfos[vault.assetToken]?.auto_bond_amount / +info.rewardInfos[vault.assetToken]?.bond_amount || 0 | percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="row">
               <div class="col">New auto-stake LP</div>
               <div class="col text-end">
-                {{calcNewStakeOrCompoundAmount('stake') || '0' | unit: '1.0-6'}} LP
+                {{+info.rewardInfos[vault.assetToken]?.bond_amount * (100 - auto_compound_percent_reallocate) / 100 || '0' | unit: '1.0-6'}} LP
                 <span class="small text-muted">({{(100 - auto_compound_percent_reallocate) / 100 | percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="row">
               <div class="col">New auto-compound LP</div>
               <div class="col text-end">
-                {{calcNewStakeOrCompoundAmount('compound') || '0' | unit: '1.0-6'}} LP
+                {{+info.rewardInfos[vault.assetToken]?.bond_amount * auto_compound_percent_reallocate / 100 || '0' | unit: '1.0-6'}} LP
                 <span class="small text-muted">({{auto_compound_percent_reallocate / 100 | percent:'0.2-2'}})</span>
               </div>
             </div>
