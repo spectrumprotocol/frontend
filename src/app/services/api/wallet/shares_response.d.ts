@@ -36,8 +36,15 @@ export interface ShareInfo {
   lock_amount: Uint128;
   lock_end: number;
   lock_start: number;
+  pools: SharePoolInfo[];
   share: Uint128;
   share_index: Decimal;
   weight: number;
+  [k: string]: unknown;
+}
+export interface SharePoolInfo {
+  days: number;
+  share: Uint128;
+  share_index: Decimal;
   [k: string]: unknown;
 }

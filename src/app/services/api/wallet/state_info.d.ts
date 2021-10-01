@@ -27,8 +27,15 @@ export type Uint128 = string;
 export type Decimal = string;
 
 export interface StateInfo {
+  pools: StatePoolInfo[];
   previous_share: Uint128;
   share_index: Decimal;
   total_weight: number;
+  [k: string]: unknown;
+}
+export interface StatePoolInfo {
+  days: number;
+  previous_share: Uint128;
+  share_index: Decimal;
   [k: string]: unknown;
 }

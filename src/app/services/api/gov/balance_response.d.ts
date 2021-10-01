@@ -22,8 +22,10 @@ export type Uint128 = string;
 export type VoteOption = "yes" | "no";
 
 export interface BalanceResponse {
+  balance: Uint128;
   locked_balance: [number, VoterInfo][];
   pools: BalancePoolInfo[];
+  share: Uint128;
   [k: string]: unknown;
 }
 export interface VoterInfo {

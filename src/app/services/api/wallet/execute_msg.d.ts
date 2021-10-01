@@ -20,18 +20,28 @@ export type ExecuteMsg =
   | {
       stake: {
         amount: Uint128;
+        days?: number | null;
         [k: string]: unknown;
       };
     }
   | {
       unstake: {
         amount: Uint128;
+        days?: number | null;
         [k: string]: unknown;
       };
     }
   | {
       update_config: {
         owner?: string | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      update_stake: {
+        amount: Uint128;
+        from_days: number;
+        to_days: number;
         [k: string]: unknown;
       };
     }
