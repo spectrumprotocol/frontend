@@ -92,16 +92,7 @@
                 <span>Balance: {{ info.tokenBalances[vault.assetToken] | unit }} {{ vault.symbol }}</span>
               </div>
               <div class="input-group">
-                <div mdbDropdown class="dropdown" #dropdown1>
-                  <button mdbDropdownToggle class="btn btn-outline-primary dropdown-toggle btn-first" type="button">
-                    {{ vault.symbol }}
-                  </button>
-                  <ul mdbDropdownMenu class="dropdown-menu">
-                    <li><a class="dropdown-item" (click)="depositMode = 'tokenust'; dropdown1.hide()" [class.active]="depositMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
-                    <li><a class="dropdown-item" (click)="depositMode = 'lp'; dropdown1.hide()" [class.active]="depositMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
-                    <li><a class="dropdown-item" (click)="depositMode = 'ust'; dropdown1.hide()" [class.active]="depositMode === 'ust'">UST</a></li>
-                  </ul>
-                </div>
+                <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
                 <input #depositTokenAmtTokenUSTCtl="ngModel" (ngModelChange)="depositTokenUSTChanged()" [(ngModel)]="depositTokenAmtTokenUST"
                        [class.is-invalid]="(formDeposit.submitted || depositTokenAmtTokenUSTCtl.touched) && depositTokenAmtTokenUSTCtl.invalid" [max]="+info.tokenBalances[vault.assetToken] / UNIT" [min]="0.000001"
                        [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-height-use-with-button" name="depositTokenAmtTokenUSTCtl"
@@ -173,16 +164,7 @@
                 <span>Balance: {{+info.lpTokenBalances[vault.lpToken] | unit}} {{ vault.symbol }}-UST LP</span>
               </div>
               <div class="input-group">
-                <div mdbDropdown class="dropdown" #dropdown2>
-                  <button mdbDropdownToggle class="btn btn-outline-primary dropdown-toggle btn-first" type="button">
-                    {{vault.symbol}}-UST LP
-                  </button>
-                  <ul mdbDropdownMenu class="dropdown-menu">
-                    <li><a class="dropdown-item" (click)="depositMode = 'tokenust'; dropdown2.hide()" [class.active]="depositMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
-                    <li><a class="dropdown-item" (click)="depositMode = 'lp'; dropdown2.hide()" [class.active]="depositMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
-                    <li><a class="dropdown-item" (click)="depositMode = 'ust'; dropdown2.hide()" [class.active]="depositMode === 'ust'">UST</a></li>
-                  </ul>
-                </div>
+                <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
                 <input #depositLPAmtLPCtl="ngModel" (ngModelChange)="depositLPChanged()" [(ngModel)]="depositLPAmtLP"
                        [class.is-invalid]="(formDeposit.submitted || depositLPAmtLPCtl.touched) && depositLPAmtLPCtl.invalid" [max]="+info.lpTokenBalances[vault.lpToken] / UNIT" [min]="0.000001"
                        [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-height-use-with-button" name="depositLPAmtLP"
@@ -221,16 +203,7 @@
                 <span>Balance: {{ info.userUstAmount | number }} UST</span>
               </div>
               <div class="input-group">
-                <div mdbDropdown class="dropdown" #dropdown3>
-                  <button mdbDropdownToggle class="btn btn-outline-primary dropdown-toggle btn-first" type="button">
-                    UST
-                  </button>
-                  <ul mdbDropdownMenu class="dropdown-menu">
-                    <li><a class="dropdown-item" (click)="depositMode = 'tokenust'; dropdown3.hide()" [class.active]="depositMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
-                    <li><a class="dropdown-item" (click)="depositMode = 'lp'; dropdown3.hide()" [class.active]="depositMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
-                    <li><a class="dropdown-item" (click)="depositMode = 'ust'; dropdown3.hide()" [class.active]="depositMode === 'ust'">UST</a></li>
-                  </ul>
-                </div>
+                <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
                 <input #depositUSTAmtUSTCtl="ngModel" (ngModelChange)="depositUSTChanged()" [(ngModel)]="depositUSTAmtUST"
                        [class.is-invalid]="(formDeposit.submitted || depositUSTAmtUSTCtl.touched) && depositUSTAmtUSTCtl.invalid" [max]="+info.userUstAmount" [min]="0.000001"
                        [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-height-use-with-button" name="depositUSTAmtUST"
@@ -473,16 +446,8 @@
                 vault.symbol }}-UST LP</span>
             </div>
             <div class="input-group">
-              <div mdbDropdown class="dropdown" #dropdown4>
-                <button mdbDropdownToggle class="btn btn-outline-primary dropdown-toggle btn-first" type="button">
-                  {{ withdrawMode == 'tokenust' ? vault.symbol + '+UST' : 'LP' }}
-                </button>
-                <ul mdbDropdownMenu class="dropdown-menu">
-                  <li><a class="dropdown-item" (click)="withdrawMode = 'tokenust'; dropdown4.hide()" [class.active]="withdrawMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
-                  <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdown4.hide()" [class.active]="withdrawMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
-                </ul>
-              </div>
-            <input #withdrawAmtCtl="ngModel" [(ngModel)]="withdrawAmt" [class.is-invalid]="(formWithdraw.submitted || withdrawAmtCtl.touched) && withdrawAmtCtl.invalid"
+              <ng-container *ngTemplateOutlet="withdrawModeSection"></ng-container>
+              <input #withdrawAmtCtl="ngModel" [(ngModel)]="withdrawAmt" [class.is-invalid]="(formWithdraw.submitted || withdrawAmtCtl.touched) && withdrawAmtCtl.invalid"
                      [max]="+info.rewardInfos[vault.assetToken]?.bond_amount / UNIT" [min]="0.000001"
                      [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-height-use-with-button"
                      name="withdrawAmtCtl" required
@@ -514,6 +479,7 @@
             </div>
           </form>
         </mdb-tab>
+<!--        //TODO bring back zap button-->
         <mdb-tab title="Unstake gov tokens">
           <div class="small mt-6">
             All your rewards are automatically staked in gov vaults to earn gov income.
@@ -547,3 +513,31 @@
     </div>
   </div>
 </div>
+
+<ng-template #depositModeSection>
+  <div mdbDropdown class="dropdown" #dropdownDepositMode>
+    <button mdbDropdownToggle class="btn btn-outline-primary dropdown-toggle btn-first" type="button">
+      <ng-container *ngIf="depositMode === 'tokenust'">{{ vault.symbol }}</ng-container>
+      <ng-container *ngIf="depositMode === 'lp'">{{vault.symbol}}-UST LP</ng-container>
+      <ng-container *ngIf="depositMode === 'ust'">UST</ng-container>
+    </button>
+    <ul mdbDropdownMenu class="dropdown-menu">
+      <li><a class="dropdown-item" (click)="depositMode = 'tokenust'; dropdownDepositMode.hide()" [class.active]="depositMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
+      <li><a class="dropdown-item" (click)="depositMode = 'lp'; dropdownDepositMode.hide()" [class.active]="depositMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
+      <li><a class="dropdown-item" (click)="depositMode = 'ust'; dropdownDepositMode.hide()" [class.active]="depositMode === 'ust'">UST</a></li>
+    </ul>
+  </div>
+</ng-template>
+
+<ng-template #withdrawModeSection>
+  <div mdbDropdown class="dropdown" #dropdownWithdrawMode>
+    <button mdbDropdownToggle class="btn btn-outline-primary dropdown-toggle btn-first" type="button">
+      {{ withdrawMode == 'tokenust' ? vault.symbol + '+UST' : vault.symbol + '-UST LP' }}
+    </button>
+    <ul mdbDropdownMenu class="dropdown-menu">
+      <li><a class="dropdown-item" (click)="withdrawMode = 'tokenust'; dropdownWithdrawMode.hide()" [class.active]="withdrawMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
+      <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdownWithdrawMode.hide()" [class.active]="withdrawMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
+    </ul>
+  </div>
+
+</ng-template>
