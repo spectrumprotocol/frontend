@@ -75,11 +75,11 @@
               </button>
               <ul mdbDropdownMenu class="dropdown-menu">
                 <li>
-                  <a class="dropdown-item cursor-pointer" [class.active]="activeFarm === 'All'"
+                  <a class="dropdown-item" [class.active]="activeFarm === 'All'"
                     (click)="activeFarm = 'All'; refresh()">All</a>
                 </li>
                 <li *ngFor="let farmInfo of info.farmInfos">
-                  <a  class="dropdown-item cursor-pointer"
+                  <a  class="dropdown-item"
                     [class.active]="activeFarm === farmInfo.farm"
                     (click)="activeFarm = farmInfo.farm; refresh()"> <img [src]="farmInfo.farm | url:'icon'" class="farm-logo"> {{farmInfo.farm}}</a>
                 </li>
@@ -95,15 +95,15 @@
               </button>
               <ul mdbDropdownMenu class="dropdown-menu">
                 <li>
-                  <a class="dropdown-item cursor-pointer" [class.active]="sortBy === 'multiplier'"
+                  <a class="dropdown-item" [class.active]="sortBy === 'multiplier'"
                     (click)="sortBy = 'multiplier'; refresh()">Default</a>
                 </li>
                 <li>
-                  <a class="dropdown-item cursor-pointer" [class.active]="sortBy === 'apy'"
+                  <a class="dropdown-item" [class.active]="sortBy === 'apy'"
                     (click)="sortBy = 'apy'; refresh()">APY%</a>
                 </li>
                 <li>
-                  <a class="dropdown-item cursor-pointer" [class.active]="sortBy === 'tvl'"
+                  <a class="dropdown-item" [class.active]="sortBy === 'tvl'"
                     (click)="sortBy = 'tvl'; refresh()">TVL</a>
                 </li>
               </ul>
