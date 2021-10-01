@@ -24,7 +24,7 @@ export interface ISettings {
   lcd: string;
   fcd: string;
   mirrorGraph: string;
-  anchorGraph: string;
+  anchorAPI: string;
   pylonAPI: string;
   chainID: string;
   finder: string;
@@ -56,7 +56,7 @@ export const networks: Record<string, ISettings> = {
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
-    anchorGraph: 'anchor',
+    anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
     chainID: 'columbus-5',
     finder: 'finder.extraterrestrial.money',
@@ -84,41 +84,10 @@ export const networks: Record<string, ISettings> = {
     pylonStaking: 'terra17av0lfhqymusm6j9jpepzerg6u54q57jp7xnrz',
     pylonToken: 'terra1lqm5tutr5xcw9d5vc4457exa3ghd4sr9mzwdex',
     pylonFarm: 'terra1hgjp2yjqe7ngzsx283tm7ch8xcsvk5c8mdj2tw',
-    lcd: 'https://tequila-lcd.terra.dev',
-    fcd: 'https://tequila-fcd.terra.dev',
-    mirrorGraph: 'mirrorTest',
-    anchorGraph: 'anchorTest',
-    pylonAPI: 'https://api.dev.pylon.rocks',
-    chainID: 'tequila-0004',
-    finder: 'finder.terra.money',
-  },
-  bombay: {
-    specToken: 'terra1kvsxd94ue6f4rtchv2l6me5k07uh26s7637cza',
-    specPool: 'terra15cjce08zcmempedxwtce2y44y2ayup8gww3txr',
-    specLpToken: 'terra1ntt4mdhr9lukayenntgltqppw4yy6hts7wr67d',
-    gov: 'terra1x3l2tkkwzzr0qsnrpy3lf2cm005zxv7pun26x4',
-    platform: 'terra10h22vx3kp8wxdkuhypmwnjr4wrurcup5pk9uq9',
-    warchest: 'terra1ulpamdq7lsg5hu0hzvl4skxt0ahtxs0enyu96e',
-    wallet: 'terra1u4kg5h8zrwvtr30h2hwhnj64ekml4uar65plvm',
-    mirrorFarm: 'terra1hasdl7l6xtegnch8mjyw2g7mfh9nt3gtdtmpfu',
-    mirrorStaking: 'terra1a06dgl27rhujjphsn4drl242ufws267qxypptx',
-    mirrorGov: 'terra12r5ghc6ppewcdcs3hkewrz24ey6xl7mmpk478s',
-    mirrorToken: 'terra10llyp6v3j3her8u3ce66ragytu45kcmd9asj3u',
-    specFarm: 'terra1cedx8gpvu7c4vzfadwmf3pewg2030fqgw4q3dl',
-    terraSwapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
-    staker: 'terra15nwqmmmza9y643apneg0ddwt0ekk38qdevnnjt',
-    anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
-    anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
-    anchorToken: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
-    anchorFarm: 'terra1yvpd3j7mry7qrmmn2x9vapmr9qpzkvjgs4f7z7',
-    pylonGov: 'terra1hffjqjscxgz5lnmmtwhksrcg4gd3x4nyp9mzwx',
-    pylonStaking: 'terra17av0lfhqymusm6j9jpepzerg6u54q57jp7xnrz',
-    pylonToken: 'terra1lqm5tutr5xcw9d5vc4457exa3ghd4sr9mzwdex',
-    pylonFarm: 'terra1hgjp2yjqe7ngzsx283tm7ch8xcsvk5c8mdj2tw',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
-    anchorGraph: 'anchorTest',
+    anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
     chainID: 'bombay-12',
     finder: 'finder.terra.money',

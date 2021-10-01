@@ -5,7 +5,6 @@ import { PylonStakingService } from '../api/pylon-staking.service';
 import { PoolItem } from '../api/pylon_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { GovService } from '../api/gov.service';
-import { TerraSwapService } from '../api/terraswap.service';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
@@ -23,7 +22,6 @@ export class PylonFarmInfoService implements FarmInfoService {
     private gov: GovService,
     private pylonFarm: PylonFarmService,
     private terrajs: TerrajsService,
-    private terraSwap: TerraSwapService,
     private pylonStaking: PylonStakingService,
     private httpClient: HttpClient
   ) { }

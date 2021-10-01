@@ -80,15 +80,22 @@ export class TerrajsService implements OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  private async getWalletController() {
+    while (!this.walletController) {
+      await new Promise(ok => setTimeout(() => ok('')));
+    }
+    return this.walletController;
+  }
+
   async checkInstalled() {
     await checkAvailableExtension(1500, true);
-    const types = await firstValueFrom(this.walletController.availableInstallTypes());
+    const types = await firstValueFrom((await this.getWalletController()).availableInstallTypes());
     return types.length === 0;
   }
 
-  getConnectTypes() {
-    return firstValueFrom(this.walletController.availableConnectTypes())
-      .then(it => it.filter(t => t !== 'READONLY'));
+  async getConnectTypes() {
+    const types = firstValueFrom((await this.getWalletController()).availableConnectTypes());
+    return (await types).filter(t => t !== 'READONLY');
   }
 
   async getHeight(force?: boolean): Promise<number> {
