@@ -113,7 +113,7 @@ export class InfoService {
   cw20Pairs: any;
 
   myTvl = 0;
-  allVaults: Vault[];
+  allVaults: Vault[] = [];
 
   portfolio: Portfolio;
 
@@ -388,7 +388,7 @@ export class InfoService {
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
       const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/stat?type=lpVault').toPromise();
-      this.coinInfos = data.coinInfos;
+      Object.assign(this.coinInfos, data.coinInfos);
       this.stat = data.stat;
       this.pairInfos = data.pairInfos;
       this.poolInfos = data.poolInfos;
