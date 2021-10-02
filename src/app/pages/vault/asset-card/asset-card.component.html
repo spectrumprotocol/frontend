@@ -453,7 +453,7 @@
               must
               be between 0 and {{info.rewardInfos[vault.assetToken]?.bond_amount | unit }}
             </span>
-            <span *ngIf="depositTokenAmtTokenUSTCtl.errors?.pattern" class="invalid-feedback-custom">
+            <span *ngIf="withdrawAmtCtl.errors?.pattern" class="invalid-feedback-custom">
               Amount must be within 6 decimal points
             </span>
             <div *ngIf="withdrawAmt" class="mt-3">

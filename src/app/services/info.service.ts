@@ -139,6 +139,7 @@ export class InfoService {
     }
   }
 
+  @memoize(1000)
   async refreshPool() {
     this.specPoolInfo = await this.terraSwap.query(this.terrajs.settings.specPool, { pool: {} });
     this.specPrice = div(this.specPoolInfo.assets[1].amount, this.specPoolInfo.assets[0].amount);
@@ -295,25 +296,13 @@ export class InfoService {
   @memoize(1000)
   async refreshPoolResponses() {
     await this.ensurePairInfos();
-    const tokenBalances: Record<string, string> = {};
-    const lpTokenBalances: Record<string, string> = {};
     const poolResponses: Record<string, PoolResponse> = {};
-    const tokenTasks: Promise<any>[] = [];
-    const lpTokenTasks: Promise<any>[] = [];
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
       const pairInfo = this.pairInfos[key];
-      if (this.terrajs.address) {
-        tokenTasks.push(this.token.balance(key)
-          .then(it => tokenBalances[key] = it.balance));
-        lpTokenTasks.push(this.token.balance(pairInfo.liquidity_token)
-          .then(it => lpTokenBalances[pairInfo.liquidity_token] = it.balance));
-      }
       poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
         .then(it => poolResponses[key] = it));
     }
-    Promise.all(tokenTasks).then(() => this.tokenBalances = tokenBalances);
-    Promise.all(lpTokenTasks).then(() => this.lpTokenBalances = lpTokenBalances);
     await Promise.all(poolTasks);
     this.poolResponses = poolResponses;
     localStorage.setItem('poolResponses', JSON.stringify(poolResponses));
@@ -386,8 +375,7 @@ export class InfoService {
 
   async initializeVaultData(connected: boolean) {
     const tasks: Promise<any>[] = [];
-    tasks.push(this.ensureCoinInfos());
-    tasks.push(this.refreshStat());
+    tasks.push(this.retrieveCachedStat());
     if (connected) {
       tasks.push(this.refreshRewardInfos());
     }
@@ -395,6 +383,28 @@ export class InfoService {
     await Promise.all(tasks);
     this.updateVaults();
     await this.updateMyTvl();
+  }
+
+  async retrieveCachedStat(skipPoolResponses = false) {
+    try {
+      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/stat?type=lpVault').toPromise();
+      this.coinInfos = data.coinInfos;
+      this.stat = data.stat;
+      this.pairInfos = data.pairInfos;
+      this.poolInfos = data.poolInfos;
+      localStorage.setItem('coinInfos', JSON.stringify(this.coinInfos));
+      localStorage.setItem('stat', JSON.stringify(this.stat));
+      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+
+      if (skipPoolResponses) {
+        this.poolResponses = data.poolResponses;
+        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+      }
+    } catch (ex) {
+      // fallback if api die
+      await Promise.all([this.ensureCoinInfos(), this.refreshStat()]);
+    }
   }
 
   updateVaults() {
