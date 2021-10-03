@@ -4,7 +4,7 @@ import { Coin, Coins, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../consts/animations';
 import { CONFIG } from '../../../consts/config';
 import { toBase64 } from '../../../libs/base64';
-import { div, floor, floor18Decimal, gt, times } from '../../../libs/math';
+import { div, floor, floor18Decimal, gt, minus, times } from '../../../libs/math';
 import { TerrajsService } from '../../../services/terrajs.service';
 import { Vault } from '../vault.component';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -447,7 +447,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       }
     }
-    const halfUST = div(this.depositUSTAmtUST, 2);
+    const halfUSTbeforeTax = div(this.depositUSTAmtUST, 2);
+    const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: halfUSTbeforeTax, denom: 'uusd' }));
+    const halfUST = minus(halfUSTbeforeTax, tax.amount.toString());
     if (this.depositUSTFoundPoolAddress) {
       const simulateSwapUSTtoToken = {
         simulation: {
@@ -480,11 +482,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       this.netLpUST = grossLp.minus(depositFee).toString();
       this.grossLpUST = grossLp.toString();
       this.depositFeeUST = depositFee.toString();
-
-      // const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountUST.toString(), denom: 'uusd' }));
-      // this.depositUSTAmtUST = amountUST.plus(tax.amount.toString())
-      //   .div(this.UNIT)
-      //   .toNumber();
     }
   }
 
