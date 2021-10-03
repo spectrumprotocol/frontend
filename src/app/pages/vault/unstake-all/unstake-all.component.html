@@ -11,21 +11,10 @@
   </ng-container>
   <span class="text-muted">($<app-digit [value]="info.portfolio?.total_reward_ust"></app-digit>)</span>
 
-  <div mdbDropdown class="btn-group">
-    <button
-      class="btn btn-outline-primary ms-2 dropdown-toggle"
-      type="button"
-      mdbDropdownToggle
-      aria-expanded="false"
-    >
-      Claim All
-    </button>
-    <ul mdbDropdownMenu class="dropdown-menu">
-      <li><a role="button" class="dropdown-item" (click)="doMoveToGov()" title="Move staked SPEC from vault to SPEC Gov, auto-staked MIR to stake in Mirror Gov, and etc.">Move staked rewards to Govs</a></li>
-      <li><a role="button" class="dropdown-item" (click)="unstakeAll()" title="Unstake all SPEC, MIR, etc rewards in vault and withdraw to your wallet">Unstake all</a></li>
-    </ul>
-  </div>
-
+  <button class="btn btn-outline-primary ms-2" type="button" aria-expanded="false" (click)="unstakeAll()"
+    title="Unstake all SPEC, MIR, ANC, and MINE rewards in vaults and withdraw to your wallet">
+    Unstake All
+  </button>
 
   <a routerLink="/tx-history" routerLinkActive="active"><button type="button" class="btn btn-outline-light ms-2"
       title="Show transaction history"><i class="fas fa-history"></i></button></a>
