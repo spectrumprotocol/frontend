@@ -415,12 +415,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
     this.netLpLp = grossLp.minus(depositFee).toString();
     this.depositFeeLp = depositFee.toString();
-
-    // TODO
-    // const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: depositTVL.toString(), denom: 'uusd' }));
-    // this.depositUSTAmountTokenUST = depositTVL.plus(tax.amount.toString())
-    //   .div(this.UNIT)
-    //   .toNumber();
   }
 
   setMaxDepositLP() {

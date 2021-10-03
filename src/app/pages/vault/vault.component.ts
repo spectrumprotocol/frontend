@@ -34,8 +34,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   private lastSortBy: string;
 
   loading = true;
-  allVaults: Vault[];
-  vaults: Vault[];
+  vaults: Vault[] = [];
   search: string;
   showDepositedPoolOnly = false;
   sortBy = 'multiplier';
