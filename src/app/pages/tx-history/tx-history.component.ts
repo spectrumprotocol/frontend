@@ -4,7 +4,9 @@ import { Subscription } from 'rxjs';
 import { CONFIG } from '../../consts/config';
 import { InfoService } from '../../services/info.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { roundSixDecimal } from 'src/app/libs/math';
+import {div, roundSixDecimal} from 'src/app/libs/math';
+import {LpBalancePipe} from '../../pipes/lp-balance.pipe';
+import {PercentPipe} from '@angular/common';
 
 interface TxHistory {
   desc: string;
@@ -20,7 +22,9 @@ const alphabetRegExp = /[A-z]+/;
 @Component({
   selector: 'app-tx-history',
   templateUrl: './tx-history.component.html',
-  styleUrls: ['./tx-history.component.scss']
+  styleUrls: ['./tx-history.component.scss'],
+  providers: [PercentPipe]
+
 })
 export class TxHistoryComponent implements OnInit, OnDestroy {
 
@@ -36,6 +40,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     public info: InfoService,
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
+    private percentPipe: PercentPipe
   ) { }
 
   async ngOnInit() {
@@ -77,6 +82,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       chainId: this.terrajs.network.chainID
     };
     const txsRes = await this.terrajs.getFCD('v1/txs', queryParams);
+    console.log(txsRes);
     for (const item of txsRes.txs) {
       if (item.code) {
         continue;
@@ -290,6 +296,20 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex]?.value?.contract);
       return {
         desc: `Withdrawn ${(+lastExecuteMsg.unbond.amount / CONFIG.UNIT)} ${symbol}-UST LP from ${foundFarmContract?.farm} farm`,
+        txhash: item.txhash,
+        timestamp: new Date(item.timestamp),
+        action: 'Farm',
+        id: item.id
+      };
+    } else if (lastExecuteMsg.update_bond){
+      const symbol = this.info.coinInfos[lastExecuteMsg.update_bond.asset_token];
+      const totalLP = +lastExecuteMsg.update_bond.amount_to_auto + +lastExecuteMsg.update_bond.amount_to_stake;
+      const amount_to_auto = +lastExecuteMsg.update_bond.amount_to_auto;
+      const amount_to_stake = +lastExecuteMsg.update_bond.amount_to_stake;
+      const amount_to_auto_percent = this.percentPipe.transform(div(amount_to_auto, totalLP));
+      const amount_to_stake_percent = this.percentPipe.transform(div(amount_to_stake, totalLP));
+      return {
+        desc: `Reallocated deposited ${symbol}-UST LP to auto-compound ${amount_to_auto_percent}, auto-stake ${amount_to_stake_percent} (${amount_to_auto / CONFIG.UNIT} LP, ${amount_to_stake / CONFIG.UNIT} LP)`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',
