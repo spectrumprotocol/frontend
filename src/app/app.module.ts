@@ -58,6 +58,7 @@ import { UnstakeAllComponent } from './pages/vault/unstake-all/unstake-all.compo
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { PylonFarmInfoService } from './services/farm_info/pylon.farm-info.service';
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
+import { FloorPipe } from './pipes/floor.pipe';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -104,6 +105,7 @@ registerLocaleData(locale, 'en');
     TxHistoryComponent,
     YourTvlComponent,
     UnstakeAllComponent,
+    FloorPipe,
   ],
   imports: [
     AppRoutingModule,

@@ -414,14 +414,14 @@
             <div class="row">
               <div class="col">New auto-stake LP</div>
               <div class="col text-end">
-                {{+info.rewardInfos[vault.assetToken]?.bond_amount * (100 - auto_compound_percent_reallocate) / 100 || '0' | unit: '1.0-6'}} LP
-                <span class="small text-muted">({{(100 - auto_compound_percent_reallocate) / 100 | percent:'0.2-2'}})</span>
+                {{+info.rewardInfos[vault.assetToken]?.bond_amount * (100 - auto_compound_percent_reallocate) / 100 || 0 | floor | unit: '1.0-6'}} LP
+                <span class="small text-muted">({{ (100 - auto_compound_percent_reallocate) / 100 | percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="row">
               <div class="col">New auto-compound LP</div>
               <div class="col text-end">
-                {{+info.rewardInfos[vault.assetToken]?.bond_amount * auto_compound_percent_reallocate / 100 || '0' | unit: '1.0-6'}} LP
+                {{+info.rewardInfos[vault.assetToken]?.bond_amount * auto_compound_percent_reallocate / 100 || 0 | floor | unit: '1.0-6'}} LP
                 <span class="small text-muted">({{auto_compound_percent_reallocate / 100 | percent:'0.2-2'}})</span>
               </div>
             </div>
