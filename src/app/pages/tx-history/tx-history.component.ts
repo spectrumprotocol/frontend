@@ -228,7 +228,28 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    } else if (lastExecuteMsg.bond) {
+    } else if (lastExecuteMsg.send && this.ensureBase64toObject(lastExecuteMsg.send.msg).bond && this.info.farmInfos.find(o => o.farmContract === lastExecuteMsg.send.contract)) {
+      const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === lastExecuteMsg.send.contract);
+      const lpAmount = +lastExecuteMsg.send.amount / CONFIG.UNIT ?? 0;
+      const send_msg = this.ensureBase64toObject(lastExecuteMsg.send.msg);
+      const token_symbol = this.info.coinInfos[send_msg.bond.asset_token];
+      let autoCompoundDesc = '';
+      if (send_msg.bond.compound_rate === '1') {
+        autoCompoundDesc = 'auto-compound mode';
+      } else if (!send_msg.bond.compound_rate || send_msg.bond.compound_rate === '0' || send_msg.bond.compound_rate === '') {
+        autoCompoundDesc = 'auto-stake mode';
+      } else if (+send_msg.bond.compound_rate < 1 && +send_msg.bond.compound_rate > 0) {
+        const compoundPercentage = +send_msg.bond.compound_rate * 100;
+        autoCompoundDesc = `auto-compound ${compoundPercentage}% mode`;
+      }
+      return {
+        desc: `Deposited ${lpAmount} ${token_symbol}-UST LP ${autoCompoundDesc} to ${foundFarmContract?.farm} farm`,
+        txhash: item.txhash,
+        timestamp: new Date(item.timestamp),
+        action: 'Farm',
+        id: item.id
+      };
+    } else if (lastExecuteMsg.bond && this.info.farmInfos.find(o => o.farmContract === lastExecuteMsg.bond.contract)) {
       const lp = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'share')?.value / CONFIG.UNIT ?? 0;
       const taxAmount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'tax_amount')?.value ?? 0;
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === lastExecuteMsg.bond.contract);
@@ -256,9 +277,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         const compoundPercentage = +lastExecuteMsg.bond.compound_rate * 100;
         autoCompoundDesc = `auto-compound ${compoundPercentage}% mode`;
       }
-
       const lpAmount = token_symbol === 'SPEC' ? `(${lp} LP)` : `(${lp} LP before deposit fee)`;
-
       return {
         desc: `Deposited ${token_amount} ${token_symbol} + ${native_token_amount} ${native_token_symbol} ${autoCompoundDesc} ${lpAmount} to ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
@@ -266,7 +285,18 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    } else if (lastExecuteMsg.send?.msg === btoa('{"withdraw_liquidity":{}}') && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
+    } else if (lastExecuteMsg.unbond && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex]?.value?.contract) ) {
+      const symbol = this.info.coinInfos[lastExecuteMsg.unbond.asset_token];
+      const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex]?.value?.contract);
+      return {
+        desc: `Withdrawn ${(+lastExecuteMsg.unbond.amount / CONFIG.UNIT)} ${symbol}-UST LP from ${foundFarmContract?.farm} farm`,
+        txhash: item.txhash,
+        timestamp: new Date(item.timestamp),
+        action: 'Farm',
+        id: item.id
+      };
+    }
+    else if (this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.withdraw_liquidity && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
       const penultimateExecutionMsg = this.ensureBase64toObject(item.tx.value.msg[lastIndex - 1]?.value?.execute_msg);
       const symbol = this.info.coinInfos[penultimateExecutionMsg.unbond.asset_token];
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract);
@@ -278,7 +308,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         ? [first, second]
         : [second, first];
       return {
-        desc: `Withdrawn ${(+lastExecuteMsg.send.amount / CONFIG.UNIT)} ${symbol}-UST LP (${tokenAmount} ${symbol}, ${uusdAmount} UST) from ${foundFarmContract?.farm} farm`,
+        desc: `Withdrawn ${tokenAmount} ${symbol}, ${uusdAmount} UST (${(+lastExecuteMsg.send.amount / CONFIG.UNIT)} ${symbol}-UST LP)  from ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',
