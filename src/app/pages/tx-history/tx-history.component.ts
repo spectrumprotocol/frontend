@@ -291,6 +291,32 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
+    } else if (lastExecuteMsg.zap_to_bond){
+      const provide_amount_UST = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'provide_amount')?.value / CONFIG.UNIT ?? 0;
+      const offer_amount =  +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT ?? 0;
+      const return_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT ?? 0;
+      const lp_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'share')?.value / CONFIG.UNIT ?? 0;
+      const tax_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'tax_amount')?.value / CONFIG.UNIT ?? 0;
+      const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === lastExecuteMsg.zap_to_bond.contract);
+      const price = roundSixDecimal(offer_amount / return_amount);
+      const token_symbol = this.info.coinInfos[lastExecuteMsg.zap_to_bond.pair_asset.token.contract_addr];
+      const lpAmountDesc = token_symbol === 'SPEC' ? `${lp_amount} ${token_symbol}-UST LP` : `${lp_amount} ${token_symbol}-UST LP (before deposit fee)`;
+      let autoCompoundDesc = '';
+      if (lastExecuteMsg.zap_to_bond.compound_rate === '1') {
+        autoCompoundDesc = 'auto-compound mode';
+      } else if (!lastExecuteMsg.zap_to_bond.compound_rate || lastExecuteMsg.zap_to_bond.compound_rate === '0' || lastExecuteMsg.zap_to_bond.compound_rate === '') {
+        autoCompoundDesc = 'auto-stake mode';
+      } else if (+lastExecuteMsg.zap_to_bond.compound_rate < 1 && +lastExecuteMsg.zap_to_bond.compound_rate > 0) {
+        const compoundPercentage = +lastExecuteMsg.zap_to_bond.compound_rate * 100;
+        autoCompoundDesc = `auto-compound ${compoundPercentage}% mode`;
+      }
+      return {
+        desc: `Deposited ${provide_amount_UST} UST for ${lpAmountDesc} which bought ${return_amount} ${token_symbol} at price ${price} UST, ${autoCompoundDesc} to ${foundFarmContract?.farm} farm`,
+        txhash: item.txhash,
+        timestamp: new Date(item.timestamp),
+        action: 'Farm',
+        id: item.id
+      };
     } else if (lastExecuteMsg.unbond && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex]?.value?.contract) ) {
       const symbol = this.info.coinInfos[lastExecuteMsg.unbond.asset_token];
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex]?.value?.contract);
