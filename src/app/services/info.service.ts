@@ -387,7 +387,7 @@ export class InfoService {
 
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
-      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/stat?type=lpVault').toPromise();
+      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
       Object.assign(this.coinInfos, data.coinInfos);
       this.stat = data.stat;
       this.pairInfos = data.pairInfos;
