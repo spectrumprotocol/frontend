@@ -86,10 +86,10 @@
               </div>
               <div class="text-end small mt-3 text-muted">
                 <span>Balance: </span>
-                <span *ngIf="!info.tokenBalances[vault.assetToken]" class="spinner-grow spinner-small mb-1" role="status" aria-hidden="true">
+                <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.assetToken]" class="spinner-grow spinner-small mb-1" role="status" aria-hidden="true">
                   <span class="visually-hidden">Loading...</span>
                 </span>
-                <span *ngIf="info.tokenBalances[vault.assetToken]">{{ info.tokenBalances[vault.assetToken] | unit }} {{ vault.symbol }}</span>
+                <span>{{ info.tokenBalances[vault.assetToken] | unit }} {{ vault.symbol }}</span>
               </div>
               <div class="input-group">
                 <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
