@@ -17,7 +17,6 @@ import { Options as NgxSliderOptions } from '@angular-slider/ngx-slider';
 import { LpBalancePipe } from '../../../pipes/lp-balance.pipe';
 import { TokenService } from '../../../services/api/token.service';
 import { TerraSwapService } from '../../../services/api/terraswap.service';
-import { StakerService } from '../../../services/api/staker.service';
 
 const DEPOSIT_FEE = '0.001';
 import { Denom } from '../../../consts/denom';
@@ -66,7 +65,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
-  auto_compound_percent_reallocate = 50;
+  auto_compound_percent_reallocate;
   ngx_slider_option: NgxSliderOptions = {
     animate: false,
     step: 1,
@@ -89,6 +88,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.terrajs.getHeight().then(h => this.height = h);
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
+      this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
       if (this.terrajs.isConnected && this.belowSection && !this.belowSection.collapsed) {
         await this.info.refreshPoolResponse(this.vault.assetToken);
         if (this.depositTokenAmtTokenUST) {
@@ -153,9 +153,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   async doDeposit() {
-    // if (this.formDeposit.invalid) {
-    //   return;
-    // }
     if (this.vault.poolInfo.auto_compound && !this.depositType) {
       return;
     }

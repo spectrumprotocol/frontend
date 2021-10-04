@@ -33,7 +33,7 @@
             <div class="fs-5">{{vault.pairStat?.tvl || 0 | unit: '1.0-2' }} UST</div>
           </div>
           <div class="col-12 col-sm-6 col-md-4">
-            <div class="fs-6 mt-2">Daily rate</div>
+            <div class="fs-6 mt-2">Daily Rate</div>
             <div class="fs-5">{{ vault.pairStat?.dpr || 0 | percent }}</div>
             <div class="fs-6 mt-2">LP Deposited</div>
             <div class="fs-5">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: '1.0-5'}}
@@ -85,7 +85,11 @@
                 with
               </div>
               <div class="text-end small mt-3 text-muted">
-                <span>Balance: {{ info.tokenBalances[vault.assetToken] | unit }} {{ vault.symbol }}</span>
+                <span>Balance: </span>
+                <span *ngIf="!info.tokenBalances[vault.assetToken]" class="spinner-grow spinner-small mb-1" role="status" aria-hidden="true">
+                  <span class="visually-hidden">Loading...</span>
+                </span>
+                <span *ngIf="info.tokenBalances[vault.assetToken]">{{ info.tokenBalances[vault.assetToken] | unit }} {{ vault.symbol }}</span>
               </div>
               <div class="input-group">
                 <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
@@ -371,7 +375,7 @@
           </form>
 
         </mdb-tab>
-        <mdb-tab title="Reallocate" *ngIf="vault.poolInfo.auto_compound">
+        <mdb-tab title="Reallocate" *ngIf="vault.poolInfo.auto_compound && info.rewardInfos[vault.assetToken]?.bond_amount">
           <form #formReallocate="ngForm" class="needs-validation p-3" novalidate>
             <div class="small mb-3">
               Reallocate auto-stake and auto-compound ratio of deposited {{ vault.symbol }}-UST LP
@@ -404,7 +408,7 @@
                 <span class="small text-muted">({{+info.rewardInfos[vault.assetToken]?.stake_bond_amount / +info.rewardInfos[vault.assetToken]?.bond_amount || 0 | percent:'0.2-2'}})</span>
               </div>
             </div>
-            <div class="row">
+            <div class="row border-bottom border-primary">
               <div class="col">Current auto-compound LP</div>
               <div class="col text-end">
                 {{+info.rewardInfos[vault.assetToken]?.auto_bond_amount || '0' | unit: '1.0-6'}} LP
