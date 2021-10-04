@@ -14,8 +14,8 @@
         <td>
           <a class="link-no-decoration" href='https://{{terrajs.settings.finder}}/{{terrajs.settings.chainID}}/tx/{{txHistory.txhash}}' target="_blank">
             <div class="d-flex flex-column">
-              <div class="table-font-size2">{{txHistory.action}}</div>
-              <div class="d-flex justify-content-between table-font-size1 fw-bold">
+              <div class="table-font-size2 fw-bold">{{txHistory.action}}</div>
+              <div class="d-flex justify-content-between table-font-size1">
                 <div [innerHTML]="txHistory.desc"></div>
                 <div>{{txHistory.timestamp | date:'EEE, LLL d YYYY, H:mm aa'}}</div>
               </div>

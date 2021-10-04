@@ -71,7 +71,7 @@
           <div class="me-3">
             <div mdbDropdown class="dropdown" #dropdownFarmFilter>
               <button mdbDropdownToggle class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false">
-                <i class="fas fa-filter"></i> {{activeFarm}} {{ activeFarm === "All" ? "Farms" : "Farm"}}
+                <img *ngIf="activeFarm !== 'All'" [src]="activeFarm | url:'icon'" class="farm-logo-small"><i *ngIf="activeFarm === 'All'"  class="fas fa-filter"></i> {{activeFarm}} {{ activeFarm === "All" ? "Farms" : "Farm"}}
               </button>
               <ul mdbDropdownMenu class="dropdown-menu">
                 <li>
