@@ -65,7 +65,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
-  auto_compound_percent_reallocate;
+  auto_compound_percent_reallocate = undefined;
   ngx_slider_option: NgxSliderOptions = {
     animate: false,
     step: 1,
@@ -88,7 +88,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.terrajs.getHeight().then(h => this.height = h);
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
-      this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
+      if (this.auto_compound_percent_reallocate === undefined) {
+        this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
+      }
       if (this.terrajs.isConnected && this.belowSection && !this.belowSection.collapsed) {
         await this.info.refreshPoolResponse(this.vault.assetToken);
         if (this.depositTokenAmtTokenUST) {

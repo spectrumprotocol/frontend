@@ -375,7 +375,7 @@
           </form>
 
         </mdb-tab>
-        <mdb-tab title="Reallocate" *ngIf="vault.poolInfo.auto_compound && info.rewardInfos[vault.assetToken]?.bond_amount">
+        <mdb-tab title="Reallocate" *ngIf="vault.poolInfo.auto_compound">
           <form #formReallocate="ngForm" class="needs-validation p-3" novalidate>
             <div class="small mb-3">
               Reallocate auto-stake and auto-compound ratio of deposited {{ vault.symbol }}-UST LP
@@ -408,7 +408,7 @@
                 <span class="small text-muted">({{+info.rewardInfos[vault.assetToken]?.stake_bond_amount / +info.rewardInfos[vault.assetToken]?.bond_amount || 0 | percent:'0.2-2'}})</span>
               </div>
             </div>
-            <div class="row border-bottom border-primary">
+            <div class="row mb-2">
               <div class="col">Current auto-compound LP</div>
               <div class="col text-end">
                 {{+info.rewardInfos[vault.assetToken]?.auto_bond_amount || '0' | unit: '1.0-6'}} LP
@@ -419,14 +419,14 @@
               <div class="col">New auto-stake LP</div>
               <div class="col text-end">
                 {{+info.rewardInfos[vault.assetToken]?.bond_amount * (100 - auto_compound_percent_reallocate) / 100 || 0 | floor | unit: '1.0-6'}} LP
-                <span class="small text-muted">({{ (100 - auto_compound_percent_reallocate) / 100 | percent:'0.2-2'}})</span>
+                <span class="small text-muted">({{ (100 - auto_compound_percent_reallocate) / 100 || 0 | percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="row">
               <div class="col">New auto-compound LP</div>
               <div class="col text-end">
                 {{+info.rewardInfos[vault.assetToken]?.bond_amount * auto_compound_percent_reallocate / 100 || 0 | floor | unit: '1.0-6'}} LP
-                <span class="small text-muted">({{auto_compound_percent_reallocate / 100 | percent:'0.2-2'}})</span>
+                <span class="small text-muted">({{auto_compound_percent_reallocate / 100 || 0 | percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="d-grid mt-3">
