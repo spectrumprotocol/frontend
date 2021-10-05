@@ -4,7 +4,7 @@ import { Coin, Coins, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../consts/animations';
 import { CONFIG } from '../../../consts/config';
 import { toBase64 } from '../../../libs/base64';
-import { div, floor, floor18Decimal, gt, minus, times } from '../../../libs/math';
+import {div, floor, floor18Decimal, floorSixDecimal, gt, minus, times} from '../../../libs/math';
 import { TerrajsService } from '../../../services/terrajs.service';
 import { Vault } from '../vault.component';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -486,7 +486,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   setMaxDepositUST() {
     if (+this.info.userUstAmount > 3.5){
-      this.depositUSTAmtUST = +this.info.userUstAmount - 3.5;
+      this.depositUSTAmtUST = +floorSixDecimal(+this.info.userUstAmount - 3.5);
     }
     this.depositUSTChanged();
   }
