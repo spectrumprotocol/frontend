@@ -445,9 +445,10 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       }
     }
-    const halfUSTbeforeTax = div(this.depositUSTAmtUST, 2);
-    const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: halfUSTbeforeTax, denom: 'uusd' }));
-    const halfUST = minus(halfUSTbeforeTax, tax.amount.toString());
+    const halfUSTbeforeTax = floor(div(times(this.depositUSTAmtUST, CONFIG.UNIT), 2));
+    const tax = await this.terrajs.lcdClient.utils.calculateTax(
+      Coin.fromData({ amount: halfUSTbeforeTax, denom: 'uusd' }));
+    const halfUST = div(minus(halfUSTbeforeTax, tax.amount.toString()), CONFIG.UNIT);
     if (this.depositUSTFoundPoolAddress) {
       const simulateSwapUSTtoToken = {
         simulation: {
@@ -470,9 +471,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       const grossLp = gt(pool.total_share, 0)
         ? BigNumber.minimum(
           new BigNumber(halfUST).times(pool.total_share).div(ust.amount),
-          new BigNumber(halfUST).times(pool.total_share).div(asset.amount))
+          new BigNumber(simulateSwapUSTtoTokenResult.return_amount).div(CONFIG.UNIT).times(pool.total_share).div(asset.amount))
         : new BigNumber(halfUST)
-          .times(halfUST)
+          .times(simulateSwapUSTtoTokenResult.return_amount)
           .sqrt();
       const depositTVL = new BigNumber(halfUST).multipliedBy('2');
       const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
