@@ -24,6 +24,7 @@ export interface ISettings {
   lcd: string;
   fcd: string;
   mirrorGraph: string;
+  specAPI: string;
   anchorAPI: string;
   pylonAPI: string;
   chainID: string;
@@ -56,6 +57,7 @@ export const networks: Record<string, ISettings> = {
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
+    specAPI: 'https://specapi.azurefd.net/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
     chainID: 'columbus-5',
@@ -87,6 +89,7 @@ export const networks: Record<string, ISettings> = {
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
+    specAPI: 'https://testapi.spec.finance/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
     chainID: 'bombay-12',

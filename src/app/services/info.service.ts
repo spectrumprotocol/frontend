@@ -59,7 +59,6 @@ export class InfoService {
     private terraSwap: TerraSwapService,
     private terraSwapFactory: TerraSwapFactoryService,
     private token: TokenService,
-    private specFarm: SpecFarmService,
     private balancePipe: BalancePipe,
     private lpBalancePipe: LpBalancePipe,
     private httpClient: HttpClient
@@ -107,12 +106,14 @@ export class InfoService {
 
   rewardInfos: Record<string, RewardInfoResponseItem> = {};
   tokenBalances: Record<string, string> = {};
+  lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
 
   cw20tokensWhitelist: any;
+  cw20Pairs: any;
 
   myTvl = 0;
-  allVaults: Vault[];
+  allVaults: Vault[] = [];
 
   portfolio: Portfolio;
 
@@ -138,6 +139,7 @@ export class InfoService {
     }
   }
 
+  @memoize(1000)
   async refreshPool() {
     this.specPoolInfo = await this.terraSwap.query(this.terrajs.settings.specPool, { pool: {} });
     this.specPrice = div(this.specPoolInfo.assets[1].amount, this.specPoolInfo.assets[0].amount);
@@ -245,6 +247,7 @@ export class InfoService {
     const ustPerYear = +specPerHeight * HEIGHT_PER_YEAR * +this.specPrice;
     for (const pair of Object.values(stat.pairs)) {
       pair.specApr = ustPerYear * pair.multiplier / totalWeight / +pair.tvl;
+      pair.dpr = (pair.poolApr + pair.specApr) / 365;
       stat.vaultFee += pair.vaultFee;
       stat.tvl = plus(stat.tvl, pair.tvl);
     }
@@ -285,26 +288,21 @@ export class InfoService {
       .then(it => this.tokenBalances[assetToken] = it.balance));
     tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
       .then(it => this.poolResponses[assetToken] = it));
+    tasks.push(this.token.balance(pairInfo.liquidity_token)
+      .then(it => this.lpTokenBalances[pairInfo.liquidity_token] = it.balance));
     await Promise.all(tasks);
   }
 
   @memoize(1000)
   async refreshPoolResponses() {
     await this.ensurePairInfos();
-    const tokenBalances: Record<string, string> = {};
     const poolResponses: Record<string, PoolResponse> = {};
-    const tokenTasks: Promise<any>[] = [];
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
       const pairInfo = this.pairInfos[key];
-      if (this.terrajs.address) {
-        tokenTasks.push(this.token.balance(key)
-          .then(it => tokenBalances[key] = it.balance));
-      }
       poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
         .then(it => poolResponses[key] = it));
     }
-    Promise.all(tokenTasks).then(() => this.tokenBalances = tokenBalances);
     await Promise.all(poolTasks);
     this.poolResponses = poolResponses;
     localStorage.setItem('poolResponses', JSON.stringify(poolResponses));
@@ -313,6 +311,12 @@ export class InfoService {
   async ensureCw20tokensWhitelist() {
     if (!this.cw20tokensWhitelist) {
       this.cw20tokensWhitelist = await this.httpClient.get<object>('https://assets.terra.money/cw20/tokens.json').toPromise();
+    }
+  }
+
+  async ensureCw20Pairs() {
+    if (!this.cw20Pairs) {
+      this.cw20Pairs = await this.httpClient.get<object>('https://assets.terra.money/cw20/pairs.json').toPromise();
     }
   }
 
@@ -371,8 +375,7 @@ export class InfoService {
 
   async initializeVaultData(connected: boolean) {
     const tasks: Promise<any>[] = [];
-    tasks.push(this.ensureCoinInfos());
-    tasks.push(this.refreshStat());
+    tasks.push(this.retrieveCachedStat());
     if (connected) {
       tasks.push(this.refreshRewardInfos());
     }
@@ -380,6 +383,28 @@ export class InfoService {
     await Promise.all(tasks);
     this.updateVaults();
     await this.updateMyTvl();
+  }
+
+  async retrieveCachedStat(skipPoolResponses = false) {
+    try {
+      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+      Object.assign(this.coinInfos, data.coinInfos);
+      this.stat = data.stat;
+      this.pairInfos = data.pairInfos;
+      this.poolInfos = data.poolInfos;
+      localStorage.setItem('coinInfos', JSON.stringify(this.coinInfos));
+      localStorage.setItem('stat', JSON.stringify(this.stat));
+      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+
+      if (skipPoolResponses) {
+        this.poolResponses = data.poolResponses;
+        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+      }
+    } catch (ex) {
+      // fallback if api die
+      await Promise.all([this.ensureCoinInfos(), this.refreshStat()]);
+    }
   }
 
   updateVaults() {
@@ -407,6 +432,7 @@ export class InfoService {
       const vault: Vault = {
         symbol: this.coinInfos[key],
         assetToken: key,
+        lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
         poolInfo: this.poolInfos[key],
         pairInfo: this.pairInfos[key],

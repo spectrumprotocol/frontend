@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Coin, Coins, MsgExecuteContract, MsgInstantiateContract, MsgMigrateContract, MsgUpdateContractAdmin } from '@terra-money/terra.js';
+import { Coin, Coins, MsgExecuteContract, MsgInstantiateContract, MsgMigrateContract, MsgStoreCode, MsgUpdateContractAdmin } from '@terra-money/terra.js';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 
 @Injectable({
@@ -17,6 +17,13 @@ export class WasmService {
 
   rawQuery(contract: string, key: string, subKey?: string) {
     return this.terrajs.get(`wasm/contracts/${contract}/store/raw`, { key, subKey });
+  }
+
+  storeCode(byteCode: string) {
+    return this.terrajs.post(new MsgStoreCode(
+      this.terrajs.address,
+      byteCode
+    ));
   }
 
   instantiate(codeId: number, initMsg: object, opts?: ExecuteOptions) {
