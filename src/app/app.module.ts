@@ -57,6 +57,8 @@ import { YourTvlComponent } from './pages/vault/your-tvl/your-tvl.component';
 import { UnstakeAllComponent } from './pages/vault/unstake-all/unstake-all.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { PylonFarmInfoService } from './services/farm_info/pylon.farm-info.service';
+import { GovPoolComponent } from './pages/gov/gov-pool/gov-pool.component';
+import { AmountInputComponent } from './components/amount-input/amount-input.component';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -103,6 +105,8 @@ registerLocaleData(locale, 'en');
     TxHistoryComponent,
     YourTvlComponent,
     UnstakeAllComponent,
+    GovPoolComponent,
+    AmountInputComponent,
   ],
   imports: [
     AppRoutingModule,
