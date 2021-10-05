@@ -485,7 +485,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   setMaxDepositUST() {
-    this.depositUSTAmtUST = +this.info.userUstAmount;
+    if (+this.info.userUstAmount > 3.5){
+      this.depositUSTAmtUST = +this.info.userUstAmount - 3.5;
+    }
     this.depositUSTChanged();
   }
 
