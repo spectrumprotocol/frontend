@@ -17,7 +17,6 @@ import { PollItemComponent } from './pages/gov/poll-item/poll-item.component';
 import { TerrajsService } from './services/terrajs.service';
 import { DigitComponent } from './components/digit/digit.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GovStakeComponent } from './pages/gov-stake/gov-stake.component';
 import { MaxValidator } from './directives/max.directive';
 import { MinValidator } from './directives/min.directive';
 import { GovPollNewComponent } from './pages/gov-poll-new/gov-poll-new.component';
@@ -77,7 +76,6 @@ registerLocaleData(locale, 'en');
     GovComponent,
     PollItemComponent,
     DigitComponent,
-    GovStakeComponent,
     MaxValidator,
     MinValidator,
     GovPollNewComponent,
