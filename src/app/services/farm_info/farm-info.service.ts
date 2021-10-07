@@ -18,6 +18,7 @@ export interface PairStat {
   multiplier: number;
   vaultFee: number;
   specApr?: number;
+  dpr?: number;
 }
 
 export const FARM_INFO_SERVICE = new InjectionToken('FARM_INFO_SERVICE');
