@@ -53,17 +53,20 @@
           </div>
         </div>
 
-        <div class="mb-4"></div>
+        <div class="mb-5"></div>
+
+        <h5 class="mb-3">Staking Pools</h5>
+
+        <div *ngIf="!poolDetails.length" class="d-flex align-items-center justify-content-center pt-3">
+          <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...
+        </div>
 
         <div class="row gy-4">
             <div *ngFor="let detail of poolDetails; trackBy: trackPoolDetails" class="col-12 col-md-6">
                 <app-gov-pool
                   [detail]="detail"
-                  [walletBalance]="walletBalance"
-                  (deposit)="deposit($event, detail.days)"
-                  (withdraw)="withdraw($event, detail.days)"
-                  (move)="move($event.amount, detail.days, $event.days)"
-                  (tabChange)="onPoolTabChange($event)">
+                  [walletBalance]="info.userSpecAmount || '0'"
+                  (transactionComplete)="fetchPoolDetails()">
                 </app-gov-pool>
             </div>
         </div>

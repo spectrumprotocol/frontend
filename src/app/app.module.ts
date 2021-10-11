@@ -57,7 +57,6 @@ import { UnstakeAllComponent } from './pages/vault/unstake-all/unstake-all.compo
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { PylonFarmInfoService } from './services/farm_info/pylon.farm-info.service';
 import { GovPoolComponent } from './pages/gov/gov-pool/gov-pool.component';
-import { AmountInputComponent } from './components/amount-input/amount-input.component';
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
 import { FloorPipe } from './pipes/floor.pipe';
 
@@ -106,7 +105,6 @@ registerLocaleData(locale, 'en');
     YourTvlComponent,
     UnstakeAllComponent,
     GovPoolComponent,
-    AmountInputComponent,
     FloorPipe,
   ],
   imports: [
