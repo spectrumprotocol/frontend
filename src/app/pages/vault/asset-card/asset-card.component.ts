@@ -65,7 +65,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
-  auto_compound_percent_reallocate;
+  auto_compound_percent_reallocate: number;
   ngx_slider_option: NgxSliderOptions = {
     animate: false,
     step: 1,
@@ -75,6 +75,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     showTicksValues: false,
     hideLimitLabels: true,
   };
+  bufferUST = 3.5;
 
   constructor(
     public terrajs: TerrajsService,
@@ -485,7 +486,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   setMaxDepositUST() {
-    if (+this.info.userUstAmount > 3.5){
+    if (+this.info.userUstAmount > this.bufferUST){
       this.depositUSTAmtUST = +floorSixDecimal(+this.info.userUstAmount - 3.5);
     }
     this.depositUSTChanged();
@@ -515,5 +516,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       }
     )];
     await this.terrajs.post(msgs);
+  }
+
+  changeDepositMode(mode: 'tokenust' | 'lp' | 'ust') {
+    setTimeout(() => this.depositMode = mode, 0);
   }
 }
