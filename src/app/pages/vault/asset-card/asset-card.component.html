@@ -203,7 +203,7 @@
             </div>
             <div *ngIf="depositMode === 'ust'" class="mt-3">
               <div class="small">
-                Auto buy {{ vault.symbol }} by half and deposit.
+                Use UST to buy {{ vault.symbol }} and create {{ vault.symbol }}-UST LP. This option has the same price exposure with other deposit options.
               </div>
               <div class="text-end small mt-3 text-muted">
                 <span>Balance: {{ info.userUstAmount | number }} UST</span>
