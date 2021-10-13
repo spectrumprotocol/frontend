@@ -165,6 +165,11 @@ export class InfoService {
             token_symbol: farmInfo.tokenSymbol,
             farmContract: farmInfo.farmContract,
             farmTokenContract: farmInfo.farmTokenContract,
+            auto_compound: farmInfo.autoCompound,
+            auto_stake: farmInfo.autoStake,
+            forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
+              ? undefined
+              : farmInfo.autoCompound ? 'compound' : 'stake'
           });
       }
     });

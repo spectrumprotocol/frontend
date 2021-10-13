@@ -16,6 +16,8 @@ import { HttpClient } from '@angular/common/http';
 export class AnchorFarmInfoService implements FarmInfoService {
   farm = 'Anchor';
   tokenSymbol = 'ANC';
+  autoCompound = true;
+  autoStake = true;
 
   constructor(
     private gov: GovService,

@@ -32,7 +32,6 @@ export interface PoolsResponse {
 }
 export interface PoolItem {
   asset_token: string;
-  auto_compound: boolean;
   auto_spec_share_index: Decimal;
   farm_share: Uint128;
   farm_share_index: Decimal;
