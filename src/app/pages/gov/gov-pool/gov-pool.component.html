@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center gap-2 pb-3 border-bottom mb-3">
       <img src="/assets/logo.png" height="36" />
       <div class="h4 mb-0">
-        {{ detail.days === 0 ? 'Flexible' : detail.days + ' Days Locked' }}
+        {{ detail.days === 0 ? 'No lock' : detail.days + '-Day Locked' }}
       </div>
     </div>
 
@@ -57,8 +57,8 @@
                 <span class="input-group-text">SPEC</span>
                 <input type="number" class="form-control" [class.is-invalid]="depositAmountModel.invalid" placeholder="0.000000"
                   [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+walletBalance"
-                  [(ngModel)]="depositAmount" #depositAmountModel="ngModel">
-                <button class="btn btn-outline-primary" (click)="depositAmount = +walletBalance">Max</button>
+                  [(ngModel)]="depositAmount" #depositAmountModel="ngModel" (change)="calculateDepositUnlock()">
+                <button class="btn btn-outline-primary" (click)="depositAmount = +walletBalance; calculateDepositUnlock()">Max</button>
                 <div *ngIf="depositAmountModel.errors?.max; then exceededBalanceError"></div>
                 <div *ngIf="depositAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
               </div>
@@ -82,7 +82,7 @@
                 <button *ngFor="let option of detail.moveOptions" type="button" class="btn btn-lg"
                   [class.btn-secondary]="moveDays === option.days"
                   [class.btn-outline-secondary]="moveDays !== option.days"
-                  (click)="moveDays = option.days">
+                  (click)="moveDays = option.days; calculateMoveUnlock()">
                   {{ option.days }}
                 </button>
               </div>
@@ -98,8 +98,8 @@
                 <span class="input-group-text">SPEC</span>
                 <input type="number" class="form-control" [class.is-invalid]="moveAmountModel.invalid" placeholder="0.000000"
                   [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
-                  [(ngModel)]="moveAmount" #moveAmountModel="ngModel">
-                <button class="btn btn-outline-primary" (click)="moveAmount = +detail.userAvailableBalance">Max</button>
+                  [(ngModel)]="moveAmount" #moveAmountModel="ngModel" (change)="calculateMoveUnlock()">
+                <button class="btn btn-outline-primary" (click)="moveAmount = +detail.userAvailableBalance; calculateMoveUnlock()">Max</button>
                 <div *ngIf="moveAmountModel.errors?.max; then exceededBalanceError"></div>
                 <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
               </div>
@@ -125,7 +125,7 @@
               <div class="small text-muted text-end">
                 Balance: {{ detail.userAvailableBalance | number }} SPEC
                 <i *ngIf="detail.userBalance !== detail.userAvailableBalance" class="fas fa-info-circle"
-                  [mdbTooltip]="'Locked: ' + (+detail.userBalance - +detail.userAvailableBalance | number) + ' SPEC'">
+                  [mdbTooltip]="'Locked: ' + (+detail.userBalance - +detail.userAvailableBalance | number) + ' SPEC from voting'">
                 </i>
               </div>
               <div class="input-group">

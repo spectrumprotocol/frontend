@@ -33,16 +33,13 @@ export class GovPoolComponent {
   @Input() walletBalance: string;
   @Output() transactionComplete = new EventEmitter();
 
-  _depositAmount: number | null = null;
-  _withdrawAmount: number | null = null;
-  _moveAmount: number | null = null;
-  _moveDays: number | null = null;
+  depositAmount: number | null = null;
+  withdrawAmount: number | null = null;
+  moveAmount: number | null = null;
+  moveDays: number | null = null;
 
   isExpanded = false;
-  get depositAmount() { return this._depositAmount; }
-  get withdrawAmount() { return this._withdrawAmount; }
-  get moveAmount() { return this._moveAmount; }
-  get moveDays() { return this._moveDays; }
+
   estimatedDepositUnlock: Date | null = null;
   estimatedMoveUnlock: Date | null = null;
   isWithdrawLocked = false;
@@ -54,31 +51,12 @@ export class GovPoolComponent {
     private gaService: GoogleAnalyticsService
   ) { }
 
-  set depositAmount(value) {
-    this._depositAmount = value;
-    this.calculateDepositUnlock();
-  }
-
-  set withdrawAmount(value) {
-    this._withdrawAmount = value;
-  }
-
-  set moveAmount(value) {
-    this._moveAmount = value;
-    this.calculateMoveUnlock();
-  }
-
-  set moveDays(value) {
-    this._moveDays = value;
-    this.calculateMoveUnlock();
-  }
-
   async submitDeposit() {
     if (this.depositAmount <= 0) {
       return;
     }
 
-    this.gaService.event('CLICK_STAKE_SPEC');
+    this.gaService.event('CLICK_STAKE_SPEC_' + this.detail.days);
 
     await this.tokenService.handle(this.terrajsService.settings.specToken, {
       send: {
@@ -97,7 +75,7 @@ export class GovPoolComponent {
       return;
     }
 
-    this.gaService.event('CLICK_UNSTAKE_SPEC');
+    this.gaService.event('CLICK_UNSTAKE_SPEC_' + this.detail.days);
 
     await this.govService.withdraw(times(this.withdrawAmount, CONFIG.UNIT), this.detail.days);
 
@@ -132,7 +110,7 @@ export class GovPoolComponent {
   onActiveTabChange() {
     this.isWithdrawLocked = Date.now() < this.detail.unlockAt?.getTime();
 
-    if (this.detail.moveOptions.length && !this.moveDays) {
+    if (this.detail.moveOptions.length === 1 && !this.moveDays) {
       this.moveDays = this.detail.moveOptions[0].days;
     }
   }
@@ -165,7 +143,7 @@ export class GovPoolComponent {
     const now = Date.now();
     const fromUnlockTime = from.unlockAt?.getTime() || 0;
     const toUnlockTime = to.unlockAt?.getTime() || 0;
-    const fromLock = Math.max(fromUnlockTime - now, 0) + (to.days - from.days) * 60 * 60 * 24;
+    const fromLock = Math.max(fromUnlockTime - now, 0) + (to.days - from.days) * 60 * 60 * 24 * 1000;
     const toLock = Math.max(toUnlockTime - now, 0);
     const newAmount = from.amount + to.amount;
 

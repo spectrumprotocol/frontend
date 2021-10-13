@@ -46,17 +46,18 @@ export class GovComponent implements OnInit, OnDestroy {
     this.$gaService.event('VIEW_GOV_PAGE');
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
-        const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
-        const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
-        Promise.all([task1, task2])
-          .then(it => this.supply = +it[0].total_supply - +it[1].staked_amount - +it[1].unstaked_amount);
+        Promise.all([
+          this.token.query(this.terrajs.settings.specToken, { token_info: {} }),
+          this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform),
+          this.info.refreshPool(),
+        ])
+          .then(it => {
+            this.supply = +it[0].total_supply - +it[1].staked_amount - +it[1].unstaked_amount;
+            this.marketCap = this.supply / CONFIG.UNIT * Number(this.info.specPrice);
+            this.fetchPoolDetails();
+          });
         this.gov.config()
           .then(it => this.config = it);
-        this.info.refreshStat();
-        this.info.refreshPool().then(() => {
-          this.marketCap = this.supply / CONFIG.UNIT * Number(this.info.specPrice);
-          this.fetchPoolDetails();
-        });
         this.pollReset();
         if (connected) {
           this.gov.balance()
@@ -100,6 +101,7 @@ export class GovComponent implements OnInit, OnDestroy {
     const [stateInfo, balanceResponse] = await Promise.all([
       this.gov.state(),
       this.terrajs.connected.value ? this.gov.balance() : Promise.resolve(null as BalanceResponse),
+      this.info.refreshStat(),
     ]);
 
     const vaultFeeByPools = {};
@@ -124,7 +126,7 @@ export class GovComponent implements OnInit, OnDestroy {
     this.poolDetails = stateInfo.pools
       .map((pool) => {
         const balanceInfo = balanceResponse?.pools.find(p => p.days === pool.days);
-        const userBalance = div(balanceInfo?.balance ?? 0, CONFIG.UNIT)
+        const userBalance = div(balanceInfo?.balance ?? 0, CONFIG.UNIT);
         const unlockAt = balanceInfo?.unlock ? new Date(balanceInfo.unlock * 1000) : null;
         const poolTvl = +pool.total_balance * +this.info.specPrice;
 
@@ -145,7 +147,7 @@ export class GovComponent implements OnInit, OnDestroy {
         const unreservedBalance = minus(lockedBalance, sumOtherPoolsBalance);
         const userAvailableBalance = gt(unreservedBalance, 0)
           ? minus(current.userBalance, unreservedBalance)
-          : current.userBalance
+          : current.userBalance;
 
         const moveOptions = poolDetails.filter(d => d.days > current.days)
           .map(({ days, userBalance, unlockAt }) => ({ days, userBalance, unlockAt }));
