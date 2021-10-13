@@ -17,6 +17,8 @@ import { PoolResponse } from '../api/terraswap_pair/pool_response';
 export class PylonFarmInfoService implements FarmInfoService {
   farm = 'Pylon';
   tokenSymbol = 'MINE';
+  autoCompound = true;
+  autoStake = true;
 
   constructor(
     private gov: GovService,

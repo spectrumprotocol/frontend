@@ -12,6 +12,8 @@ import { PoolResponse } from '../api/terraswap_pair/pool_response';
 export class SpecFarmInfoService implements FarmInfoService {
   farm = 'Spectrum';
   tokenSymbol = 'SPEC';
+  autoCompound = false;
+  autoStake = true;
 
   constructor(
     private gov: GovService,

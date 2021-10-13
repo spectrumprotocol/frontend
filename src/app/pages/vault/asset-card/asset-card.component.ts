@@ -107,6 +107,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     if (isNaN(this.auto_compound_percent_reallocate)) {
       this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
     }
+    if (this.vault.poolInfo.forceDepositType) {
+      this.depositType = this.vault.poolInfo.forceDepositType as any;
+    }
   }
 
   setMaxDepositUSTToken() {
@@ -160,7 +163,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   async doDeposit() {
-    if (this.vault.poolInfo.auto_compound && !this.depositType) {
+    if (!this.depositType) {
       return;
     }
     this.$gaService.event('CLICK_DEPOSIT_LP_VAULT', `${this.depositType}, ${this.depositMode}`, this.vault.symbol + '-UST');
@@ -168,7 +171,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     let auto_compound_ratio: string;
     if (this.depositType === 'compound') {
       auto_compound_ratio = '1';
-    } else if (this.depositType === 'stake' || !this.vault.poolInfo.auto_compound) {
+    } else if (this.depositType === 'stake') {
       auto_compound_ratio = undefined;
     } else if (this.depositType === 'mixed') {
       auto_compound_ratio = (this.auto_compound_percent_deposit / 100).toString();

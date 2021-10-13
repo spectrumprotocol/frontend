@@ -16,6 +16,8 @@ export class MirrorFarmInfoService implements FarmInfoService {
 
   farm = 'Mirror';
   tokenSymbol = 'MIR';
+  autoCompound = true;
+  autoStake = true;
 
   constructor(
     private apollo: Apollo,
