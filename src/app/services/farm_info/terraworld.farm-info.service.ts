@@ -18,6 +18,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
   tokenSymbol = 'TWD';
   autoCompound = true;
   autoStake = true;
+  auditWarning = true;
 
   constructor(
     private gov: GovService,
