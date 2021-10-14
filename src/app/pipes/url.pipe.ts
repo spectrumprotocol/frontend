@@ -26,8 +26,8 @@ export class UrlPipe implements PipeTransform {
           case 'MINE': return 'https://assets.pylon.rocks/logo/MINE.png';
           case 'Mirror': return `https://whitelist.mirror.finance/icon/MIR.png`;
           case 'Terraworld': return `/assets/token_icons/TWD.webp`;
-          case 'TWD': return `/assets/token_icons/TWD.webp`;
-          case 'MYMY': return `/assets/token_icons/TWD.webp`;
+          case 'TWD': return `https://terraoffice.world/twd_logo.png`;
+          case 'MYMY': return `https://terraoffice.world/twd_logo.png`;
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
