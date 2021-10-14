@@ -16,6 +16,8 @@ import {Denom} from '../../consts/denom';
 export class TerraworldFarmInfoService implements FarmInfoService {
   farm = 'Terraworld';
   tokenSymbol = 'TWD';
+  autoCompound = true;
+  autoStake = true;
 
   constructor(
     private gov: GovService,
