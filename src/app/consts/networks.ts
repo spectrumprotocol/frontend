@@ -21,6 +21,10 @@ export interface ISettings {
   pylonStaking: string;
   pylonToken: string;
   pylonFarm: string;
+  terraworldGov: string;
+  terraworldStaking: string;
+  terraworldToken: string;
+  terraworldFarm: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -54,6 +58,10 @@ export const networks: Record<string, ISettings> = {
     pylonStaking: 'terra19nek85kaqrvzlxygw20jhy08h3ryjf5kg4ep3l',
     pylonToken: 'terra1kcthelkax4j9x8d3ny6sdag0qmxxynl3qtcrpy',
     pylonFarm: 'terra1r3675psl7s2fe0sfh0vut5z4hrywgyyfdrzg95',
+    terraworldGov: 'terra1l709gpyzpwukpq3g55j7n8kqyzataxlg4swg96',
+    terraworldStaking: 'terra10eyxljyqkcvhs4dgr534hk0wehc28tz6gwnh8a',
+    terraworldToken: 'terra19djkaepjjswucys4npd5ltaxgsntl7jf0xz7w6',
+    terraworldFarm: '',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -86,6 +94,10 @@ export const networks: Record<string, ISettings> = {
     pylonStaking: 'terra17av0lfhqymusm6j9jpepzerg6u54q57jp7xnrz',
     pylonToken: 'terra1lqm5tutr5xcw9d5vc4457exa3ghd4sr9mzwdex',
     pylonFarm: 'terra1hgjp2yjqe7ngzsx283tm7ch8xcsvk5c8mdj2tw',
+    terraworldGov: 'terra1k7tsz2m2hnutx074gcwk9dtaxd88pywm6t8qul',
+    terraworldStaking: 'terra155yqhchyvfkxz5tas07kvprx77wnla7stexhs7',
+    terraworldToken: 'terra1pe803vgyesmqr73j3l4732hmg2v6ss374aagx4',
+    terraworldFarm: 'terra19w0a2xv7vyj8yze3fxzk55nfl5nlvc0l67uduu',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',

@@ -25,6 +25,9 @@ export class UrlPipe implements PipeTransform {
           case 'Pylon': return 'https://assets.pylon.rocks/logo/MINE.png';
           case 'MINE': return 'https://assets.pylon.rocks/logo/MINE.png';
           case 'Mirror': return `https://whitelist.mirror.finance/icon/MIR.png`;
+          case 'Terraworld': return `/assets/token_icons/TWD.webp`;
+          case 'TWD': return `/assets/token_icons/TWD.webp`;
+          case 'MYMY': return `/assets/token_icons/TWD.webp`;
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -36,6 +39,8 @@ export class UrlPipe implements PipeTransform {
           case 'ANC': return 'https://app.anchorprotocol.com/trade/buy';
           case 'TTN': return 'https://app.anchorprotocol.com/trade/buy';
           case 'MINE': return 'https://app.pylon.money/trade/buy';
+          case 'TWD': return `https://app.terraoffice.world/Gov/trade`;
+          case 'MYMY': return `https://app.terraoffice.world/Gov/trade`;
           default: return 'https://terra.mirror.finance/trade#buy';
         }
       case 'mint':
@@ -43,14 +48,6 @@ export class UrlPipe implements PipeTransform {
           return 'https://terra.mirror.finance/mint#open';
         }
         return undefined;
-      case 'pool':
-        if (symbol.startsWith('m')) {
-          return 'https://terra.mirror.finance/pool#provide';
-        }
-        switch (symbol) {
-          case 'SPEC': return '/pool';
-          default: return 'https://terra.mirror.finance/pool#provide';
-        }
     }
   }
 
