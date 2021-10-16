@@ -19,6 +19,14 @@ interface TxHistory {
 const numberRegExp = /\d+/;
 const alphabetRegExp = /[A-z]+/;
 
+const getGovPoolName = (days?: number) => {
+  if (!days) {
+    return 'No Lock Pool';
+  }
+
+  return `${days}-Day${days > 1 ? 's' : ''} Locked Pool`;
+};
+
 @Component({
   selector: 'app-tx-history',
   templateUrl: './tx-history.component.html',
@@ -341,8 +349,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    }
-    else if (this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.withdraw_liquidity && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
+    } else if (this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.withdraw_liquidity && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
       const penultimateExecutionMsg = this.ensureBase64toObject(item.tx.value.msg[lastIndex - 1]?.value?.execute_msg);
       const symbol = this.info.coinInfos[penultimateExecutionMsg.unbond.asset_token];
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract);
@@ -360,9 +367,10 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    } else if (lastExecuteMsg.send?.msg === btoa('{"stake_tokens":{}}') && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
+    } else if (this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.stake_tokens && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
+      const { days } = this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.stake_tokens;
       return {
-        desc: 'Staked to Gov ' + (+lastExecuteMsg.send.amount / CONFIG.UNIT) + ' SPEC',
+        desc: `Staked to ${getGovPoolName(days)} ${+lastExecuteMsg.send.amount / CONFIG.UNIT} SPEC`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Gov',
@@ -387,7 +395,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     } else if (lastExecuteMsg.withdraw && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.gov) {
       const executeMsgLvl2 = this.ensureBase64toObject(item.tx.value.msg[lastIndex]?.value.execute_msg);
       return {
-        desc: 'Unstaked from Gov ' + (+executeMsgLvl2.withdraw.amount / CONFIG.UNIT) + ' SPEC',
+        desc: `Unstaked from ${getGovPoolName(executeMsgLvl2.withdraw.days)} ${+executeMsgLvl2.withdraw.amount / CONFIG.UNIT} SPEC`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Gov',
@@ -409,6 +417,15 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         timestamp: new Date(item.timestamp),
         action: 'Gov',
         id: item.id
+      };
+    } else if (lastExecuteMsg.update_stake && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.gov) {
+      const { update_stake: { amount, from_days, to_days } } = lastExecuteMsg;
+      return {
+        desc: `Moved staking ${amount / CONFIG.UNIT} SPEC from ${getGovPoolName(from_days)} to ${getGovPoolName(to_days)}`,
+        txhash: item.txhash,
+        timestamp: new Date(item.timestamp),
+        action: 'Gov',
+        id: item.id,
       };
     } else if (item.tx.value.msg.length >= 3
       && lastExecuteMsg.send
