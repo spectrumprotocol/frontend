@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { CONFIG } from 'src/app/consts/config';
 import { toBase64 } from 'src/app/libs/base64';
@@ -6,6 +6,7 @@ import { times } from 'src/app/libs/math';
 import { GovService } from 'src/app/services/api/gov.service';
 import { TokenService } from 'src/app/services/api/token.service';
 import { TerrajsService } from 'src/app/services/terrajs.service';
+import { MdbCollapseDirective } from 'mdb-angular-ui-kit';
 
 export enum GovPoolTab {
   Deposit,
@@ -32,13 +33,12 @@ export class GovPoolComponent {
   @Input() detail: GovPoolDetail;
   @Input() walletBalance: string;
   @Output() transactionComplete = new EventEmitter();
-
+  @ViewChild('belowSection') belowSection: MdbCollapseDirective;
+  
   depositAmount: number | null = null;
   withdrawAmount: number | null = null;
   moveAmount: number | null = null;
   moveDays: number | null = null;
-
-  isExpanded = false;
 
   estimatedDepositUnlock: Date | null = null;
   estimatedMoveUnlock: Date | null = null;
@@ -50,6 +50,10 @@ export class GovPoolComponent {
     private govService: GovService,
     private gaService: GoogleAnalyticsService
   ) { }
+
+  ngOnChanges(changes: SimpleChanges) {
+    this.isWithdrawLocked = Date.now() < changes.detail.currentValue.unlockAt?.getTime();   
+  }
 
   async submitDeposit() {
     if (this.depositAmount <= 0) {
@@ -97,7 +101,7 @@ export class GovPoolComponent {
   }
 
   toggleExpanded() {
-    this.isExpanded = !this.isExpanded;
+    this.belowSection.toggle();
   }
 
   reset() {
@@ -108,8 +112,6 @@ export class GovPoolComponent {
   }
 
   onActiveTabChange() {
-    this.isWithdrawLocked = Date.now() < this.detail.unlockAt?.getTime();
-
     if (this.detail.moveOptions.length === 1 && !this.moveDays) {
       this.moveDays = this.detail.moveOptions[0].days;
     }

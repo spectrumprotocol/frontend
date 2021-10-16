@@ -7,3 +7,16 @@
     flex-direction: column;
   }
 }
+
+.logo {
+  height: 32px;
+}
+
+.badge-staked {
+  top: 0;
+  right: 0;
+  border-top-right-radius: 0.2rem;
+  border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0.25rem;
+}
