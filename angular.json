@@ -65,7 +65,7 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/chart.js/dist/Chart.js",
+              "node_modules/chart.js/dist/chart.js",
               "node_modules/hammerjs/hammer.min.js"
             ],
             "allowedCommonJsDependencies": [

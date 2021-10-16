@@ -1,0 +1,9 @@
+@import '~mdb-angular-ui-kit/assets/scss/bootstrap/functions';
+@import '~mdb-angular-ui-kit/assets/scss/bootstrap/variables';
+@import '~mdb-angular-ui-kit/assets/scss/bootstrap/mixins';
+
+@include media-breakpoint-down(lg) {
+  :host ::ng-deep .nav-tabs {
+    flex-direction: column;
+  }
+}

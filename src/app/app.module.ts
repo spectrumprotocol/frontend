@@ -17,7 +17,6 @@ import { PollItemComponent } from './pages/gov/poll-item/poll-item.component';
 import { TerrajsService } from './services/terrajs.service';
 import { DigitComponent } from './components/digit/digit.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GovStakeComponent } from './pages/gov-stake/gov-stake.component';
 import { MaxValidator } from './directives/max.directive';
 import { MinValidator } from './directives/min.directive';
 import { GovPollNewComponent } from './pages/gov-poll-new/gov-poll-new.component';
@@ -57,8 +56,10 @@ import { YourTvlComponent } from './pages/vault/your-tvl/your-tvl.component';
 import { UnstakeAllComponent } from './pages/vault/unstake-all/unstake-all.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { PylonFarmInfoService } from './services/farm_info/pylon.farm-info.service';
+import { GovPoolComponent } from './pages/gov/gov-pool/gov-pool.component';
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
 import { FloorPipe } from './pipes/floor.pipe';
+import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -77,7 +78,6 @@ registerLocaleData(locale, 'en');
     GovComponent,
     PollItemComponent,
     DigitComponent,
-    GovStakeComponent,
     MaxValidator,
     MinValidator,
     GovPollNewComponent,
@@ -105,6 +105,7 @@ registerLocaleData(locale, 'en');
     TxHistoryComponent,
     YourTvlComponent,
     UnstakeAllComponent,
+    GovPoolComponent,
     FloorPipe,
   ],
   imports: [
@@ -135,6 +136,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

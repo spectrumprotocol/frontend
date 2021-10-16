@@ -17,6 +17,7 @@ export type Cw20HookMsg =
     }
   | {
       stake_tokens: {
+        days?: number | null;
         staker_addr?: string | null;
         [k: string]: unknown;
       };

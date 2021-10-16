@@ -26,25 +26,27 @@ export type Uint128 = string;
  */
 export type Decimal = string;
 
-export interface SharesResponse {
-  shares: ShareInfo[];
+export interface RewardInfoResponse {
+  reward_infos: RewardInfoResponseItem[];
+  staker_addr: string;
   [k: string]: unknown;
 }
-export interface ShareInfo {
-  address: string;
-  amount: Uint128;
-  lock_amount: Uint128;
-  lock_end: number;
-  lock_start: number;
-  pools: SharePoolInfo[];
-  share: Uint128;
-  share_index: Decimal;
-  weight: number;
-  [k: string]: unknown;
-}
-export interface SharePoolInfo {
-  days: number;
-  share: Uint128;
-  share_index: Decimal;
+export interface RewardInfoResponseItem {
+  accum_spec_share: Uint128;
+  asset_token: string;
+  auto_bond_amount: Uint128;
+  auto_bond_share: Uint128;
+  auto_spec_share_index: Decimal;
+  bond_amount: Uint128;
+  farm_share: Uint128;
+  farm_share_index: Decimal;
+  locked_spec_reward: Uint128;
+  locked_spec_share: Uint128;
+  pending_farm_reward: Uint128;
+  pending_spec_reward: Uint128;
+  spec_share: Uint128;
+  stake_bond_amount: Uint128;
+  stake_bond_share: Uint128;
+  stake_spec_share_index: Decimal;
   [k: string]: unknown;
 }

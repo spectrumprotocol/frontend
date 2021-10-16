@@ -7,57 +7,57 @@
 
 export type ExecuteMsg =
   | {
-      poll_vote: {
-        amount: Uint128;
-        poll_id: number;
-        vote: VoteOption;
-        [k: string]: unknown;
-      };
-    }
-  | {
       receive: Cw20ReceiveMsg;
     }
   | {
-      stake: {
-        amount: Uint128;
-        days?: number | null;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      unstake: {
-        amount: Uint128;
-        days?: number | null;
-        [k: string]: unknown;
-      };
-    }
-  | {
       update_config: {
+        community_fee?: Decimal | null;
+        controller?: string | null;
+        controller_fee?: Decimal | null;
+        deposit_fee?: Decimal | null;
         owner?: string | null;
+        platform_fee?: Decimal | null;
         [k: string]: unknown;
       };
     }
   | {
-      update_stake: {
+      unbond: {
         amount: Uint128;
-        from_days: number;
-        to_days: number;
+        asset_token: string;
         [k: string]: unknown;
       };
     }
   | {
-      upsert_share: {
-        address: string;
-        lock_amount?: Uint128 | null;
-        lock_end?: number | null;
-        lock_start?: number | null;
+      register_asset: {
+        asset_token: string;
+        auto_compound: boolean;
+        staking_token: string;
         weight: number;
         [k: string]: unknown;
       };
     }
   | {
       withdraw: {
-        amount?: Uint128 | null;
+        asset_token?: string | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      stake: {
+        asset_token: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      compound: {
+        [k: string]: unknown;
+      };
+    }
+  | {
+      update_bond: {
+        amount_to_auto: Uint128;
+        amount_to_stake: Uint128;
+        asset_token: string;
         [k: string]: unknown;
       };
     };
@@ -75,13 +75,18 @@ export type ExecuteMsg =
  * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
  */
 export type Uint128 = string;
-export type VoteOption = "yes" | "no";
 /**
  * Binary is a wrapper around Vec<u8> to add base64 de/serialization with serde. It also adds some helper methods to help encode inline.
  *
  * This is only needed as serde-json-{core,wasm} has a horrible encoding for Vec<u8>
  */
 export type Binary = string;
+/**
+ * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
+ *
+ * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
+ */
+export type Decimal = string;
 
 /**
  * Cw20ReceiveMsg should be de/serialized under `Receive()` variant in a ExecuteMsg

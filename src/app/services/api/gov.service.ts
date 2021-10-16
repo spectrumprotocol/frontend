@@ -3,7 +3,7 @@ import { memoize } from 'utils-decorators';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { BalanceResponse } from './gov/balance_response';
 import { ConfigInfo } from './gov/config_info';
-import { ExecuteMsg } from './gov/execute_msg';
+import { ExecuteMsg, Uint128 } from './gov/execute_msg';
 import { PollInfo, PollsResponse } from './gov/polls_response';
 import { QueryMsg } from './gov/query_msg';
 import { StateInfo } from './gov/state_info';
@@ -37,6 +37,18 @@ export class GovService {
   @memoize(1000)
   vaults() {
     return this.query({ vaults: {} });
+  }
+
+  state() {
+    return this.query({ state: {} });
+  }
+
+  withdraw(amount: Uint128, days: number) {
+    return this.handle({ withdraw: { amount, days } });
+  }
+
+  updateStake(amount: Uint128, from_days: number, to_days: number) {
+    return this.handle({ update_stake: { amount, from_days, to_days } });
   }
 
   query(msg: Extract<QueryMsg, { balance: unknown }>): Promise<BalanceResponse>;

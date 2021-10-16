@@ -1,0 +1,165 @@
+<div class="card hover-shadow">
+  <div class="card-body" style="cursor: pointer;" (click)="toggleExpanded()">
+    <div class="d-flex align-items-center gap-2 pb-3 border-bottom mb-3">
+      <img src="/assets/logo.png" height="36" />
+      <div class="h4 mb-0">
+        {{ detail.days === 0 ? 'No lock' : detail.days + '-Day Locked' }}
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <div class="flex-grow-1 d-flex flex-column gap-2">
+        <div class="small">
+          <div>
+            Total Staked
+          </div>
+          <div>
+            {{ detail.balance | number }} SPEC
+          </div>
+        </div>
+        <div class="small">
+          <div>
+            Your Staked
+            <small *ngIf="detail.unlockAt" class="text-primary">
+              <i class="fas fa-unlock"></i> Unlock {{ detail.unlockAt | timeago }}
+            </small>
+          </div>
+          <div>
+            {{ detail.userBalance | number }} SPEC
+          </div>
+        </div>
+      </div>
+      <div class="text-end">
+        <div class="text-primary">
+          <div class="text-primary display-4 lh-1">{{ detail.apr | percent }}</div>
+          <div>
+            APR
+            <i class="fas fa-info-circle" mdbTooltip="SPEC staking return from vault fee"></i>
+          </div>
+        </div>
+        <div class="small text-muted lh-sm">
+          {{ detail.apr / 365 | percent }} daily rate
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isExpanded" class="card-body pt-0">
+    <div class="p-3 bg-dark rounded">
+      <mdb-tabs [justified]="true" (activeTabChange)="onActiveTabChange()">
+        <mdb-tab title="Deposit">
+          <div class="d-grid gap-3">
+            <div>
+              <div class="small text-muted text-end">
+                Balance: {{ walletBalance | number }} SPEC
+              </div>
+              <div class="input-group">
+                <span class="input-group-text">SPEC</span>
+                <input type="number" class="form-control" [class.is-invalid]="depositAmountModel.invalid" placeholder="0.000000"
+                  [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+walletBalance"
+                  [(ngModel)]="depositAmount" #depositAmountModel="ngModel" (change)="calculateDepositUnlock()">
+                <button class="btn btn-outline-primary" (click)="depositAmount = +walletBalance; calculateDepositUnlock()">Max</button>
+                <div *ngIf="depositAmountModel.errors?.max; then exceededBalanceError"></div>
+                <div *ngIf="depositAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
+              </div>
+            </div>
+            <div *ngIf="detail.days > 0" class="d-flex flex-wrap small text-muted">
+              <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
+              <div>{{ estimatedDepositUnlock ? (estimatedDepositUnlock | date:'medium') : '-' }}</div>
+            </div>
+            <button type="button" class="btn btn-lg btn-primary" (click)="submitDeposit()"
+              [disabled]="depositAmount <= 0 || depositAmountModel.invalid">
+              Deposit
+            </button>
+          </div>
+        </mdb-tab>
+
+        <mdb-tab [disabled]="!detail.moveOptions.length" title="Move">
+          <div class="d-grid gap-3">
+            <div *ngIf="detail.moveOptions.length > 1">
+              <div class="small">Lock Duration (Days)</div>
+              <div class="btn-group w-100">
+                <button *ngFor="let option of detail.moveOptions" type="button" class="btn btn-lg"
+                  [class.btn-secondary]="moveDays === option.days"
+                  [class.btn-outline-secondary]="moveDays !== option.days"
+                  (click)="moveDays = option.days; calculateMoveUnlock()">
+                  {{ option.days }}
+                </button>
+              </div>
+            </div>
+            <div>
+              <div class="small text-muted text-end">
+                Balance: {{ detail.userAvailableBalance | number }} SPEC
+                <i *ngIf="detail.userBalance !== detail.userAvailableBalance" class="fas fa-info-circle"
+                  [mdbTooltip]="'Locked: ' + (+detail.userBalance - +detail.userAvailableBalance | number) + ' SPEC'">
+                </i>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text">SPEC</span>
+                <input type="number" class="form-control" [class.is-invalid]="moveAmountModel.invalid" placeholder="0.000000"
+                  [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
+                  [(ngModel)]="moveAmount" #moveAmountModel="ngModel" (change)="calculateMoveUnlock()">
+                <button class="btn btn-outline-primary" (click)="moveAmount = +detail.userAvailableBalance; calculateMoveUnlock()">Max</button>
+                <div *ngIf="moveAmountModel.errors?.max; then exceededBalanceError"></div>
+                <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
+              </div>
+            </div>
+            <div *ngIf="detail.moveOptions.length === 1" class="d-flex flex-wrap small text-muted">
+              <div class="flex-grow-1">Lock Duration:&nbsp;</div>
+              <div>{{ moveDays }} Days</div>
+            </div>
+            <div class="d-flex flex-wrap small text-muted">
+              <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
+              <div>{{ estimatedMoveUnlock ? (estimatedMoveUnlock | date:'medium') : '-' }}</div>
+            </div>
+            <button type="button" class="btn btn-lg btn-primary" (click)="submitMove()"
+              [disabled]="moveAmount <= 0 || moveAmountModel.invalid">
+              Move
+            </button>
+          </div>
+        </mdb-tab>
+
+        <mdb-tab title="Withdraw">
+          <div class="d-grid gap-3">
+            <div>
+              <div class="small text-muted text-end">
+                Balance: {{ detail.userAvailableBalance | number }} SPEC
+                <i *ngIf="detail.userBalance !== detail.userAvailableBalance" class="fas fa-info-circle"
+                  [mdbTooltip]="'Locked: ' + (+detail.userBalance - +detail.userAvailableBalance | number) + ' SPEC from voting'">
+                </i>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text">SPEC</span>
+                <input type="number" class="form-control" [class.is-invalid]="withdrawAmountModel.invalid" placeholder="0.000000"
+                  [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
+                  [(ngModel)]="withdrawAmount" #withdrawAmountModel="ngModel" [disabled]="isWithdrawLocked">
+                <button class="btn btn-outline-primary" (click)="withdrawAmount = +detail.userAvailableBalance"
+                  [disabled]="isWithdrawLocked">
+                  Max
+                </button>
+                <div *ngIf="withdrawAmountModel.errors?.max; then exceededBalanceError"></div>
+                <div *ngIf="withdrawAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-lg btn-primary" (click)="submitWithdraw()"
+              [disabled]="isWithdrawLocked || withdrawAmount <= 0 || withdrawAmountModel.invalid">
+              {{ isWithdrawLocked ? 'Locked until ' + (detail.unlockAt | date:'medium') : 'Withdraw' }}
+            </button>
+          </div>
+        </mdb-tab>
+      </mdb-tabs>
+    </div>
+  </div>
+</div>
+
+<ng-template #exceededBalanceError>
+  <div class="invalid-feedback">
+    Amount must not be greater than the balance
+  </div>
+</ng-template>
+
+<ng-template #maxDecimalPlacesError>
+  <div class="invalid-feedback">
+    Amount must be within 6 decimal points
+  </div>
+</ng-template>

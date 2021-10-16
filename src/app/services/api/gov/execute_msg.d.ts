@@ -55,6 +55,21 @@ export type ExecuteMsg =
       };
     }
   | {
+      update_stake: {
+        amount: Uint128;
+        from_days: number;
+        to_days: number;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      upsert_pool: {
+        active: boolean;
+        days: number;
+        [k: string]: unknown;
+      };
+    }
+  | {
       upsert_vault: {
         vault_address: string;
         weight: number;
@@ -64,6 +79,7 @@ export type ExecuteMsg =
   | {
       withdraw: {
         amount?: Uint128 | null;
+        days?: number | null;
         [k: string]: unknown;
       };
     };

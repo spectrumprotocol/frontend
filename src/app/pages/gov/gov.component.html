@@ -12,80 +12,65 @@
             </div>
         </div>
         <div class="row g-3 pt-3">
-            <div class="col-md-4">
-                <div class="row g-3">
-                    <div class="col-6 col-md-12">
-                        <div class="card box-left">
-                            <div class="card-body">
-                                <p class="card-text">
-                                    Total Staked <i class="fas fa-info-circle info-icon"
-                                        mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
-                                </p>
-                                <h5 class="card-title">
-                                    <app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit> SPEC (<app-digit
-                                        [value]="supply ? +info.stat?.govStaked * 100 / supply : 0"></app-digit>%)
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-12">
-                        <div class="card box-left">
-                            <div class="card-body">
-                                <p class="card-text">
-                                    Circulation Supply <i class="fas fa-info-circle info-icon"
-                                        mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
-                                </p>
-                                <h5 class="card-title">
-                                    <app-digit [value]="+supply / UNIT"></app-digit> SPEC
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          <div class="col-12 col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <p class="card-text">
+                  Total Staked <i class="fas fa-info-circle info-icon"
+                    mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
+                </p>
+                <h5 class="card-title">
+                  <app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit> SPEC (<app-digit
+                    [value]="supply ? +info.stat?.govStaked * 100 / supply : 0"></app-digit>%)
+                </h5>
+              </div>
             </div>
-            <div class="col-md-8">
-                <div class="card text-center box-right">
-                    <div class="card-body pb-0">
-                        <img src="/assets/logo.png" class="logo" />
-                        <h5 class="card-title">Spectrum Token (SPEC)</h5>
-                        <h2 class="text-primary">{{ info.stat?.govApr | percent }} APR</h2>
-                        <p class="small">
-                            {{ info.stat?.govApr / 365 | percent }} daily rate <i class="fas fa-info-circle info-icon"
-                                mdbTooltip="SPEC staking return from vault fee"></i>
-                        </p>
-                        <button type="button" class="btn btn-primary" routerLink="/gov/stake">Manage Stake</button>
-                        <div class="d-md-none pt-2 pb-1"><span class="small">Stakable </span><span class="h5">
-                                <app-digit [value]="+info.userSpecAmount || 0"></app-digit>
-                            </span></div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="row">
-                            <div class="col-md-4 col-6 ps-1 pe-1">
-                                <p class="small">Staked in Gov</p>
-                                <h5 class="card-title">
-                                    <app-digit [value]="myStaked / UNIT"></app-digit><span class="d-none d-md-inline">
-                                        SPEC</span>
-                                </h5>
-                            </div>
-                            <div class="col-md-4 col-6 ps-1 pe-1 border-start">
-                                <p class="small">Staked in Vaults</p>
-                                <h5 class="card-title">
-                                    <app-digit [value]="+info.portfolio?.tokens.get('SPEC').pending_reward_token">
-                                    </app-digit><span class="d-none d-md-inline"> SPEC</span>
-                                </h5>
-                            </div>
-                            <div class="d-none d-md-inline col-md-4 ps-1 pe-1 border-start">
-                                <p class="small">Stakable</p>
-                                <h5 class="card-title">
-                                    <app-digit [value]="+info.userSpecAmount || 0"></app-digit><span
-                                        class="d-none d-md-inline"> SPEC</span>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <p class="card-text">
+                  Circulation Supply <i class="fas fa-info-circle info-icon"
+                    mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
+                </p>
+                <h5 class="card-title">
+                  <app-digit [value]="+supply / UNIT"></app-digit> SPEC
+                </h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <p class="card-text">
+                  Market Capitalization
+                </p>
+                <h5 class="card-title">
+                  <app-digit *ngIf="marketCap" [value]="marketCap"></app-digit>&nbsp;<span *ngIf="marketCap">UST</span>
+                </h5>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-5"></div>
+
+        <h5 class="mb-3">Staking Pools</h5>
+
+        <div *ngIf="!poolDetails.length" class="d-flex align-items-center justify-content-center pt-3">
+          <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...
+        </div>
+
+        <div class="row gy-4">
+            <div *ngFor="let detail of poolDetails; trackBy: trackPoolDetails" class="col-12 col-md-6">
+                <app-gov-pool
+                  [detail]="detail"
+                  [walletBalance]="info.userSpecAmount || '0'"
+                  (transactionComplete)="fetchPoolDetails()">
+                </app-gov-pool>
             </div>
         </div>
+
         <div class="row pt-5">
             <div class="col-4">
                 <h5>Polls <i class="fas fa-info-circle info-icon"
