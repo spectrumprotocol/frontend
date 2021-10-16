@@ -6,8 +6,6 @@
  */
 
 export interface ConfigInfo {
-  lock_end: number;
-  lock_start: number;
   owner: string;
   spectrum_gov: string;
   spectrum_token: string;

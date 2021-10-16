@@ -33,6 +33,7 @@ export type ExecuteMsg =
   | {
       withdraw: {
         asset_token?: string | null;
+        spec_amount?: Uint128 | null;
         [k: string]: unknown;
       };
     };

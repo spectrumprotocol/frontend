@@ -30,7 +30,6 @@ export type ExecuteMsg =
   | {
       register_asset: {
         asset_token: string;
-        auto_compound: boolean;
         staking_token: string;
         weight: number;
         [k: string]: unknown;
@@ -39,6 +38,8 @@ export type ExecuteMsg =
   | {
       withdraw: {
         asset_token?: string | null;
+        farm_amount?: Uint128 | null;
+        spec_amount?: Uint128 | null;
         [k: string]: unknown;
       };
     }

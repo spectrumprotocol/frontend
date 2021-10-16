@@ -27,6 +27,8 @@ export type Uint128 = string;
 export type Decimal = string;
 
 export interface StateInfo {
+  earning: Uint128;
+  earning_spec: Uint128;
   previous_spec_share: Uint128;
   spec_share_index: Decimal;
   total_farm_share: Uint128;

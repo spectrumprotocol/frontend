@@ -7,6 +7,9 @@
 
 export type ExecuteMsg =
   | {
+      receive: Cw20ReceiveMsg;
+    }
+  | {
       bond: {
         assets: [Asset, Asset];
         compound_rate?: Decimal | null;
@@ -56,6 +59,16 @@ export type ExecuteMsg =
         remove_allowlist?: string[] | null;
         [k: string]: unknown;
       };
+    }
+  | {
+      zap_to_unbond_hook: {
+        belief_price?: Decimal | null;
+        max_spread: Decimal;
+        prev_sell_asset: Asset;
+        prev_target_asset: Asset;
+        staker_addr: string;
+        [k: string]: unknown;
+      };
     };
 /**
  * A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.
@@ -71,6 +84,12 @@ export type ExecuteMsg =
  * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
  */
 export type Uint128 = string;
+/**
+ * Binary is a wrapper around Vec<u8> to add base64 de/serialization with serde. It also adds some helper methods to help encode inline.
+ *
+ * This is only needed as serde-json-{core,wasm} has a horrible encoding for Vec<u8>
+ */
+export type Binary = string;
 /**
  * AssetInfo contract_addr is usually passed from the cw20 hook so we can trust the contract_addr is properly validated.
  */
@@ -94,6 +113,15 @@ export type AssetInfo =
  */
 export type Decimal = string;
 
+/**
+ * Cw20ReceiveMsg should be de/serialized under `Receive()` variant in a ExecuteMsg
+ */
+export interface Cw20ReceiveMsg {
+  amount: Uint128;
+  msg: Binary;
+  sender: string;
+  [k: string]: unknown;
+}
 export interface Asset {
   amount: Uint128;
   info: AssetInfo;

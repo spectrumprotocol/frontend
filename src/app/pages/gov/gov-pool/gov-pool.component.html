@@ -1,64 +1,64 @@
-<div class="card hover-shadow">
-  <div class="card-body" style="cursor: pointer;" (click)="toggleExpanded()">
+<div [ngClass]="{'border border-primary' : +detail.userBalance >= 10}" class="card hover-shadow">
+  <span *ngIf="+detail.userBalance >= 10" class="badge bg-primary position-absolute badge-staked">Staked</span>
+  <div class="card-body" style="cursor: pointer;" (click)="toggleExpanded()" aria-controls="belowSection"
+    aria-expanded="false">
     <div class="d-flex align-items-center gap-2 pb-3 border-bottom mb-3">
-      <img src="/assets/logo.png" height="36" />
-      <div class="h4 mb-0">
-        {{ detail.days === 0 ? 'No lock' : detail.days + '-Day Locked' }}
+      <img class="spec-logo" src="/assets/logo.png" class="logo" />
+      <div class="h5 mb-0">
+        {{ detail.days === 0 ? 'No Lock' : detail.days + '-Day Locked' }}
       </div>
     </div>
 
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 ">
       <div class="flex-grow-1 d-flex flex-column gap-2">
-        <div class="small">
+        <div>
           <div>
             Total Staked
           </div>
-          <div>
-            {{ detail.balance | number }} SPEC
-          </div>
+          <app-digit [value]="+detail.balance"></app-digit> SPEC
         </div>
-        <div class="small">
+        <div>
           <div>
             Your Staked
             <small *ngIf="detail.unlockAt" class="text-primary">
-              <i class="fas fa-unlock"></i> Unlock {{ detail.unlockAt | timeago }}
+              <i [ngClass]="isWithdrawLocked ? 'fa-lock' : 'fa-unlock'" class="fas"></i> Unlock {{ detail.unlockAt |
+              timeago }}
             </small>
           </div>
           <div>
-            {{ detail.userBalance | number }} SPEC
+            <app-digit [value]="+detail.userBalance"></app-digit> SPEC
           </div>
         </div>
       </div>
       <div class="text-end">
+        <div class="text-primary fs-2 lh-1">{{ detail.apr | percent }}</div>
         <div class="text-primary">
-          <div class="text-primary display-4 lh-1">{{ detail.apr | percent }}</div>
-          <div>
-            APR
-            <i class="fas fa-info-circle" mdbTooltip="SPEC staking return from vault fee"></i>
-          </div>
+          APR
         </div>
-        <div class="small text-muted lh-sm">
-          {{ detail.apr / 365 | percent }} daily rate
+        <div class="text lh-sm">
+          {{ detail.apr / 365 | percent }} Daily Rate
+          <i class="fas fa-info-circle info-icon" mdbTooltip="SPEC staking return from vault fee"></i>
         </div>
       </div>
     </div>
   </div>
 
-  <div *ngIf="isExpanded" class="card-body pt-0">
+  <div class="card-body pt-0" #belowSection="mdbCollapse" mdbCollapse>
     <div class="p-3 bg-dark rounded">
       <mdb-tabs [justified]="true" (activeTabChange)="onActiveTabChange()">
         <mdb-tab title="Deposit">
           <div class="d-grid gap-3">
             <div>
-              <div class="small text-muted text-end">
+              <div class="text-muted text-end">
                 Balance: {{ walletBalance | number }} SPEC
               </div>
               <div class="input-group">
                 <span class="input-group-text">SPEC</span>
-                <input type="number" class="form-control" [class.is-invalid]="depositAmountModel.invalid" placeholder="0.000000"
-                  [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+walletBalance"
+                <input type="number" class="form-control" [class.is-invalid]="depositAmountModel.invalid"
+                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+walletBalance"
                   [(ngModel)]="depositAmount" #depositAmountModel="ngModel" (change)="calculateDepositUnlock()">
-                <button class="btn btn-outline-primary" (click)="depositAmount = +walletBalance; calculateDepositUnlock()">Max</button>
+                <button class="btn btn-outline-primary"
+                  (click)="depositAmount = +walletBalance; calculateDepositUnlock()">Max</button>
                 <div *ngIf="depositAmountModel.errors?.max; then exceededBalanceError"></div>
                 <div *ngIf="depositAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
               </div>
@@ -96,10 +96,11 @@
               </div>
               <div class="input-group">
                 <span class="input-group-text">SPEC</span>
-                <input type="number" class="form-control" [class.is-invalid]="moveAmountModel.invalid" placeholder="0.000000"
-                  [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
+                <input type="number" class="form-control" [class.is-invalid]="moveAmountModel.invalid"
+                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
                   [(ngModel)]="moveAmount" #moveAmountModel="ngModel" (change)="calculateMoveUnlock()">
-                <button class="btn btn-outline-primary" (click)="moveAmount = +detail.userAvailableBalance; calculateMoveUnlock()">Max</button>
+                <button class="btn btn-outline-primary"
+                  (click)="moveAmount = +detail.userAvailableBalance; calculateMoveUnlock()">Max</button>
                 <div *ngIf="moveAmountModel.errors?.max; then exceededBalanceError"></div>
                 <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
               </div>
@@ -130,8 +131,8 @@
               </div>
               <div class="input-group">
                 <span class="input-group-text">SPEC</span>
-                <input type="number" class="form-control" [class.is-invalid]="withdrawAmountModel.invalid" placeholder="0.000000"
-                  [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
+                <input type="number" class="form-control" [class.is-invalid]="withdrawAmountModel.invalid"
+                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
                   [(ngModel)]="withdrawAmount" #withdrawAmountModel="ngModel" [disabled]="isWithdrawLocked">
                 <button class="btn btn-outline-primary" (click)="withdrawAmount = +detail.userAvailableBalance"
                   [disabled]="isWithdrawLocked">
