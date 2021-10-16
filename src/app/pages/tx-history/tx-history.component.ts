@@ -24,7 +24,7 @@ const getGovPoolName = (days?: number) => {
     return 'No Lock Pool';
   }
 
-  return `${days}-Day${days > 1 ? 's' : ''} Locked Pool`;
+  return `${days}-Day Locked Pool`;
 };
 
 @Component({
