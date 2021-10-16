@@ -84,8 +84,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
 
     const rewardInfos = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
-    const govConfig = await this.gov.config();
-    const communityFeeRate = +farmConfig.community_fee * (1 - +govConfig.warchest_ratio);
+    const communityFeeRate = +farmConfig.community_fee;
     const tasks = rewardInfos.reward_infos.map(async it => {
       const p = poolResponses[it.asset_token];
       const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
@@ -109,7 +108,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
       const poolInfo = poolInfos[token];
       const stat: PairStat = {
         poolApr,
-        poolApy: (poolApr / 365 + 1) ** 365 - 1,
+        poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
         farmApr: mirrorGovStat.data.statistic.govAPR,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,

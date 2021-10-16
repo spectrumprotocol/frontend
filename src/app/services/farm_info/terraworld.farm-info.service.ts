@@ -50,15 +50,13 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.terraworldFarm)?.weight || 0;
-    console.log(poolResponses[this.terrajs.settings.terraworldToken])
     const terraworldLPStat = await this.getTerraworldLPStat(poolResponses[this.terrajs.settings.terraworldToken]);
     const terraworldGovStat = await this.getTerraworldGovStat();
     const pairs: Record<string, PairStat> = {};
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
-    const govConfig = await this.gov.config();
-    const communityFeeRate = +farmConfig.community_fee * (1 - +govConfig.warchest_ratio);
+    const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[this.terrajs.settings.terraworldToken];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
@@ -83,7 +81,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
       const poolInfo = poolInfos[token];
       const stat: PairStat = {
         poolApr,
-        poolApy: (poolApr / 365 + 1) ** 365 - 1,
+        poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
         farmApr: +(terraworldGovStat.apy || 0),
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,

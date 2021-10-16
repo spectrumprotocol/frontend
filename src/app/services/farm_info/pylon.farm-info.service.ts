@@ -59,8 +59,7 @@ export class PylonFarmInfoService implements FarmInfoService {
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
-    const govConfig = await this.gov.config();
-    const communityFeeRate = +farmConfig.community_fee * (1 - +govConfig.warchest_ratio);
+    const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[this.terrajs.settings.pylonToken];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
@@ -82,7 +81,7 @@ export class PylonFarmInfoService implements FarmInfoService {
       const poolInfo = poolInfos[token];
       const stat: PairStat = {
         poolApr,
-        poolApy: (poolApr / 365 + 1) ** 365 - 1,
+        poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
         farmApr: +(pylonGovStat.apy || 0),
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,

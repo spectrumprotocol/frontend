@@ -61,7 +61,7 @@ export const networks: Record<string, ISettings> = {
     terraworldGov: 'terra1l709gpyzpwukpq3g55j7n8kqyzataxlg4swg96',
     terraworldStaking: 'terra10eyxljyqkcvhs4dgr534hk0wehc28tz6gwnh8a',
     terraworldToken: 'terra19djkaepjjswucys4npd5ltaxgsntl7jf0xz7w6',
-    terraworldFarm: '',
+    terraworldFarm: 'terra1cdyw7fydevn372re7xjgfh8kqrrf2lxm5k6ve3',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
