@@ -32,7 +32,6 @@ export interface RewardInfoResponse {
   [k: string]: unknown;
 }
 export interface RewardInfoResponseItem {
-  accum_spec_share: Uint128;
   asset_token: string;
   auto_bond_amount: Uint128;
   auto_bond_share: Uint128;
@@ -40,8 +39,6 @@ export interface RewardInfoResponseItem {
   bond_amount: Uint128;
   farm_share: Uint128;
   farm_share_index: Decimal;
-  locked_spec_reward: Uint128;
-  locked_spec_share: Uint128;
   pending_farm_reward: Uint128;
   pending_spec_reward: Uint128;
   spec_share: Uint128;

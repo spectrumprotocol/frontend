@@ -18,8 +18,6 @@ export interface ConfigInfo {
   controller: string;
   controller_fee: Decimal;
   deposit_fee: Decimal;
-  lock_end: number;
-  lock_start: number;
   owner: string;
   platform: string;
   platform_fee: Decimal;
