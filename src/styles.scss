@@ -272,6 +272,12 @@ input[type="number"] {
   background: linear-gradient(315deg, darken($terraworld, 7%) 0%, $terraworld 50%);
 }
 
+.bg-Valkyrie {
+  background: $valkyrie;
+  background: -webkit-linear-gradient(315deg, darken($valkyrie, 7%) 0%, $valkyrie 50%);
+  background: linear-gradient(315deg, darken($valkyrie, 7%) 0%, $valkyrie 50%);
+}
+
 .bg-your-rewards {
   background: #ed7b84;
   background: -webkit-linear-gradient(315deg, darken(#ed7b84, 7%) 0%, #ed7b84 50%);

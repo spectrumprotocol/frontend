@@ -25,12 +25,17 @@ export interface ISettings {
   terraworldStaking: string;
   terraworldToken: string;
   terraworldFarm: string;
+  valkyrieGov: string;
+  valkyrieStaking: string;
+  valkyrieToken: string;
+  valkyrieFarm: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
   specAPI: string;
   anchorAPI: string;
   pylonAPI: string;
+  valkyrieAPI: string;
   chainID: string;
   finder: string;
 }
@@ -62,12 +67,17 @@ export const networks: Record<string, ISettings> = {
     terraworldStaking: 'terra10eyxljyqkcvhs4dgr534hk0wehc28tz6gwnh8a',
     terraworldToken: 'terra19djkaepjjswucys4npd5ltaxgsntl7jf0xz7w6',
     terraworldFarm: 'terra1cdyw7fydevn372re7xjgfh8kqrrf2lxm5k6ve3',
+    valkyrieGov: '',
+    valkyrieStaking: '',
+    valkyrieToken: '',
+    valkyrieFarm: '',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
     specAPI: 'https://specapi.azurefd.net/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
+    valkyrieAPI: '',
     chainID: 'columbus-5',
     finder: 'finder.extraterrestrial.money',
   },
@@ -98,12 +108,17 @@ export const networks: Record<string, ISettings> = {
     terraworldStaking: 'terra155yqhchyvfkxz5tas07kvprx77wnla7stexhs7',
     terraworldToken: 'terra1pe803vgyesmqr73j3l4732hmg2v6ss374aagx4',
     terraworldFarm: 'terra19w0a2xv7vyj8yze3fxzk55nfl5nlvc0l67uduu',
+    valkyrieGov: 'terra102jsr0c2d5nhaa8vmjw0nerphw0s2cs70tz9a3',
+    valkyrieStaking: 'terra1pemp0pyupazlfye0cuxn0cz93mu02p8m5uep3k',
+    valkyrieToken: 'terra1a8hskrwnccq0v7gq3n24nraaqt7yevzy005uf5',
+    valkyrieFarm: 'terra15u4nuq7jchdzklpeqzazxs09cylgndqc37tvhg',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
     specAPI: 'https://specapi-test.azurefd.net/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
+    valkyrieAPI: 'https://api.testnet.valkyrieprotocol.com',
     chainID: 'bombay-12',
     finder: 'finder.terra.money',
   },
