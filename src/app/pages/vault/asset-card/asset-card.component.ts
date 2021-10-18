@@ -44,7 +44,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   depositType: 'compound' | 'stake' | 'mixed';
   depositMode: 'tokenust' | 'lp' | 'ust' = 'tokenust';
-  withdrawMode: 'tokenust' | 'lp' = 'tokenust';
+  withdrawMode: 'tokenust' | 'lp' | 'ust' = 'tokenust';
 
   withdrawAmt: number;
   grossLpTokenUST: string;
@@ -313,10 +313,33 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       }
     }
     );
+    const withdrawUst = new MsgExecuteContract(
+      this.terrajs.address,
+      this.vault.pairInfo.liquidity_token,
+      {
+        send: {
+          amount: times(this.withdrawAmt, CONFIG.UNIT),
+          contract: this.terrajs.settings.staker,
+          msg: toBase64({
+            zap_to_unbond: {
+              sell_asset: { token: { contract_addr: this.vault.poolInfo.asset_token } },
+              target_asset: { native_token: { denom: 'uusd' } },
+              belief_price: times(
+                this.lpBalancePipe.transform(this.withdrawAmt, this.info.poolResponses[this.vault.assetToken]),
+                CONFIG.UNIT
+              ),
+              max_spread: '0.01',
+            },
+          }),
+        },
+      }
+    );
     if (this.withdrawMode === 'tokenust') {
       await this.terrajs.post([unbond, withdrawLp]);
     } else if (this.withdrawMode === 'lp') {
       await this.terrajs.post([unbond]);
+    } else if (this.withdrawMode === 'ust') {
+      await this.terrajs.post([unbond, withdrawUst]);
     }
     this.withdrawAmt = undefined;
   }
