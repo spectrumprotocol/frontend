@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { CONFIG } from '../../consts/config';
 import { InfoService } from '../../services/info.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import {div, roundSixDecimal} from 'src/app/libs/math';
+import {div, plus, roundSixDecimal} from 'src/app/libs/math';
 import {LpBalancePipe} from '../../pipes/lp-balance.pipe';
 import {PercentPipe} from '@angular/common';
 
@@ -362,6 +362,27 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         : [second, first];
       return {
         desc: `Withdrawn ${tokenAmount} ${symbol}, ${uusdAmount} UST (${(+lastExecuteMsg.send.amount / CONFIG.UNIT)} ${symbol}-UST LP)  from ${foundFarmContract?.farm} farm`,
+        txhash: item.txhash,
+        timestamp: new Date(item.timestamp),
+        action: 'Farm',
+        id: item.id
+      };
+    } else if (this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.zap_to_unbond && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
+      const penultimateExecutionMsg = this.ensureBase64toObject(item.tx.value.msg[lastIndex - 1]?.value?.execute_msg);
+      const symbol = this.info.coinInfos[penultimateExecutionMsg.unbond.asset_token];
+      const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract);
+      const refund_assets = item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'refund_assets');
+      const splitted: string[] = refund_assets.value?.split(',');
+      const first = splitted ? +splitted[0].match(numberRegExp)[0] / CONFIG.UNIT : 0;
+      const second = splitted ? +splitted[1].match(numberRegExp)[0] / CONFIG.UNIT : 0;
+      const [uusdAmount, _] = splitted[0].match(alphabetRegExp)[0] === 'uusd'
+        ? [first, second]
+        : [second, first];
+      const return_amount = item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'return_amount');
+      const swappedAmount = return_amount?.value / CONFIG.UNIT || 0;
+      const totalAmount = plus(uusdAmount, swappedAmount);
+      return {
+        desc: `Withdrawn ${totalAmount} UST (${(+lastExecuteMsg.send.amount / CONFIG.UNIT)} ${symbol}-UST LP)  from ${foundFarmContract?.farm} farm`,
         txhash: item.txhash,
         timestamp: new Date(item.timestamp),
         action: 'Farm',
