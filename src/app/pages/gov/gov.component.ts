@@ -29,6 +29,8 @@ export class GovComponent implements OnInit, OnDestroy {
   marketCap = 0;
   myStaked = 0;
   myPendingReward = 0;
+  stakedInGovAPR = 0;
+  stakedInVaultsAPR = 0;
   filteredStatus = '' as PollStatus;
   UNIT = CONFIG.UNIT;
   private connected: Subscription;
@@ -158,6 +160,25 @@ export class GovComponent implements OnInit, OnDestroy {
           moveOptions,
         };
       });
+
+    this.calculateAPR();
+  }
+
+  calculateAPR() {
+    let sumGovAPR = 0;
+    let vaultsAPR = 0;
+    let totalStaked = 0;
+    for (let pool of this.poolDetails) {
+      if (pool.days === 0) {
+        vaultsAPR = pool.apr;
+      }
+      sumGovAPR += +pool.userBalance * pool.apr;
+      totalStaked += +pool.userBalance;
+    }
+
+    this.stakedInVaultsAPR = vaultsAPR;
+    this.stakedInGovAPR = sumGovAPR / totalStaked;
+
   }
 
   trackPoolDetails(_: unknown, poolDetail: GovPoolDetail) {

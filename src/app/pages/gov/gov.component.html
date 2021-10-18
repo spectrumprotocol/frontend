@@ -70,13 +70,15 @@
                         <app-digit [value]="myStaked / UNIT"></app-digit><span class="d-none d-md-inline">
                             SPEC</span>
                     </h5>
+                    <p *ngIf="stakedInGovAPR && myStaked > 0" class="small text-primary">{{stakedInGovAPR | percent}} APR</p>
                 </div>
                 <div class="col-md-4 col-6 ps-1 pe-1 border-start">
-                    <p class="small">Staked in Vaults</p>
+                    <p class="small">Staked in Vaults </p>
                     <h5 class="card-title">
                         <app-digit [value]="+info.portfolio?.tokens.get('SPEC').pending_reward_token">
                         </app-digit><span class="d-none d-md-inline"> SPEC</span>
                     </h5>
+                    <p *ngIf="stakedInVaultsAPR && +info.portfolio?.tokens.get('SPEC').pending_reward_token > 0" class="small text-primary">{{stakedInVaultsAPR | percent}} APR</p>
                 </div>
                 <div class="d-none d-md-inline col-md-4 ps-1 pe-1 border-start">
                     <p class="small">Stakable</p>

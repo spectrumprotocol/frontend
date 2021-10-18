@@ -1,5 +1,5 @@
-<div [ngClass]="{'border border-primary' : +detail.userBalance >= 10}" class="card hover-shadow">
-  <span *ngIf="+detail.userBalance >= 10" class="badge bg-primary position-absolute badge-staked">Staked</span>
+<div [ngClass]="{'border border-primary' : +detail.userBalance > 0}" class="card hover-shadow">
+  <span *ngIf="+detail.userBalance > 0" class="badge bg-primary position-absolute badge-staked">Staked</span>
   <div class="card-body" style="cursor: pointer;" (click)="toggleExpanded()" aria-controls="belowSection"
     aria-expanded="false">
     <div class="d-flex align-items-center gap-2 pb-3 border-bottom mb-3">
@@ -21,7 +21,7 @@
           <div>
             Your Staked
             <small *ngIf="detail.unlockAt" class="text-primary">
-              <i [ngClass]="isWithdrawLocked ? 'fa-lock' : 'fa-unlock'" class="fas"></i> Unlock {{ detail.unlockAt |
+              <i [ngClass]="isWithdrawLocked ? 'fa-lock' : 'fa-unlock'" class="fas"></i> Unlock{{!isWithdrawLocked ? "ed" : ""}} {{ detail.unlockAt |
               timeago }}
             </small>
           </div>
@@ -49,7 +49,7 @@
         <mdb-tab title="Deposit">
           <div class="d-grid gap-3">
             <div>
-              <div class="text-muted text-end">
+              <div class="small text-muted text-end">
                 Balance: {{ walletBalance | number }} SPEC
               </div>
               <div class="input-group">
@@ -89,25 +89,22 @@
             </div>
             <div>
               <div class="small text-muted text-end">
-                Balance: {{ detail.userAvailableBalance | number }} SPEC
-                <i *ngIf="detail.userBalance !== detail.userAvailableBalance" class="fas fa-info-circle"
-                  [mdbTooltip]="'Locked: ' + (+detail.userBalance - +detail.userAvailableBalance | number) + ' SPEC'">
-                </i>
+                Balance: {{ detail.userBalance | number }} SPEC
               </div>
               <div class="input-group">
                 <span class="input-group-text">SPEC</span>
                 <input type="number" class="form-control" [class.is-invalid]="moveAmountModel.invalid"
-                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
+                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userBalance"
                   [(ngModel)]="moveAmount" #moveAmountModel="ngModel" (change)="calculateMoveUnlock()">
                 <button class="btn btn-outline-primary"
-                  (click)="moveAmount = +detail.userAvailableBalance; calculateMoveUnlock()">Max</button>
+                  (click)="moveAmount = +detail.userBalance; calculateMoveUnlock()">Max</button>
                 <div *ngIf="moveAmountModel.errors?.max; then exceededBalanceError"></div>
                 <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
               </div>
             </div>
             <div *ngIf="detail.moveOptions.length === 1" class="d-flex flex-wrap small text-muted">
               <div class="flex-grow-1">Lock Duration:&nbsp;</div>
-              <div>{{ moveDays }} Days</div>
+              <div>{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
             </div>
             <div class="d-flex flex-wrap small text-muted">
               <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
