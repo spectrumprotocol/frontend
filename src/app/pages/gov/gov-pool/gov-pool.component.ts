@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { CONFIG } from 'src/app/consts/config';
 import { toBase64 } from 'src/app/libs/base64';
@@ -29,12 +29,12 @@ export interface GovPoolDetail {
   templateUrl: './gov-pool.component.html',
   styleUrls: ['./gov-pool.component.scss'],
 })
-export class GovPoolComponent {
+export class GovPoolComponent implements OnChanges {
   @Input() detail: GovPoolDetail;
   @Input() walletBalance: string;
   @Output() transactionComplete = new EventEmitter();
   @ViewChild('belowSection') belowSection: MdbCollapseDirective;
-  
+
   depositAmount: number | null = null;
   withdrawAmount: number | null = null;
   moveAmount: number | null = null;
@@ -52,7 +52,9 @@ export class GovPoolComponent {
   ) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.isWithdrawLocked = Date.now() < changes.detail.currentValue.unlockAt?.getTime();   
+    if (changes.detail) {
+      this.isWithdrawLocked = Date.now() < changes.detail.currentValue.unlockAt?.getTime();
+    }
   }
 
   async submitDeposit() {
