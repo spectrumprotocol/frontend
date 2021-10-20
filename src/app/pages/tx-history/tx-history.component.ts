@@ -4,9 +4,9 @@ import { Subscription } from 'rxjs';
 import { CONFIG } from '../../consts/config';
 import { InfoService } from '../../services/info.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import {div, plus, roundSixDecimal} from 'src/app/libs/math';
-import {LpBalancePipe} from '../../pipes/lp-balance.pipe';
-import {PercentPipe} from '@angular/common';
+import { div, plus, roundSixDecimal } from 'src/app/libs/math';
+import { LpBalancePipe } from '../../pipes/lp-balance.pipe';
+import { PercentPipe } from '@angular/common';
 
 interface TxHistory {
   desc: string;
@@ -108,17 +108,17 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  ensureBase64toObject(executeMsg: any){
+  ensureBase64toObject(executeMsg: any) {
     const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
     try {
-      if (typeof executeMsg === 'string' && base64regex.test(executeMsg)){
+      if (typeof executeMsg === 'string' && base64regex.test(executeMsg)) {
         return JSON.parse(atob(executeMsg));
-      } else if (typeof executeMsg === 'object'){
+      } else if (typeof executeMsg === 'object') {
         return executeMsg;
       } else {
         return {};
       }
-    } catch (e){
+    } catch (e) {
       console.error(e);
       return {};
     }
@@ -135,6 +135,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     }
 
     const lastExecuteMsg = this.ensureBase64toObject(item.tx.value.msg[lastIndex]?.value?.execute_msg);
+    const lastSendMsg = lastExecuteMsg.send?.msg ? this.ensureBase64toObject(lastExecuteMsg.send?.msg) : undefined;
     if (lastExecuteMsg.swap && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specPool) {
       const ustOffer = +item.tx.value.msg[lastIndex]?.value?.coins[0].amount / CONFIG.UNIT;
       const return_amount = +item.logs[lastIndex].events.find(o => o.type === 'from_contract').attributes.find(o => o.key === 'return_amount').value / CONFIG.UNIT;
@@ -146,7 +147,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Trade',
         id: item.id
       };
-    } else if (lastExecuteMsg.send?.msg && lastExecuteMsg.send?.msg?.execute_swap_operations?.operations[1]?.terra_swap?.ask_asset_info?.token?.contract_addr === this.terrajs.settings.specToken) {
+    } else if (lastSendMsg?.execute_swap_operations?.operations[1]?.terra_swap?.ask_asset_info?.token?.contract_addr === this.terrajs.settings.specToken) {
       const return_amount_list = item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.filter(o => o.key === 'return_amount');
       const offer_amount = +lastExecuteMsg.send?.msg?.execute_swap_operations.offer_amount / CONFIG.UNIT ?? 0;
       let offer_token;
@@ -177,7 +178,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Trade',
         id: item.id
       };
-    } else if (lastExecuteMsg.send?.msg && this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.swap && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specToken) {
+    } else if (lastSendMsg?.swap && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specToken) {
       const offer_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT ?? 0;
       const return_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT ?? 0;
       const price = roundSixDecimal(return_amount / offer_amount);
@@ -188,7 +189,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Trade',
         id: item.id
       };
-    } else if (lastExecuteMsg.send?.msg && lastExecuteMsg.send?.msg?.execute_swap_operations && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specToken) {
+    } else if (lastSendMsg?.execute_swap_operations && item.tx.value.msg[lastIndex]?.value?.contract === this.terrajs.settings.specToken) {
       const return_amount_list = item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.filter(o => o.key === 'return_amount');
       const ask_asset_list = item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.filter(o => o.key === 'ask_asset');
       const offer_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT ?? 0;
@@ -242,7 +243,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    } else if (lastExecuteMsg.send && this.ensureBase64toObject(lastExecuteMsg.send.msg).bond && this.info.farmInfos.find(o => o.farmContract === lastExecuteMsg.send.contract)) {
+    } else if (lastSendMsg?.bond && this.info.farmInfos.find(o => o.farmContract === lastExecuteMsg.send.contract)) {
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === lastExecuteMsg.send.contract);
       const lpAmount = +lastExecuteMsg.send.amount / CONFIG.UNIT ?? 0;
       const send_msg = this.ensureBase64toObject(lastExecuteMsg.send.msg);
@@ -299,9 +300,9 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    } else if (lastExecuteMsg.zap_to_bond){
+    } else if (lastExecuteMsg.zap_to_bond) {
       const provide_amount_UST = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'provide_amount')?.value / CONFIG.UNIT ?? 0;
-      const offer_amount =  +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT ?? 0;
+      const offer_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT ?? 0;
       const return_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT ?? 0;
       const lp_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'share')?.value / CONFIG.UNIT ?? 0;
       const tax_amount = +item.logs[lastIndex].events?.find(o => o.type === 'from_contract')?.attributes?.find(o => o.key === 'tax_amount')?.value / CONFIG.UNIT ?? 0;
@@ -325,7 +326,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    } else if (lastExecuteMsg.unbond && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex]?.value?.contract) ) {
+    } else if (lastExecuteMsg.unbond && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex]?.value?.contract)) {
       const symbol = this.info.coinInfos[lastExecuteMsg.unbond.asset_token];
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex]?.value?.contract);
       return {
@@ -335,7 +336,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    } else if (lastExecuteMsg.update_bond){
+    } else if (lastExecuteMsg.update_bond) {
       const symbol = this.info.coinInfos[lastExecuteMsg.update_bond.asset_token];
       const totalLP = +lastExecuteMsg.update_bond.amount_to_auto + +lastExecuteMsg.update_bond.amount_to_stake;
       const amount_to_auto = +lastExecuteMsg.update_bond.amount_to_auto;
@@ -349,7 +350,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    } else if (this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.withdraw_liquidity && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
+    } else if (lastSendMsg?.withdraw_liquidity && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
       const penultimateExecutionMsg = this.ensureBase64toObject(item.tx.value.msg[lastIndex - 1]?.value?.execute_msg);
       const symbol = this.info.coinInfos[penultimateExecutionMsg.unbond.asset_token];
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract);
@@ -367,7 +368,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    } else if (this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.zap_to_unbond && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
+    } else if (lastSendMsg?.zap_to_unbond && this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract)) {
       const penultimateExecutionMsg = this.ensureBase64toObject(item.tx.value.msg[lastIndex - 1]?.value?.execute_msg);
       const symbol = this.info.coinInfos[penultimateExecutionMsg.unbond.asset_token];
       const foundFarmContract = this.info.farmInfos.find(o => o.farmContract === item.tx.value.msg[lastIndex - 1]?.value?.contract);
@@ -388,7 +389,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Farm',
         id: item.id
       };
-    } else if (this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.stake_tokens && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
+    } else if (lastSendMsg?.stake_tokens && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
       const { days } = this.ensureBase64toObject(lastExecuteMsg.send?.msg)?.stake_tokens;
       return {
         desc: `Staked to ${getGovPoolName(days)} ${+lastExecuteMsg.send.amount / CONFIG.UNIT} SPEC`,
@@ -422,7 +423,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         action: 'Gov',
         id: item.id
       };
-    } else if (lastExecuteMsg.send && lastExecuteMsg.send.msg.poll_start && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
+    } else if (lastSendMsg?.poll_start && lastExecuteMsg.send?.contract === this.terrajs.settings.gov) {
       const poll_start = this.ensureBase64toObject(this.ensureBase64toObject(item.tx.value.msg[lastIndex]?.value?.execute_msg)?.send?.msg)?.poll_start;
       return {
         desc: 'Created Poll ' + poll_start.title,

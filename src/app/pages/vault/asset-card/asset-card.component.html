@@ -568,7 +568,7 @@
           [class.active]="withdrawMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
       <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdownWithdrawMode.hide()"
           [class.active]="withdrawMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
-      <li><a class="dropdown-item" (click)="withdrawMode = 'ust'; dropdownWithdrawMode.hide()"
+      <li *ngIf="vault.poolInfo.farm !== 'Spectrum'"><a class="dropdown-item" (click)="withdrawMode = 'ust'; dropdownWithdrawMode.hide()"
           [class.active]="withdrawMode === 'ust'">UST</a></li>
     </ul>
   </div>
