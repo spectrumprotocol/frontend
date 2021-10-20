@@ -56,7 +56,7 @@
                 info.poolResponses[terrajs.settings.specToken] |
                 unit: '1.0-2' }})</span>
             </div>
-            <div *ngIf="vault.poolInfo.farm !== 'Spectrum'">
+            <div *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake">
               <div class="fs-6 mt-2">
                 Staked <span *ngIf="vault.poolInfo.farm === 'Mirror'">MIR <i class="fas fa-info-circle info-icon"
                     mdbTooltip="MIR will be earned from auto-stake strategy. If you select auto-compound, LP will be earned."></i></span>
@@ -368,7 +368,7 @@
             </div>
             <div class="d-grid mt-3">
               <div *ngIf="vault.poolInfo.auditWarning" class="card-text small text-warning mb-1">
-              <i class="fas fa-flag"></i> {{vault.poolInfo.farm}} is being audited, please use your own discretion before investing. 
+              <i class="fas fa-flag"></i> {{vault.poolInfo.farm}} is being audited, please use your own discretion before investing.
               </div>
               <div *ngIf="depositType && depositType !== 'compound' && vault.poolInfo.farm !== 'Spectrum'"
                 class="card-text small text-warning mb-1">

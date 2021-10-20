@@ -438,14 +438,18 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       this.depositFeeUST = undefined;
       this.netLpUST = undefined;
     }
-    await this.info.ensureCw20Pairs();
-    const poolAddresses = Object.keys(this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet']);
-    if (!this.depositUSTFoundPoolAddress) {
-      for (const poolAddress of poolAddresses) {
-        const pair = this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet'][poolAddress];
-        if (pair[0] === this.vault.assetToken || pair[1] === this.vault.assetToken) {
-          this.depositUSTFoundPoolAddress = poolAddress;
-          break;
+    if (this.vault.assetToken === this.terrajs.settings.nexusToken && this.terrajs.network.name === 'testnet'){
+      this.depositUSTFoundPoolAddress = 'terra1ee9h9c9fv2smm8wkq0aw78tut3w3x62ckj6nz8';
+    } else {
+      await this.info.ensureCw20Pairs();
+      const poolAddresses = Object.keys(this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet']);
+      if (!this.depositUSTFoundPoolAddress) {
+        for (const poolAddress of poolAddresses) {
+          const pair = this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet'][poolAddress];
+          if (pair[0] === this.vault.assetToken || pair[1] === this.vault.assetToken) {
+            this.depositUSTFoundPoolAddress = poolAddress;
+            break;
+          }
         }
       }
     }

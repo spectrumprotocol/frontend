@@ -30,6 +30,8 @@ export class UrlPipe implements PipeTransform {
           case 'MYMY': return `https://terraoffice.world/twd_logo.png`;
           case 'Valkyrie': return 'https://app.valkyrieprotocol.com/icon_vkr.png';
           case 'VKR': return 'https://app.valkyrieprotocol.com/icon_vkr.png';
+          case 'Nexus': return `https://terra.nexusprotocol.app/logo.svg`;
+          case 'Psi': return `https://terra.nexusprotocol.app/logo.svg`;
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -44,6 +46,7 @@ export class UrlPipe implements PipeTransform {
           case 'TWD': return `https://app.terraoffice.world/Gov/trade`;
           case 'MYMY': return `https://app.terraoffice.world/Gov/trade`;
           case 'VKR': return 'https://app.valkyrieprotocol.com/trade';
+          case 'Psi': return `https://terra.nexusprotocol.app/`;
           default: return 'https://terra.mirror.finance/trade#buy';
         }
       case 'mint':
