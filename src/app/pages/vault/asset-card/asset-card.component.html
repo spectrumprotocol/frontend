@@ -493,6 +493,9 @@
                 <span *ngIf="withdrawMode === 'tokenust'">{{ withdrawAmt | lpSplit:
                   info.poolResponses[vault.assetToken]: vault.symbol }}</span>
                 <span *ngIf="withdrawMode === 'lp'">{{ withdrawAmt | number }} {{vault.symbol}}-UST LP</span>
+                <span *ngIf="withdrawMode === 'ust'">
+                  {{ withdrawAmt | lpBalance: info.poolResponses[vault.assetToken] | number }} UST
+                </span>
               </div>
             </div>
             <div class="d-grid mt-3">
@@ -556,13 +559,17 @@
 <ng-template #withdrawModeSection>
   <div mdbDropdown class="dropdown" #dropdownWithdrawMode>
     <button mdbDropdownToggle class="btn btn-outline-primary dropdown-toggle btn-first" type="button">
-      {{ withdrawMode == 'tokenust' ? vault.symbol + '+UST' : vault.symbol + '-UST LP' }}
+      <ng-container *ngIf="withdrawMode === 'tokenust'">{{ vault.symbol }}+UST</ng-container>
+      <ng-container *ngIf="withdrawMode === 'lp'">{{ vault.symbol }}-UST LP</ng-container>
+      <ng-container *ngIf="withdrawMode === 'ust'">UST</ng-container>
     </button>
     <ul mdbDropdownMenu class="dropdown-menu">
       <li><a class="dropdown-item" (click)="withdrawMode = 'tokenust'; dropdownWithdrawMode.hide()"
           [class.active]="withdrawMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
       <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdownWithdrawMode.hide()"
           [class.active]="withdrawMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
+      <li *ngIf="vault.poolInfo.farm !== 'Spectrum'"><a class="dropdown-item" (click)="withdrawMode = 'ust'; dropdownWithdrawMode.hide()"
+          [class.active]="withdrawMode === 'ust'">UST</a></li>
     </ul>
   </div>
 

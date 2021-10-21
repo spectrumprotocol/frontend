@@ -44,7 +44,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   depositType: 'compound' | 'stake' | 'mixed';
   depositMode: 'tokenust' | 'lp' | 'ust' = 'tokenust';
-  withdrawMode: 'tokenust' | 'lp' = 'tokenust';
+  withdrawMode: 'tokenust' | 'lp' | 'ust' = 'tokenust';
 
   withdrawAmt: number;
   grossLpTokenUST: string;
@@ -313,10 +313,33 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       }
     }
     );
+    const withdrawUst = new MsgExecuteContract(
+      this.terrajs.address,
+      this.vault.pairInfo.liquidity_token,
+      {
+        send: {
+          amount: times(this.withdrawAmt, CONFIG.UNIT),
+          contract: this.terrajs.settings.staker,
+          msg: toBase64({
+            zap_to_unbond: {
+              sell_asset: { token: { contract_addr: this.vault.poolInfo.asset_token } },
+              target_asset: { native_token: { denom: 'uusd' } },
+              belief_price: times(
+                this.lpBalancePipe.transform(this.withdrawAmt, this.info.poolResponses[this.vault.assetToken]),
+                CONFIG.UNIT
+              ),
+              max_spread: '0.01',
+            },
+          }),
+        },
+      }
+    );
     if (this.withdrawMode === 'tokenust') {
       await this.terrajs.post([unbond, withdrawLp]);
     } else if (this.withdrawMode === 'lp') {
       await this.terrajs.post([unbond]);
+    } else if (this.withdrawMode === 'ust') {
+      await this.terrajs.post([unbond, withdrawUst]);
     }
     this.withdrawAmt = undefined;
   }
@@ -438,26 +461,11 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       this.depositFeeUST = undefined;
       this.netLpUST = undefined;
     }
-    if (this.vault.assetToken === this.terrajs.settings.nexusToken && this.terrajs.network.name === 'testnet'){
-      this.depositUSTFoundPoolAddress = 'terra1ee9h9c9fv2smm8wkq0aw78tut3w3x62ckj6nz8';
-    } else {
-      await this.info.ensureCw20Pairs();
-      const poolAddresses = Object.keys(this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet']);
-      if (!this.depositUSTFoundPoolAddress) {
-        for (const poolAddress of poolAddresses) {
-          const pair = this.info.cw20Pairs[this.terrajs?.network?.name ?? 'mainnet'][poolAddress];
-          if (pair[0] === this.vault.assetToken || pair[1] === this.vault.assetToken) {
-            this.depositUSTFoundPoolAddress = poolAddress;
-            break;
-          }
-        }
-      }
-    }
+    this.depositUSTFoundPoolAddress = this.info.pairInfos[this.vault.assetToken].contract_addr;
     const halfUSTbeforeTax = floor(div(times(this.depositUSTAmtUST, CONFIG.UNIT), 2));
     const tax = await this.terrajs.lcdClient.utils.calculateTax(
       Coin.fromData({ amount: halfUSTbeforeTax, denom: 'uusd' }));
     const halfUST = div(minus(halfUSTbeforeTax, tax.amount.toString()), CONFIG.UNIT);
-    if (this.depositUSTFoundPoolAddress) {
       const simulateSwapUSTtoToken = {
         simulation: {
           offer_asset: {
@@ -490,7 +498,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       this.grossLpUST = grossLp.toString();
       this.depositFeeUST = depositFee.toString();
     }
-  }
 
   setMaxDepositUST() {
     if (+this.info.userUstAmount > this.bufferUST){
