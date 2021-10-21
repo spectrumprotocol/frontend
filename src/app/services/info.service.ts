@@ -110,7 +110,6 @@ export class InfoService {
   poolResponses: Record<string, PoolResponse> = {};
 
   cw20tokensWhitelist: any;
-  cw20Pairs: any;
 
   myTvl = 0;
   allVaults: Vault[] = [];
@@ -316,12 +315,6 @@ export class InfoService {
   async ensureCw20tokensWhitelist() {
     if (!this.cw20tokensWhitelist) {
       this.cw20tokensWhitelist = await this.httpClient.get<object>('https://assets.terra.money/cw20/tokens.json').toPromise();
-    }
-  }
-
-  async ensureCw20Pairs() {
-    if (!this.cw20Pairs) {
-      this.cw20Pairs = await this.httpClient.get<object>('https://assets.terra.money/cw20/pairs.json').toPromise();
     }
   }
 
