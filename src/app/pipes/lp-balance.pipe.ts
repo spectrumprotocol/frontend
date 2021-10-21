@@ -8,7 +8,7 @@ import { PoolResponse } from '../services/api/terraswap_pair/pool_response';
 export class LpBalancePipe implements PipeTransform {
 
   transform(lp: any, poolResponse: PoolResponse): string {
-    if (typeof lp !== 'string' || !poolResponse) {
+    if ((typeof lp !== 'string' && typeof lp !== 'number') || !poolResponse) {
       return undefined;
     }
     if (poolResponse.assets[0].info.native_token) {
