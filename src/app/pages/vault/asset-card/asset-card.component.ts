@@ -4,7 +4,7 @@ import { Coin, Coins, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../consts/animations';
 import { CONFIG } from '../../../consts/config';
 import { toBase64 } from '../../../libs/base64';
-import { div, floor, floor18Decimal, floorSixDecimal, gt, minus, times } from '../../../libs/math';
+import {div, floor, floor18Decimal, floorSixDecimal, gt, minus, times} from '../../../libs/math';
 import { TerrajsService } from '../../../services/terrajs.service';
 import { Vault } from '../vault.component';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -76,6 +76,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     hideLimitLabels: true,
   };
   bufferUST = 3.5;
+
+  WITHDRAW_UST_MAX_SPREAD = CONFIG.WITHDRAW_UST_MAX_SPREAD;
 
   constructor(
     public terrajs: TerrajsService,
@@ -323,12 +325,12 @@ export class AssetCardComponent implements OnInit, OnDestroy {
           msg: toBase64({
             zap_to_unbond: {
               sell_asset: { token: { contract_addr: this.vault.poolInfo.asset_token } },
-              target_asset: { native_token: { denom: 'uusd' } },
+              target_asset: { native_token: { denom: Denom.USD } },
               belief_price: times(
                 this.lpBalancePipe.transform(this.withdrawAmt, this.info.poolResponses[this.vault.assetToken]),
                 CONFIG.UNIT
               ),
-              max_spread: '0.01',
+              max_spread: this.WITHDRAW_UST_MAX_SPREAD,
             },
           }),
         },
@@ -466,41 +468,41 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     const tax = await this.terrajs.lcdClient.utils.calculateTax(
       Coin.fromData({ amount: halfUSTbeforeTax, denom: 'uusd' }));
     const halfUST = div(minus(halfUSTbeforeTax, tax.amount.toString()), CONFIG.UNIT);
-    const simulateSwapUSTtoToken = {
-      simulation: {
-        offer_asset: {
-          amount: times(halfUST, CONFIG.UNIT),
-          info: {
-            native_token: {
-              denom: Denom.USD
+      const simulateSwapUSTtoToken = {
+        simulation: {
+          offer_asset: {
+            amount: times(halfUST, CONFIG.UNIT),
+            info: {
+              native_token: {
+                denom: Denom.USD
+              }
             }
           }
         }
-      }
-    };
-    const simulateSwapUSTtoTokenResult = await this.terraSwapService.query(this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken);
-    this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(halfUST, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT));
+      };
+      const simulateSwapUSTtoTokenResult = await this.terraSwapService.query(this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken);
+      this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(halfUST, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT));
 
-    const pool = this.info.poolResponses[this.vault.assetToken];
-    const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
+      const pool = this.info.poolResponses[this.vault.assetToken];
+      const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
 
-    const grossLp = gt(pool.total_share, 0)
-      ? BigNumber.minimum(
-        new BigNumber(halfUST).times(pool.total_share).div(ust.amount),
-        new BigNumber(simulateSwapUSTtoTokenResult.return_amount).div(CONFIG.UNIT).times(pool.total_share).div(asset.amount))
-      : new BigNumber(halfUST)
-        .times(simulateSwapUSTtoTokenResult.return_amount)
-        .sqrt();
-    const depositTVL = new BigNumber(halfUST).multipliedBy('2');
-    const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
-      grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
-    this.netLpUST = grossLp.minus(depositFee).toString();
-    this.grossLpUST = grossLp.toString();
-    this.depositFeeUST = depositFee.toString();
-  }
+      const grossLp = gt(pool.total_share, 0)
+        ? BigNumber.minimum(
+          new BigNumber(halfUST).times(pool.total_share).div(ust.amount),
+          new BigNumber(simulateSwapUSTtoTokenResult.return_amount).div(CONFIG.UNIT).times(pool.total_share).div(asset.amount))
+        : new BigNumber(halfUST)
+          .times(simulateSwapUSTtoTokenResult.return_amount)
+          .sqrt();
+      const depositTVL = new BigNumber(halfUST).multipliedBy('2');
+      const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
+        grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+      this.netLpUST = grossLp.minus(depositFee).toString();
+      this.grossLpUST = grossLp.toString();
+      this.depositFeeUST = depositFee.toString();
+    }
 
   setMaxDepositUST() {
-    if (+this.info.userUstAmount > this.bufferUST) {
+    if (+this.info.userUstAmount > this.bufferUST){
       this.depositUSTAmtUST = +floorSixDecimal(+this.info.userUstAmount - 3.5);
     }
     this.depositUSTChanged();
