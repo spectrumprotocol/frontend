@@ -77,6 +77,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   };
   bufferUST = 3.5;
 
+  WITHDRAW_UST_MAX_SPREAD = CONFIG.WITHDRAW_UST_MAX_SPREAD;
+
   constructor(
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
@@ -323,12 +325,12 @@ export class AssetCardComponent implements OnInit, OnDestroy {
           msg: toBase64({
             zap_to_unbond: {
               sell_asset: { token: { contract_addr: this.vault.poolInfo.asset_token } },
-              target_asset: { native_token: { denom: 'uusd' } },
+              target_asset: { native_token: { denom: Denom.USD } },
               belief_price: times(
                 this.lpBalancePipe.transform(this.withdrawAmt, this.info.poolResponses[this.vault.assetToken]),
                 CONFIG.UNIT
               ),
-              max_spread: '0.01',
+              max_spread: this.WITHDRAW_UST_MAX_SPREAD,
             },
           }),
         },
