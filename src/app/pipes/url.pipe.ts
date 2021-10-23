@@ -28,6 +28,8 @@ export class UrlPipe implements PipeTransform {
           case 'Terraworld': return `https://terraoffice.world/twd_logo.png`;
           case 'TWD': return `https://terraoffice.world/twd_logo.png`;
           case 'MYMY': return `https://terraoffice.world/twd_logo.png`;
+          case 'Valkyrie': return 'https://app.valkyrieprotocol.com/icon_vkr.png';
+          case 'VKR': return 'https://app.valkyrieprotocol.com/icon_vkr.png';
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -41,6 +43,7 @@ export class UrlPipe implements PipeTransform {
           case 'MINE': return 'https://app.pylon.money/trade/buy';
           case 'TWD': return `https://app.terraoffice.world/Gov/trade`;
           case 'MYMY': return `https://app.terraoffice.world/Gov/trade`;
+          case 'VKR': return 'https://app.valkyrieprotocol.com/trade';
           default: return 'https://terra.mirror.finance/trade#buy';
         }
       case 'mint':

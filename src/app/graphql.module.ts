@@ -10,7 +10,7 @@ export function createApollo(httpLink: HttpLink): Record<string, ApolloClientOpt
       cache: new InMemoryCache(),
     },
     mirrorTest: {
-      link: httpLink.create({ uri: 'https://tequila-graph.mirror.finance/graphql' }),
+      link: httpLink.create({ uri: 'https://bombay-graph.mirror.finance/graphql' }),
       cache: new InMemoryCache(),
     },
     anchor: {
@@ -18,7 +18,7 @@ export function createApollo(httpLink: HttpLink): Record<string, ApolloClientOpt
       cache: new InMemoryCache(),
     },
     anchorTest: {
-      link: httpLink.create({ uri: 'https://tequila-mantle.anchorprotocol.com/graphql' }),
+      link: httpLink.create({ uri: 'https://bombay-mantle.anchorprotocol.com/graphql' }),
       cache: new InMemoryCache(),
     },
   };
