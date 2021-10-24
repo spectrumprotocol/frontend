@@ -78,7 +78,7 @@ export const networks: Record<string, ISettings> = {
     nexusGov: 'terra1xrk6v2tfjrhjz2dsfecj40ps7ayanjx970gy0j',
     nexusStaking: 'terra12kzewegufqprmzl20nhsuwjjq6xu8t8ppzt30a',
     nexusToken: 'terra12897djskt9rge8dtmm86w654g7kzckkd698608',
-    nexusFarm: '',
+    nexusFarm: 'terra1j2hdp4jelqe9tkfwnsx5mlheqagaryxhqwr4h2',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
