@@ -110,7 +110,6 @@ export class InfoService {
   poolResponses: Record<string, PoolResponse> = {};
 
   cw20tokensWhitelist: any;
-  cw20Pairs: any;
 
   myTvl = 0;
   allVaults: Vault[] = [];
@@ -249,7 +248,7 @@ export class InfoService {
       .reduce((a, b) => a + b, 0);
     const height = await this.terrajs.getHeight();
     const specPerHeight = config.mint_end > height ? config.mint_per_block : '0';
-    const ustPerYear = +specPerHeight * HEIGHT_PER_YEAR * +this.specPrice;
+    const ustPerYear = +specPerHeight * HEIGHT_PER_YEAR * +this.specPrice * (1 - +config.warchest_ratio);
     for (const pair of Object.values(stat.pairs)) {
       pair.specApr = ustPerYear * pair.multiplier / totalWeight / +pair.tvl;
       pair.dpr = (pair.poolApr + pair.specApr) / 365;
@@ -316,12 +315,6 @@ export class InfoService {
   async ensureCw20tokensWhitelist() {
     if (!this.cw20tokensWhitelist) {
       this.cw20tokensWhitelist = await this.httpClient.get<object>('https://assets.terra.money/cw20/tokens.json').toPromise();
-    }
-  }
-
-  async ensureCw20Pairs() {
-    if (!this.cw20Pairs) {
-      this.cw20Pairs = await this.httpClient.get<object>('https://assets.terra.money/cw20/pairs.json').toPromise();
     }
   }
 
