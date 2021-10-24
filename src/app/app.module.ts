@@ -62,6 +62,7 @@ import { FloorPipe } from './pipes/floor.pipe';
 import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
 import { ValkyrieFarmInfoService } from './services/farm_info/valkyrie.farm-info.service';
 import {NexusFarmInfoService} from './services/farm_info/nexus.farm-info.service';
+import {WithdrawUstPipe} from './pipes/withdraw-ust.pipe';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -109,6 +110,7 @@ registerLocaleData(locale, 'en');
     UnstakeAllComponent,
     GovPoolComponent,
     FloorPipe,
+    WithdrawUstPipe
   ],
   imports: [
     AppRoutingModule,
