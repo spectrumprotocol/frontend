@@ -3,15 +3,15 @@ import BigNumber from 'bignumber.js';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo, PoolItem } from './farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import {HttpClient} from '@angular/common/http';
-import {div, times} from '../../libs/math';
-import {Denom} from '../../consts/denom';
-import {NexusFarmService} from '../api/nexus-farm.service';
-import {RewardInfoResponseItem} from '../api/nexus_farm/reward_info_response';
-import {NexusStakingService} from '../api/nexus-staking.service';
+import { HttpClient } from '@angular/common/http';
+import { div, times } from '../../libs/math';
+import { Denom } from '../../consts/denom';
+import { NexusFarmService } from '../api/nexus-farm.service';
+import { RewardInfoResponseItem } from '../api/nexus_farm/reward_info_response';
+import { NexusStakingService } from '../api/nexus-staking.service';
 
 @Injectable()
 export class NexusFarmInfoService implements FarmInfoService {
@@ -19,7 +19,6 @@ export class NexusFarmInfoService implements FarmInfoService {
   tokenSymbol = 'Psi';
   autoCompound = true;
   autoStake = false;
-  auditWarning = true;
 
   constructor(
     private gov: GovService,
@@ -83,7 +82,7 @@ export class NexusFarmInfoService implements FarmInfoService {
       const poolInfo = poolInfos[token];
       const stat: PairStat = {
         poolApr,
-        poolApy: (poolApr / 365 + 1) ** 365 - 1,
+        poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
         farmApr: 0, // +(nexusGovStat.apy || 0),
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
@@ -110,21 +109,21 @@ export class NexusFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.nexusGov,
           amount,
-          msg: toBase64({stake_voting_tokens: {}})
+          msg: toBase64({ stake_voting_tokens: {} })
         }
       }
     );
   }
 
-  async getNexusLPStat(psiPoolResponse: PoolResponse, unixTimeSecond){
+  async getNexusLPStat(psiPoolResponse: PoolResponse, unixTimeSecond) {
     const configTask = this.nexusStaking.query({ config: {} });
-    const stateTask = this.nexusStaking.query({ state: {time_seconds: +unixTimeSecond} });
+    const stateTask = this.nexusStaking.query({ state: { time_seconds: +unixTimeSecond } });
     const [config, state] = await Promise.all([configTask, stateTask]);
     const psiPoolUSTAmount = psiPoolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? psiPoolResponse.assets[1].amount : psiPoolResponse.assets[0].amount;
     const psiPoolPSIAmount = psiPoolResponse.assets[1]?.info?.token ? psiPoolResponse.assets[1].amount : psiPoolResponse.assets[0].amount;
     const psiPrice = div(psiPoolUSTAmount, psiPoolPSIAmount);
     const current_distribution_schedule = config.distribution_schedule.find(obj => unixTimeSecond >= +obj.start_time && unixTimeSecond <= +obj.end_time);
-    if (!current_distribution_schedule){
+    if (!current_distribution_schedule) {
       return {
         apr: 0
       };
