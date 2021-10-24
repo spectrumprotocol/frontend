@@ -60,6 +60,9 @@ import { GovPoolComponent } from './pages/gov/gov-pool/gov-pool.component';
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
 import { FloorPipe } from './pipes/floor.pipe';
 import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
+import { ValkyrieFarmInfoService } from './services/farm_info/valkyrie.farm-info.service';
+import {NexusFarmInfoService} from './services/farm_info/nexus.farm-info.service';
+import {WithdrawUstPipe} from './pipes/withdraw-ust.pipe';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -107,6 +110,7 @@ registerLocaleData(locale, 'en');
     UnstakeAllComponent,
     GovPoolComponent,
     FloorPipe,
+    WithdrawUstPipe
   ],
   imports: [
     AppRoutingModule,
@@ -137,6 +141,8 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,
