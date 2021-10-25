@@ -26,6 +26,7 @@ export interface Stat {
   govStaked: string;
   govTvl: string;
   govApr: number;
+  govPoolCount: number;
 }
 
 type PendingReward = {
@@ -221,6 +222,7 @@ export class InfoService {
       govStaked: '0',
       govTvl: '0',
       govApr: 0,
+      govPoolCount: 1,
     };
     await this.refreshPoolInfos();
     await this.refreshPoolResponses();
@@ -255,7 +257,7 @@ export class InfoService {
       stat.vaultFee += pair.vaultFee;
       stat.tvl = plus(stat.tvl, pair.tvl);
     }
-    stat.govApr = stat.vaultFee / +stat.govTvl;
+    stat.govApr = stat.vaultFee / stat.govPoolCount / +stat.govTvl;
     this.stat = stat;
     localStorage.setItem('stat', JSON.stringify(stat));
   }
@@ -265,6 +267,7 @@ export class InfoService {
 
     const state = await this.gov.query({ state: { } });
     stat.govStaked = state.total_staked;
+    stat.govPoolCount = state.pools.length;
 
     await poolTask;
     stat.govTvl = times(stat.govStaked, this.specPrice);
