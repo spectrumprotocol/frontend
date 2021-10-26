@@ -18,6 +18,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
   tokenSymbol = 'ANC';
   autoCompound = true;
   autoStake = true;
+  farmColor = '#3bac3b';
 
   constructor(
     private gov: GovService,

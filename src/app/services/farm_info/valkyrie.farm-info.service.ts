@@ -18,6 +18,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
   tokenSymbol = 'VKR';
   autoCompound = true;
   autoStake = true;
+  farmColor = '#ffe646';
 
   constructor(
     private gov: GovService,

@@ -19,9 +19,8 @@ export class YourTvlComponent implements OnInit, OnDestroy {
   loading = false;
   chartDataList: ChartData[];
 
-  // MIRROR, SPEC, ANCHOR, PYLON, totalValueItem 0-3
   chartColors = {
-    domain: ['#fc5185', '#232C45', '#3bac3b', '#00cfda', '#ED7B84', '#f5dbcb', '#D6D5B3', '#7EB77F']
+    domain: []
   };
 
   private connected: Subscription;
@@ -35,6 +34,7 @@ export class YourTvlComponent implements OnInit, OnDestroy {
 
   // because totalValueItems input is delayed
   ngOnInit(): void {
+    this.chartColors.domain = [...this.info.farmInfos.map(farmInfo => farmInfo.farmColor), '#ED7B84', '#f5dbcb', '#D6D5B3', '#7EB77F'];
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         if (connected && !this.chartDataList) {
