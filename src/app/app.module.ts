@@ -142,7 +142,7 @@ registerLocaleData(locale, 'en');
     // { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,
