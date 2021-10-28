@@ -19,6 +19,7 @@ export class PylonFarmInfoService implements FarmInfoService {
   tokenSymbol = 'MINE';
   autoCompound = true;
   autoStake = true;
+  farmColor = '#00cfda';
 
   constructor(
     private gov: GovService,

@@ -19,6 +19,7 @@ export class NexusFarmInfoService implements FarmInfoService {
   tokenSymbol = 'Psi';
   autoCompound = true;
   autoStake = false;
+  farmColor = '#F4B6C7';
 
   constructor(
     private gov: GovService,

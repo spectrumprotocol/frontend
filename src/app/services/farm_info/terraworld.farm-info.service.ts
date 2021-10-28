@@ -19,6 +19,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   auditWarning = true;
+  farmColor = '#249fd4';
 
   constructor(
     private gov: GovService,
