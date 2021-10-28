@@ -1,0 +1,54 @@
+<div class="modal-header">
+  <h5 class="modal-title">Manage Rewards</h5>
+  <a href="#" class="text-white" (click)="modalRef.close(); false">
+    <i class="fas fa-times fa-lg"></i>
+  </a>
+</div>
+<div class="modal-body">
+  <div class="bg-dark p-3 rounded mb-3">
+    <div class="row">
+      <div class="col-12 col-sm-6">
+        <div>Avg APR</div>
+        <div class="h5 mb-0">{{ info.portfolio?.avg_tokens_apr | percent }}</div>
+      </div>
+      <div class="col-12 col-sm-6 text-end">
+        <div>Total Value Staked</div>
+        <div class="h5 mb-0">{{ info.portfolio?.total_reward_ust | number: '1.0-2' }} UST</div>
+      </div>
+    </div>
+  </div>
+  <table class="table align-middle">
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th class="d-none d-sm-table-cell">APR</th>
+        <th>Rewards</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let token of info.portfolio?.tokens | keyvalue; trackBy: trackTokensMap">
+        <tr *ngIf="token.value.pending_reward_token > 0">
+          <td>
+            <img [src]="token.key | url:'icon'" height="32" class="rounded-circle">
+            {{ token.key }}
+          </td>
+          <td class="d-none d-sm-table-cell">
+            {{ token.value.apr | percent }}
+          </td>
+          <td>
+            {{ token.value.pending_reward_token | number }}
+            <small class="text-muted">(${{ token.value.pending_reward_ust | number: '1.0-2' }})</small>
+          </td>
+          <td>
+            <div *ngIf="token.key === 'SPEC'" class="d-grid d-lg-flex gap-2">
+              <button class="btn btn-primary" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
+              <button class="btn btn-primary" (click)="moveToGov(token.key, 30)">Move to 30-Day Locked Gov</button>
+            </div>
+            <button *ngIf="token.key !== 'SPEC'" class="btn btn-primary" (click)="moveToGov(token.key)">Move to Gov</button>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

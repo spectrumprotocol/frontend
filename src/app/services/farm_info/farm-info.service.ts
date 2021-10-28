@@ -35,5 +35,5 @@ export interface FarmInfoService {
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>>;
   queryRewards(): Promise<RewardInfoResponseItem[]>;
-  getStakeGovMsg(amount: string): MsgExecuteContract;
+  getStakeGovMsg(amount: string, additionalData?: object): MsgExecuteContract;
 }

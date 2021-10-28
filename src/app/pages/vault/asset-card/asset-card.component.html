@@ -513,16 +513,32 @@
             All your rewards are automatically staked in gov vaults to earn gov income.
           </div>
           <div class="row mt-3">
-            <div class="col">Staked SPEC</div>
-            <div class="col text-end">
-              {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}</div>
-          </div>
-          <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" class="row">
-            <div class="col">Staked <span *ngIf="vault.poolInfo.farm === 'Mirror'">MIR</span>
-              <span *ngIf="vault.poolInfo.farm !== 'Mirror'">{{vault.symbol}}</span>
+            <div class="col">
+              Staked SPEC
+              <small class="text-primary">APR: {{ info.stat?.govApr | percent }}</small>
             </div>
             <div class="col text-end">
-              {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit }}</div>
+              {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
+              <small class="text-muted">
+                (${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | balance:
+                info.poolResponses[terrajs.settings.specToken] |
+                unit: '1.0-2' }})
+              </small>
+            </div>
+          </div>
+          <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" class="row">
+            <div class="col">
+              Staked {{ vault.poolInfo.farm === 'Mirror' ? 'MIR' : vault.symbol }}
+              <small class="text-primary">APR: {{ vault.pairStat?.farmApr | percent }}</small>
+            </div>
+            <div class="col text-end">
+              {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit }}
+              <small class="text-muted">
+                (${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
+                info.poolResponses[vault.poolInfo.farmTokenContract] |
+                unit: '1.0-2' }})
+              </small>
+            </div>
           </div>
           <div *ngIf="vault.poolInfo.farm === 'Spectrum'" class="d-grid mt-3">
             <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake SPEC</button>

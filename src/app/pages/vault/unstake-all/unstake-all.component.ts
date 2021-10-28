@@ -5,6 +5,7 @@ import { MsgExecuteContract } from '@terra-money/terra.js';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { CONFIG } from '../../../consts/config';
 import { floor, times } from '../../../libs/math';
+import { MdbModalService } from 'mdb-angular-ui-kit';
 
 @Component({
   selector: 'app-unstake-all',
@@ -16,6 +17,7 @@ export class UnstakeAllComponent {
   constructor(
     public info: InfoService,
     private terrajs: TerrajsService,
+    private modalService: MdbModalService,
     protected $gaService: GoogleAnalyticsService,
   ) { }
 
@@ -73,6 +75,18 @@ export class UnstakeAllComponent {
       }
     }
     await this.terrajs.post(msg);
+  }
+
+  async manageRewards() {
+    if (!this.info.portfolio?.total_reward_ust) {
+      return;
+    }
+
+    const modal = await import('../manage-rewards/manage-rewards.component');
+    this.modalService.open(modal.ManageRewardsComponent, {
+      ignoreBackdropClick: true,
+      modalClass: 'modal-xl',
+    });
   }
 
   asIsOrder() {

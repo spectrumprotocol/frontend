@@ -11,6 +11,10 @@
   </ng-container>
   <span class="text-muted">($<app-digit [value]="info.portfolio?.total_reward_ust"></app-digit>)</span>
 
+  <button class="btn btn-outline-primary ms-2" type="button" (click)="manageRewards()">
+    Manage Rewards
+  </button>
+
   <button class="btn btn-outline-primary ms-2" type="button" aria-expanded="false" (click)="unstakeAll()"
     title="Unstake all SPEC, MIR, ANC, and MINE rewards in vaults and withdraw to your wallet">
     Claim staked rewards

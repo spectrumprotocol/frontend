@@ -61,6 +61,7 @@ import {NgxSliderModule} from '@angular-slider/ngx-slider';
 import { FloorPipe } from './pipes/floor.pipe';
 import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
 import {WithdrawUstPipe} from './pipes/withdraw-ust.pipe';
+import { ManageRewardsComponent } from './pages/vault/manage-rewards/manage-rewards.component';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -108,7 +109,8 @@ registerLocaleData(locale, 'en');
     UnstakeAllComponent,
     GovPoolComponent,
     FloorPipe,
-    WithdrawUstPipe
+    WithdrawUstPipe,
+    ManageRewardsComponent,
   ],
   imports: [
     AppRoutingModule,
