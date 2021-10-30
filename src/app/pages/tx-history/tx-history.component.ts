@@ -364,7 +364,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         if (farmInfo) {
           const stakeAmount = unstakes.reduce((sum, unstake) => sum + (farmInfo.tokenSymbol === 'SPEC' ? unstake.specAmount : unstake.farmAmount), 0);
           txHistory.desc += '<br>';
-          txHistory.desc += `and Staked to ${farmInfo.farm} Gov (${stakeAmount} ${farmInfo.tokenSymbol})`;
+          txHistory.desc += `and staked to ${farmInfo.farm} Gov (${stakeAmount} ${farmInfo.tokenSymbol})`;
         }
       }
 

@@ -45,7 +45,7 @@
               <button class="btn btn-primary" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
               <button class="btn btn-primary" (click)="moveToGov(token.key, 30)">Move to 30-Day Locked Gov</button>
             </div>
-            <button *ngIf="token.key !== 'SPEC'" class="btn btn-primary" (click)="moveToGov(token.key)">Move to Gov</button>
+            <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.key).autoStake" class="btn btn-primary" (click)="moveToGov(token.key)">Move to Gov</button>
           </td>
         </tr>
       </ng-container>

@@ -19,9 +19,16 @@ export class ManageRewardsComponent {
     private terrajs: TerrajsService
   ) { }
 
+  getGovFarmInfo(tokenSymbol: string){
+    return this.info.farmInfos.find(x => x.tokenSymbol === tokenSymbol);
+  }
+
   async moveToGov(tokenSymbol: string, days?: number) {
     const isSpec = tokenSymbol === 'SPEC';
-    const govFarmInfo = this.info.farmInfos.find(x => x.tokenSymbol === tokenSymbol);
+    const govFarmInfo = this.getGovFarmInfo(tokenSymbol);
+    if (!govFarmInfo.autoStake){
+      return;
+    }
     const withdrawAmounts: { [farmContract: string]: string } = {};
 
     for (const rewardInfo of Object.values(this.info.rewardInfos)) {
