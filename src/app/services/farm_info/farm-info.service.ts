@@ -32,6 +32,7 @@ export interface FarmInfoService {
   readonly autoCompound: boolean;
   readonly autoStake: boolean;
   readonly auditWarning?: boolean;
+  readonly farmColor: string;
 
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>>;

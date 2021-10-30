@@ -200,7 +200,6 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       chainId: this.terrajs.network.chainID
     };
     const txsRes = await this.terrajs.getFCD('v1/txs', queryParams);
-    console.log(txsRes);
     for (const item of txsRes.txs) {
       if (item.code) {
         continue;

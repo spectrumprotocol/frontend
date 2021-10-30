@@ -14,6 +14,7 @@ export class SpecFarmInfoService implements FarmInfoService {
   tokenSymbol = 'SPEC';
   autoCompound = false;
   autoStake = true;
+  farmColor = '#fc5185';
 
   constructor(
     private gov: GovService,

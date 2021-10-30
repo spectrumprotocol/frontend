@@ -60,6 +60,8 @@ import { GovPoolComponent } from './pages/gov/gov-pool/gov-pool.component';
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
 import { FloorPipe } from './pipes/floor.pipe';
 import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
+import { ValkyrieFarmInfoService } from './services/farm_info/valkyrie.farm-info.service';
+import {NexusFarmInfoService} from './services/farm_info/nexus.farm-info.service';
 import {WithdrawUstPipe} from './pipes/withdraw-ust.pipe';
 import { ManageRewardsComponent } from './pages/vault/manage-rewards/manage-rewards.component';
 
@@ -137,10 +139,12 @@ registerLocaleData(locale, 'en');
       multi: true
     },
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true },
-    { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
+    // { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

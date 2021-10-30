@@ -1,9 +1,5 @@
 import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { AnchorFarmService } from '../api/anchor-farm.service';
-import { AnchorStakingService } from '../api/anchor-staking.service';
-import { PoolItem } from '../api/anchor_farm/pools_response';
-import { RewardInfoResponseItem } from '../api/anchor_farm/reward_info_response';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
@@ -11,67 +7,70 @@ import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { HttpClient } from '@angular/common/http';
+import { ValkyrieFarmService } from '../api/valkyrie-farm.service';
+import { ValkyrieStakingService } from '../api/valkyrie-staking.service';
+import { PoolItem } from '../api/valkyrie_farm/pools_response';
+import { RewardInfoResponseItem } from '../api/valkyrie_farm/reward_info_response';
 
 @Injectable()
-export class AnchorFarmInfoService implements FarmInfoService {
-  farm = 'Anchor';
-  tokenSymbol = 'ANC';
+export class ValkyrieFarmInfoService implements FarmInfoService {
+  farm = 'Valkyrie';
+  tokenSymbol = 'VKR';
   autoCompound = true;
   autoStake = true;
-  farmColor = '#3bac3b';
+  farmColor = '#ffe646';
 
   constructor(
     private gov: GovService,
-    private anchorFarm: AnchorFarmService,
     private terrajs: TerrajsService,
-    private anchorStaking: AnchorStakingService,
+    private valkyrieFarm: ValkyrieFarmService,
+    private valkyrieStaking: ValkyrieStakingService,
     private httpClient: HttpClient,
   ) { }
 
   get farmContract() {
-    return this.terrajs.settings.anchorFarm;
+    return this.terrajs.settings.valkyrieFarm;
   }
 
   get farmTokenContract() {
-    return this.terrajs.settings.anchorToken;
+    return this.terrajs.settings.valkyrieToken;
   }
 
   get farmGovContract() {
-    return this.terrajs.settings.anchorGov;
+    return this.terrajs.settings.valkyrieGov;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.anchorFarm.query({ pools: {} });
+    const pool = await this.valkyrieFarm.query({ pools: {} });
     return pool.pools;
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
-    const height = await this.terrajs.getHeight();
-    const rewardInfoTask = this.anchorStaking.query({ staker_info: { block_height: +height, staker: this.terrajs.settings.anchorFarm } });
-    const farmConfigTask = this.anchorFarm.query({ config: {} });
-    const anchorStatTask = this.httpClient.get<any>(this.terrajs.settings.anchorAPI + '/ust-lp-reward').toPromise();
-    const anchorGovTask = this.httpClient.get<any>(this.terrajs.settings.anchorAPI + '/gov-reward').toPromise();
+    const rewardInfoTask = this.valkyrieStaking.query({ staker_info: { staker: this.terrajs.settings.valkyrieFarm } });
+    const farmConfigTask = this.valkyrieFarm.query({ config: {} });
+    const valkyrieStatTask = this.httpClient.get<any>(this.terrajs.settings.valkyrieAPI + '/liquidity-provision/stake/apr').toPromise();
+    const valkyrieGovTask = this.httpClient.get<any>(this.terrajs.settings.valkyrieAPI + '/governance/stake/apr').toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govVaults = await this.gov.vaults();
-    const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.anchorFarm)?.weight || 0;
-    const anchorStat = await anchorStatTask;
-    const anchorGov = await anchorGovTask;
+    const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.valkyrieFarm)?.weight || 0;
+    const valkyrieStat = await valkyrieStatTask;
+    const valkyrieGov = await valkyrieGovTask;
     const pairs: Record<string, PairStat> = {};
 
-    const poolApr = +(anchorStat?.apy || 0);
-    pairs[this.terrajs.settings.anchorToken] = createPairStat(poolApr, this.terrajs.settings.anchorToken);
+    const poolApr = +(valkyrieStat?.data?.apr || 0);
+    pairs[this.terrajs.settings.valkyrieToken] = createPairStat(poolApr, this.terrajs.settings.valkyrieToken);
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.terrajs.settings.anchorToken];
+    const p = poolResponses[this.terrajs.settings.valkyrieToken];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;
     }
-    const pair = pairs[this.terrajs.settings.anchorToken];
+    const pair = pairs[this.terrajs.settings.valkyrieToken];
     const value = new BigNumber(uusd.amount)
       .times(rewardInfo.bond_amount)
       .times(2)
@@ -88,7 +87,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: +(anchorGov?.current_apy || 0),
+        farmApr: +(valkyrieGov?.data?.apr || 0),
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
@@ -98,7 +97,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
   }
 
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const rewardInfo = await this.anchorFarm.query({
+    const rewardInfo = await this.valkyrieFarm.query({
       reward_info: {
         staker_addr: this.terrajs.address,
       }
@@ -109,10 +108,10 @@ export class AnchorFarmInfoService implements FarmInfoService {
   getStakeGovMsg(amount: string): MsgExecuteContract {
     return new MsgExecuteContract(
       this.terrajs.address,
-      this.terrajs.settings.anchorToken,
+      this.terrajs.settings.valkyrieToken,
       {
           send: {
-            contract: this.terrajs.settings.anchorGov,
+            contract: this.terrajs.settings.valkyrieGov,
             amount,
             msg: toBase64({stake_voting_tokens: {}})
           }

@@ -25,12 +25,21 @@ export interface ISettings {
   terraworldStaking: string;
   terraworldToken: string;
   terraworldFarm: string;
+  valkyrieGov: string;
+  valkyrieStaking: string;
+  valkyrieToken: string;
+  valkyrieFarm: string;
+  nexusGov: string;
+  nexusStaking: string;
+  nexusToken: string;
+  nexusFarm: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
   specAPI: string;
   anchorAPI: string;
   pylonAPI: string;
+  valkyrieAPI: string;
   chainID: string;
   finder: string;
 }
@@ -62,12 +71,21 @@ export const networks: Record<string, ISettings> = {
     terraworldStaking: 'terra10eyxljyqkcvhs4dgr534hk0wehc28tz6gwnh8a',
     terraworldToken: 'terra19djkaepjjswucys4npd5ltaxgsntl7jf0xz7w6',
     terraworldFarm: 'terra1cdyw7fydevn372re7xjgfh8kqrrf2lxm5k6ve3',
+    valkyrieGov: 'terra1w6xf64nlmy3fevmmypx6w2fa34ue74hlye3chk',
+    valkyrieStaking: 'terra1ude6ggsvwrhefw2dqjh4j6r7fdmu9nk6nf2z32',
+    valkyrieToken: 'terra1dy9kmlm4anr92e42mrkjwzyvfqwz66un00rwr5',
+    valkyrieFarm: 'terra1xt4ugaxds6wjehjckqchzg4e99n3cjd2rtfw4f',
+    nexusGov: 'terra1xrk6v2tfjrhjz2dsfecj40ps7ayanjx970gy0j',
+    nexusStaking: 'terra12kzewegufqprmzl20nhsuwjjq6xu8t8ppzt30a',
+    nexusToken: 'terra12897djskt9rge8dtmm86w654g7kzckkd698608',
+    nexusFarm: 'terra1j2hdp4jelqe9tkfwnsx5mlheqagaryxhqwr4h2',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
     specAPI: 'https://specapi.azurefd.net/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
+    valkyrieAPI: 'https://api.valkyrieprotocol.com',
     chainID: 'columbus-5',
     finder: 'finder.extraterrestrial.money',
   },
@@ -98,12 +116,21 @@ export const networks: Record<string, ISettings> = {
     terraworldStaking: 'terra155yqhchyvfkxz5tas07kvprx77wnla7stexhs7',
     terraworldToken: 'terra1pe803vgyesmqr73j3l4732hmg2v6ss374aagx4',
     terraworldFarm: 'terra19w0a2xv7vyj8yze3fxzk55nfl5nlvc0l67uduu',
+    valkyrieGov: 'terra102jsr0c2d5nhaa8vmjw0nerphw0s2cs70tz9a3',
+    valkyrieStaking: 'terra1pemp0pyupazlfye0cuxn0cz93mu02p8m5uep3k',
+    valkyrieToken: 'terra1a8hskrwnccq0v7gq3n24nraaqt7yevzy005uf5',
+    valkyrieFarm: 'terra15u4nuq7jchdzklpeqzazxs09cylgndqc37tvhg',
+    nexusGov: 'terra1u7tnl4326ge86mzqeqnzxxjg7xkgj8nfg65a2h',
+    nexusStaking: 'terra1qsc7y8448payj9fyjxn6ffxxmdcj5g5dtptfq2',
+    nexusToken: 'terra18nle009rtynpjgleh2975rleu5zts0zdtqryte',
+    nexusFarm: 'terra158j75d7kml99u3r4xy4e7xnfzmhm2j780e5npl',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
     specAPI: 'https://specapi-test.azurefd.net/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
+    valkyrieAPI: 'https://api.testnet.valkyrieprotocol.com',
     chainID: 'bombay-12',
     finder: 'finder.terra.money',
   },

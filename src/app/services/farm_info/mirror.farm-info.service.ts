@@ -18,6 +18,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
   tokenSymbol = 'MIR';
   autoCompound = true;
   autoStake = true;
+  farmColor = '#232C45';
 
   constructor(
     private apollo: Apollo,
