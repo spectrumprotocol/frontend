@@ -1,10 +1,11 @@
 import { KeyValue } from '@angular/common';
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { MdbModalRef } from 'mdb-angular-ui-kit';
 import { plus } from 'src/app/libs/math';
 import { InfoService, Portfolio } from 'src/app/services/info.service';
 import { TerrajsService } from 'src/app/services/terrajs.service';
+import {GovService} from '../../../services/api/gov.service';
 
 type MapToKeyValue<T> = T extends Map<infer X, infer Y> ? KeyValue<X, Y> : never;
 
@@ -12,12 +13,21 @@ type MapToKeyValue<T> = T extends Map<infer X, infer Y> ? KeyValue<X, Y> : never
   selector: 'app-manage-rewards',
   templateUrl: './manage-rewards.component.html',
 })
-export class ManageRewardsComponent {
+export class ManageRewardsComponent implements OnInit{
   constructor(
     public modalRef: MdbModalRef<ManageRewardsComponent>,
     public info: InfoService,
-    private terrajs: TerrajsService
+    private terrajs: TerrajsService,
+    private gov: GovService
   ) { }
+
+  availablePoolDays: number[] = [];
+
+  ngOnInit() {
+    this.gov.state().then(state => {
+      this.availablePoolDays = state.pools.filter(pool => pool.active).map(pool => pool.days);
+    });
+  }
 
   getGovFarmInfo(tokenSymbol: string){
     return this.info.farmInfos.find(x => x.tokenSymbol === tokenSymbol);

@@ -168,7 +168,7 @@ export class GovComponent implements OnInit, OnDestroy {
     let sumGovAPR = 0;
     let vaultsAPR = 0;
     let totalStaked = 0;
-    for (let pool of this.poolDetails) {
+    for (const pool of this.poolDetails) {
       if (pool.days === 0) {
         vaultsAPR = pool.apr;
       }

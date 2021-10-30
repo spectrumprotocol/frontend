@@ -42,8 +42,10 @@
           </td>
           <td>
             <div *ngIf="token.key === 'SPEC'" class="d-grid d-lg-flex gap-2">
-              <button class="btn btn-primary" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
-              <button class="btn btn-primary" (click)="moveToGov(token.key, 30)">Move to 30-Day Locked Gov</button>
+              <ng-container *ngFor="let day of availablePoolDays">
+                <button class="btn btn-primary" *ngIf="day === 0" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
+                <button class="btn btn-primary" *ngIf="day !== 0" (click)="moveToGov(token.key, day)">Move to {{day}}-Day Locked Gov</button>
+              </ng-container>
             </div>
             <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.key).autoStake" class="btn btn-primary" (click)="moveToGov(token.key)">Move to Gov</button>
           </td>
