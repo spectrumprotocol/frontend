@@ -466,11 +466,10 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const amountToStake = +rawAmountToStake / CONFIG.UNIT;
       const amountToAutoPercentage = this.percentPipe.transform(div(rawAmountToAuto, totalLP));
       const amountToStakePercentage = this.percentPipe.transform(div(rawAmountToStake, totalLP));
-      const farm = this.info.farmInfos.find(o => o.farmContract === secondLastMsg.contract)?.farm;
 
       return {
         action: 'Farm',
-        desc: `Reallocated deposited ${tokenSymbol}-UST LP to auto-compound ${amountToAutoPercentage}, auto-stake ${amountToStakePercentage} (${amountToAuto} LP, ${amountToStake} LP) ${farm} farm`,
+        desc: `Reallocated deposited ${tokenSymbol}-UST LP to auto-compound ${amountToAutoPercentage}, auto-stake ${amountToStakePercentage} (${amountToAuto} LP, ${amountToStake} LP) `,
       };
     }
 
