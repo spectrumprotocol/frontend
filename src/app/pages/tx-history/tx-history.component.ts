@@ -94,7 +94,7 @@ const txHistoryFactory = {
       desc += ` ${uusdAmount} UST (${lp})`;
     }
 
-    desc += ` ${farm} farm`;
+    desc += ` from ${farm} farm`;
 
     return { desc, action: 'Farm' as const };
   },
@@ -245,6 +245,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     }
 
     const [secondLastMsg, lastMsg] = msgs.length === 1 ? [undefined, msgs[0]] : msgs.slice(-2);
+    const lastSendMsg = lastMsg.execute_msg['send']?.msg ? ensureBase64toObject(lastMsg.execute_msg['send']?.msg) : undefined;
     const sendExecuteMsg = tryExtractExecuteMsgSend(lastMsg.execute_msg);
 
     const logs: Event[][] = txsItem?.logs?.map(log => log.events) ?? [];
@@ -290,7 +291,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       return txHistoryFactory.buySpec(returnAmount, offerAmount, offerDenom, price);
     }
 
-    if (lastMsg.execute_msg['swap'] && lastMsg.contract === this.terrajs.settings.specToken) {
+    if (lastSendMsg && lastSendMsg['swap'] && lastMsg.contract === this.terrajs.settings.specToken) {
       const offerAmount = +fromContractEvent?.attributes.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT || 0;
       const returnAmount = +fromContractEvent?.attributes.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT || 0;
       const price = roundSixDecimal(returnAmount / offerAmount);
