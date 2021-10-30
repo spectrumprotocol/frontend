@@ -35,6 +35,10 @@ export class MirrorFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.mirrorToken;
   }
 
+  get farmGovContract() {
+    return this.terrajs.settings.mirrorGov;
+  }
+
   async queryPoolItems(): Promise<PoolItem[]> {
     const res = await this.mirrorFarm.query({ pools: {} });
     return res.pools;

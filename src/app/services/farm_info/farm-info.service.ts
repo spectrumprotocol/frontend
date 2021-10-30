@@ -28,6 +28,7 @@ export interface FarmInfoService {
   tokenSymbol: string;
   readonly farmContract: string;
   readonly farmTokenContract: string;
+  readonly farmGovContract: string;
   readonly autoCompound: boolean;
   readonly autoStake: boolean;
   readonly auditWarning?: boolean;

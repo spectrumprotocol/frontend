@@ -29,6 +29,10 @@ export class SpecFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.specToken;
   }
 
+  get farmGovContract() {
+    return this.terrajs.settings.gov;
+  }
+
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.specFarm.query({ pools: {} });
     return pool.pools;

@@ -36,6 +36,10 @@ export class PylonFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.pylonToken;
   }
 
+  get farmGovContract() {
+    return this.terrajs.settings.pylonGov;
+  }
+
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.pylonFarm.query({ pools: {} });
     return pool.pools;

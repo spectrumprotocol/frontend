@@ -35,6 +35,10 @@ export class AnchorFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.anchorToken;
   }
 
+  get farmGovContract() {
+    return this.terrajs.settings.anchorGov;
+  }
+
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.anchorFarm.query({ pools: {} });
     return pool.pools;
