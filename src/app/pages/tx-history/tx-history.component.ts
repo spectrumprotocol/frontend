@@ -52,7 +52,7 @@ const txHistoryFactory = {
     let desc = 'Deposited';
 
     if (!provide) {
-      desc += ` ${lpAmount} ${tokenSymbol}`;
+      desc += ` ${lpAmount} ${tokenSymbol}-UST LP`;
     } else if ('price' in provide) {
       const { provideAmount, returnAmount, price } = provide;
 
