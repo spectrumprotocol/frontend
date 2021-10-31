@@ -113,7 +113,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
           send: {
             contract: this.terrajs.settings.valkyrieGov,
             amount,
-            msg: toBase64({stake_voting_tokens: {}})
+            msg: toBase64({stake_governance_token: {}})
           }
       }
     );
