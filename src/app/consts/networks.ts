@@ -127,7 +127,7 @@ export const networks: Record<string, ISettings> = {
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
-    specAPI: 'https://specapi-test.azurefd.net/api',
+    specAPI: 'https://testapi.spec.finance/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
     valkyrieAPI: 'https://api.testnet.valkyrieprotocol.com',
