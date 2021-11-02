@@ -20,7 +20,8 @@
       <div class="col-12 col-md-9">
         <div class="row">
           <div class="col-12 col-sm-12 col-md-4">
-            <div class="fs-6 mt-2">APY</div>
+            <div class="fs-6 mt-2">APY <i class="fas fa-info-circle info-icon"
+              mdbTooltip="APY (Annual Percentage Yield) is the rate of return with compound interest in one year."></i></div>
             <div class="fs-5">
               <span *ngIf="vault.apy > vault.pairStat?.farmApr">
                 <span class="text-primary text-decoration-line-through">
@@ -34,9 +35,10 @@
             <div class="fs-5">{{vault.pairStat?.tvl || 0 | unit: '1.0-2' }} UST</div>
           </div>
           <div class="col-12 col-sm-6 col-md-4">
-            <div class="fs-6 mt-2">Daily Rate</div>
+            <div class="fs-6 mt-2">Daily Rate <i class="fas fa-info-circle info-icon"
+              mdbTooltip="Estimated rate of return per day"></i></div>
             <div class="fs-5">{{ vault.pairStat?.dpr || 0 | percent }}</div>
-            <div class="fs-6 mt-2">LP Deposited</div>
+            <div class="fs-6 mt-2">LP Balance</div>
             <div class="fs-5">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: '1.0-5'}}
               <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
                 [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i>
