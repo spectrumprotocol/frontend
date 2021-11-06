@@ -40,6 +40,7 @@ export interface ISettings {
   anchorAPI: string;
   pylonAPI: string;
   valkyrieAPI: string;
+  nexusGraph: string;
   chainID: string;
   finder: string;
 }
@@ -86,6 +87,7 @@ export const networks: Record<string, ISettings> = {
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
     valkyrieAPI: 'https://api.valkyrieprotocol.com',
+    nexusGraph: 'nexus',
     chainID: 'columbus-5',
     finder: 'finder.extraterrestrial.money',
   },
@@ -127,10 +129,11 @@ export const networks: Record<string, ISettings> = {
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
-    specAPI: 'https://specapi-test.azurefd.net/api',
+    specAPI: 'https://testapi.spec.finance/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
     valkyrieAPI: 'https://api.testnet.valkyrieprotocol.com',
+    nexusGraph: 'nexus',
     chainID: 'bombay-12',
     finder: 'finder.terra.money',
   },

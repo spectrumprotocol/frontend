@@ -18,6 +18,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
   tokenSymbol = 'VKR';
   autoCompound = true;
   autoStake = true;
+  farmColor = '#ffe646';
 
   constructor(
     private gov: GovService,
@@ -33,6 +34,10 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
 
   get farmTokenContract() {
     return this.terrajs.settings.valkyrieToken;
+  }
+
+  get farmGovContract() {
+    return this.terrajs.settings.valkyrieGov;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
@@ -108,7 +113,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
           send: {
             contract: this.terrajs.settings.valkyrieGov,
             amount,
-            msg: toBase64({stake_voting_tokens: {}})
+            msg: toBase64({stake_governance_token: {}})
           }
       }
     );

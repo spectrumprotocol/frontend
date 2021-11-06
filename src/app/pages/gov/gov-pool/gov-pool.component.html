@@ -20,7 +20,7 @@
         <div>
           <div>
             Your Staked
-            <small *ngIf="detail.unlockAt" class="text-primary">
+            <small *ngIf="+detail.userBalance >0 && detail.unlockAt" class="text-primary">
               <i [ngClass]="isWithdrawLocked ? 'fa-lock' : 'fa-unlock'" class="fas"></i> Unlock{{!isWithdrawLocked ? "ed" : ""}} {{ detail.unlockAt |
               timeago }}
             </small>

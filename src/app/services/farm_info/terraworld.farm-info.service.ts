@@ -19,6 +19,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   auditWarning = true;
+  farmColor = '#249fd4';
 
   constructor(
     private gov: GovService,
@@ -34,6 +35,10 @@ export class TerraworldFarmInfoService implements FarmInfoService {
 
   get farmTokenContract() {
     return this.terrajs.settings.terraworldToken;
+  }
+
+  get farmGovContract() {
+    return this.terrajs.settings.terraworldGov;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {

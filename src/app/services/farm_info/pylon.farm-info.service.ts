@@ -19,6 +19,7 @@ export class PylonFarmInfoService implements FarmInfoService {
   tokenSymbol = 'MINE';
   autoCompound = true;
   autoStake = true;
+  farmColor = '#00cfda';
 
   constructor(
     private gov: GovService,
@@ -34,6 +35,10 @@ export class PylonFarmInfoService implements FarmInfoService {
 
   get farmTokenContract() {
     return this.terrajs.settings.pylonToken;
+  }
+
+  get farmGovContract() {
+    return this.terrajs.settings.pylonGov;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {

@@ -18,6 +18,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
   tokenSymbol = 'ANC';
   autoCompound = true;
   autoStake = true;
+  farmColor = '#3bac3b';
 
   constructor(
     private gov: GovService,
@@ -33,6 +34,10 @@ export class AnchorFarmInfoService implements FarmInfoService {
 
   get farmTokenContract() {
     return this.terrajs.settings.anchorToken;
+  }
+
+  get farmGovContract() {
+    return this.terrajs.settings.anchorGov;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {

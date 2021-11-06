@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Apollo, gql } from 'apollo-angular';
 import BigNumber from 'bignumber.js';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
@@ -6,8 +7,7 @@ import { FarmInfoService, PairStat, PoolInfo, PoolItem } from './farm-info.servi
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { HttpClient } from '@angular/common/http';
-import { div, times } from '../../libs/math';
+import { div } from '../../libs/math';
 import { Denom } from '../../consts/denom';
 import { NexusFarmService } from '../api/nexus-farm.service';
 import { RewardInfoResponseItem } from '../api/nexus_farm/reward_info_response';
@@ -18,14 +18,15 @@ export class NexusFarmInfoService implements FarmInfoService {
   farm = 'Nexus';
   tokenSymbol = 'Psi';
   autoCompound = true;
-  autoStake = false;
+  autoStake = true;
+  farmColor = '#F4B6C7';
 
   constructor(
     private gov: GovService,
     private nexusFarm: NexusFarmService,
     private terrajs: TerrajsService,
-    private httpClient: HttpClient,
-    private nexusStaking: NexusStakingService
+    private apollo: Apollo,
+    private nexusStaking: NexusStakingService,
   ) { }
 
   get farmContract() {
@@ -34,6 +35,10 @@ export class NexusFarmInfoService implements FarmInfoService {
 
   get farmTokenContract() {
     return this.terrajs.settings.nexusToken;
+  }
+
+  get farmGovContract() {
+    return this.terrajs.settings.nexusGov;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
@@ -51,7 +56,16 @@ export class NexusFarmInfoService implements FarmInfoService {
     const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nexusFarm)?.weight || 0;
     const nexusLPStat = await this.getNexusLPStat(poolResponses[this.terrajs.settings.nexusToken], unixTimeSecond);
-    // const nexusGovStat = await this.getNexusGovStat();
+    const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    const nexusGovStatTask = apollo.query<any>({
+      query: gql`{
+        getGovStakingAprRecords(limit: 1, offset: 0) {
+          date
+          govStakingApr
+        }
+      }`
+    }).toPromise();
+    const nexusGovStat = await nexusGovStatTask;
     const pairs: Record<string, PairStat> = {};
 
     const rewardInfo = await rewardInfoTask;
@@ -83,7 +97,7 @@ export class NexusFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: 0, // +(nexusGovStat.apy || 0),
+        farmApr: nexusGovStat.data.getGovStakingAprRecords[0].govStakingApr / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
@@ -136,19 +150,5 @@ export class NexusFarmInfoService implements FarmInfoService {
       apr,
     };
   }
-  //
-  // async getNexusGovStat(){
-  //   const height = await this.terrajs.getHeight();
-  //   const configTask = this.wasm.query(this.terrajs.settings.nexusGov, { config: {} });
-  //   const stateTask = this.wasm.query(this.terrajs.settings.nexusGov, { state: {block_height: height} });
-  //   const [config, state] = await Promise.all([configTask, stateTask]);
-  //   const current_distribution_schedule = (config.distribution_schedule as []).find(obj => height >= +obj[0] && height <= +obj[1]);
-  //   const totalMint = +current_distribution_schedule[2];
-  //   const apr = new BigNumber(totalMint).div(state.total_bond_amount);
-  //   const apy = (+apr / 365 + 1) ** 365 - 1; // pending compound calc
-  //   return {
-  //     apy,
-  //   };
-  // }
 
 }

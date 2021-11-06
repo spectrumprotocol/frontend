@@ -28,12 +28,14 @@ export interface FarmInfoService {
   tokenSymbol: string;
   readonly farmContract: string;
   readonly farmTokenContract: string;
+  readonly farmGovContract: string;
   readonly autoCompound: boolean;
   readonly autoStake: boolean;
   readonly auditWarning?: boolean;
+  readonly farmColor: string;
 
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>>;
   queryRewards(): Promise<RewardInfoResponseItem[]>;
-  getStakeGovMsg(amount: string): MsgExecuteContract;
+  getStakeGovMsg(amount: string, additionalData?: object): MsgExecuteContract;
 }

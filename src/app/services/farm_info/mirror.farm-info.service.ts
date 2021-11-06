@@ -18,6 +18,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
   tokenSymbol = 'MIR';
   autoCompound = true;
   autoStake = true;
+  farmColor = '#232C45';
 
   constructor(
     private apollo: Apollo,
@@ -33,6 +34,10 @@ export class MirrorFarmInfoService implements FarmInfoService {
 
   get farmTokenContract() {
     return this.terrajs.settings.mirrorToken;
+  }
+
+  get farmGovContract() {
+    return this.terrajs.settings.mirrorGov;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
