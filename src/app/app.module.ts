@@ -63,6 +63,7 @@ import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-in
 import { ValkyrieFarmInfoService } from './services/farm_info/valkyrie.farm-info.service';
 import {NexusFarmInfoService} from './services/farm_info/nexus.farm-info.service';
 import {WithdrawUstPipe} from './pipes/withdraw-ust.pipe';
+import {OrionFarmInfoService} from './services/farm_info/orion.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -143,6 +144,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,
