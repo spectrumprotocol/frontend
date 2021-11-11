@@ -18,12 +18,11 @@ export interface ConfigInfo {
   controller: string;
   controller_fee: Decimal;
   deposit_fee: Decimal;
+  orion_staking: string;
+  orion_token: string;
   owner: string;
   platform: string;
   platform_fee: Decimal;
-  pylon_gov: string;
-  pylon_staking: string;
-  pylon_token: string;
   spectrum_gov: string;
   spectrum_token: string;
   terraswap_factory: string;
