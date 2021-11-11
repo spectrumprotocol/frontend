@@ -109,7 +109,7 @@ export const networks: Record<string, ISettings> = {
     mirrorToken: 'terra10llyp6v3j3her8u3ce66ragytu45kcmd9asj3u',
     specFarm: 'terra1cedx8gpvu7c4vzfadwmf3pewg2030fqgw4q3dl',
     terraSwapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
-    staker: 'terra15nwqmmmza9y643apneg0ddwt0ekk38qdevnnjt',
+    staker: 'terra16mr4m8phfnhdlvqatc59w536aly9fpdvz9dtvv',
     anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
     anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
     anchorToken: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
@@ -132,7 +132,7 @@ export const networks: Record<string, ISettings> = {
     nexusFarm: 'terra158j75d7kml99u3r4xy4e7xnfzmhm2j780e5npl',
     orionStaking: 'terra1jz22ws2yhlm6zycz7eluqptjn2t74fw4g82v8j',
     orionToken: 'terra13qdskca8xavmed88htplse0z396tesgh63tn9r', //orionLP terra1qvmf8jf3a7h6lgglw29f8nvcckn7t8z0hqgma5
-    orionFarm: '',
+    orionFarm: 'terra1ymwlr8v6j6ty7rg2crun5r5vetqdduwfe7pmvh',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
