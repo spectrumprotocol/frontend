@@ -30,6 +30,10 @@ export class SpecFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.specToken;
   }
 
+  get farmGovContract() {
+    return this.terrajs.settings.gov;
+  }
+
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.specFarm.query({ pools: {} });
     return pool.pools;
@@ -78,7 +82,7 @@ export class SpecFarmInfoService implements FarmInfoService {
     return rewardInfo.reward_infos;
   }
 
-  getStakeGovMsg(amount: string): MsgExecuteContract {
+  getStakeGovMsg(amount: string, additionalData: object): MsgExecuteContract {
     return new MsgExecuteContract(
       this.terrajs.address,
       this.terrajs.settings.specToken,
@@ -86,7 +90,7 @@ export class SpecFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.gov,
           amount,
-          msg: toBase64({stake_tokens: {}})
+          msg: toBase64({stake_tokens: additionalData})
         }
       }
     );

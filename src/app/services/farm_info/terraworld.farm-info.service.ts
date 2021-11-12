@@ -37,6 +37,10 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.terraworldToken;
   }
 
+  get farmGovContract() {
+    return this.terrajs.settings.terraworldGov;
+  }
+
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.terraworldFarm.query({ pools: {} });
     return pool.pools;

@@ -20,7 +20,8 @@
       <div class="col-12 col-md-9">
         <div class="row">
           <div class="col-12 col-sm-12 col-md-4">
-            <div class="fs-6 mt-2">APY</div>
+            <div class="fs-6 mt-2">APY <i class="fas fa-info-circle info-icon"
+              mdbTooltip="APY (Annual Percentage Yield) is the rate of return with compound interest in one year."></i></div>
             <div class="fs-5">
               <span *ngIf="vault.apy > vault.pairStat?.farmApr">
                 <span class="text-primary text-decoration-line-through">
@@ -34,9 +35,10 @@
             <div class="fs-5">{{vault.pairStat?.tvl || 0 | unit: '1.0-2' }} UST</div>
           </div>
           <div class="col-12 col-sm-6 col-md-4">
-            <div class="fs-6 mt-2">Daily Rate</div>
+            <div class="fs-6 mt-2">Daily Rate <i class="fas fa-info-circle info-icon"
+              mdbTooltip="Estimated rate of return per day"></i></div>
             <div class="fs-5">{{ vault.pairStat?.dpr || 0 | percent }}</div>
-            <div class="fs-6 mt-2">LP Deposited</div>
+            <div class="fs-6 mt-2">LP Balance</div>
             <div class="fs-5">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: '1.0-5'}}
               <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
                 [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i>
@@ -513,18 +515,33 @@
             All your rewards are automatically staked in gov vaults to earn gov income.
           </div>
           <div class="row mt-3">
-            <div class="col">Staked SPEC</div>
-            <div class="col text-end">
-              {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}</div>
-          </div>
-          <div *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="row">
-            <div class="col">Staked
-              <span *ngIf="vault.poolInfo.farm === 'Mirror'">MIR</span>
-              <span *ngIf="vault.poolInfo.farm !== 'Mirror'">{{vault.symbol}}</span>
-<!--              TODO change here for nAsset support later-->
+            <div class="col">
+              Staked SPEC
+              <small class="text-primary">APR: {{ info.stat?.govApr | percent }}</small>
             </div>
             <div class="col text-end">
-              {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit }}</div>
+              {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
+              <small class="text-muted">
+                (${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | balance:
+                info.poolResponses[terrajs.settings.specToken] |
+                unit: '1.0-2' }})
+              </small>
+            </div>
+          </div>
+          <div *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="row">
+            <div class="col">
+              Staked {{ vault.poolInfo.farm === 'Mirror' ? 'MIR' : vault.symbol }}
+              <small class="text-primary">APR: {{ vault.pairStat?.farmApr | percent }}</small>
+            </div>
+            <div class="col text-end">
+              {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit }}
+              <small class="text-muted">
+                (${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
+                info.poolResponses[vault.poolInfo.farmTokenContract] |
+                unit: '1.0-2' }})
+              </small>
+            </div>
+            <!--              TODO change here for nAsset support later-->
           </div>
           <div *ngIf="vault.poolInfo.farm === 'Spectrum'" class="d-grid mt-3">
             <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake SPEC</button>

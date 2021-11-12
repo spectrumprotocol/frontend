@@ -36,6 +36,10 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.valkyrieToken;
   }
 
+  get farmGovContract() {
+    return this.terrajs.settings.valkyrieGov;
+  }
+
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.valkyrieFarm.query({ pools: {} });
     return pool.pools;
@@ -109,7 +113,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
           send: {
             contract: this.terrajs.settings.valkyrieGov,
             amount,
-            msg: toBase64({stake_voting_tokens: {}})
+            msg: toBase64({stake_governance_token: {}})
           }
       }
     );

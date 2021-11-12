@@ -29,19 +29,20 @@ export interface Stat {
   govPoolCount: number;
 }
 
-type PendingReward = {
+export type PendingReward = {
   pending_reward_token: number;
   pending_reward_ust: number;
 };
 
-type PortfolioItem = {
+export type PortfolioItem = {
   bond_amount_ust: number;
 };
 
 export type Portfolio = {
   total_reward_ust: number;
   gov: PendingReward;
-  tokens: Map<string, PendingReward>;
+  avg_tokens_apr?: number;
+  tokens: Map<string, PendingReward & { apr?: number }>;
   farms: Map<string, PortfolioItem>;
 };
 
@@ -105,7 +106,7 @@ export class InfoService {
 
   stat: Stat;
 
-  rewardInfos: Record<string, RewardInfoResponseItem> = {};
+  rewardInfos: Record<string, RewardInfoResponseItem & { farm: string }> = {};
   tokenBalances: Record<string, string> = {};
   lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
@@ -275,12 +276,11 @@ export class InfoService {
   }
 
   async refreshRewardInfos() {
-    const rewardInfos: Record<string, RewardInfoResponseItem> = {};
+    const rewardInfos: InfoService['rewardInfos'] = {};
     const tasks = this.farmInfos.map(async farmInfo => {
       const rewards = await farmInfo.queryRewards();
       for (const reward of rewards) {
-        rewardInfos[reward.asset_token] = reward;
-        rewardInfos[reward.asset_token].farm = farmInfo.farm;
+        rewardInfos[reward.asset_token] = { ...reward, farm: farmInfo.farm };
       }
     });
     await Promise.all(tasks);
@@ -354,6 +354,7 @@ export class InfoService {
       tvl += pending_reward_spec_ust;
       portfolio.tokens.get('SPEC').pending_reward_ust += pending_reward_spec_ust;
       portfolio.tokens.get('SPEC').pending_reward_token += +rewardInfo.pending_spec_reward / CONFIG.UNIT;
+      portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
         const farmPoolResponse = this.poolResponses[farmInfo.farmTokenContract];
@@ -361,6 +362,7 @@ export class InfoService {
         tvl += pending_farm_reward_ust;
         portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_ust += pending_farm_reward_ust;
         portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+        portfolio.tokens.get(farmInfo.tokenSymbol).apr = this.stat?.pairs[farmInfo.farmTokenContract]?.farmApr;
         portfolio.total_reward_ust += pending_farm_reward_ust;
       }
     }
@@ -371,6 +373,13 @@ export class InfoService {
     portfolio.gov.pending_reward_token += +specGovStaked / CONFIG.UNIT;
     tvl += gov_spec_staked_ust;
     this.myTvl = tvl;
+
+    const pendingTokenRewards = [...portfolio.tokens.values()].filter(value => value.pending_reward_token > 0);
+    portfolio.avg_tokens_apr = pendingTokenRewards.every(pr => pr.apr)
+      ? pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token * pr.apr, 0) /
+        pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token, 0)
+      : undefined;
+
     this.portfolio = portfolio;
   }
 

@@ -15,11 +15,6 @@ import { PoolResponse } from '../api/terraswap_pair/pool_response';
 
 @Injectable()
 export class OrionFarmInfoService implements FarmInfoService {
-  farm = 'Orion';
-  tokenSymbol = 'ORION';
-  autoCompound = true;
-  autoStake = false;
-  farmColor = '#00BE72';
 
   constructor(
     private gov: GovService,
@@ -36,6 +31,12 @@ export class OrionFarmInfoService implements FarmInfoService {
   get farmTokenContract() {
     return this.terrajs.settings.orionToken;
   }
+  farm = 'Orion';
+  tokenSymbol = 'ORION';
+  autoCompound = true;
+  autoStake = false;
+  farmColor = '#00BE72';
+  auditWarning = false;
 
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.orionFarm.query({ pools: {} });
@@ -101,6 +102,10 @@ export class OrionFarmInfoService implements FarmInfoService {
   }
 
   getStakeGovMsg(amount: string): MsgExecuteContract {
+    return null;
+  }
+
+  get farmGovContract() {
     return null;
   }
 

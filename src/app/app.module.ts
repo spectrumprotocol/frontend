@@ -64,6 +64,7 @@ import { ValkyrieFarmInfoService } from './services/farm_info/valkyrie.farm-info
 import {NexusFarmInfoService} from './services/farm_info/nexus.farm-info.service';
 import {WithdrawUstPipe} from './pipes/withdraw-ust.pipe';
 import {OrionFarmInfoService} from './services/farm_info/orion.farm-info.service';
+import { ManageRewardsComponent } from './pages/vault/manage-rewards/manage-rewards.component';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -111,7 +112,8 @@ registerLocaleData(locale, 'en');
     UnstakeAllComponent,
     GovPoolComponent,
     FloorPipe,
-    WithdrawUstPipe
+    WithdrawUstPipe,
+    ManageRewardsComponent,
   ],
   imports: [
     AppRoutingModule,

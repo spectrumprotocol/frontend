@@ -21,6 +21,10 @@ export function createApollo(httpLink: HttpLink): Record<string, ApolloClientOpt
       link: httpLink.create({ uri: 'https://bombay-mantle.anchorprotocol.com/graphql' }),
       cache: new InMemoryCache(),
     },
+    nexus: {
+      link: httpLink.create({ uri: 'https://api.nexusprotocol.app/graphql' }),
+      cache: new InMemoryCache(),
+    },
   };
 }
 

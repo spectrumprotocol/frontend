@@ -1,0 +1,60 @@
+<div class="modal-header">
+  <h5 class="modal-title">Manage Rewards <i class="fas fa-info-circle info-icon"
+    mdbTooltip="Manage your staked rewards in vaults such as move rewards to respective Gov under your address"></i></h5>
+  <a href="#" class="text-white" (click)="modalRef.close(); false">
+    <i class="fas fa-times fa-lg"></i>
+  </a>
+</div>
+<div class="modal-body">
+  <div class="bg-dark p-3 rounded mb-3">
+    <div class="row">
+      <div class="col-12 col-sm-6">
+        <div>Avg. APR <i class="fas fa-info-circle info-icon"
+          mdbTooltip="Average APR from Gov staking"></i></div>
+        <div class="h5 mb-0">{{ info.portfolio?.avg_tokens_apr | percent }}</div>
+      </div>
+      <div class="mt-2 col-12 mt-sm-0 col-sm-6 text-sm-end">
+        <div>Total Value Staked</div>
+        <div class="h5 mb-0">{{ info.portfolio?.total_reward_ust | number: '1.0-2' }} UST</div>
+      </div>
+    </div>
+  </div>
+  <table class="table align-middle">
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th class="d-none d-sm-table-cell">APR <i class="fas fa-info-circle info-icon"
+          mdbTooltip="APR from Gov staking"></i></th>
+        <th>Rewards <i class="fas fa-info-circle info-icon"
+          mdbTooltip="Staked rewards in vaults"></i></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let token of info.portfolio?.tokens | keyvalue; trackBy: trackTokensMap">
+        <tr *ngIf="token.value.pending_reward_token > 0">
+          <td>
+            <img [src]="token.key | url:'icon'" height="32" class="rounded-circle">
+            {{ token.key }}
+          </td>
+          <td class="d-none d-sm-table-cell">
+            {{ token.value.apr | percent }}
+          </td>
+          <td>
+            {{ token.value.pending_reward_token | number }}
+            <small class="text-muted">(${{ token.value.pending_reward_ust | number: '1.0-2' }})</small>
+          </td>
+          <td class="ps-1 pe-1">
+            <div *ngIf="token.key === 'SPEC'" class="d-grid d-lg-flex gap-2">
+              <ng-container *ngFor="let day of availablePoolDays">
+                <button class="btn btn-primary p-2" *ngIf="day === 0" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
+                <button class="btn btn-primary p-2" *ngIf="day !== 0" (click)="moveToGov(token.key, day)">Move to {{day}}-Day Locked Gov</button>
+              </ng-container>
+            </div>
+            <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.key).autoStake" class="btn btn-primary p-2" (click)="moveToGov(token.key)">Move to Gov</button>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
