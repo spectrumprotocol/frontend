@@ -51,19 +51,17 @@ export class OrionFarmInfoService implements FarmInfoService {
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.orionFarm)?.weight || 0;
-    const orionLPStat = null; // await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.orionAPI}/api/liquidity/v1/overview`));
+    const orionLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.orionAPI}/staking`));
     const pairs: Record<string, PairStat> = {};
 
-    const poolApr = 0; // +(orionLPStat.apy || 0);
+    const poolApr = +((orionLPStat?.lp?.apr.replace(/,/g, '') / 100) || 0);
     pairs[this.terrajs.settings.orionToken] = createPairStat(poolApr, this.terrajs.settings.orionToken);
 
     const rewardInfo = await rewardInfoTask;
-    console.log(rewardInfo);
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[this.terrajs.settings.orionToken];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
-    console.log(uusd);
     if (!uusd) {
       return;
     }

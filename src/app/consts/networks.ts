@@ -43,6 +43,7 @@ export interface ISettings {
   anchorAPI: string;
   pylonAPI: string;
   valkyrieAPI: string;
+  orionAPI: string;
   chainID: string;
   finder: string;
 }
@@ -92,6 +93,7 @@ export const networks: Record<string, ISettings> = {
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
     valkyrieAPI: 'https://api.valkyrieprotocol.com',
+    orionAPI: 'https://api.orion.money/v1/terra',
     chainID: 'columbus-5',
     finder: 'finder.extraterrestrial.money',
   },
@@ -140,6 +142,7 @@ export const networks: Record<string, ISettings> = {
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
     valkyrieAPI: 'https://api.testnet.valkyrieprotocol.com',
+    orionAPI: 'https://api.stage.orion.money/v1/terra',
     chainID: 'bombay-12',
     finder: 'finder.terra.money',
   },
