@@ -22,7 +22,13 @@ export class YourTvlComponent implements OnInit, OnDestroy {
   chartColors = {
     domain: []
   };
-
+  puiArray = [{
+    farm: 'Spectrum',
+    val: '10'
+  }, {
+    farm: 'Mirror',
+    val: '20'
+  }];
   private connected: Subscription;
   private heightChanged: Subscription;
 
@@ -42,9 +48,9 @@ export class YourTvlComponent implements OnInit, OnDestroy {
         }
       });
     this.heightChanged = this.terrajs.heightChanged.subscribe(async _ => {
-      if (this.terrajs.isConnected) {
+      // if (this.terrajs.isConnected) {
         this.refreshChartDataList();
-      }
+      // }
     });
   }
 
@@ -67,7 +73,20 @@ export class YourTvlComponent implements OnInit, OnDestroy {
 
     chartDataListTemp.push({ name: 'SPEC staked in Gov', value: this.info.portfolio?.gov.pending_reward_ust });
     chartDataListTemp.push({ name: 'Total staked in vaults', value: this.info.portfolio?.total_reward_ust });
-    this.chartDataList = chartDataListTemp;
+    // this.chartDataList = chartDataListTemp;
+    this.chartDataList = [{
+        name: 'pui',
+        value: 20,
+      }, {
+        name: 'anna',
+        value: 30,
+      }, {
+        name: 'pao',
+        value: 50,
+      }
+    ]
+    this.chartDataList.push({ name: 'SPEC staked in Gov', value: 11 });
+    this.chartDataList.push({ name: 'Total staked in vaults', value: 12});
   }
 
   closeModal() {

@@ -1,29 +1,35 @@
 <main>
   <div class="container py-5">
+    <div class="row">
+      <div class="col-12">
+        <h4>Governance</h4>
+        <div class="seperator"></div>
+        <span class="sub-topic">Stake your SPEC here, all changes in Spectrum must be done through SPEC stakers.</span>
+      </div>
+    </div>
     <div class="mb-5">
-      <div class="row">
-        <div class="col-7">
-          <h2>Governance</h2>
-          <span>Stake your SPEC here, all changes in Spectrum must be done through SPEC stakers.</span>
-        </div>
-        <div class="col-5 text-end">
-          <a class="btn btn-secondary" href="https://github.com/spectrumprotocol/contracts/issues" target="_blank">Join
+      <div class="row mb-5">
+        <div class="col-12">
+          <a class="btn btn-lg btn-outline-secondary" href="https://github.com/spectrumprotocol/contracts/issues" target="_blank">Join
             Forum</a>
-          <button type="button" class="btn btn-primary ms-3 mt-3" routerLink="/gov/poll/new">Create Poll</button>
+          <button type="button" class="btn btn-lg btn-primary ms-3 mt-3" routerLink="/gov/poll/new">Create Poll</button>
         </div>
       </div>
       <div class="row g-3 pt-3">
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-5">
           <div class="card">
             <div class="card-body">
               <p class="card-text">
-                Total Staked <i class="fas fa-info-circle info-icon"
-                  mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
+                Total Staked
               </p>
-              <h5 class="card-title">
-                <app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit> SPEC (<app-digit
-                  [value]="supply ? +info.stat?.govStaked * 100 / supply : 0"></app-digit>%)
-              </h5>
+              <h3 class="card-title">
+                <app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit>
+                  <span class="cur-title"> SPEC (<app-digit
+                    [value]="supply ? +info.stat?.govStaked * 100 / supply : 0"></app-digit>%)
+                    <i class="fas fa-info-circle info-icon"
+                    mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
+                  </span>
+              </h3>
             </div>
           </div>
         </div>
@@ -31,66 +37,84 @@
           <div class="card">
             <div class="card-body">
               <p class="card-text">
-                Circulation Supply <i class="fas fa-info-circle info-icon"
+                Circulation Supply
+              </p>
+              <h3 class="card-title">
+                <app-digit [value]="+supply / UNIT"></app-digit> 
+                <span class="cur-title"> SPEC
+                  <i class="fas fa-info-circle info-icon"
                   mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
-              </p>
-              <h5 class="card-title">
-                <app-digit [value]="+supply / UNIT"></app-digit> SPEC
-              </h5>
+                </span>
+              </h3>
             </div>
           </div>
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-3">
           <div class="card">
             <div class="card-body">
               <p class="card-text">
                 Market Capitalization
               </p>
-              <h5 class="card-title">
-                <app-digit *ngIf="marketCap" [value]="marketCap"></app-digit>&nbsp;<span *ngIf="marketCap">UST</span>
-              </h5>
+              <h3 class="card-title">
+                <app-digit *ngIf="marketCap" [value]="marketCap"></app-digit>&nbsp;<span class="cur-title" *ngIf="marketCap">UST</span>
+              </h3>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <h5>Staking Pools <i class="fas fa-info-circle info-icon"
+    <h4>Your Staking Pools<i class="fas fa-info-circle info-icon"
         mdbTooltip="Stake SPEC to earn revenue from vault fee"></i>
-    </h5>
-
-    <div class="row pt-3">
-      <div class="col">
-      <div class="card text-center">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-4 col-6 ps-1 pe-1">
-                    <p class="small">Staked in Gov</p>
-                    <h5 class="card-title">
-                        <app-digit [value]="myStaked / UNIT"></app-digit><span class="d-none d-md-inline">
-                            SPEC</span>
-                    </h5>
-                    <p *ngIf="stakedInGovAPR && myStaked > 0" class="small text-primary">{{stakedInGovAPR | percent}} APR</p>
-                </div>
-                <div class="col-md-4 col-6 ps-1 pe-1 border-start">
-                    <p class="small">Staked in Vaults </p>
-                    <h5 class="card-title">
-                        <app-digit [value]="+info.portfolio?.tokens.get('SPEC').pending_reward_token">
-                        </app-digit><span class="d-none d-md-inline"> SPEC</span>
-                    </h5>
-                    <p *ngIf="stakedInVaultsAPR && +info.portfolio?.tokens.get('SPEC').pending_reward_token > 0" class="small text-primary">{{stakedInVaultsAPR | percent}} APR</p>
-                </div>
-                <div class="d-none d-md-inline col-md-4 ps-1 pe-1 border-start">
-                    <p class="small">Stakable</p>
-                    <h5 class="card-title">
-                        <app-digit [value]="+info.userSpecAmount || 0"></app-digit><span
-                            class="d-none d-md-inline"> SPEC</span>
-                    </h5>
-                </div>
-            </div>
+    </h4>
+    
+    <div class="row g-3 pt-3">
+      <div class="col-12 col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-text">
+              Staked in Gov
+            </p>
+            <h3 class="card-title">
+                <app-digit [value]="myStaked / UNIT"></app-digit>
+                <span class="cur-title">SPEC</span>
+            </h3>
+            <p class="h-7" *ngIf="!!!stakedInGovAPR || myStaked === 0"></p>
+            <p *ngIf="stakedInGovAPR && myStaked > 0" class="small text-primary mb-0">{{stakedInGovAPR | percent}} APR</p>
+          </div>
         </div>
-    </div>
-  </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-text">
+              Staked in Vaults
+            </p>
+            <h3 class="card-title">
+              <app-digit [value]="+info.portfolio?.tokens.get('SPEC').pending_reward_token">
+              </app-digit>
+              <span class="cur-title"> SPEC
+              </span>
+            </h3>
+            <p class="h-7" *ngIf="!!!stakedInVaultsAPR || +info.portfolio?.tokens.get('SPEC').pending_reward_token === 0"></p>
+            <p *ngIf="stakedInVaultsAPR && +info.portfolio?.tokens.get('SPEC').pending_reward_token > 0" class="small text-primary mb-0">{{stakedInVaultsAPR | percent}} APR</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-5">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-text">
+              Stakable
+            </p>
+            <h3 class="card-title">
+              <app-digit [value]="+info.userSpecAmount || 0"></app-digit>
+              <span class="cur-title"> SPEC</span>
+            </h3>
+            <p class="h-7"></p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div *ngIf="!poolDetails.length" class="d-flex align-items-center justify-content-center pt-3">
@@ -127,10 +151,13 @@
         <app-poll-item [poll]="poll" [config]="config" [staked]="+info.stat.govStaked" link="gov">
         </app-poll-item>
       </div>
-      <div class="d-grid gap-2 col-6 mx-auto">
+      <div class="d-grid gap-2 col-4 mx-auto">
         <button type="button" class="btn btn-outline-default border-1" *ngIf="hasMore"
           (click)="pollMore()">More</button>
       </div>
+    </div>
+    <div class="row pt-5">
+      <app-footer></app-footer>
     </div>
   </div>
 </main>

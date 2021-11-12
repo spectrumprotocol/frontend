@@ -1,23 +1,26 @@
 <nav class="navbar navbar-expand-md navbar-dark navbar-bg">
-  <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/"><img src="/assets/logo.png" class="logo" /> Spectrum Protocol</a>
+  <div class="container">
+    <a class="navbar-brand" routerLink="/"><img src="/assets/Logo.png" class="logo" /></a>
     <!-- Left links -->
-    <ul class="navbar-nav me-auto d-none d-md-flex">
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/vaults" routerLinkActive="active">Vaults</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/trade" routerLinkActive="active">Trade SPEC</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/gov" routerLinkActive="active">Governance</a>
-      </li>
-    </ul>
+      <ul class="navbar-nav d-none d-md-flex">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/vaults" routerLinkActive="active">Vaults</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/trade" routerLinkActive="active">Trade SPEC</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/gov" routerLinkActive="active">Gov</a>
+        </li>
+      </ul>
     <!-- Left links -->
 
     <!--- right links -->
     <div mdbDropdown class="dropdown" *ngIf="terrajs.address" #dropdown>
-      <button class="btn btn-outline-primary dropdown-toggle" type="button" mdbDropdownToggle>
+      <button class="btn btn-dark dropdown-toggle" type="button" mdbDropdownToggle>
         <i class="fas fa-wallet"></i> <span class="text-muted d-none d-md-inline"> {{walletText}} |</span> {{
         info.userUstAmount |
         number : '1.0-2'}} UST
@@ -43,7 +46,7 @@
         <li><button class="dropdown-item" type="button" (click)="disconnect()">Disconnect</button></li>
       </ul>
     </div>
-    <button type="button" class="btn btn-outline-primary" *ngIf="!terrajs.address" (click)="connect()"><i
+    <button type="button" class="btn btn-dark" *ngIf="!terrajs.address" (click)="connect()"><i
         class="fas fa-wallet"></i> <span class="text-muted">
         {{walletText}} </span></button>
     <!--- right links -->

@@ -43,7 +43,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   myStaked: string;
   myTvl = 0;
   height: number;
-
+  isGrid = true;
   @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
   @ViewChild('dropdownSortBy') dropdownSortBy: MdbDropdownDirective;
 
@@ -134,6 +134,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.$gaService.event('CLICK_OPEN_YOUR_TVL');
     const modal = await import('./your-tvl/your-tvl.component');
     const ref = this.modalService.open(modal.YourTvlComponent, {
+      modalClass: 'modal-md modal-dialog-centered',
       ignoreBackdropClick: false,
     });
     await ref.onClose.toPromise();

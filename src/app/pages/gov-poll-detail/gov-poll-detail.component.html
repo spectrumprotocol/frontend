@@ -1,10 +1,25 @@
 <main>
     <div class="container py-5" *ngIf="poll && staked && config">
-        <div class="row">
-            <div class="col-12">
-                 <h2><a class="fas fa-angle-left" routerLink="/gov" ></a> Poll details</h2>
+        <div class="row poll-detail-header">
+            <div class="col-3 col-md-1">
+                <a routerLink="/gov" class="ms-3 text-reset fs-5">
+                    <img src="/assets/Icon _ Back.svg">
+                </a>
+            </div>
+            <div class="col-9 col-md-11">
+                 <h4>Poll details</h4>
+                <div class="seperator"></div>
             </div>
         </div>
+        <div class="container pt-5">
+            <div class="row">
+              <div class="d-flex justify-content-end pe-0">
+                <div class="d-inline-block f-14">Audited by <a href="https://github.com/HalbornSecurity/PublicReports/blob/master/CosmWasm%20Smart%20Contract%20Audits/Spectrum_Protocol_CosmWasm_Smart_Contract_Security_Audit_Halborn_Report_v1_1.pdf" target="_blank">
+                  <img src="assets/halborn_logo.svg" alt="Halborn" class="platform-logo-halborn"></a>
+                </div>
+              </div>
+            </div>
+          </div>
         <div class="row pt-3">
             <app-poll-item [poll]="poll" [staked]="staked" [config]="config"></app-poll-item>
         </div>
@@ -132,6 +147,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row pt-3">
+            <app-footer></app-footer>
         </div>
     </div>
 </main>

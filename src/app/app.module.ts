@@ -33,6 +33,7 @@ import { TxPostComponent } from './services/tx-post/tx-post.component';
 import locale from '@angular/common/locales/en';
 import { TradeComponent } from './pages/trade/trade.component';
 import { AssetCardComponent } from './pages/vault/asset-card/asset-card.component';
+import { VaultDialogComponent } from './pages/vault/asset-card/vault-dialog/vault-dialog.component';
 import { GraphQLModule } from './graphql.module';
 import { UrlPipe } from './pipes/url.pipe';
 import { UnitPipe } from './pipes/unit.pipe';
@@ -96,6 +97,7 @@ registerLocaleData(locale, 'en');
     // StepDirective,
     TradeComponent,
     AssetCardComponent,
+    VaultDialogComponent,
     UrlPipe,
     UnitPipe,
     RewardInfoPipe,

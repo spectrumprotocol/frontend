@@ -1,0 +1,125 @@
+@import "../asset-card.component.scss";
+.btn-close {
+    color: white;
+}
+
+.tab-container {
+    border-radius: 6px;
+    margin: 10px 5px 5px 5px;
+    padding-top: 10px;
+    span.is-invalid {
+        border: 1px solid $text-error;
+    }
+
+    .fix-border {
+        text-align: right;
+        border: 1px solid $white;
+        background-color: $gray-950;
+        border: 0;
+        &:focus {
+            box-shadow: none;
+        }
+    }
+
+    .fix-border::placeholder {
+        color: $white;
+    }
+}
+
+.card-green {
+    background-color: $card-green-bg;
+    border: solid 1px $card-green-border;
+    .card-body {
+      padding: 0.5em 0.5em;
+      a {
+          text-decoration: underline;
+          color: white;
+          font-weight: 700;
+      }
+    }
+}
+
+.card-red {
+    background-color: $card-red-bg;
+    border: solid 1px $card-red-border;
+    .card-body {
+      padding: 0.5em 0.5em;
+      .bulk-name-container {
+        display: flex;
+        align-items:center;
+      }
+    }
+}
+
+
+.auto-container {
+    .btn-group {
+        height: 50px;
+    }
+
+    .btn-auto {
+        border: solid 1px $primary;
+        background-color: $btn-bg;
+        font-weight: bold;
+        z-index: 1;
+    }
+
+    .btn-outline-auto {
+        color: white;
+        border: 0;
+        background-color: $gray-950;
+        font-weight: bold;
+    }
+}
+
+.auto-compound {
+    padding: 15px;
+    border-radius: 6px;
+    background-color: $gray-950;
+    width: fit-content;
+}
+
+.dropdown {
+    .btn-drop {
+        background-color: $gray-950;
+        border: 0;
+        height: 48px;
+        font-weight: bold;
+        font-size: 16px;
+        box-shadow: none;
+        &:focus {
+            box-shadow: none;
+            // border-left: none;
+        }
+    }
+    .is-invalid {
+        border: 1px solid $text-error;
+        &:focus, .is-invalid:hover {
+            box-shadow: none;
+        }
+    }
+}
+
+.deposit-icon {
+    width: 20px;
+    height: 20px;
+    background-color: $black;
+    // margin-top: -5px;
+    position: inherit;
+}
+
+.deposit-icon-ust {
+    width: 20px;
+    height: 20px;
+    background-color: $black;
+    margin-left: -10px;
+    margin-top: 5px;
+}
+
+.deposit-ust {
+    margin: -10px 5px 0 5px;
+}
+
+.btn-max {
+    background-color: $max-btn;
+}

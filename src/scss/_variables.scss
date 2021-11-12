@@ -1,24 +1,50 @@
 $primary: #fc5185;
 $secondary: #f5f5f5;
 $default: #3fc1c9;
-
-$dark: #121212;
+// 121212
+$dark: #181d23;
 $white: #fff;
 $gray-100: #F5F5F5;
 $gray-200: #EEEEEE;
 $gray-300: #E0E0E0;
 $gray-400: #BDBDBD;
+$gray-450: #888;
 $gray-500: #424242;
 $gray-600: #3C3C3C;
 $gray-700: #333333;
 $gray-800: #2B2B2B;
 $gray-900: #1D1D1D;
+$gray-950: #2a313c;
+
 $black:    #000;
 
-$spectrum: #fc5185;
-$mirror: #232C45;
-$anchor: #3bac3b;
-$pylon: #00cfda;
-$terraworld: #249fd4;
-$valkyrie: #ffe646;
-$nexus: #F4B6C7;
+$spectrum: rgba(251, 43, 107, 0.5);
+$mirror: rgba(54, 54, 54, 0.5);
+$anchor: rgba(75, 219, 75, 0.5);
+$pylon: rgba(1, 220, 249, 0.5);
+$terraworld: rgba(39, 169, 225, 0.5);
+$valkyrie: #2A2A30;
+$nexus: #1D1F31;
+
+
+$main-bg: #29303A;
+$second-bg: #20272f;
+$btn-bg: #1b1f26;
+$header-font: #f2f2f2;
+$execute: #22dce8;
+$text-error: #f93154;
+
+$progress: #4bdb4b;
+$error: #be0f0f;
+$passed: #00b74a;
+$apy-error: #a42a2a;
+$hr-color: rgba(255, 255, 255, 0.1);
+$card-green-border: #46e974;
+$card-green-bg: rgba(61, 187, 89, 0.24);
+
+$card-red-border: #e94661;
+$card-red-bg: rgba(187, 61, 84, 0.24);
+$dropdown-border: rgba(255, 255, 255, 0.3);
+$dropdown-active: #171c25;
+
+$max-btn: #383C44;

@@ -1,3 +1,4 @@
+@import "../../../../scss/variables";
 @import '~mdb-angular-ui-kit/assets/scss/bootstrap/functions';
 @import '~mdb-angular-ui-kit/assets/scss/bootstrap/variables';
 @import '~mdb-angular-ui-kit/assets/scss/bootstrap/mixins';
@@ -8,15 +9,56 @@
   }
 }
 
-.logo {
-  height: 32px;
+.badge-staked {
+  height: fit-content;
+  width: 70px;
+  background: $primary;
+  position: relative;
+  border-top-left-radius: 0.5rem;
+  font-size: 11px;
+  padding-left: 10px;
 }
 
-.badge-staked {
-  top: 0;
+.badge-staked:before {
+  content: '';
+  position: absolute;
+  bottom: 0;
   right: 0;
-  border-top-right-radius: 0.2rem;
-  border-top-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0.25rem;
+  border-bottom: 17px solid $main-bg;
+  border-left: 15px solid $primary;
+  width: 0;
+}
+
+
+.gov-pool-container {
+  .card-body {
+    padding: 2em 2em;
+  }
+}
+
+span.is-invalid {
+  border: 1px solid #f93154;
+  border-right: none;
+}
+
+.fix-border {
+  text-align: right;
+  border: 1px solid white;
+  background-color: #2a313c;
+  border: 0;
+  &:focus {
+      box-shadow: none;
+      border-left: none;
+  }
+}
+
+.fix-border::placeholder {
+  color: #fff;
+}
+
+.is-invalid {
+  border: 1px solid #f93154;
+  &:focus, .is-invalid:hover {
+      box-shadow: none;
+  }
 }

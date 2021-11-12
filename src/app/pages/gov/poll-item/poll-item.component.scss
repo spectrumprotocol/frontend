@@ -3,7 +3,7 @@
 @import 'src/scss/dark';
 
 .poll-card {
-    background-color: $gray-700;
+    background-color: $second-bg;
     color: $body-color;
     text-decoration: none;
     border: 2px solid transparent;
@@ -15,7 +15,7 @@
 }
 
 .poll-card.done {
-    background-color: $gray-800;
+    background-color: $second-bg;
 }
 
 .indicator {
@@ -23,5 +23,9 @@
 }
 
 .progress {
-    background-color: $white;
-} 
+    background-color: black;
+    border-radius: 10px;
+    height: 10px;
+}
+
+

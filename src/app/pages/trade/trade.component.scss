@@ -1,0 +1,48 @@
+@import "../../../scss/variables";
+
+.card-trade {
+    border-radius: 6px;
+    margin: 15px 5px 15px 5px;
+    background-color: $btn-bg;
+    button[type=submit] {
+        height: 48px;
+    }
+    .needs-validation {
+        button, input {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .slip-page {
+            button {
+                height: 39px;
+            }
+        }
+    }
+
+    span.is-invalid {
+        border: 1px solid $text-error;
+        border-right: none;
+    }
+
+    .fix-border {
+        text-align: right;
+        border: 1px solid $white;
+        background-color: $gray-950;
+        border: 0;
+        &:focus {
+            box-shadow: none;
+            border-left: none;
+        }
+    }
+
+    .fix-border::placeholder {
+        color: $white;
+    }
+      
+    .is-invalid {
+        border: 1px solid $text-error;
+        &:focus, .is-invalid:hover {
+            box-shadow: none;
+        }
+    }
+}

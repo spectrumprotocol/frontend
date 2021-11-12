@@ -1,17 +1,38 @@
+@import "../../scss/variables";
+
 .logo {
-    width: 30px;
-    height: 30px;
+    width: 48px;
+    height: 48px;
+}
+
+.navbar {
+    padding-bottom: 0.5625rem;
 }
 
 .navbar-bg {
-    background-color: rgba(9, 9, 9, 0);
+    background-color: $main-bg;
     box-shadow: none;
 }
 
 .navbar-sm-bg {
-    background-color: rgba(9, 9, 9, 1);
+    background-color: $main-bg;
 }
 
-.navbar-brand {
-    font-family: "Roboto";
+.nav-item {
+    font-weight: bold;
+    font-size: 14px;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 5px;
+    .nav-link {
+        color: white;
+    }
+}
+
+.nav-item .active {
+    border-radius: 6px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: $btn-bg;
+    border-color: rgba(255, 255, 255, 0.5);
 }

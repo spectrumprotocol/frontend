@@ -50,7 +50,7 @@ export class PollItemComponent implements OnChanges {
       this.calcPoll(poll, staked, config);
     }
   }
-
+  
   private calcPoll(poll: PollInfo, staked: number, config: ConfigInfo) {
     if (poll && staked && config) {
       this.yes_ratio = +poll.yes_votes / staked;

@@ -1,8 +1,42 @@
 @import "src/scss/variables";
+
+.bulk-name-container {
+  position: relative;
+  .name-detail {
+    float: left;
+    padding-left: 10px;
+    text-align: left;
+  }
+}
+
 .mAssetIcon {
-  width: 50px;
-  height: 50px;
-  z-index: 1;
+  width: 40px;
+  height: 40px;
+  padding: 4px;
+  background-color: black;
+  position: relative;
+  top: -5px;
+}
+
+.mAssetIcon-sm {
+  width: 30px;
+  height: 30px;
+  padding: 2px;
+  background-color: white;
+}
+
+.mAssetIcon-list {
+  width: 48px;
+  height: 48px;
+  padding: 4px;
+  background-color: white;
+}
+.mAssetIcon-list-sm {
+  width: 48px;
+  height: 48px;
+  padding: 2px;
+  background-color: black;
+  position: inherit;
 }
 
 .ust-outline {
@@ -14,9 +48,8 @@
   background-color: rgba(79, 79, 79, 0.8);
 }
 
-.asset-card {
-  min-height: 200px;
-  padding: 5px;
+.min-53 {
+  min-height: 53px;
 }
 
 .asset-card-info {
@@ -89,14 +122,14 @@
   .custom-slider .ngx-slider{
     .ngx-slider-bar {
       background: $white;
-      height: 2px;
+      height: 10px;
     }
     .ngx-slider-pointer {
-      width: 14px;
-      height: 14px;
+      width: 36px;
+      height: 36px;
       top: auto;
-      bottom: -3px;
-      background-color: $spectrum;
+      bottom: -20px;
+      background-color: $primary;
       &:focus{
         outline-style: none !important;
         outline-width: 0 !important;
@@ -129,10 +162,7 @@
 }
 
 .slider-compound-stake{
-
   margin-top: -1.2em;
-  padding-left: 1em;
-  padding-right: 1em;
 }
 
 .btn-first {
