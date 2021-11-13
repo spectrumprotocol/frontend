@@ -291,6 +291,10 @@ export class InfoService {
     localStorage.setItem('rewardInfos', JSON.stringify(rewardInfos));
   }
 
+  async refreshTokenBalance(assetToken: string){
+    this.tokenBalances[assetToken] = (await this.token.balance(assetToken)).balance;
+  }
+
   async refreshPoolResponse(assetToken: string) {
     const pairInfo = this.pairInfos[assetToken];
     const tasks: Promise<any>[] = [];

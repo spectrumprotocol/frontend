@@ -4,7 +4,7 @@ import { Coin, Coins, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../consts/animations';
 import { CONFIG } from '../../../consts/config';
 import { toBase64 } from '../../../libs/base64';
-import {div, floor, floor18Decimal, floorSixDecimal, gt, minus, times} from '../../../libs/math';
+import {div, floor, floor18Decimal, floorSixDecimal, gt, minus, roundSixDecimal, times} from '../../../libs/math';
 import { TerrajsService } from '../../../services/terrajs.service';
 import { Vault } from '../vault.component';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -20,6 +20,8 @@ import { TerraSwapService } from '../../../services/api/terraswap.service';
 
 const DEPOSIT_FEE = '0.001';
 import { Denom } from '../../../consts/denom';
+import {StakerService} from '../../../services/api/staker.service';
+import {AssetInfo} from '../../../services/api/staker/query_msg';
 
 @Component({
   selector: 'app-asset-card',
@@ -41,6 +43,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   depositUSTAmountTokenUST: number;
   depositLPAmtLP: number;
   depositUSTAmtUST: number;
+  depositTokenBAmtTokenToken: number;
 
   depositType: 'compound' | 'stake' | 'mixed';
   depositMode: 'tokentoken' | 'lp' | 'ust' = 'tokentoken';
@@ -94,7 +97,12 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
 
       if (this.terrajs.isConnected && this.belowSection && !this.belowSection.collapsed) {
-        await this.info.refreshPoolResponse(this.vault.assetToken);
+        const tasks: Promise<any>[] = [];
+        if (this.vault.poolInfo.denomContract){
+          tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.denomContract));
+        }
+        tasks.push(this.info.refreshPoolResponse(this.vault.assetToken));
+        await Promise.all(tasks);
         if (this.depositTokenAAmtTokenToken) {
           this.depositTokenATokenTokenChanged();
         }
@@ -136,34 +144,61 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       this.depositFeeTokenUST = undefined;
       this.netLpTokenUST = undefined;
     }
-    const pool = this.info.poolResponses[this.vault.assetToken];
-    const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
-    const amountUST = new BigNumber(this.depositTokenAAmtTokenToken)
-      .times(this.UNIT)
-      .times(ust.amount)
-      .div(asset.amount)
-      .integerValue();
+    if (this.vault.denomSymbolDisplay === 'UST'){
+      const pool = this.info.poolResponses[this.vault.assetToken];
+      const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
+      const amountUST = new BigNumber(this.depositTokenAAmtTokenToken)
+        .times(this.UNIT)
+        .times(ust.amount)
+        .div(asset.amount)
+        .integerValue();
 
-    const grossLp = gt(pool.total_share, 0)
-      ? BigNumber.minimum(
-        new BigNumber(this.depositUSTAmountTokenUST).times(pool.total_share).div(ust.amount),
-        new BigNumber(this.depositTokenAAmtTokenToken).times(pool.total_share).div(asset.amount))
-      : new BigNumber(this.depositTokenAAmtTokenToken)
-        .times(this.depositUSTAmountTokenUST)
-        .sqrt();
-    if (this.vault.pairStat) {
-      const depositTVL = new BigNumber(amountUST).multipliedBy('2');
-      const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
-        grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
-      this.netLpTokenUST = grossLp.minus(depositFee).toString();
-      this.depositFeeTokenUST = depositFee.toString();
+      const grossLp = gt(pool.total_share, 0)
+        ? BigNumber.minimum(
+          new BigNumber(this.depositUSTAmountTokenUST).times(pool.total_share).div(ust.amount),
+          new BigNumber(this.depositTokenAAmtTokenToken).times(pool.total_share).div(asset.amount))
+        : new BigNumber(this.depositTokenAAmtTokenToken)
+          .times(this.depositUSTAmountTokenUST)
+          .sqrt();
+      if (this.vault.pairStat) {
+        const depositTVL = new BigNumber(amountUST).multipliedBy('2');
+        const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
+          grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+        this.netLpTokenUST = grossLp.minus(depositFee).toString();
+        this.depositFeeTokenUST = depositFee.toString();
+      }
+      this.grossLpTokenUST = grossLp.toString();
+
+      const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountUST.toString(), denom: 'uusd' }));
+      this.depositUSTAmountTokenUST = amountUST.plus(tax.amount.toString())
+        .div(this.UNIT)
+        .toNumber();
+    } else {
+      const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
+      const amountDenom = new BigNumber(this.depositTokenAAmtTokenToken)
+        .times(assetDenom.amount)
+        .div(assetBase.amount).toNumber();
+      this.depositTokenBAmtTokenToken = +roundSixDecimal(amountDenom);
     }
-    this.grossLpTokenUST = grossLp.toString();
+  }
 
-    const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountUST.toString(), denom: 'uusd' }));
-    this.depositUSTAmountTokenUST = amountUST.plus(tax.amount.toString())
-      .div(this.UNIT)
-      .toNumber();
+  @debounce(250)
+  async depositTokenBTokenTokenChanged() {
+    if (this.vault.denomSymbolDisplay !== 'UST'){
+      const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
+      const amountBase = new BigNumber(this.depositTokenBAmtTokenToken)
+        .times(assetBase.amount)
+        .div(assetDenom.amount).toNumber();
+      this.depositTokenAAmtTokenToken = +roundSixDecimal(amountBase);
+    }
+  }
+
+  findAssetBaseAndDenom(){
+    const pool = this.info.poolResponses[this.vault.assetToken];
+    const denomAssetIndex = pool.assets.findIndex(a => a.info.token?.['contract_addr'] === this.vault.poolInfo.denomContract);
+    const assetDenom = pool.assets[denomAssetIndex];
+    const assetBase = denomAssetIndex === 0 ? pool.assets[1] : pool.assets[0];
+    return [assetBase, assetDenom];
   }
 
   async doDeposit() {
@@ -245,7 +280,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
           })
         }
       };
-      console.log(msg)
       await this.tokenService.handle(this.vault.lpToken, msg);
     } else if (this.depositMode === 'ust') {
       const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === this.vault.poolInfo.farmContract)?.farmContract;
@@ -543,10 +577,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   setMaxDepositTokenBTokenToken() {
-
+    this.depositTokenBAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.denomContract] / CONFIG.UNIT;
+    this.depositTokenBTokenTokenChanged();
   }
 
-  depositTokenBTokenTokenChanged() {
-
-  }
 }
