@@ -55,7 +55,7 @@ export class OrionFarmInfoService implements FarmInfoService {
     const orionLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.orionAPI}/staking`));
     const pairs: Record<string, PairStat> = {};
 
-    const poolApr = +((orionLPStat?.lp?.apr.replace(/,/g, '') / 100) || 0);
+    const poolApr = +orionLPStat?.lp?.apr / 100 || 0;
     pairs[this.terrajs.settings.orionToken] = createPairStat(poolApr, this.terrajs.settings.orionToken);
 
     const rewardInfo = await rewardInfoTask;

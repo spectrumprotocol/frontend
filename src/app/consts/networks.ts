@@ -33,6 +33,7 @@ export interface ISettings {
   nexusStaking: string;
   nexusToken: string;
   nexusFarm: string;
+  orionGov: string;
   orionStaking: string;
   orionToken: string;
   orionFarm: string;
@@ -84,6 +85,7 @@ export const networks: Record<string, ISettings> = {
     nexusStaking: 'terra12kzewegufqprmzl20nhsuwjjq6xu8t8ppzt30a',
     nexusToken: 'terra12897djskt9rge8dtmm86w654g7kzckkd698608',
     nexusFarm: 'terra1j2hdp4jelqe9tkfwnsx5mlheqagaryxhqwr4h2',
+    orionGov: '',
     orionStaking: 'terra1q8q6y03452e44pztw8kr8zcdkjtxuz8vq9t8uq',
     orionToken: 'terra1mddcdx0ujx89f38gu7zspk2r2ffdl5enyz2u03', // orionLP terra14ffp0waxcck733a9jfd58d86h9rac2chf5xhev
     orionFarm: '',
@@ -134,9 +136,10 @@ export const networks: Record<string, ISettings> = {
     nexusStaking: 'terra1qsc7y8448payj9fyjxn6ffxxmdcj5g5dtptfq2',
     nexusToken: 'terra18nle009rtynpjgleh2975rleu5zts0zdtqryte',
     nexusFarm: 'terra158j75d7kml99u3r4xy4e7xnfzmhm2j780e5npl',
+    orionGov: 'terra1xamqmmllxwhenagfn57753w9hqdhck43dzwj94',
     orionStaking: 'terra1jz22ws2yhlm6zycz7eluqptjn2t74fw4g82v8j',
-    orionToken: 'terra13qdskca8xavmed88htplse0z396tesgh63tn9r', //orionLP terra1qvmf8jf3a7h6lgglw29f8nvcckn7t8z0hqgma5
-    orionFarm: 'terra1ymwlr8v6j6ty7rg2crun5r5vetqdduwfe7pmvh',
+    orionToken: 'terra13qdskca8xavmed88htplse0z396tesgh63tn9r', // orionLP terra1qvmf8jf3a7h6lgglw29f8nvcckn7t8z0hqgma5
+    orionFarm: 'terra1swzlts3jvs5lh4v4xpxlylct3auvt79yvnf6c4',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
