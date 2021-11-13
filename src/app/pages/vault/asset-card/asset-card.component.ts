@@ -37,14 +37,14 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   UNIT = CONFIG.UNIT;
 
-  depositTokenAmtTokenUST: number;
+  depositTokenAAmtTokenToken: number;
   depositUSTAmountTokenUST: number;
   depositLPAmtLP: number;
   depositUSTAmtUST: number;
 
   depositType: 'compound' | 'stake' | 'mixed';
-  depositMode: 'tokenust' | 'lp' | 'ust' = 'tokenust';
-  withdrawMode: 'tokenust' | 'lp' | 'ust' = 'tokenust';
+  depositMode: 'tokentoken' | 'lp' | 'ust' = 'tokentoken';
+  withdrawMode: 'tokentoken' | 'lp' | 'ust' = 'tokentoken';
 
   withdrawAmt: number;
   grossLpTokenUST: string;
@@ -78,6 +78,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   bufferUST = 3.5;
 
   WITHDRAW_UST_MAX_SPREAD = CONFIG.WITHDRAW_UST_MAX_SPREAD;
+  depositTokenBAmtTokenToken: any;
 
   constructor(
     public terrajs: TerrajsService,
@@ -94,8 +95,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
       if (this.terrajs.isConnected && this.belowSection && !this.belowSection.collapsed) {
         await this.info.refreshPoolResponse(this.vault.assetToken);
-        if (this.depositTokenAmtTokenUST) {
-          this.depositTokenUSTChanged();
+        if (this.depositTokenAAmtTokenToken) {
+          this.depositTokenATokenTokenChanged();
         }
       }
     });
@@ -115,9 +116,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     }
   }
 
-  setMaxDepositUSTToken() {
-    this.depositTokenAmtTokenUST = +this.info.tokenBalances?.[this.vault.assetToken] / CONFIG.UNIT;
-    this.depositTokenUSTChanged();
+  setMaxDepositTokenATokenToken() {
+    this.depositTokenAAmtTokenToken = +this.info.tokenBalances?.[this.vault.assetToken] / CONFIG.UNIT;
+    this.depositTokenATokenTokenChanged();
   }
 
   setMaxWithdrawLP() {
@@ -128,8 +129,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   @debounce(250)
-  async depositTokenUSTChanged() {
-    if (!this.depositTokenAmtTokenUST) {
+  async depositTokenATokenTokenChanged() {
+    if (!this.depositTokenAAmtTokenToken) {
       this.depositUSTAmountTokenUST = undefined;
       this.grossLpTokenUST = undefined;
       this.depositFeeTokenUST = undefined;
@@ -137,7 +138,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     }
     const pool = this.info.poolResponses[this.vault.assetToken];
     const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
-    const amountUST = new BigNumber(this.depositTokenAmtTokenUST)
+    const amountUST = new BigNumber(this.depositTokenAAmtTokenToken)
       .times(this.UNIT)
       .times(ust.amount)
       .div(asset.amount)
@@ -146,8 +147,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     const grossLp = gt(pool.total_share, 0)
       ? BigNumber.minimum(
         new BigNumber(this.depositUSTAmountTokenUST).times(pool.total_share).div(ust.amount),
-        new BigNumber(this.depositTokenAmtTokenUST).times(pool.total_share).div(asset.amount))
-      : new BigNumber(this.depositTokenAmtTokenUST)
+        new BigNumber(this.depositTokenAAmtTokenToken).times(pool.total_share).div(asset.amount))
+      : new BigNumber(this.depositTokenAAmtTokenToken)
         .times(this.depositUSTAmountTokenUST)
         .sqrt();
     if (this.vault.pairStat) {
@@ -182,8 +183,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.depositMode === 'tokenust') {
-      const assetAmount = times(this.depositTokenAmtTokenUST, this.UNIT);
+    if (this.depositMode === 'tokentoken') {
+      const assetAmount = times(this.depositTokenAAmtTokenToken, this.UNIT);
       const ustAmount = times(this.depositUSTAmountTokenUST, this.UNIT);
       const asset = {
         amount: assetAmount,
@@ -230,8 +231,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       ]);
     } else if (this.depositMode === 'lp') {
       const lpAmount = times(this.depositLPAmtLP, this.UNIT);
-      const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farm === this.vault.poolInfo.farm)?.farmContract;
-      await this.tokenService.handle(this.vault.lpToken, {
+      const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === this.vault.poolInfo.farmContract)?.farmContract;
+      console.log(this.vault.lpToken)
+      const msg = {
         send: {
           amount: lpAmount,
           contract: farmContract,
@@ -242,9 +244,11 @@ export class AssetCardComponent implements OnInit, OnDestroy {
             }
           })
         }
-      });
+      };
+      console.log(msg)
+      await this.tokenService.handle(this.vault.lpToken, msg);
     } else if (this.depositMode === 'ust') {
-      const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farm === this.vault.poolInfo.farm)?.farmContract;
+      const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === this.vault.poolInfo.farmContract)?.farmContract;
       const depositUST = times(this.depositUSTAmtUST, CONFIG.UNIT);
       const coin = new Coin(Denom.USD, depositUST);
       const msgs = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.staker, {
@@ -272,7 +276,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       await this.terrajs.post(msgs);
     }
 
-    this.depositTokenAmtTokenUST = undefined;
+    this.depositTokenAAmtTokenToken = undefined;
     this.depositUSTAmountTokenUST = undefined;
     this.depositUSTAmtUST = undefined;
 
@@ -327,7 +331,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
               sell_asset: { token: { contract_addr: this.vault.poolInfo.asset_token } },
               target_asset: { native_token: { denom: Denom.USD } },
               belief_price: times(
-                this.lpBalancePipe.transform(this.withdrawAmt, this.info.poolResponses[this.vault.assetToken]),
+                this.lpBalancePipe.transform(this.withdrawAmt, this.info.poolResponses, this.vault.assetToken),
                 CONFIG.UNIT
               ),
               max_spread: this.WITHDRAW_UST_MAX_SPREAD,
@@ -336,7 +340,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         },
       }
     );
-    if (this.withdrawMode === 'tokenust') {
+    if (this.withdrawMode === 'tokentoken') {
       await this.terrajs.post([unbond, withdrawLp]);
     } else if (this.withdrawMode === 'lp') {
       await this.terrajs.post([unbond]);
@@ -443,7 +447,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       this.netLpLp = undefined;
     }
     const grossLp = new BigNumber(this.depositLPAmtLP);
-    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositLPAmtLP, CONFIG.UNIT) ?? '0', this.info.poolResponses[this.vault.assetToken]));
+    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositLPAmtLP, CONFIG.UNIT) ?? '0', this.info.poolResponses, this.vault.assetToken));
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
       grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
     this.netLpLp = grossLp.minus(depositFee).toString();
@@ -534,7 +538,15 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     await this.terrajs.post(msgs);
   }
 
-  changeDepositMode(mode: 'tokenust' | 'lp' | 'ust') {
+  changeDepositMode(mode: 'tokentoken' | 'lp' | 'ust') {
     setTimeout(() => this.depositMode = mode, 0);
+  }
+
+  setMaxDepositTokenBTokenToken() {
+
+  }
+
+  depositTokenBTokenTokenChanged() {
+
   }
 }

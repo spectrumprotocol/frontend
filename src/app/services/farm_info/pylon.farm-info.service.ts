@@ -6,12 +6,19 @@ import { PoolItem } from '../api/pylon_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
+import {
+  denomContract,
+  denomSymbol,
+  FarmInfoService,
+  PairStat,
+  PoolInfo
+} from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
@@ -117,6 +124,10 @@ export class PylonFarmInfoService implements FarmInfoService {
         }
       }
     );
+  }
+
+  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
+    return [Denom.USD, null];
   }
 
 }

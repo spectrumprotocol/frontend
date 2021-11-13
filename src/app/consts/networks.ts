@@ -12,6 +12,7 @@ export interface ISettings {
   mirrorToken: string;
   specFarm: string;
   terraSwapFactory: string;
+  terraSwapRouter: string;
   staker: string;
   anchorGov: string;
   anchorStaking: string;
@@ -33,6 +34,15 @@ export interface ISettings {
   nexusStaking: string;
   nexusToken: string;
   nexusFarm: string;
+  nLunaPsiStaking: string;
+  nLunaToken: string;
+  nLunaPsiFarm: string;
+  nEthPsiStaking: string;
+  nEthToken: string;
+  nEthPsiFarm: string;
+  orionStaking: string;
+  orionToken: string;
+  orionFarm: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -40,6 +50,7 @@ export interface ISettings {
   anchorAPI: string;
   pylonAPI: string;
   valkyrieAPI: string;
+  orionAPI: string;
   nexusGraph: string;
   chainID: string;
   finder: string;
@@ -59,6 +70,7 @@ export const networks: Record<string, ISettings> = {
     mirrorToken: 'terra15gwkyepfc6xgca5t5zefzwy42uts8l2m4g40k6',
     specFarm: 'terra17hjvrkcwn3jk2qf69s5ldxx5rjccchu35assga',
     terraSwapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
+    terraSwapRouter: 'terra19qx5xe6q9ll4w0890ux7lv2p4mf3csd4qvt3ex',
     staker: 'terra1fxwelge6mf5l6z0rjpylzcfq9w9tw2q7tewaf5',
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
     anchorStaking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
@@ -80,6 +92,15 @@ export const networks: Record<string, ISettings> = {
     nexusStaking: 'terra12kzewegufqprmzl20nhsuwjjq6xu8t8ppzt30a',
     nexusToken: 'terra12897djskt9rge8dtmm86w654g7kzckkd698608',
     nexusFarm: 'terra1j2hdp4jelqe9tkfwnsx5mlheqagaryxhqwr4h2',
+    nLunaPsiStaking: 'terra1hs4ev0ghwn4wr888jwm56eztfpau6rjcd8mczc',
+    nLunaToken: 'terra10f2mt82kjnkxqj2gepgwl637u2w4ue2z5nhz5j', // nLunaPsiLP: 'terra1tuw46dwfvahpcwf3ulempzsn9a0vhazut87zec'
+    nLunaPsiFarm: '',
+    nEthPsiStaking: 'terra1lws09x0slx892ux526d6atwwgdxnjg58uan8ph', // nEthPsiLP: 'terra1y8kxhfg22px5er32ctsgjvayaj8q36tr590qtp'
+    nEthToken: 'terra178v546c407pdnx5rer3hu8s2c0fc924k74ymnn',
+    nEthPsiFarm: '',
+    orionStaking: 'terra1q8q6y03452e44pztw8kr8zcdkjtxuz8vq9t8uq',
+    orionToken: 'terra1mddcdx0ujx89f38gu7zspk2r2ffdl5enyz2u03', // orionLP terra14ffp0waxcck733a9jfd58d86h9rac2chf5xhev
+    orionFarm: '',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -87,6 +108,7 @@ export const networks: Record<string, ISettings> = {
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
     valkyrieAPI: 'https://api.valkyrieprotocol.com',
+    orionAPI: 'https://api.orion.money/v1/terra',
     nexusGraph: 'nexus',
     chainID: 'columbus-5',
     finder: 'finder.extraterrestrial.money',
@@ -105,7 +127,8 @@ export const networks: Record<string, ISettings> = {
     mirrorToken: 'terra10llyp6v3j3her8u3ce66ragytu45kcmd9asj3u',
     specFarm: 'terra1cedx8gpvu7c4vzfadwmf3pewg2030fqgw4q3dl',
     terraSwapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
-    staker: 'terra15nwqmmmza9y643apneg0ddwt0ekk38qdevnnjt',
+    terraSwapRouter: 'terra14z80rwpd0alzj4xdtgqdmcqt9wd9xj5ffd60wp',
+    staker: 'terra16mr4m8phfnhdlvqatc59w536aly9fpdvz9dtvv',
     anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
     anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
     anchorToken: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
@@ -126,6 +149,15 @@ export const networks: Record<string, ISettings> = {
     nexusStaking: 'terra1qsc7y8448payj9fyjxn6ffxxmdcj5g5dtptfq2',
     nexusToken: 'terra18nle009rtynpjgleh2975rleu5zts0zdtqryte',
     nexusFarm: 'terra158j75d7kml99u3r4xy4e7xnfzmhm2j780e5npl',
+    nLunaPsiStaking: 'terra14r89lj2e87qz2vwmdjxs70khh89n3w2xy2zkgn',
+    nLunaToken: 'terra1gzq2zd4skvnvgm2z48fdp0mxy2djmtk7sz4uhe', // nLunaPsiLP: 'terra1a7awn36j2yy7jvy8te72rwrhl6zma3yugtrhm5'
+    nLunaPsiFarm: 'terra1jssrzhcr2qdm53qucw6ty35wddyhea8nvwwq4a',
+    nEthPsiStaking: 'terra1u8gvskrt5n6vdeeuc4428pxhjh75h0jcntm7ca',
+    nEthToken: 'terra1em8dvzln8quptj9tuptf8tu73jyuv5jn6kqdwv', // nEthPsiLP: 'terra1y2r544tw2q4cgpgjvts8uu6gekk9kwz047a9sl'
+    nEthPsiFarm: 'terra1pmgrx608xemvtcfvcxvvsu85ufklqmxfvdc8tl',
+    orionStaking: 'terra1jz22ws2yhlm6zycz7eluqptjn2t74fw4g82v8j',
+    orionToken: 'terra13qdskca8xavmed88htplse0z396tesgh63tn9r', // orionLP terra1qvmf8jf3a7h6lgglw29f8nvcckn7t8z0hqgma5
+    orionFarm: 'terra1ymwlr8v6j6ty7rg2crun5r5vetqdduwfe7pmvh',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
@@ -133,6 +165,7 @@ export const networks: Record<string, ISettings> = {
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
     valkyrieAPI: 'https://api.testnet.valkyrieprotocol.com',
+    orionAPI: 'https://api.stage.orion.money/v1/terra',
     nexusGraph: 'nexus',
     chainID: 'bombay-12',
     finder: 'finder.terra.money',

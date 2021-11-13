@@ -78,7 +78,7 @@
                   <a class="dropdown-item" [class.active]="activeFarm === 'All'"
                     (click)="activeFarm = 'All'; refresh()">All</a>
                 </li>
-                <li *ngFor="let farmInfo of info.farmInfos">
+                <li *ngFor="let farmInfo of farmInfoDropdownList">
                   <a  class="dropdown-item"
                     [class.active]="activeFarm === farmInfo.farm"
                     (click)="activeFarm = farmInfo.farm; refresh()"> <img [src]="farmInfo.farm | url:'icon'" class="farm-logo"> {{farmInfo.farm}}</a>

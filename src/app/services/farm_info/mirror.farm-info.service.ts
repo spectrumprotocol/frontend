@@ -6,10 +6,18 @@ import { MirrorFarmService } from '../api/mirror-farm.service';
 import { MirrorStakingService } from '../api/mirror-staking.service';
 import { RewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo, PoolItem } from './farm-info.service';
+import {
+  denomContract,
+  denomSymbol,
+  FarmInfoService,
+  PairStat,
+  PoolInfo,
+  PoolItem
+} from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class MirrorFarmInfoService implements FarmInfoService {
@@ -144,6 +152,10 @@ export class MirrorFarmInfoService implements FarmInfoService {
         }
       }
     );
+  }
+
+  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
+    return [Denom.USD, null];
   }
 
 }

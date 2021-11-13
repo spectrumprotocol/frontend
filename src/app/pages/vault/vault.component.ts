@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { TerrajsService } from '../../services/terrajs.service';
 import { InfoService } from '../../services/info.service';
 import { debounce } from 'utils-decorators';
-import { PairStat, PoolInfo } from '../../services/farm_info/farm-info.service';
+import {FarmInfoService, PairStat, PoolInfo} from '../../services/farm_info/farm-info.service';
 import { CONFIG } from '../../consts/config';
 import { MdbDropdownDirective, MdbModalService } from 'mdb-angular-ui-kit';
 import { PairInfo } from '../../services/api/terraswap_factory/pair_info';
@@ -21,6 +21,7 @@ export interface Vault {
   compoundApy: number;
   stakeApy: number;
   apy: number;
+  denomSymbolDisplay: string;
 }
 
 @Component({
@@ -40,9 +41,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   sortBy = 'multiplier';
   activeFarm = 'All';
   UNIT = CONFIG.UNIT;
-  myStaked: string;
   myTvl = 0;
   height: number;
+  farmInfoDropdownList: FarmInfoService[];
 
   @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
   @ViewChild('dropdownSortBy') dropdownSortBy: MdbDropdownDirective;
@@ -55,6 +56,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    this.farmInfoDropdownList = [...new Map(this.info.farmInfos.map(farmInfo => [farmInfo.farm, farmInfo])).values()];
     this.showDepositedPoolOnly = localStorage.getItem('deposit') === 'true';
     this.loading = true;
     this.connected = this.terrajs.connected

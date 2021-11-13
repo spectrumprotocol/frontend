@@ -2,7 +2,13 @@ import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
+import {
+  denomContract,
+  denomSymbol,
+  FarmInfoService,
+  PairStat,
+  PoolInfo
+} from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
@@ -11,6 +17,7 @@ import { ValkyrieFarmService } from '../api/valkyrie-farm.service';
 import { ValkyrieStakingService } from '../api/valkyrie-staking.service';
 import { PoolItem } from '../api/valkyrie_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/valkyrie_farm/reward_info_response';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class ValkyrieFarmInfoService implements FarmInfoService {
@@ -117,6 +124,10 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
           }
       }
     );
+  }
+
+  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
+    return [Denom.USD, null];
   }
 
 }

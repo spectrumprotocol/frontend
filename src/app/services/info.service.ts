@@ -170,7 +170,9 @@ export class InfoService {
             auto_stake: farmInfo.autoStake,
             forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
               ? undefined
-              : farmInfo.autoCompound ? 'compound' : 'stake'
+              : farmInfo.autoCompound ? 'compound' : 'stake',
+            denomSymbol: farmInfo.getDenom()[0],
+            denomContract: farmInfo.getDenom()[1]
           });
       }
     });
@@ -185,11 +187,12 @@ export class InfoService {
     const tasks = Object.keys(this.poolInfos)
       .filter(key => !this.pairInfos[key])
       .map(async key => {
+        const tokenA = { token: { contract_addr: key } };
+        const tokenB =  this.poolInfos[key].denomSymbol === Denom.USD ? { native_token: { denom: Denom.USD } } : { token: { contract_addr:  this.poolInfos[key].denomContract } };
         const it = await this.terraSwapFactory.query({
           pair: {
             asset_infos: [
-              { token: { contract_addr: key } },
-              { native_token: { denom: 'uusd' } }
+              tokenA, tokenB
             ]
           }
         });
@@ -344,8 +347,7 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      const poolResponse = this.poolResponses[vault.assetToken];
-      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, poolResponse) / CONFIG.UNIT || 0;
+      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.assetToken) / CONFIG.UNIT || 0;
       const farmInfo = this.farmInfos.find(it => it.farm === this.poolInfos[vault.assetToken].farm);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
@@ -396,25 +398,25 @@ export class InfoService {
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
-    try {
-      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      Object.assign(this.coinInfos, data.coinInfos);
-      this.stat = data.stat;
-      this.pairInfos = data.pairInfos;
-      this.poolInfos = data.poolInfos;
-      localStorage.setItem('coinInfos', JSON.stringify(this.coinInfos));
-      localStorage.setItem('stat', JSON.stringify(this.stat));
-      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-
-      if (skipPoolResponses) {
-        this.poolResponses = data.poolResponses;
-        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-      }
-    } catch (ex) {
-      // fallback if api die
+    // try {
+    //   const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+    //   Object.assign(this.coinInfos, data.coinInfos);
+    //   this.stat = data.stat;
+    //   this.pairInfos = data.pairInfos;
+    //   this.poolInfos = data.poolInfos;
+    //   localStorage.setItem('coinInfos', JSON.stringify(this.coinInfos));
+    //   localStorage.setItem('stat', JSON.stringify(this.stat));
+    //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+    //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+    //
+    //   if (skipPoolResponses) {
+    //     this.poolResponses = data.poolResponses;
+    //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+    //   }
+    // } catch (ex) {
+    //   // fallback if api die
       await Promise.all([this.ensureCoinInfos(), this.refreshStat()]);
-    }
+    // }
   }
 
   updateVaults() {
@@ -451,6 +453,7 @@ export class InfoService {
         compoundApy,
         stakeApy,
         apy,
+        denomSymbolDisplay: Denom.display[this.poolInfos[key].denomSymbol] || this.poolInfos[key].denomSymbol
       };
       this.allVaults.push(vault);
     }

@@ -33,23 +33,13 @@ export type ExecuteMsg =
   | {
       zap_to_bond: {
         belief_price?: Decimal | null;
+        belief_price_b?: Decimal | null;
         compound_rate?: Decimal | null;
         contract: string;
         max_spread: Decimal;
         pair_asset: AssetInfo;
+        pair_asset_b?: AssetInfo | null;
         provide_asset: Asset;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      zap_to_bond_hook: {
-        asset_token: string;
-        bond_asset: Asset;
-        compound_rate?: Decimal | null;
-        contract: string;
-        prev_asset_token_amount: Uint128;
-        slippage_tolerance: Decimal;
-        staker_addr: string;
         [k: string]: unknown;
       };
     }
@@ -64,8 +54,9 @@ export type ExecuteMsg =
       zap_to_unbond_hook: {
         belief_price?: Decimal | null;
         max_spread: Decimal;
-        prev_sell_asset: Asset;
-        prev_target_asset: Asset;
+        minimum_receive?: Uint128 | null;
+        prev_asset_a: Asset;
+        prev_asset_b: Asset;
         staker_addr: string;
         [k: string]: unknown;
       };

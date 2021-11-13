@@ -8,10 +8,11 @@
       <div class="col-12 col-md-3 text-center">
         <div class="p-2">
           <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle mAssetIcon">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle mAssetIcon ust-outline">
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle mAssetIcon ust-outline" *ngIf="vault.denomSymbolDisplay === 'uusd'">
+          <img [src]="vault.denomSymbolDisplay | url:'icon'" class="img-fluid rounded-circle mAssetIcon token-denom" *ngIf="vault.denomSymbolDisplay !== 'uusd'">
         </div>
         <div class="fs-5">
-          {{vault.symbol}}-UST LP
+          {{vault.symbol}}-{{vault.denomSymbolDisplay==='uusd' ? 'UST' : vault.denomSymbolDisplay}} LP
         </div>
         <div class="fs-6">
           Farm: <span class="badge bg-{{vault.poolInfo.farm}}">{{vault.poolInfo.farm}}</span>
@@ -44,8 +45,7 @@
                 [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i>
               <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10" class="small text-muted">
                 &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
-                info.poolResponses[vault.assetToken] |
-                unit: '1.0-2' }})</span>
+                info.poolResponses : vault.assetToken | unit: '1.0-2' }})</span>
             </div>
           </div>
           <div class="col-12 col-sm-6 col-md-4">
@@ -62,7 +62,7 @@
               <div class="fs-6 mt-2">
                 Staked <span *ngIf="vault.poolInfo.farm === 'Mirror'">MIR <i class="fas fa-info-circle info-icon"
                     mdbTooltip="MIR will be earned from auto-stake strategy. If you select auto-compound, LP will be earned."></i></span>
-                <span *ngIf="vault.poolInfo.farm !== 'Mirror'">{{vault.symbol}} <i class="fas fa-info-circle info-icon"
+                <span *ngIf="vault.poolInfo.farm !== 'Mirror'">{{vault.poolInfo.denomSymbol}} <i class="fas fa-info-circle info-icon"
                     mdbTooltip="{{vault.symbol}} will be earned from auto-stake strategy. If you select auto-compound, LP will be earned."></i></span>
               </div>
               <div class="fs-5">{{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit: '1.0-2'}}
@@ -80,11 +80,18 @@
       <mdb-tabs [fill]="true">
         <mdb-tab title="Deposit">
           <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
-            <div *ngIf="depositMode === 'tokenust'" class="mt-3">
+            <div *ngIf="depositMode === 'tokentoken'" class="mt-3">
               <div class="small">
-                Need more {{ vault.symbol }}? <a [href]="vault.symbol | url:'trade'" target="_blank">Buy</a><span
+                Need more {{ vault.symbol }}? <a [href]="vault.symbol | url:'trade'" target="_blank">Buy</a>
+                <span
                   *ngIf="vault.symbol.startsWith('m')">
-                  or <a [href]="vault.symbol | url:'mint'" target="_blank">Borrow</a></span> {{ vault.symbol }} to farm
+                  or <a [href]="vault.symbol | url:'mint'" target="_blank">Borrow</a>
+                </span>
+                <span
+                  *ngIf="['nLuna', 'nETH'].includes(vault.symbol)">
+                  or <a [href]="vault.symbol | url:'mint'" target="_blank">Mint</a>
+                </span>
+                {{ vault.symbol }} to farm
                 with
               </div>
               <div class="text-end small mt-3 text-muted">
@@ -95,39 +102,64 @@
                 </span>
                 <span>{{ info.tokenBalances[vault.assetToken] | unit }} {{ vault.symbol }}</span>
               </div>
+
               <div class="input-group">
                 <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
-                <input #depositTokenAmtTokenUSTCtl="ngModel" (ngModelChange)="depositTokenUSTChanged()"
-                  [(ngModel)]="depositTokenAmtTokenUST"
-                  [class.is-invalid]="(formDeposit.submitted || depositTokenAmtTokenUSTCtl.touched) && depositTokenAmtTokenUSTCtl.invalid"
-                  [max]="+info.tokenBalances[vault.assetToken] / UNIT" [min]="0.000001"
-                  [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-height-use-with-button"
-                  name="depositTokenAmtTokenUSTCtl" required type="number" />
-                <button (click)="setMaxDepositUSTToken()" class="btn btn-outline-primary last" type="button">
+                <input #depositTokenAAmtTokenTokenCtl="ngModel" (ngModelChange)="depositTokenATokenTokenChanged()"
+                       [(ngModel)]="depositTokenAAmtTokenToken"
+                       [class.is-invalid]="(formDeposit.submitted || depositTokenAAmtTokenTokenCtl.touched) && depositTokenAAmtTokenTokenCtl.invalid"
+                       [max]="+info.tokenBalances[vault.assetToken] / UNIT" [min]="0.000001"
+                       [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-height-use-with-button"
+                       name="depositTokenAmtTokenUSTCtl" required type="number" />
+                <button (click)="setMaxDepositTokenATokenToken()" class="btn btn-outline-primary last" type="button">
                   Max
                 </button>
               </div>
-              <span *ngIf="depositTokenAmtTokenUST > +info.tokenBalances[vault.assetToken] / UNIT"
-                class="invalid-feedback-custom">
-                Amount must be between 0 and {{info.tokenBalances[vault.assetToken] | unit }}
-              </span>
-              <span *ngIf="depositTokenAmtTokenUSTCtl.errors?.pattern" class="invalid-feedback-custom">
-                Amount must be within 6 decimal points
-              </span>
-              <div class="mt-3 icon-between-inputs"><i class="fas fa-plus fa-lg"></i></div>
-              <div class="text-end small mt-1 text-muted">
-                <span>Balance: {{ info.userUstAmount | number }} UST</span>
-              </div>
-              <div class="input-group">
-                <span class="input-group-text igt-fixwidth">UST</span>
-                <input #depositAmountUSTTokenUSTCtl="ngModel" [(ngModel)]="depositUSTAmountTokenUST"
-                  [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" readonly
-                  [max]="+info.userUstAmount - this.bufferUST" [min]="0.000001" [step]="0.000001"
-                  aria-describedby="USTLabel" class="form-control" name="depositUSTAmountTokenUST" required
-                  type="number" />
-                <div class="invalid-feedback" *ngIf="depositAmountUSTTokenUSTCtl.errors?.max">UST is not enough for this transaction</div>
-              </div>
+              <ng-container *ngIf="vault.denomSymbolDisplay === 'UST'">
+                <span *ngIf="depositTokenAAmtTokenToken > +info.tokenBalances[vault.assetToken] / UNIT"
+                  class="invalid-feedback-custom">
+                  Amount must be between 0 and {{info.tokenBalances[vault.assetToken] | unit }}
+                </span>
+                <span *ngIf="depositTokenAAmtTokenTokenCtl.errors?.pattern" class="invalid-feedback-custom">
+                  Amount must be within 6 decimal points
+                </span>
+                <div class="mt-3 icon-between-inputs"><i class="fas fa-plus fa-lg"></i></div>
+                <div class="text-end small mt-1 text-muted">
+                  <span>Balance: {{ info.userUstAmount | number }} UST</span>
+                </div>
+                <div class="input-group">
+                  <span class="input-group-text igt-fixwidth">UST</span>
+                  <input #depositAmountUSTTokenUSTCtl="ngModel" [(ngModel)]="depositUSTAmountTokenUST"
+                    [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" readonly
+                    [max]="+info.userUstAmount - this.bufferUST" [min]="0.000001" [step]="0.000001"
+                    aria-describedby="USTLabel" class="form-control" name="depositUSTAmountTokenUST" required
+                    type="number" />
+                  <div class="invalid-feedback" *ngIf="depositAmountUSTTokenUSTCtl.errors?.max">UST is not enough for this transaction</div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="vault.denomSymbolDisplay !== 'UST'">
+                <div class="text-end small mt-3 text-muted">
+                  <span>Balance: </span>
+                  <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.denomContract]"
+                        class="spinner-grow spinner-small mb-1" role="status" aria-hidden="true">
+                  <span class="visually-hidden">Loading...</span>
+                </span>
+                  <span>{{ info.tokenBalances[vault.poolInfo.denomContract] | unit }} {{ vault.poolInfo.denomSymbol }}</span>
+                </div>
 
+                <div class="input-group">
+                  <span class="btn btn-outline-primary btn-first input-group-text-denom">{{vault.poolInfo.denomSymbol}}</span>
+                  <input #depositTokenBAmtTokenTokenCtl="ngModel" (ngModelChange)="depositTokenBTokenTokenChanged()"
+                         [(ngModel)]="depositTokenBAmtTokenToken"
+                         [class.is-invalid]="(formDeposit.submitted || depositTokenBAmtTokenTokenCtl.touched) && depositTokenBAmtTokenTokenCtl.invalid"
+                         [max]="+info.tokenBalances[vault.poolInfo.denomSymbol] / UNIT" [min]="0.000001"
+                         [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-height-use-with-button"
+                         name="depositTokenAmtTokenUSTCtl" required type="number" />
+                  <button (click)="setMaxDepositTokenBTokenToken()" class="btn btn-outline-primary last" type="button">
+                    Max
+                  </button>
+                </div>
+              </ng-container>
               <div *ngIf="depositUSTAmountTokenUST" @fade class="mt-3 pool-info">
                 <div class="row">
                   <div class="col">Terraswap Price</div>
@@ -169,7 +201,7 @@
                 <a href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
               </div>
               <div class="text-end small mt-3 text-muted">
-                <span>Balance: {{+info.lpTokenBalances[vault.lpToken] | unit}} {{ vault.symbol }}-UST LP</span>
+                <span>Balance: {{+info.lpTokenBalances[vault.lpToken] | unit}} {{ vault.symbol }}-{{vault.denomSymbolDisplay}} LP</span>
               </div>
               <div class="input-group">
                 <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
@@ -205,7 +237,7 @@
             </div>
             <div *ngIf="depositMode === 'ust'" class="mt-3">
               <div class="small">
-                Use UST to buy {{ vault.symbol }} and create {{ vault.symbol }}-UST LP. This option has the same price exposure and risk of impermanent loss as other deposit options.
+                Use UST to buy {{ vault.symbol }}<span *ngIf="vault.denomSymbolDisplay !== 'UST'">, and {{ vault.denomSymbolDisplay }}</span> to create {{ vault.symbol }}-{{vault.denomSymbolDisplay}} LP. This option has the same price exposure and risk of impermanent loss as other deposit options.
               </div>
               <div class="text-end small mt-3 text-muted">
                 <span>Balance: {{ info.userUstAmount | number }} UST</span>
@@ -374,9 +406,9 @@
               </div>
               <div *ngIf="depositType && depositType !== 'compound' && vault.poolInfo.farm !== 'Spectrum'"
                 class="card-text small text-warning mb-1">
-                <i class="fas fa-exclamation-triangle"></i> With auto stake, earned {{vault.poolInfo.token_symbol}} will
+                <i class="fas fa-exclamation-triangle"></i> With auto stake, earned {{vault.poolInfo.denomSymbol}} will
                 be staked to earn only Gov APR not Airdrop rewards or
-                other staking incentives. Please unstake your {{vault.poolInfo.token_symbol}} and stake directly to
+                other staking incentives. Please unstake your {{vault.poolInfo.denomSymbol}} and stake directly to
                 {{vault.poolInfo.farm}} Gov
                 under your address to earn the benefits.
               </div>
@@ -395,7 +427,7 @@
         <mdb-tab title="Reallocate" *ngIf="!vault.poolInfo.forceDepositType">
           <form #formReallocate="ngForm" class="needs-validation p-3" novalidate>
             <div class="small mb-3">
-              Reallocate auto-stake and auto-compound ratio of deposited {{ vault.symbol }}-UST LP
+              Reallocate auto-stake and auto-compound ratio of deposited {{ vault.symbol }}-{{vault.denomSymbolDisplay}} LP
             </div>
             <div class="d-flex flex-row justify-content-between">
               <div class="d-flex">
@@ -466,7 +498,7 @@
           <form #formWithdraw="ngForm" class="needs-validation p-3" novalidate>
             <div class="text-end small mt-3 text-muted">
               <span>Deposited: {{ info.rewardInfos[vault.assetToken]?.bond_amount || 0 | unit }} {{
-                vault.symbol }}-UST LP</span>
+                vault.symbol }}-{{vault.denomSymbolDisplay}} LP</span>
             </div>
             <div class="input-group">
               <ng-container *ngTemplateOutlet="withdrawModeSection"></ng-container>
@@ -496,9 +528,9 @@
                 <i mdbTooltip="based on slippage tolerance {{ WITHDRAW_UST_MAX_SPREAD | percent}}" class="fas fa-info-circle info-icon"></i>
               </div>
               <div>
-                <span *ngIf="withdrawMode === 'tokenust'">{{ withdrawAmt | lpSplit:
-                  info.poolResponses[vault.assetToken]: vault.symbol }}</span>
-                <span *ngIf="withdrawMode === 'lp'">{{ withdrawAmt | number }} {{vault.symbol}}-UST LP</span>
+                <span *ngIf="withdrawMode === 'tokentoken'">{{ withdrawAmt | lpSplit:
+                  info.poolResponses[vault.assetToken]: vault.symbol: vault.denomSymbolDisplay }}</span>
+                <span *ngIf="withdrawMode === 'lp'">{{ withdrawAmt | number }} {{vault.symbol}}-{{vault.denomSymbolDisplay}} LP</span>
                 <span *ngIf="withdrawMode === 'ust'">
                   {{ withdrawAmt | withdrawUst: info.poolResponses[vault.assetToken] | number }} UST
                 </span>
@@ -528,9 +560,9 @@
               </small>
             </div>
           </div>
-          <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" class="row">
+          <div *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="row">
             <div class="col">
-              Staked {{ vault.poolInfo.farm === 'Mirror' ? 'MIR' : vault.symbol }}
+              Staked {{ vault.poolInfo.farm === 'Mirror' ? 'MIR' : vault.poolInfo.denomSymbol }}
               <small class="text-primary">APR: {{ vault.pairStat?.farmApr | percent }}</small>
             </div>
             <div class="col text-end">
@@ -541,6 +573,7 @@
                 unit: '1.0-2' }})
               </small>
             </div>
+            <!--              TODO change here for nAsset support later-->
           </div>
           <div *ngIf="vault.poolInfo.farm === 'Spectrum'" class="d-grid mt-3">
             <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake SPEC</button>
@@ -551,7 +584,7 @@
               from ALL Mirror vaults</button>
           </div>
           <div *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'" class="d-grid mt-3">
-            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake {{vault.symbol}} +
+            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake {{vault.poolInfo.denomSymbol}} +
               SPEC</button>
           </div>
         </mdb-tab>
@@ -563,15 +596,15 @@
 <ng-template #depositModeSection>
   <div mdbDropdown class="dropdown" #dropdownDepositMode>
     <button mdbDropdownToggle class="btn btn-outline-primary dropdown-toggle btn-first" type="button">
-      <ng-container *ngIf="depositMode === 'tokenust'">{{ vault.symbol }}</ng-container>
-      <ng-container *ngIf="depositMode === 'lp'">{{vault.symbol}}-UST LP</ng-container>
+      <ng-container *ngIf="depositMode === 'tokentoken'">{{ vault.symbol }}</ng-container>
+      <ng-container *ngIf="depositMode === 'lp'">{{vault.symbol}}-{{vault.denomSymbolDisplay}} LP</ng-container>
       <ng-container *ngIf="depositMode === 'ust'">UST</ng-container>
     </button>
     <ul mdbDropdownMenu class="dropdown-menu">
-      <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('tokenust')"
-          [class.active]="depositMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
+      <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('tokentoken')"
+          [class.active]="depositMode === 'tokentoken'">{{vault.symbol}} + {{vault.denomSymbolDisplay}}</a></li>
       <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('lp')"
-          [class.active]="depositMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
+          [class.active]="depositMode === 'lp'">{{vault.symbol}}-{{vault.denomSymbolDisplay}} LP</a></li>
       <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('ust')"
           [class.active]="depositMode === 'ust'">UST</a></li>
     </ul>
@@ -581,15 +614,15 @@
 <ng-template #withdrawModeSection>
   <div mdbDropdown class="dropdown" #dropdownWithdrawMode>
     <button mdbDropdownToggle class="btn btn-outline-primary dropdown-toggle btn-first" type="button">
-      <ng-container *ngIf="withdrawMode === 'tokenust'">{{ vault.symbol }}+UST</ng-container>
-      <ng-container *ngIf="withdrawMode === 'lp'">{{ vault.symbol }}-UST LP</ng-container>
+      <ng-container *ngIf="withdrawMode === 'tokentoken'">{{ vault.symbol }} + {{ vault.denomSymbolDisplay }}</ng-container>
+      <ng-container *ngIf="withdrawMode === 'lp'">{{ vault.symbol }}-{{vault.denomSymbolDisplay}} LP</ng-container>
       <ng-container *ngIf="withdrawMode === 'ust'">UST</ng-container>
     </button>
     <ul mdbDropdownMenu class="dropdown-menu">
-      <li><a class="dropdown-item" (click)="withdrawMode = 'tokenust'; dropdownWithdrawMode.hide()"
-          [class.active]="withdrawMode === 'tokenust'">{{vault.symbol}} + UST</a></li>
+      <li><a class="dropdown-item" (click)="withdrawMode = 'tokentoken'; dropdownWithdrawMode.hide()"
+          [class.active]="withdrawMode === 'tokentoken'">{{vault.symbol}} + {{vault.denomSymbolDisplay}}</a></li>
       <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdownWithdrawMode.hide()"
-          [class.active]="withdrawMode === 'lp'">{{vault.symbol}}-UST LP</a></li>
+          [class.active]="withdrawMode === 'lp'">{{vault.symbol}}-{{vault.denomSymbolDisplay}} LP</a></li>
       <li *ngIf="vault.poolInfo.farm !== 'Spectrum'"><a class="dropdown-item" (click)="withdrawMode = 'ust'; dropdownWithdrawMode.hide()"
           [class.active]="withdrawMode === 'ust'">UST</a></li>
     </ul>

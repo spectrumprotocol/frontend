@@ -9,5 +9,6 @@ export interface ConfigInfo {
   allowlist: string[];
   owner: string;
   terraswap_factory: string;
+  terraswap_router: string;
   [k: string]: unknown;
 }

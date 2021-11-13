@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { PoolResponse } from '../services/api/terraswap_pair/pool_response';
+import {Denom} from '../consts/denom';
 
 @Pipe({
   name: 'balance'
@@ -16,11 +17,13 @@ export class BalancePipe implements PipeTransform {
         .times(poolResponse.assets[0].amount)
         .div(poolResponse.assets[1].amount)
         .toString();
-    } else {
+    } else if (poolResponse.assets[1].info.native_token){
       return new BigNumber(value)
       .times(poolResponse.assets[1].amount)
       .div(poolResponse.assets[0].amount)
       .toString();
+    } else {
+      return null;
     }
 
   }

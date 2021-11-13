@@ -12,7 +12,7 @@ export class LpSplitPipe implements PipeTransform {
     private decimalPipe: DecimalPipe
   ) { }
 
-  transform(lp: number, poolResponse: PoolResponse, symbol: string, digitsInfo?: string): string {
+  transform(lp: number, poolResponse: PoolResponse, symbol: string, denomSymbol: string, digitsInfo?: string): string {
     if (typeof lp !== 'number' || !poolResponse) {
       return undefined;
     }
@@ -26,9 +26,9 @@ export class LpSplitPipe implements PipeTransform {
       .div(poolResponse.total_share)
       .toString();
     if (poolResponse.assets[0].info.native_token) {
-      return `${this.decimalPipe.transform(amount2, digitsInfo)} ${symbol} + ${this.decimalPipe.transform(amount1, digitsInfo)} UST`;
+      return `${this.decimalPipe.transform(amount2, digitsInfo)} ${symbol} + ${this.decimalPipe.transform(amount1, digitsInfo)} ${denomSymbol}`;
     } else {
-      return `${this.decimalPipe.transform(amount1, digitsInfo)} ${symbol} + ${this.decimalPipe.transform(amount2, digitsInfo)} UST`;
+      return `${this.decimalPipe.transform(amount1, digitsInfo)} ${symbol} + ${this.decimalPipe.transform(amount2, digitsInfo)} ${denomSymbol}`;
     }
   }
 

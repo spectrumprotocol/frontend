@@ -284,6 +284,13 @@ input[type="number"] {
   background: linear-gradient(315deg, darken($nexus, 7%) 0%, $nexus 50%);
 }
 
+.bg-Orion {
+  background: $orion;
+  background: -webkit-linear-gradient(315deg, darken($orion, 7%) 0%, $orion 50%);
+  background: linear-gradient(315deg, darken($orion, 7%) 0%, $orion 50%);
+}
+
+
 .bg-your-rewards {
   background: #ed7b84;
   background: -webkit-linear-gradient(315deg, darken(#ed7b84, 7%) 0%, #ed7b84 50%);

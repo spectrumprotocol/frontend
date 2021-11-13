@@ -3,7 +3,14 @@ import { Apollo, gql } from 'apollo-angular';
 import BigNumber from 'bignumber.js';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo, PoolItem } from './farm-info.service';
+import {
+  denomContract,
+  denomSymbol,
+  FarmInfoService,
+  PairStat,
+  PoolInfo,
+  PoolItem
+} from './farm-info.service';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
@@ -149,6 +156,10 @@ export class NexusFarmInfoService implements FarmInfoService {
     return {
       apr,
     };
+  }
+
+  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
+    return [Denom.USD, null];
   }
 
 }
