@@ -40,6 +40,7 @@ export interface ISettings {
   nEthPsiStaking: string;
   nEthToken: string;
   nEthPsiFarm: string;
+  orionGov: string;
   orionStaking: string;
   orionToken: string;
   orionFarm: string;
@@ -98,6 +99,7 @@ export const networks: Record<string, ISettings> = {
     nEthPsiStaking: 'terra1lws09x0slx892ux526d6atwwgdxnjg58uan8ph', // nEthPsiLP: 'terra1y8kxhfg22px5er32ctsgjvayaj8q36tr590qtp'
     nEthToken: 'terra178v546c407pdnx5rer3hu8s2c0fc924k74ymnn',
     nEthPsiFarm: '',
+    orionGov: '',
     orionStaking: 'terra1q8q6y03452e44pztw8kr8zcdkjtxuz8vq9t8uq',
     orionToken: 'terra1mddcdx0ujx89f38gu7zspk2r2ffdl5enyz2u03', // orionLP terra14ffp0waxcck733a9jfd58d86h9rac2chf5xhev
     orionFarm: '',
@@ -155,9 +157,10 @@ export const networks: Record<string, ISettings> = {
     nEthPsiStaking: 'terra1u8gvskrt5n6vdeeuc4428pxhjh75h0jcntm7ca',
     nEthToken: 'terra1em8dvzln8quptj9tuptf8tu73jyuv5jn6kqdwv', // nEthPsiLP: 'terra1y2r544tw2q4cgpgjvts8uu6gekk9kwz047a9sl'
     nEthPsiFarm: 'terra1pmgrx608xemvtcfvcxvvsu85ufklqmxfvdc8tl',
+    orionGov: 'terra1xamqmmllxwhenagfn57753w9hqdhck43dzwj94',
     orionStaking: 'terra1jz22ws2yhlm6zycz7eluqptjn2t74fw4g82v8j',
     orionToken: 'terra13qdskca8xavmed88htplse0z396tesgh63tn9r', // orionLP terra1qvmf8jf3a7h6lgglw29f8nvcckn7t8z0hqgma5
-    orionFarm: 'terra1ymwlr8v6j6ty7rg2crun5r5vetqdduwfe7pmvh',
+    orionFarm: 'terra1swzlts3jvs5lh4v4xpxlylct3auvt79yvnf6c4',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
