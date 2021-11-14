@@ -23,6 +23,7 @@ import { Denom } from '../../../consts/denom';
 import {StakerService} from '../../../services/api/staker.service';
 import {AssetInfo} from '../../../services/api/staker/query_msg';
 import {ExecuteMsg as StakerExecuteMsg} from '../../../services/api/staker/execute_msg';
+import {BalancePipe} from '../../../pipes/balance.pipe';
 
 @Component({
   selector: 'app-asset-card',
@@ -91,6 +92,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     protected $gaService: GoogleAnalyticsService,
     public info: InfoService,
     private lpBalancePipe: LpBalancePipe,
+    private balancePipe: BalancePipe,
     private tokenService: TokenService,
     private terraSwapService: TerraSwapService,
     private staker: StakerService
@@ -573,7 +575,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
       // 2.Belief price buy for half Psi -> nAsset
       this.depositUSTFoundBaseAssetPoolAddress = this.info.pairInfos[assetBase.info.token?.['contract_addr']].contract_addr;
-      const halfDenomAssetAmount = floor18Decimal(div(simulateSwapUSTtoTokenResult.return_amount, 2)); // TODO slippage??
+      const halfDenomAssetAmount = floor(floor18Decimal(div(simulateSwapUSTtoTokenResult.return_amount, 2))); // TODO slippage??
       console.log(halfDenomAssetAmount)
       const simulateSwapDenomTokenToBaseToken = {
         simulation: {
@@ -601,7 +603,12 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       });
       console.log(res);
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
-
+      // const tokenPrice = this.balancePipe.transform('1', this.info.poolResponses[assetDenom.info.token?.['contract_addr']]);
+      // const psiAmount = new BigNumber(lp)
+      //   .times(poolResponses[asset_address].assets[index].amount)
+      //   .div(poolResponses[asset_address].total_share).toString();
+      // const totalPsiValueUST = times(psiPrice, psiAmount);
+      halfUST = div(totalUST, 2);
     }
 
 
