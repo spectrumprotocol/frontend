@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 import { ExecuteMsg } from './staker/execute_msg';
 import { WasmService } from './wasm.service';
-import {QueryMsg} from './nexus_staking/query_msg';
+import {QueryMsg} from './staker/query_msg';
 import {ConfigInfo} from './staker/config_info';
+import {SimulateZapToBondResponse} from './staker/simulate_zap_to_bond_response';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class StakerService {
   ) { }
 
   query(msg: Extract<QueryMsg, { config: unknown }>): Promise<ConfigInfo>;
-  query(msg: Extract<QueryMsg, { config: unknown }>): Promise<ConfigInfo>;
+  query(msg: Extract<QueryMsg, { simulate_zap_to_bond: unknown }>): Promise<SimulateZapToBondResponse>;
   query(msg: QueryMsg): Promise<any> {
     return this.wasm.query(this.terrajs.settings.staker, msg);
   }

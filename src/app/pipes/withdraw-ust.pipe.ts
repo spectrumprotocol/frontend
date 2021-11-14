@@ -23,6 +23,6 @@ export class WithdrawUstPipe implements PipeTransform {
     const ustPart = new BigNumber(lp)
       .times(poolResponseAssetAmount)
       .div(poolResponse.total_share);
-    return plus(ustPart, times(ustPart, 1 - +CONFIG.WITHDRAW_UST_MAX_SPREAD));
+    return plus(ustPart, times(ustPart, 1 - +CONFIG.SLIPPAGE_TOLERANCE));
   }
 }
