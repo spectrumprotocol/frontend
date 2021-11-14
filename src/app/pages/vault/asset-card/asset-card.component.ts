@@ -296,28 +296,62 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === this.vault.poolInfo.farmContract)?.farmContract;
       const depositUST = times(this.depositUSTAmtUST, CONFIG.UNIT);
       const coin = new Coin(Denom.USD, depositUST);
-      const msgs = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.staker, {
-        zap_to_bond: {
-          contract: farmContract,
-          provide_asset: {
-            info: {
-              native_token: {
-                denom: Denom.USD
-              }
+      // pair_asset_b: assetBase.info, // nLuna, nEth
+      // pair_asset: assetDenom.info, // Psi
+      if (this.vault.denomSymbolDisplay === Denom.display[Denom.USD]){
+        const msgs = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.staker, {
+          zap_to_bond: {
+            contract: farmContract,
+            provide_asset: {
+              info: {
+                native_token: {
+                  denom: Denom.USD
+                }
+              },
+              amount: depositUST
             },
-            amount: depositUST
-          },
-          pair_asset: {
-            token: {
-              contract_addr: this.vault.assetToken
+            pair_asset: {
+              token: {
+                contract_addr: this.vault.assetToken
+              },
             },
-          },
-          belief_price: this.depositUSTBeliefPriceBuy,
-          max_spread: CONFIG.SLIPPAGE_TOLERANCE,
-          compound_rate: auto_compound_ratio,
-        }
-      } as StakerExecuteMsg, new Coins([coin]));
-      await this.terrajs.post(msgs);
+            belief_price: this.depositUSTBeliefPriceBuy,
+            max_spread: CONFIG.SLIPPAGE_TOLERANCE,
+            compound_rate: auto_compound_ratio,
+          }
+        } as StakerExecuteMsg, new Coins([coin]));
+        await this.terrajs.post(msgs);
+      } else {
+        const msgs = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.staker, {
+          zap_to_bond: {
+            contract: farmContract,
+            provide_asset: {
+              info: {
+                native_token: {
+                  denom: Denom.USD
+                }
+              },
+              amount: depositUST
+            },
+            pair_asset: {
+              token: {
+                contract_addr: this.vault.poolInfo.denomContract
+              },
+            },
+            belief_price: this.depositUSTBeliefPriceBuy,
+            max_spread: CONFIG.SLIPPAGE_TOLERANCE,
+            compound_rate: auto_compound_ratio,
+            pair_asset_b: {
+              token: {
+                contract_addr: this.vault.assetToken
+              },
+            },
+            belief_price_b: this.depositUSTBaseAssetBeliefPriceBuy
+          }
+        } as StakerExecuteMsg, new Coins([coin]));
+        await this.terrajs.post(msgs);
+      }
+
       // if (this.vault.denomSymbolDisplay === Denom.display[Denom.USD]){
       //
       // } else {
