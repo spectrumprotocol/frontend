@@ -231,51 +231,111 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     }
 
     if (this.depositMode === 'tokentoken') {
-      const assetAmount = times(this.depositTokenAAmtTokenToken, this.UNIT);
-      const ustAmount = times(this.depositUSTAmountTokenUST, this.UNIT);
-      const asset = {
-        amount: assetAmount,
-        info: {
-          token: {
-            contract_addr: this.vault.assetToken,
-          }
-        }
-      };
-      const ust = {
-        amount: ustAmount,
-        info: {
-          native_token: {
-            denom: Denom.USD
-          }
-        }
-      };
-      const pool = this.info.poolResponses[this.vault.assetToken];
-      const assets = pool.assets[0].info.native_token ? [ust, asset] : [asset, ust];
-      await this.terrajs.post([
-        new MsgExecuteContract(
-          this.terrajs.address,
-          this.vault.assetToken,
-          {
-            increase_allowance: {
-              amount: assetAmount,
-              spender: this.terrajs.settings.staker,
+      if (this.vault.denomSymbolDisplay === Denom.display[Denom.USD]){
+        const assetAmount = times(this.depositTokenAAmtTokenToken, this.UNIT);
+        const ustAmount = times(this.depositUSTAmountTokenUST, this.UNIT);
+        const asset = {
+          amount: assetAmount,
+          info: {
+            token: {
+              contract_addr: this.vault.assetToken,
             }
           }
-        ),
-        new MsgExecuteContract(
-          this.terrajs.address,
-          this.terrajs.settings.staker,
-          {
-            bond: {
-              assets,
-              compound_rate: auto_compound_ratio,
-              contract: this.vault.poolInfo.farmContract,
-              slippage_tolerance: CONFIG.SLIPPAGE_TOLERANCE
+        };
+        const ust = {
+          amount: ustAmount,
+          info: {
+            native_token: {
+              denom: Denom.USD
             }
-          },
-          new Coins([new Coin(Denom.USD, ustAmount)])
-        )
-      ]);
+          }
+        };
+        const pool = this.info.poolResponses[this.vault.assetToken];
+        const assets = pool.assets[0].info.native_token ? [ust, asset] : [asset, ust];
+        const msgs = [
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.vault.assetToken,
+            {
+              increase_allowance: {
+                amount: assetAmount,
+                spender: this.terrajs.settings.staker,
+              }
+            }
+          ),
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.terrajs.settings.staker,
+            {
+              bond: {
+                assets,
+                compound_rate: auto_compound_ratio,
+                contract: this.vault.poolInfo.farmContract,
+                slippage_tolerance: CONFIG.SLIPPAGE_TOLERANCE
+              }
+            },
+            new Coins([new Coin(Denom.USD, ustAmount)])
+          )
+        ];
+        await this.terrajs.post(msgs);
+      } else {
+        const assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.UNIT);
+        const assetDenomAmount = times(this.depositTokenBAmtTokenToken, this.UNIT);
+        const assetBase = {
+          amount: assetBaseAmount,
+          info: {
+            token: {
+              contract_addr: this.vault.assetToken,
+            }
+          }
+        };
+        const assetDenom = {
+          amount: assetDenomAmount,
+          info: {
+            token: {
+              contract_addr: this.vault.poolInfo.denomContract,
+            }
+          }
+        };
+
+        const msgs = [
+          // new MsgExecuteContract(
+          //   this.terrajs.address,
+          //   this.vault.assetToken,
+          //   {
+          //     increase_allowance: {
+          //       amount: assetBaseAmount,
+          //       spender: this.terrajs.settings.staker,
+          //     }
+          //   }
+          // ),
+          // new MsgExecuteContract(
+          //   this.terrajs.address,
+          //   this.vault.poolInfo.denomContract,
+          //   {
+          //     increase_allowance: {
+          //       amount: assetDenomAmount,
+          //       spender: this.terrajs.settings.staker,
+          //     }
+          //   }
+          // ),
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.terrajs.settings.staker,
+            {
+              bond: {
+                assets: [assetDenom, assetBase],
+                compound_rate: auto_compound_ratio,
+                contract: this.vault.poolInfo.farmContract,
+                slippage_tolerance: CONFIG.SLIPPAGE_TOLERANCE
+              }
+            }
+          )
+        ];
+        console.log(msgs)
+        await this.terrajs.post(msgs);
+      }
+
     } else if (this.depositMode === 'lp') {
       const lpAmount = times(this.depositLPAmtLP, this.UNIT);
       const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === this.vault.poolInfo.farmContract)?.farmContract;
@@ -296,8 +356,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === this.vault.poolInfo.farmContract)?.farmContract;
       const depositUST = times(this.depositUSTAmtUST, CONFIG.UNIT);
       const coin = new Coin(Denom.USD, depositUST);
-      // pair_asset_b: assetBase.info, // nLuna, nEth
-      // pair_asset: assetDenom.info, // Psi
       if (this.vault.denomSymbolDisplay === Denom.display[Denom.USD]){
         const msgs = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.staker, {
           zap_to_bond: {
@@ -320,6 +378,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
             compound_rate: auto_compound_ratio,
           }
         } as StakerExecuteMsg, new Coins([coin]));
+        console.log(msgs);
+
         await this.terrajs.post(msgs);
       } else {
         const msgs = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.staker, {
@@ -335,7 +395,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
             },
             pair_asset: {
               token: {
-                contract_addr: this.vault.poolInfo.denomContract
+                contract_addr: this.vault.poolInfo.denomContract // psi
               },
             },
             belief_price: this.depositUSTBeliefPriceBuy,
@@ -343,21 +403,16 @@ export class AssetCardComponent implements OnInit, OnDestroy {
             compound_rate: auto_compound_ratio,
             pair_asset_b: {
               token: {
-                contract_addr: this.vault.assetToken
+                contract_addr: this.vault.assetToken // nasset
               },
             },
             belief_price_b: this.depositUSTBaseAssetBeliefPriceBuy
           }
         } as StakerExecuteMsg, new Coins([coin]));
+        console.log(msgs);
+
         await this.terrajs.post(msgs);
       }
-
-      // if (this.vault.denomSymbolDisplay === Denom.display[Denom.USD]){
-      //
-      // } else {
-      //
-      // }
-
     }
 
     this.depositTokenAAmtTokenToken = undefined;
@@ -570,19 +625,15 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       };
       const simulateSwapUSTtoTokenResult = await this.terraSwapService.query(this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken);
       this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(halfUST, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT));
-      console.log('this.depositUSTBeliefPriceBuy >>', this.depositUSTBeliefPriceBuy);
       const res = await this.staker.query({
         simulate_zap_to_bond: {
           pair_asset: assetBase.info,
           provide_asset: {amount: (this.depositUSTAmtUST * CONFIG.UNIT).toString(), info: assetNativeToken.info} // OK now
         }
       });
-      console.log(res);
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
     } else {
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
-      console.log(assetBase);
-      console.log(assetDenom);
 
       // 1.Belief price buy for UST -> all Psi
       this.depositUSTFoundPoolAddress = this.info.pairInfos[assetDenom.info.token?.['contract_addr']].contract_addr;
@@ -604,13 +655,10 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       };
       const simulateSwapUSTtoTokenResult = await this.terraSwapService.query(this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken);
       this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(totalUST, simulateSwapUSTtoTokenResult.return_amount), CONFIG.UNIT)); // TODO slippage??
-      console.log(simulateSwapUSTtoTokenResult.return_amount);
-      console.log('this.depositUSTBeliefPriceBuy >>', this.depositUSTBeliefPriceBuy);
 
       // 2.Belief price buy for half Psi -> nAsset
       this.depositUSTFoundBaseAssetPoolAddress = this.info.pairInfos[assetBase.info.token?.['contract_addr']].contract_addr;
       const halfDenomAssetAmount = floor(floor18Decimal(div(simulateSwapUSTtoTokenResult.return_amount, 2))); // TODO slippage??
-      console.log(halfDenomAssetAmount)
       const simulateSwapDenomTokenToBaseToken = {
         simulation: {
           offer_asset: {
@@ -619,11 +667,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
           }
         }
       };
-      console.log(simulateSwapDenomTokenToBaseToken)
       const simulateSwapDenomTokenToBaseTokenResult = await this.terraSwapService.query(this.depositUSTFoundBaseAssetPoolAddress, simulateSwapDenomTokenToBaseToken);
-      console.log(simulateSwapDenomTokenToBaseTokenResult);
       this.depositUSTBaseAssetBeliefPriceBuy = floor18Decimal(div(halfDenomAssetAmount, simulateSwapDenomTokenToBaseTokenResult.return_amount));
-      console.log('this.depositUSTBaseAssetBeliefPriceBuy >>', this.depositUSTBaseAssetBeliefPriceBuy);
 
       const res = await this.staker.query({
       simulate_zap_to_bond: {
@@ -635,27 +680,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       }
       });
-      console.log(res);
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
-      // const tokenPrice = this.balancePipe.transform('1', this.info.poolResponses[assetDenom.info.token?.['contract_addr']]);
-      // const psiAmount = new BigNumber(lp)
-      //   .times(poolResponses[asset_address].assets[index].amount)
-      //   .div(poolResponses[asset_address].total_share).toString();
-      // const totalPsiValueUST = times(psiPrice, psiAmount);
       halfUST = div(totalUST, 2);
     }
-
-
-    // const pool = this.info.poolResponses[this.vault.assetToken];
-    // const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
-
-    // const grossLp = gt(pool.total_share, 0)
-    //   ? BigNumber.minimum(
-    //     new BigNumber(halfUST).times(pool.total_share).div(ust.amount),
-    //     new BigNumber(simulateSwapUSTtoTokenResult.return_amount).div(CONFIG.UNIT).times(pool.total_share).div(asset.amount))
-    //   : new BigNumber(halfUST)
-    //     .times(simulateSwapUSTtoTokenResult.return_amount)
-    //     .sqrt();
 
     const depositTVL = new BigNumber(halfUST).multipliedBy('2');
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
