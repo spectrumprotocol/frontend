@@ -46,6 +46,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   depositLPAmtLP: number;
   depositUSTAmtUST: number;
   depositTokenBAmtTokenToken: number;
+  tokenAToBeStatic = true;
 
   depositType: 'compound' | 'stake' | 'mixed';
   depositMode: 'tokentoken' | 'lp' | 'ust' = 'tokentoken';
@@ -109,8 +110,10 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
         tasks.push(this.info.refreshPoolResponse(this.vault.assetToken));
         await Promise.all(tasks);
-        if (this.depositTokenAAmtTokenToken) {
-          this.depositTokenATokenTokenChanged();
+        if (this.depositTokenAAmtTokenToken && this.tokenAToBeStatic) {
+          this.depositTokenATokenTokenChanged(true);
+        } else if (this.depositTokenBAmtTokenToken && !this.tokenAToBeStatic) {
+          this.depositTokenBTokenTokenChanged(true);
         }
       }
     });
@@ -131,8 +134,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   setMaxDepositTokenATokenToken() {
+    this.tokenAToBeStatic = true;
     this.depositTokenAAmtTokenToken = +this.info.tokenBalances?.[this.vault.assetToken] / CONFIG.UNIT;
-    this.depositTokenATokenTokenChanged();
+    this.depositTokenATokenTokenChanged(true);
   }
 
   setMaxWithdrawLP() {
@@ -143,14 +147,45 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   @debounce(250)
-  async depositTokenATokenTokenChanged() {
+  async depositTokenATokenTokenChanged(forced: boolean, event?: any) {
+    if (!forced && !event){
+      // input from from HTML has event, input from ngModel changes does not have event, trick to prevent bounce
+      return;
+    }
+    if (event){
+      this.tokenAToBeStatic = true;
+    }
     if (!this.depositTokenAAmtTokenToken) {
       this.depositUSTAmountTokenUST = undefined;
+      this.depositTokenBAmtTokenToken = undefined;
       this.grossLpTokenUST = undefined;
       this.depositFeeTokenUST = undefined;
       this.netLpTokenUST = undefined;
     }
-    if (this.vault.denomSymbolDisplay === 'UST'){
+    this.refreshDataTokenToken(true);
+  }
+
+  @debounce(250)
+  async depositTokenBTokenTokenChanged(forced: boolean, event?: any) {
+    if (!forced && !event){
+      // input from from HTML has event, input from ngModel changes does not have event, trick to prevent bounce
+      return;
+    }
+    if (event){
+      this.tokenAToBeStatic = false;
+    }
+    if (!this.depositTokenBAmtTokenToken) {
+      this.depositUSTAmountTokenUST = undefined;
+      this.depositTokenAAmtTokenToken = undefined;
+      this.grossLpTokenUST = undefined;
+      this.depositFeeTokenUST = undefined;
+      this.netLpTokenUST = undefined;
+    }
+    this.refreshDataTokenToken(false);
+  }
+
+  async refreshDataTokenToken(inputFromA: boolean) {
+    if (this.vault.denomSymbolDisplay === 'UST' && inputFromA){
       const pool = this.info.poolResponses[this.vault.assetToken];
       const [asset, ust] = this.findAssetBaseAndNativeToken();
       const amountUST = new BigNumber(this.depositTokenAAmtTokenToken)
@@ -181,21 +216,17 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         .toNumber();
     } else {
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
-      const amountDenom = new BigNumber(this.depositTokenAAmtTokenToken)
-        .times(assetDenom.amount)
-        .div(assetBase.amount).toNumber();
-      this.depositTokenBAmtTokenToken = +roundSixDecimal(amountDenom);
-    }
-  }
-
-  @debounce(250)
-  async depositTokenBTokenTokenChanged() {
-    if (this.vault.denomSymbolDisplay !== 'UST'){
-      const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
-      const amountBase = new BigNumber(this.depositTokenBAmtTokenToken)
-        .times(assetBase.amount)
-        .div(assetDenom.amount).toNumber();
-      this.depositTokenAAmtTokenToken = +roundSixDecimal(amountBase);
+      if (inputFromA){
+        const amountDenom = new BigNumber(this.depositTokenAAmtTokenToken)
+          .times(assetDenom.amount)
+          .div(assetBase.amount).toNumber();
+        this.depositTokenBAmtTokenToken = +roundSixDecimal(amountDenom);
+      } else {
+        const amountBase = new BigNumber(this.depositTokenBAmtTokenToken)
+          .times(assetBase.amount)
+          .div(assetDenom.amount).toNumber();
+        this.depositTokenAAmtTokenToken = +roundSixDecimal(amountBase);
+      }
     }
   }
 
@@ -299,26 +330,26 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         };
 
         const msgs = [
-          // new MsgExecuteContract(
-          //   this.terrajs.address,
-          //   this.vault.assetToken,
-          //   {
-          //     increase_allowance: {
-          //       amount: assetBaseAmount,
-          //       spender: this.terrajs.settings.staker,
-          //     }
-          //   }
-          // ),
-          // new MsgExecuteContract(
-          //   this.terrajs.address,
-          //   this.vault.poolInfo.denomContract,
-          //   {
-          //     increase_allowance: {
-          //       amount: assetDenomAmount,
-          //       spender: this.terrajs.settings.staker,
-          //     }
-          //   }
-          // ),
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.vault.assetToken,
+            {
+              increase_allowance: {
+                amount: assetBaseAmount,
+                spender: this.terrajs.settings.staker,
+              }
+            }
+          ),
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.vault.poolInfo.denomContract,
+            {
+              increase_allowance: {
+                amount: assetDenomAmount,
+                spender: this.terrajs.settings.staker,
+              }
+            }
+          ),
           new MsgExecuteContract(
             this.terrajs.address,
             this.terrajs.settings.staker,
@@ -579,7 +610,11 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   @debounce(250)
-  async depositLPChanged() {
+  async depositLPChanged(forced: boolean, event?: any) {
+    if (!forced && !event){
+      // input from from HTML has event, input from ngModel changes does not have event, trick to prevent bounce
+      return;
+    }
     if (!this.depositLPAmtLP) {
       this.depositLPAmtLP = undefined;
       this.depositFeeLp = undefined;
@@ -595,11 +630,15 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   setMaxDepositLP() {
     this.depositLPAmtLP = +this.info.lpTokenBalances?.[this.vault.lpToken] / CONFIG.UNIT;
-    this.depositLPChanged();
+    this.depositLPChanged(true);
   }
 
   @debounce(250)
-  async depositUSTChanged() {
+  async depositUSTChanged(forced: boolean, event?: any) {
+    if (!forced && !event){
+      // input from from HTML has event, input from ngModel changes does not have event, trick to prevent bounce
+      return;
+    }
     if (!this.depositUSTAmtUST) {
       this.depositUSTAmtUST = undefined;
       this.grossLpUST = undefined;
@@ -697,7 +736,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     if (+this.info.userUstAmount > this.bufferUST){
       this.depositUSTAmtUST = +floorSixDecimal(+this.info.userUstAmount - 3.5);
     }
-    this.depositUSTChanged();
+    this.depositUSTChanged(true);
   }
 
   private calcNewStakeOrCompoundAmount(mode: string) {
@@ -731,8 +770,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   setMaxDepositTokenBTokenToken() {
+    this.tokenAToBeStatic = false;
     this.depositTokenBAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.denomContract] / CONFIG.UNIT;
-    this.depositTokenBTokenTokenChanged();
+    this.depositTokenBTokenTokenChanged(true);
   }
 
 }

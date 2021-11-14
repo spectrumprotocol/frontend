@@ -105,7 +105,7 @@
 
               <div class="input-group">
                 <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
-                <input #depositTokenAAmtTokenTokenCtl="ngModel" (ngModelChange)="depositTokenATokenTokenChanged()"
+                <input #depositTokenAAmtTokenTokenCtl="ngModel" (input)="depositTokenATokenTokenChanged(false, $event)"
                        [(ngModel)]="depositTokenAAmtTokenToken"
                        [class.is-invalid]="(formDeposit.submitted || depositTokenAAmtTokenTokenCtl.touched) && depositTokenAAmtTokenTokenCtl.invalid"
                        [max]="+info.tokenBalances[vault.assetToken] / UNIT" [min]="0.000001"
@@ -149,7 +149,7 @@
 
                 <div class="input-group">
                   <span class="btn btn-outline-primary btn-first input-group-text-denom">{{vault.poolInfo.denomSymbol}}</span>
-                  <input #depositTokenBAmtTokenTokenCtl="ngModel" (ngModelChange)="depositTokenBTokenTokenChanged()"
+                  <input #depositTokenBAmtTokenTokenCtl="ngModel" (input)="depositTokenBTokenTokenChanged(false, $event)"
                          [(ngModel)]="depositTokenBAmtTokenToken"
                          [class.is-invalid]="(formDeposit.submitted || depositTokenBAmtTokenTokenCtl.touched) && depositTokenBAmtTokenTokenCtl.invalid"
                          [max]="+info.tokenBalances[vault.poolInfo.denomSymbol] / UNIT" [min]="0.000001"
@@ -205,7 +205,7 @@
               </div>
               <div class="input-group">
                 <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
-                <input #depositLPAmtLPCtl="ngModel" (ngModelChange)="depositLPChanged()" [(ngModel)]="depositLPAmtLP"
+                <input #depositLPAmtLPCtl="ngModel" (input)="depositLPChanged(false, $event)" [(ngModel)]="depositLPAmtLP"
                   [class.is-invalid]="(formDeposit.submitted || depositLPAmtLPCtl.touched) && depositLPAmtLPCtl.invalid"
                   [max]="+info.lpTokenBalances[vault.lpToken] / UNIT" [min]="0.000001"
                   [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-height-use-with-button"
@@ -244,7 +244,7 @@
               </div>
               <div class="input-group">
                 <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
-                <input #depositUSTAmtUSTCtl="ngModel" (ngModelChange)="depositUSTChanged()"
+                <input #depositUSTAmtUSTCtl="ngModel" (input)="depositUSTChanged(false, $event)"
                   [(ngModel)]="depositUSTAmtUST"
                   [class.is-invalid]="(formDeposit.submitted || depositUSTAmtUSTCtl.touched) && depositUSTAmtUSTCtl.invalid"
                   [max]="+info.userUstAmount" [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
