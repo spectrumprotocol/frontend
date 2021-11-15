@@ -750,10 +750,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   }
 
   async doReallocate() {
-    const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farm === this.vault.poolInfo.farm)?.farmContract;
     const msgs = [new MsgExecuteContract(
       this.terrajs.address,
-      farmContract,
+      this.vault.poolInfo.farmContract,
       {
         update_bond: {
           asset_token: this.vault.poolInfo.asset_token,
