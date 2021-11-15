@@ -42,8 +42,7 @@ export class ManageRewardsComponent implements OnInit{
     const withdrawAmounts: { [farmContract: string]: string } = {};
 
     for (const rewardInfo of Object.values(this.info.rewardInfos)) {
-      const farmInfo = this.info.farmInfos.find(x => x.farm === rewardInfo.farm);
-
+      const farmInfo = this.info.farmInfos.find(x => x.farmContract === rewardInfo.farmContract);
       if (farmInfo.tokenSymbol !== tokenSymbol && !isSpec) {
         continue;
       }
@@ -64,7 +63,6 @@ export class ManageRewardsComponent implements OnInit{
         },
       })
     );
-
     await this.terrajs.post([mintMsg, ...withdrawMsgs, stakeGovMsg]);
   }
 

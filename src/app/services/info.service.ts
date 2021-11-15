@@ -106,7 +106,7 @@ export class InfoService {
 
   stat: Stat;
 
-  rewardInfos: Record<string, RewardInfoResponseItem & { farm: string }> = {};
+  rewardInfos: Record<string, RewardInfoResponseItem & { farm: string, farmContract: string }> = {};
   tokenBalances: Record<string, string> = {};
   lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
@@ -283,7 +283,7 @@ export class InfoService {
     const tasks = this.farmInfos.map(async farmInfo => {
       const rewards = await farmInfo.queryRewards();
       for (const reward of rewards) {
-        rewardInfos[reward.asset_token] = { ...reward, farm: farmInfo.farm };
+        rewardInfos[reward.asset_token] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
       }
     });
     await Promise.all(tasks);
