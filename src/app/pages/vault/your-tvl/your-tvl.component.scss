@@ -1,3 +1,5 @@
+@import "../../../../scss/variables";
+
 .card-body {
     padding: 1rem 0 1rem 0;
 }
@@ -7,13 +9,13 @@
 }
 
 .farm-info-container {
-    background-color: #1b1f26;
+    background-color: $btn-bg;
     margin: 9px 0 0 0;
     padding: 5px;
     border-radius: 6px;
 }
 
-.myStyle {
-    background-color: #222730;
-    padding: 10px;
+.ptb-10 {
+    padding-top: 10px;
+    padding-bottom: 10px;
 }

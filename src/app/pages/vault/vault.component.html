@@ -47,21 +47,21 @@
             <h3 class="card-title">
               <span *ngIf="+info.myTvl" class="fas fa-chevron-up animate-up text-success"></span>&nbsp;<app-digit
                 [value]="info.myTvl"></app-digit> <span class="cur-title"> UST</span>
-                <!-- *ngIf="!loading && terrajs.isConnected" -->
-                <a role="button" class="margin-left-auto text-light small"
+                <!--  -->
+                <a role="button" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
                 (click)="openYourTVL()"><img class="float-end " src="../../../assets/Icon _ PieChart.svg"></a>
             </h3>
           </div>
         </div>
       </div>
       <div class="col-12 col-md-8">
-        <!-- *ngIf="terrajs.isConnected"  -->
-        <app-unstake-all></app-unstake-all>
+        <!--   -->
+        <app-unstake-all *ngIf="terrajs.isConnected"></app-unstake-all>
       </div>
 
       <div class="col-12 col-md-5">
         <div class="card box-left">
-          <div class="card-body p-10">
+          <div class="card-body p-10 d-none d-sm-none d-md-none d-lg-block">
             <div class="d-flex justify-content-between">
               <div>
                 <img src="{{ isGrid ? '../../../assets/Icon-grid-white.svg' : '../../../assets/Icon-grid-grey.svg' }}" (click)="isGrid = true">
@@ -77,9 +77,21 @@
               </div>
           </div>
           </div>
+          <div class="card-body p-10 d-block d-md-none">
+            <div class="d-flex justify-content-end">
+              <div> 
+                  <span class="align-sub">Deposited only</span>
+                  <label class="switch">
+                    <input type="checkbox" id="showDepositedPoolOnly"
+                    [(ngModel)]="showDepositedPoolOnly" (change)="refresh();memoize('deposit')">
+                    <span class="slider"></span>
+                  </label>
+              </div>
+          </div>
+          </div>
         </div>
       </div>
-      <div class="col-12 col-md-3">
+      <div class="col-sm-8 col-md-3">
         <div class="card box-left">
           <div class="card-body p-10">
             <div class="d-flex">
@@ -92,13 +104,14 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-2">
+      <div class="col-sm-2 col-md-2">
         <div class="card box-left">
           <div class="card-body pd-5">
             <div class="d-flex">
               <div mdbDropdown class="dropdown w-100 text-center" #dropdownFarmFilter>
                 <button mdbDropdownToggle class="btn dropdown-toggle b-none" type="button" aria-expanded="false">
-                  <img *ngIf="activeFarm !== 'All'" [src]="activeFarm | url:'icon'" width="24" height="24"><img *ngIf="activeFarm === 'All'" src="../../../assets/Icon _ Farms.svg" width="24" height="24"> {{activeFarm}} {{ activeFarm === "All" ? "Farms" : "Farm"}}
+                  <img *ngIf="activeFarm !== 'All'" [src]="activeFarm | url:'icon'" width="24" height="24"><img *ngIf="activeFarm === 'All'" src="../../../assets/Icon _ Farms.svg" width="24" height="24">
+                  <span class="d-none d-sm-none d-md-none d-lg-inline">{{activeFarm}} {{ activeFarm === "All" ? "Farms" : "Farm"}}</span> 
                 </button>
                 <ul mdbDropdownMenu class="dropdown-menu">
                   <li>
@@ -116,12 +129,13 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-2">
+      <div class="col-sm-2 col-md-2">
         <div class="card box-left">
           <div class="card-body pd-5">
             <div mdbDropdown class="dropdown w-100 text-center" #dropdownSortBy>
               <button mdbDropdownToggle class="btn dropdown-toggle b-none" type="button" aria-expanded="false">
-                <img src="../../../assets/Icon _ SortBy.svg" width="24" height="24"> Sort by
+                <img src="../../../assets/Icon _ SortBy.svg" width="24" height="24"> 
+                <span class="d-none d-sm-none d-md-none d-lg-inline">Sort by</span>
               </button>
               <ul mdbDropdownMenu class="dropdown-menu">
                 <li>
@@ -174,6 +188,9 @@
           <app-asset-card [vault]="vault" [isGrid]="isGrid"></app-asset-card>
         </div>
       </ng-container>
+    </div>
+    <div class="row pt-5">
+      <app-footer></app-footer>
     </div>
   </div>
 </main>

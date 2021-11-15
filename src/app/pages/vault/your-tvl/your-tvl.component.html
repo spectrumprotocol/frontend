@@ -26,39 +26,28 @@
         <div class="your-tvl-percentage"></div>
       </span>
     </div> -->
-  <div class="row farm-info-container">
-    <div class="d-flex">
+  <div class="row farm-info-container" *ngIf="info.portfolio?.total_reward_ust > 0.01">
+    <div class="d-flex ptb-10">
       <div class="fs-6 sub-topic">Breakdown</div>
     </div>
-    <ng-container *ngFor="let farmInfo of puiArray; let i = index;">
-      <div class="d-flex" [ngClass]="{'myStyle': 0 === i % 2}">
-        <span class="legend-square bg-{{farmInfo.farm}}"></span> {{farmInfo.farm}} farm
-        <span class="margin-left-auto">
-          <app-digit [duration]=300 [value]="22" [format]="'1.2-2'"></app-digit> UST
-          <div class="your-tvl-percentage">(<app-digit [duration]=300 [value]="22" [format]="'1.2-2'"></app-digit> %)</div>
-        </span>
-      </div>
-    </ng-container>
-    <!-- <ng-container *ngFor="let farmInfo of info.farmInfos; let i = index;">
-      <div class="d-flex" *ngIf="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust > 0.01" [ngClass]="{'myStyle': 0 === i % 2}">
+    <ng-container *ngFor="let farmInfo of info.farmInfos; let i = index;">
+      <div class="d-flex" *ngIf="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust > 0.01" [ngClass]="{'switch-grey': 0 === i % 2}">
         <span class="legend-square bg-{{farmInfo.farm}}"></span> {{farmInfo.farm}} farm
         <span class="margin-left-auto">
           <app-digit [duration]=300 [value]="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust" [format]="'1.2-2'"></app-digit> UST
           <div class="your-tvl-percentage">(<app-digit [duration]=300 [value]="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust * 100 / info.myTvl" [format]="'1.2-2'"></app-digit> %)</div>
         </span>
       </div>
-    </ng-container> -->
+    </ng-container>
     <div class="pt-2"></div>
-    <!-- *ngIf="info.portfolio?.gov.pending_reward_ust > 0.01" -->
-    <div class="d-flex" >
+    <div class="d-flex ptb-10" [ngClass]="{'switch-grey': 0 === info.farmInfos?.length % 2}" *ngIf="info.portfolio?.gov.pending_reward_ust > 0.01">
       <span class="legend-square bg-item0"></span> SPEC staked in Gov
       <span class="margin-left-auto">
         <app-digit [duration]=300 [value]="info.portfolio?.gov.pending_reward_ust" [format]="'1.2-2'"></app-digit> UST
         <div class="your-tvl-percentage">(<app-digit [duration]=300 [value]="info.portfolio?.gov.pending_reward_ust * 100 / info.myTvl" [format]="'1.2-2'"></app-digit> %)</div>
       </span>
     </div>
-    <!-- *ngIf="info.portfolio?.total_reward_ust > 0.01" -->
-    <div class="d-flex">
+    <div class="d-flex ptb-10" [ngClass]="{'switch-grey': 0 === info.farmInfos?.length % 2}" *ngIf="info.portfolio?.total_reward_ust > 0.01">
       <span class="legend-square bg-item1"></span> Total staked in Vaults
       <span class="margin-left-auto">
         <app-digit [duration]=300 [value]="info.portfolio?.total_reward_ust" [format]="'1.2-2'"></app-digit> UST

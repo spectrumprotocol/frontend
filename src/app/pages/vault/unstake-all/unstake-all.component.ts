@@ -78,6 +78,8 @@ export class UnstakeAllComponent {
   }
 
   async manageRewards() {
+    // TODO:: remove
+
     if (!this.info.portfolio?.total_reward_ust) {
       return;
     }

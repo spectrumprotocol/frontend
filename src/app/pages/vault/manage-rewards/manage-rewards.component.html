@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h5 class="modal-title">Manage Rewards <i class="fas fa-info-circle info-icon"
+  <h5 class="modal-title margin-auto">Manage Rewards <i class="fas fa-info-circle info-icon"
     mdbTooltip="Manage your staked rewards in vaults such as move rewards to respective Gov under your address"></i></h5>
   <a href="#" class="text-white" (click)="modalRef.close(); false">
     <i class="fas fa-times fa-lg"></i>
@@ -22,17 +22,18 @@
   <table class="table align-middle">
     <thead>
       <tr>
-        <th>Token</th>
-        <th class="d-none d-sm-table-cell">APR <i class="fas fa-info-circle info-icon"
+        <th class="sub-topic">Token</th>
+        <th class="d-none d-sm-table-cell sub-topic">APR <i class="fas fa-info-circle info-icon"
           mdbTooltip="APR from Gov staking"></i></th>
-        <th>Rewards <i class="fas fa-info-circle info-icon"
+        <th class="sub-topic">Rewards <i class="fas fa-info-circle info-icon"
           mdbTooltip="Staked rewards in vaults"></i></th>
         <th></th>
       </tr>
     </thead>
     <tbody>
-      <ng-container *ngFor="let token of info.portfolio?.tokens | keyvalue; trackBy: trackTokensMap">
-        <tr *ngIf="token.value.pending_reward_token > 0">
+      <ng-container *ngFor="let token of info.portfolio?.tokens | keyvalue; let i = index; trackBy: trackTokensMap">
+        <!--  -->
+        <tr [ngClass]="{'switch-grey': 0 === i % 2}" *ngIf="token.value.pending_reward_token > 0">
           <td>
             <img [src]="token.key | url:'icon'" height="32" class="rounded-circle">
             {{ token.key }}
