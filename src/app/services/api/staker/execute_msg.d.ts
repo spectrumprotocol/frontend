@@ -52,11 +52,12 @@ export type ExecuteMsg =
     }
   | {
       zap_to_unbond_hook: {
-        belief_price?: Decimal | null;
+        belief_price_a?: Decimal | null;
+        belief_price_b?: Decimal | null;
         max_spread: Decimal;
-        minimum_receive?: Uint128 | null;
         prev_asset_a: Asset;
-        prev_asset_b: Asset;
+        prev_asset_b?: Asset | null;
+        prev_target_asset: Asset;
         staker_addr: string;
         [k: string]: unknown;
       };

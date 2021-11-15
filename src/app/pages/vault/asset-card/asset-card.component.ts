@@ -384,7 +384,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       };
       await this.tokenService.handle(this.vault.lpToken, msg);
     } else if (this.depositMode === 'ust') {
-      const farmContract = this.info.farmInfos.find(farmInfo => farmInfo.farmContract === this.vault.poolInfo.farmContract)?.farmContract;
+      const farmContract = this.vault.poolInfo.farmContract;
       const depositUST = times(this.depositUSTAmtUST, CONFIG.UNIT);
       const coin = new Coin(Denom.USD, depositUST);
       if (this.vault.denomSymbolDisplay === Denom.display[Denom.USD]){
