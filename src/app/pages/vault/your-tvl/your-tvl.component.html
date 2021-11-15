@@ -14,7 +14,7 @@
       </span>
     </div>
   <div class="row">
-    <ng-container *ngFor="let farmInfo of info.farmInfos">
+    <ng-container *ngFor="let farmInfo of farmInfoList">
       <div class="d-flex" *ngIf="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust > 0.01">
         <span class="legend-square bg-{{farmInfo.farm}}"></span> {{farmInfo.farm}} farm
         <span class="margin-left-auto">

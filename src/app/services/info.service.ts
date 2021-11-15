@@ -352,7 +352,7 @@ export class InfoService {
         continue;
       }
       const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.assetToken) / CONFIG.UNIT || 0;
-      const farmInfo = this.farmInfos.find(it => it.farm === this.poolInfos[vault.assetToken].farm);
+      const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.assetToken].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
       tvl += bond_amount;
@@ -363,8 +363,8 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        const farmPoolResponse = this.poolResponses[farmInfo.farmTokenContract];
-        const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, farmPoolResponse) / CONFIG.UNIT || 0;
+        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.farmTokenContract];
+        const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
         tvl += pending_farm_reward_ust;
         portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_ust += pending_farm_reward_ust;
         portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
