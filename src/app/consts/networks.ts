@@ -156,7 +156,7 @@ export const networks: Record<string, ISettings> = {
     nLunaPsiFarm: 'terra1jssrzhcr2qdm53qucw6ty35wddyhea8nvwwq4a',
     nEthPsiStaking: 'terra1u8gvskrt5n6vdeeuc4428pxhjh75h0jcntm7ca',
     nEthToken: 'terra1em8dvzln8quptj9tuptf8tu73jyuv5jn6kqdwv', // nEthPsiLP: 'terra1y2r544tw2q4cgpgjvts8uu6gekk9kwz047a9sl'
-    nEthPsiFarm: 'terra1pmgrx608xemvtcfvcxvvsu85ufklqmxfvdc8tl',
+    nEthPsiFarm: 'terra1nvgz56np9kytg4xx8xmd85yqfjh50p39wua2yg',
     orionGov: 'terra1xamqmmllxwhenagfn57753w9hqdhck43dzwj94',
     orionStaking: 'terra1jz22ws2yhlm6zycz7eluqptjn2t74fw4g82v8j',
     orionToken: 'terra13qdskca8xavmed88htplse0z396tesgh63tn9r', // orionLP terra1qvmf8jf3a7h6lgglw29f8nvcckn7t8z0hqgma5
