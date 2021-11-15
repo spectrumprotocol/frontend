@@ -496,20 +496,38 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         send: {
           amount: times(this.withdrawAmt, CONFIG.UNIT),
           contract: this.terrajs.settings.staker,
-          msg: toBase64({
+          msg: this.vault.denomSymbolDisplay === Denom.display[Denom.USD] ?
+            toBase64({
+              zap_to_unbond: {
+                sell_asset: { token: { contract_addr: this.vault.poolInfo.asset_token } },
+                target_asset: { native_token: { denom: Denom.USD } },
+                belief_price: floor18Decimal(times(
+                  this.lpBalancePipe.transform(this.withdrawAmt, this.info.poolResponses, this.vault.poolInfo.asset_token),
+                  CONFIG.UNIT
+                )),
+                max_spread: this.WITHDRAW_UST_MAX_SPREAD,
+              },
+            }) : toBase64({
             zap_to_unbond: {
-              sell_asset: { token: { contract_addr: this.vault.poolInfo.asset_token } },
+              sell_asset: { token: { contract_addr: this.vault.poolInfo.denomContract } },
+              sell_asset_b: { token: { contract_addr: this.vault.poolInfo.asset_token } },
               target_asset: { native_token: { denom: Denom.USD } },
-              belief_price: times(
-                this.lpBalancePipe.transform(this.withdrawAmt, this.info.poolResponses, this.vault.assetToken),
+              belief_price: floor18Decimal(times(
+                this.lpBalancePipe.transform(this.withdrawAmt, this.info.poolResponses, this.vault.poolInfo.denomContract),
                 CONFIG.UNIT
-              ),
+              )),
+              belief_price_b: floor18Decimal(times(
+                this.lpBalancePipe.transform(this.withdrawAmt, this.info.poolResponses, this.vault.poolInfo.asset_token),
+                CONFIG.UNIT
+              )),
               max_spread: this.WITHDRAW_UST_MAX_SPREAD,
             },
           }),
         },
       }
     );
+    console.log(withdrawUst);
+    console.log(JSON.parse(atob(withdrawUst.execute_msg['send'].msg)));
     if (this.withdrawMode === 'tokentoken') {
       await this.terrajs.post([unbond, withdrawLp]);
     } else if (this.withdrawMode === 'lp') {
