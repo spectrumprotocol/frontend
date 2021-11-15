@@ -8,6 +8,7 @@ import { div, plus, roundSixDecimal } from 'src/app/libs/math';
 import { LpBalancePipe } from '../../pipes/lp-balance.pipe';
 import { PercentPipe } from '@angular/common';
 import { Event, MsgExecuteContract } from '@terra-money/terra.js';
+import {Denom} from '../../consts/denom';
 
 interface TxHistory {
   desc: string;
@@ -335,13 +336,22 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
 
         const assetToken = this.info.coinInfos[msg.execute_msg['withdraw'].asset_token];
         let poolName: string;
+        const denomDisplay = Denom.display[farmInfo.getDenom()[0]] || farmInfo.getDenom()[0];
 
         if (assetToken) {
-          poolName = `${assetToken}-UST pool`;
+          poolName = `${assetToken}-${denomDisplay} pool`;
         } else if (farmInfo.tokenSymbol === 'MIR') {
           poolName = 'all pools';
         } else {
-          poolName = `${farmInfo.tokenSymbol}-UST pool`;
+          let baseSymbol;
+          if (farmInfo.farmContract === this.terrajs.settings.nLunaPsiFarm){
+            baseSymbol = 'nLuna';
+          } else if (farmInfo.farmContract === this.terrajs.settings.nEthPsiFarm){
+            baseSymbol = 'nEth';
+          } else {
+            baseSymbol = farmInfo.tokenSymbol;
+          }
+          poolName = `${baseSymbol}-${denomDisplay} pool`;
         }
 
         if (farmInfo.tokenSymbol !== 'SPEC') {
