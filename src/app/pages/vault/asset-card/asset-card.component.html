@@ -536,7 +536,7 @@
                   info.poolResponses[vault.assetToken]: vault.symbol: vault.denomSymbolDisplay }}</span>
                 <span *ngIf="withdrawMode === 'lp'">{{ withdrawAmt | number }} {{vault.symbol}}-{{vault.denomSymbolDisplay}} LP</span>
                 <span *ngIf="withdrawMode === 'ust'">
-                  {{ withdrawAmt | withdrawUst: info.poolResponses[vault.assetToken] | number }} UST
+                  {{ withdrawAmt | withdrawUst: info.poolResponses: vault.assetToken | number }} UST
                 </span>
               </div>
             </div>
