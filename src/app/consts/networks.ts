@@ -139,7 +139,7 @@ export const networks: Record<string, ISettings> = {
     orionGov: 'terra1xamqmmllxwhenagfn57753w9hqdhck43dzwj94',
     orionStaking: 'terra1jz22ws2yhlm6zycz7eluqptjn2t74fw4g82v8j',
     orionToken: 'terra13qdskca8xavmed88htplse0z396tesgh63tn9r', // orionLP terra1qvmf8jf3a7h6lgglw29f8nvcckn7t8z0hqgma5
-    orionFarm: 'terra1swzlts3jvs5lh4v4xpxlylct3auvt79yvnf6c4',
+    orionFarm: 'terra1mset93yy46n8lwy59gadcmekxspnf3zldzsc0x',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
