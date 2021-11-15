@@ -41,7 +41,7 @@ export class NethPsiFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nEthPsiFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 

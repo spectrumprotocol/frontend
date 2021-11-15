@@ -39,7 +39,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.valkyrieFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.valkyrieToken;
   }
 

@@ -42,7 +42,7 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nLunaPsiFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 

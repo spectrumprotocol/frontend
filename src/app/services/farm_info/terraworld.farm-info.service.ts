@@ -41,7 +41,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.terraworldFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.terraworldToken;
   }
 

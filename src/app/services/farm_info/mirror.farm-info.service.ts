@@ -40,7 +40,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.mirrorFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.mirrorToken;
   }
 

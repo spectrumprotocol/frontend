@@ -40,7 +40,7 @@ export class NexusFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nexusFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 

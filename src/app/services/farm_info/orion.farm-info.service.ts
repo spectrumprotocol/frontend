@@ -29,7 +29,7 @@ export class OrionFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.orionFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.orionToken;
   }
   farm = 'Orion';

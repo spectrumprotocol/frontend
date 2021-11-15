@@ -163,9 +163,9 @@ export class InfoService {
         poolInfos[pool.asset_token] = Object.assign(pool,
           {
             farm: farmInfo.farm,
-            token_symbol: farmInfo.tokenSymbol,
+            rewardTokenSymbol: farmInfo.tokenSymbol,
             farmContract: farmInfo.farmContract,
-            farmTokenContract: farmInfo.farmTokenContract,
+            rewardTokenContract: farmInfo.rewardTokenContract,
             auto_compound: farmInfo.autoCompound,
             auto_stake: farmInfo.autoStake,
             forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
@@ -363,12 +363,12 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.farmTokenContract];
+        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardTokenContract];
         const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
         tvl += pending_farm_reward_ust;
         portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_ust += pending_farm_reward_ust;
         portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
-        portfolio.tokens.get(farmInfo.tokenSymbol).apr = this.stat?.pairs[farmInfo.farmTokenContract]?.farmApr;
+        portfolio.tokens.get(farmInfo.tokenSymbol).apr = this.stat?.pairs[farmInfo.rewardTokenContract]?.farmApr;
         portfolio.total_reward_ust += pending_farm_reward_ust;
       }
     }

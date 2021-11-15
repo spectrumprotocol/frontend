@@ -62,13 +62,13 @@
               <div class="fs-6 mt-2">
                 Staked <span *ngIf="vault.poolInfo.farm === 'Mirror'">MIR <i class="fas fa-info-circle info-icon"
                     mdbTooltip="MIR will be earned from auto-stake strategy. If you select auto-compound, LP will be earned."></i></span>
-                <span *ngIf="vault.poolInfo.farm !== 'Mirror'">{{vault.poolInfo.token_symbol}} <i class="fas fa-info-circle info-icon"
-                    mdbTooltip="{{vault.poolInfo.token_symbol}} will be earned from auto-stake strategy. If you select auto-compound, LP will be earned."></i></span>
+                <span *ngIf="vault.poolInfo.farm !== 'Mirror'">{{vault.poolInfo.rewardTokenSymbol}} <i class="fas fa-info-circle info-icon"
+                    mdbTooltip="{{vault.poolInfo.rewardTokenSymbol}} will be earned from auto-stake strategy. If you select auto-compound, LP will be earned."></i></span>
               </div>
               <div class="fs-5">{{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit: '1.0-2'}}
                 <span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_farm_reward" class="small text-muted">
                   &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
-                  info.poolResponses[vault.poolInfo.farmTokenContract] |
+                  info.poolResponses[vault.poolInfo.rewardTokenContract] |
                   unit: '1.0-2' }})</span>
               </div>
             </div>
@@ -566,14 +566,14 @@
           </div>
           <div *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="row">
             <div class="col">
-              Staked {{ vault.poolInfo.farm === 'Mirror' ? 'MIR' : vault.poolInfo.token_symbol }}
+              Staked {{ vault.poolInfo.farm === 'Mirror' ? 'MIR' : vault.poolInfo.rewardTokenSymbol }}
               <small class="text-primary">APR: {{ vault.pairStat?.farmApr | percent }}</small>
             </div>
             <div class="col text-end">
               {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit }}
               <small class="text-muted">
                 (${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
-                info.poolResponses[vault.poolInfo.farmTokenContract] |
+                info.poolResponses[vault.poolInfo.rewardTokenContract] |
                 unit: '1.0-2' }})
               </small>
             </div>
@@ -587,7 +587,7 @@
               from ALL Mirror vaults</button>
           </div>
           <div *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'" class="d-grid mt-3">
-            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake {{vault.poolInfo.token_symbol}} +
+            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake {{vault.poolInfo.rewardTokenSymbol}} +
               SPEC</button>
           </div>
         </mdb-tab>

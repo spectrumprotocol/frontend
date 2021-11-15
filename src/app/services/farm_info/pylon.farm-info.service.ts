@@ -40,7 +40,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.pylonFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.pylonToken;
   }
 

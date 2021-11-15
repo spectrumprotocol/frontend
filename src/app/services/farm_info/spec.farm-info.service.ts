@@ -35,7 +35,7 @@ export class SpecFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.specFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.specToken;
   }
 

@@ -39,7 +39,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.anchorFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.anchorToken;
   }
 

@@ -8,7 +8,7 @@ import {MsgExecuteContract} from '@terra-money/terra.js';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem;
-export type PoolInfo = PoolItem & { farm: string; token_symbol: string; farmTokenContract: string; farmContract: string; denomSymbol: string; denomContract: string};
+export type PoolInfo = PoolItem & { farm: string; rewardTokenSymbol: string; rewardTokenContract: string; farmContract: string; denomSymbol: string; denomContract: string};
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
 export interface PairStat {
@@ -31,7 +31,7 @@ export interface FarmInfoService {
   farm: string;
   tokenSymbol: string;
   readonly farmContract: string;
-  readonly farmTokenContract: string;
+  readonly rewardTokenContract: string;
   readonly farmGovContract: string;
   readonly autoCompound: boolean;
   readonly autoStake: boolean;
