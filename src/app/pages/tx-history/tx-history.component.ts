@@ -61,7 +61,7 @@ const txHistoryFactory = {
       lpDesc += !isSpec ? ' (before deposit fee)' : '';
 
       desc += ` ${provideAmount} UST for ${lpDesc} which bought ${returnAmount} ${baseTokenSymbol} at price ${price} UST`;
-      // TODO support for nAsset-Psi
+      // TODO support for nAsset-Psi // TODO wait for zap to unbond to work
     } else {
       const { baseTokenAmount, denomTokenAmount } = provide;
 
@@ -83,17 +83,17 @@ const txHistoryFactory = {
 
     return { desc, action: 'Farm' as const };
   },
-  withdrawFarm: (farm: string, tokenSymbol: string, lpAmount: number, demand?: { uusdAmount: number, tokenAmount?: number }) => {
+  withdrawFarm: (farm: string, baseTokenSymbol: string, denomTokenSymbol: string, lpAmount: number, demand?: { denomTokenAmount: number, baseTokenAmount?: number }) => {
     let desc = 'Withdrawn';
 
-    const lp = `${lpAmount} ${tokenSymbol}-UST LP`;
+    const lp = `${lpAmount} ${baseTokenSymbol}-${denomTokenSymbol} LP`;
 
     if (!demand) {
       desc += ` ${lp}`;
     } else {
-      const { uusdAmount, tokenAmount } = demand;
-      desc += tokenAmount ? ` ${tokenAmount} ${tokenSymbol},` : '';
-      desc += ` ${uusdAmount} UST (${lp})`;
+      const { denomTokenAmount, baseTokenAmount } = demand;
+      desc += baseTokenAmount ? ` ${baseTokenAmount} ${baseTokenSymbol},` : '';
+      desc += ` ${denomTokenAmount} ${denomTokenSymbol} (${lp})`;
     }
 
     desc += ` from ${farm} farm`;
@@ -443,10 +443,12 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const unbondMsg = lastMsg.execute_msg['unbond'];
 
       const lpAmount = +unbondMsg.amount / CONFIG.UNIT;
-      const tokenSymbol = this.info.coinInfos[unbondMsg.asset_token];
-      const farm = this.info.farmInfos.find(o => o.farmContract === lastMsg.contract)?.farm;
+      const baseTokenSymbol = this.info.coinInfos[unbondMsg.asset_token];
+      const farmInfo = this.info.farmInfos.find(o => o.farmContract === lastMsg.contract);
+      const farm = farmInfo?.farm;
+      const denomTokenSymbol = this.getDenomDisplay(farmInfo);
 
-      return txHistoryFactory.withdrawFarm(farm, tokenSymbol, lpAmount);
+      return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount);
     }
 
     if (
@@ -458,19 +460,21 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
 
       const lpAmount = +sendExecuteMsg.amount / CONFIG.UNIT;
       const tokenSymbol = this.info.coinInfos[unbondMsg.asset_token];
-      const farm = this.info.farmInfos.find(o => o.farmContract === secondLastMsg.contract)?.farm;
+      const farmInfo = this.info.farmInfos.find(o => o.farmContract === secondLastMsg.contract);
       const refundAssets = fromContractEvent.attributes.find(o => o.key === 'refund_assets')?.value.split(',');
       const [uusdAmount, tokenAmount] = (refundAssets[0].match(alphabetRegExp)[0] === 'uusd' ? refundAssets : [refundAssets[1], refundAssets[0]])
-        .map(value => +value.match(numberRegExp)[0] / CONFIG.UNIT || 0);
+        .map(value => +value.match(numberRegExp)[0] / CONFIG.UNIT || 0); // TODO wait for zap to unbond to work
+      const farm = farmInfo?.farm;
+      const denomTokenSymbol = this.getDenomDisplay(farmInfo);
 
       if (withdrawLiquidityMsg) {
-        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, lpAmount, { uusdAmount, tokenAmount });
+        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, { denomTokenAmount: uusdAmount, baseTokenAmount: tokenAmount });
       }
 
       const swappedAmount = +fromContractEvent.attributes.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT || 0;
       const totalAmount = +plus(uusdAmount, swappedAmount);
 
-      return txHistoryFactory.withdrawFarm(farm, tokenSymbol, lpAmount, { uusdAmount: totalAmount });
+      return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, { denomTokenAmount: totalAmount });
     }
 
     if (lastMsg.execute_msg['update_bond'] && this.info.farmInfos.find(o => o.farmContract === lastMsg.contract)) {
