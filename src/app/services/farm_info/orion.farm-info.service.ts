@@ -106,7 +106,7 @@ export class OrionFarmInfoService implements FarmInfoService {
   }
 
   get farmGovContract() {
-    return null;
+    return this.terrajs.settings.orionGov;
   }
 
 }

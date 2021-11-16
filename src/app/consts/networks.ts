@@ -85,10 +85,10 @@ export const networks: Record<string, ISettings> = {
     nexusStaking: 'terra12kzewegufqprmzl20nhsuwjjq6xu8t8ppzt30a',
     nexusToken: 'terra12897djskt9rge8dtmm86w654g7kzckkd698608',
     nexusFarm: 'terra1j2hdp4jelqe9tkfwnsx5mlheqagaryxhqwr4h2',
-    orionGov: '',
+    orionGov: 'terra135mjmscm37mp5tu5ghp00lp374fsjaqksmjfh8',
     orionStaking: 'terra1q8q6y03452e44pztw8kr8zcdkjtxuz8vq9t8uq',
     orionToken: 'terra1mddcdx0ujx89f38gu7zspk2r2ffdl5enyz2u03', // orionLP terra14ffp0waxcck733a9jfd58d86h9rac2chf5xhev
-    orionFarm: '',
+    orionFarm: 'terra106en784zr4kpe6phlaj8c8t3aeqgn3xsugaelx',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
