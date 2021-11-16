@@ -104,7 +104,6 @@ export class TradeComponent implements OnInit, OnDestroy {
       const simulateSwapUSTtoSPECResult = (await this.terraSwapService.query(this.terrajs.settings.specPool, simulateSwapUSTtoSPEC));
       this.amountBuySPEC = parseFloat(div(simulateSwapUSTtoSPECResult.return_amount, CONFIG.UNIT));
       this.beliefPriceBuy = floor18Decimal(times(div(this.amountBuyUST, simulateSwapUSTtoSPECResult.return_amount), CONFIG.UNIT));
-      // console.log(this.beliefPriceBuy)
       this.expectedPriceBuySPEC = floorSixDecimal(this.beliefPriceBuy);
       this.refreshMinimumReceived();
     } else if (inputCoin === 'SPEC') {
@@ -240,7 +239,6 @@ export class TradeComponent implements OnInit, OnDestroy {
       const reverseSimulateSwapSPECtoUSTResult = (await this.terraSwapService.query(this.terrajs.settings.specPool, reverseSimulateSwapSPECtoUST));
       this.amountSellSPEC = parseFloat(div(reverseSimulateSwapSPECtoUSTResult.offer_amount, CONFIG.UNIT));
       this.beliefPriceSell = floor18Decimal(div(div(1, div(this.amountSellUST, reverseSimulateSwapSPECtoUSTResult.offer_amount)), CONFIG.UNIT));
-      // console.log(this.beliefPriceSell)
       this.expectedPriceSellSPEC = floor18Decimal(div(this.amountSellUST, this.amountSellSPEC));
       this.refreshMinimumReceived();
       this.formSellSpec.form.markAsPristine();

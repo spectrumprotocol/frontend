@@ -21,7 +21,6 @@ export interface Vault {
   compoundApy: number;
   stakeApy: number;
   apy: number;
-  denomSymbolDisplay: string;
 }
 
 @Component({

@@ -62,21 +62,6 @@ export class UnstakeAllComponent {
     await this.terrajs.post(this.getUnstakeAllMsg());
   }
 
-  async doMoveToGov() {
-    this.$gaService.event('CLICK_MOVE_STAKED_REWARD_TO_GOV');
-    if (!this.info.portfolio?.total_reward_ust) {
-      return;
-    }
-    let msg: MsgExecuteContract[] = this.getUnstakeAllMsg();
-    for (const token of this.info.portfolio.tokens) {
-      const foundFarmInfo = this.info.farmInfos.find(farmInfo => farmInfo.tokenSymbol === token[0]);
-      if (foundFarmInfo && token[1].pending_reward_token > 0) {
-        msg = [...msg, foundFarmInfo.getStakeGovMsg(floor(times(token[1].pending_reward_token, CONFIG.UNIT)))];
-      }
-    }
-    await this.terrajs.post(msg);
-  }
-
   async manageRewards() {
     if (!this.info.portfolio?.total_reward_ust) {
       return;

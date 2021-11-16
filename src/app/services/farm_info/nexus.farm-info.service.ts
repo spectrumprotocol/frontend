@@ -4,8 +4,6 @@ import BigNumber from 'bignumber.js';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
 import {
-  denomContract,
-  denomSymbol,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -27,6 +25,7 @@ export class NexusFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#F4B6C7';
+  pairSymbol = 'UST';
 
   constructor(
     private gov: GovService,
@@ -40,7 +39,7 @@ export class NexusFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nexusFarm;
   }
 
-  get rewardTokenContract() {
+  get farmTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 
@@ -156,10 +155,6 @@ export class NexusFarmInfoService implements FarmInfoService {
     return {
       apr,
     };
-  }
-
-  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
-    return [Denom.USD, null];
   }
 
 }

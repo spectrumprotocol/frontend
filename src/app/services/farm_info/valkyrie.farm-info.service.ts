@@ -3,8 +3,6 @@ import BigNumber from 'bignumber.js';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
 import {
-  denomContract,
-  denomSymbol,
   FarmInfoService,
   PairStat,
   PoolInfo
@@ -26,6 +24,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#ffe646';
+  pairSymbol = 'UST';
 
   constructor(
     private gov: GovService,
@@ -39,7 +38,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.valkyrieFarm;
   }
 
-  get rewardTokenContract() {
+  get farmTokenContract() {
     return this.terrajs.settings.valkyrieToken;
   }
 
@@ -125,9 +124,4 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
       }
     );
   }
-
-  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
-    return [Denom.USD, null];
-  }
-
 }

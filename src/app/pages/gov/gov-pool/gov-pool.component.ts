@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { CONFIG } from 'src/app/consts/config';
-import { toBase64 } from 'src/app/libs/base64';
-import { times } from 'src/app/libs/math';
-import { GovService } from 'src/app/services/api/gov.service';
-import { TokenService } from 'src/app/services/api/token.service';
-import { TerrajsService } from 'src/app/services/terrajs.service';
+import { CONFIG } from '../../../consts/config';
+import { toBase64 } from '../../../libs/base64';
+import { times } from '../../../libs/math';
+import { GovService } from '../../../services/api/gov.service';
+import { TokenService } from '../../../services/api/token.service';
+import { TerrajsService } from '../../../services/terrajs.service';
 import { MdbCollapseDirective } from 'mdb-angular-ui-kit';
 
 export enum GovPoolTab {

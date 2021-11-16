@@ -6,16 +6,21 @@ import { PoolItem } from '../api/orion_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/orion_farm/reward_info_response';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
-import { denomContract, denomSymbol, FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
+import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { Denom } from 'src/app/consts/denom';
 
 @Injectable()
 export class OrionFarmInfoService implements FarmInfoService {
+  farm = 'Orion';
+  tokenSymbol = 'ORION';
+  autoCompound = true;
+  autoStake = false;
+  farmColor = '#00BE72';
+  auditWarning = false;
+  pairSymbol = 'UST';
 
   constructor(
     private gov: GovService,
@@ -29,15 +34,9 @@ export class OrionFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.orionFarm;
   }
 
-  get rewardTokenContract() {
+  get farmTokenContract() {
     return this.terrajs.settings.orionToken;
   }
-  farm = 'Orion';
-  tokenSymbol = 'ORION';
-  autoCompound = true;
-  autoStake = false;
-  farmColor = '#00BE72';
-  auditWarning = false;
 
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.orionFarm.query({ pools: {} });
@@ -101,17 +100,4 @@ export class OrionFarmInfoService implements FarmInfoService {
     });
     return rewardInfo.reward_infos;
   }
-
-  getStakeGovMsg(amount: string): MsgExecuteContract {
-    return null;
-  }
-
-  get farmGovContract() {
-    return null;
-  }
-
-  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
-    return [Denom.USD, null];
-  }
-
 }

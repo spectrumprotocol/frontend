@@ -2,9 +2,9 @@ import { KeyValue } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { MdbModalRef } from 'mdb-angular-ui-kit';
-import { plus } from 'src/app/libs/math';
-import { InfoService, Portfolio } from 'src/app/services/info.service';
-import { TerrajsService } from 'src/app/services/terrajs.service';
+import { plus } from '../../../libs/math';
+import { InfoService, Portfolio } from '../../../services/info.service';
+import { TerrajsService } from '../../../services/terrajs.service';
 import {GovService} from '../../../services/api/gov.service';
 
 type MapToKeyValue<T> = T extends Map<infer X, infer Y> ? KeyValue<X, Y> : never;

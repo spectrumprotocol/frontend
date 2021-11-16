@@ -61,10 +61,8 @@ export class UrlPipe implements PipeTransform {
       case 'mint':
         if (symbol.startsWith('m')) {
           return 'https://terra.mirror.finance/mint#open';
-        }
-        switch (symbol) {
-          case 'nLuna': return `https://terra.nexusprotocol.app/vaults`;
-          case 'nETH': return `https://terra.nexusprotocol.app/vaults`;
+        } else if (symbol.startsWith('n')) {
+          return `https://terra.nexusprotocol.app/vaults`;
         }
         return undefined;
     }

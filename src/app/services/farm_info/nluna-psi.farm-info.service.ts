@@ -4,8 +4,6 @@ import BigNumber from 'bignumber.js';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
 import {
-  denomContract,
-  denomSymbol,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -18,7 +16,6 @@ import {div, times} from '../../libs/math';
 import { RewardInfoResponseItem } from '../api/nexus_nassets_psi_farm/reward_info_response';
 import {NlunaPsiFarmService} from '../api/nluna-psi-farm.service';
 import {NlunaPsiStakingService} from '../api/nluna-psi-staking.service';
-import {LpBalancePipe} from '../../pipes/lp-balance.pipe';
 import {BalancePipe} from '../../pipes/balance.pipe';
 
 @Injectable()
@@ -28,6 +25,8 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#F4B6C7';
+  pairSymbol = 'Psi';
+  baseSymbol = 'nLuna';
 
   constructor(
     private gov: GovService,
@@ -42,7 +41,7 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nLunaPsiFarm;
   }
 
-  get rewardTokenContract() {
+  get farmTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 
@@ -61,7 +60,8 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     const farmConfigTask = this.nlunaPsiFarmService.query({ config: {} });
 
     // action
-    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0); //TODO
+    // TODO
+    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nLunaPsiFarm)?.weight || 0;
     const nexusLPStat = await this.getnLunaPsiLPStat(poolResponses[this.terrajs.settings.nLunaToken], unixTimeSecond);
@@ -160,9 +160,5 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     return {
       apr,
     };
-  }
-
-  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
-    return [this.tokenSymbol, this.terrajs.settings.nexusToken];
   }
 }

@@ -4,8 +4,6 @@ import { GovService } from '../api/gov.service';
 import { TerraworldFarmService } from '../api/terraworld-farm.service';
 import { TerrajsService } from '../terrajs.service';
 import {
-  denomContract,
-  denomSymbol,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -28,12 +26,12 @@ export class TerraworldFarmInfoService implements FarmInfoService {
   autoStake = true;
   auditWarning = true;
   farmColor = '#249fd4';
+  pairSymbol = 'UST';
 
   constructor(
     private gov: GovService,
     private terraworldFarm: TerraworldFarmService,
     private terrajs: TerrajsService,
-    private httpClient: HttpClient,
     private wasm: WasmService
   ) { }
 
@@ -41,7 +39,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.terraworldFarm;
   }
 
-  get rewardTokenContract() {
+  get farmTokenContract() {
     return this.terrajs.settings.terraworldToken;
   }
 
@@ -158,9 +156,4 @@ export class TerraworldFarmInfoService implements FarmInfoService {
       apy,
     };
   }
-
-  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
-    return [Denom.USD, null];
-  }
-
 }

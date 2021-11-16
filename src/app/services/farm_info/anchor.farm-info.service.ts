@@ -7,8 +7,6 @@ import { RewardInfoResponseItem } from '../api/anchor_farm/reward_info_response'
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
 import {
-  denomContract,
-  denomSymbol,
   FarmInfoService,
   PairStat,
   PoolInfo
@@ -26,6 +24,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#3bac3b';
+  pairSymbol = 'UST';
 
   constructor(
     private gov: GovService,
@@ -39,7 +38,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.anchorFarm;
   }
 
-  get rewardTokenContract() {
+  get farmTokenContract() {
     return this.terrajs.settings.anchorToken;
   }
 
@@ -126,9 +125,4 @@ export class AnchorFarmInfoService implements FarmInfoService {
       }
     );
   }
-
-  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
-    return [Denom.USD, null];
-  }
-
 }

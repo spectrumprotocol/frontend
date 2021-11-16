@@ -4,8 +4,6 @@ import BigNumber from 'bignumber.js';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
 import {
-  denomContract,
-  denomSymbol,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -27,6 +25,8 @@ export class NethPsiFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#F4B6C7';
+  pairSymbol = 'Psi';
+  baseSymbol = 'nEth';
 
   constructor(
     private gov: GovService,
@@ -41,7 +41,7 @@ export class NethPsiFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nEthPsiFarm;
   }
 
-  get rewardTokenContract() {
+  get farmTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 
@@ -60,7 +60,8 @@ export class NethPsiFarmInfoService implements FarmInfoService {
     const farmConfigTask = this.nethPsiFarmService.query({ config: {} });
 
     // action
-    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0); //TODO
+    // TODO
+    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nEthPsiFarm)?.weight || 0;
     const nexusLPStat = await this.getnEthPsiLPStat(poolResponses[this.terrajs.settings.nEthToken], unixTimeSecond);
@@ -159,9 +160,5 @@ export class NethPsiFarmInfoService implements FarmInfoService {
     return {
       apr,
     };
-  }
-
-  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
-    return [this.tokenSymbol, this.terrajs.settings.nexusToken];
   }
 }

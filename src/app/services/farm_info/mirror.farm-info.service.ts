@@ -7,8 +7,6 @@ import { MirrorStakingService } from '../api/mirror-staking.service';
 import { RewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
-  denomContract,
-  denomSymbol,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -27,6 +25,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#232C45';
+  pairSymbol = 'UST';
 
   constructor(
     private apollo: Apollo,
@@ -40,7 +39,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.mirrorFarm;
   }
 
-  get rewardTokenContract() {
+  get farmTokenContract() {
     return this.terrajs.settings.mirrorToken;
   }
 
@@ -153,9 +152,4 @@ export class MirrorFarmInfoService implements FarmInfoService {
       }
     );
   }
-
-  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
-    return [Denom.USD, null];
-  }
-
 }

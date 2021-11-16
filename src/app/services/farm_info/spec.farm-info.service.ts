@@ -4,8 +4,6 @@ import { GovService } from '../api/gov.service';
 import { SpecFarmService } from '../api/spec-farm.service';
 import { TerrajsService } from '../terrajs.service';
 import {
-  denomContract,
-  denomSymbol,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -24,6 +22,7 @@ export class SpecFarmInfoService implements FarmInfoService {
   autoCompound = false;
   autoStake = true;
   farmColor = '#fc5185';
+  pairSymbol = 'UST';
 
   constructor(
     private gov: GovService,
@@ -35,7 +34,7 @@ export class SpecFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.specFarm;
   }
 
-  get rewardTokenContract() {
+  get farmTokenContract() {
     return this.terrajs.settings.specToken;
   }
 
@@ -104,9 +103,4 @@ export class SpecFarmInfoService implements FarmInfoService {
       }
     );
   }
-
-  getDenom(baseTokenAddr?: string): [denomSymbol, denomContract] {
-    return [Denom.USD, null];
-  }
-
 }
