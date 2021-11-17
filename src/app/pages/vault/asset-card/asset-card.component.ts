@@ -17,13 +17,13 @@ import { Options as NgxSliderOptions } from '@angular-slider/ngx-slider';
 import { LpBalancePipe } from '../../../pipes/lp-balance.pipe';
 import { TokenService } from '../../../services/api/token.service';
 import { TerraSwapService } from '../../../services/api/terraswap.service';
-
-const DEPOSIT_FEE = '0.001';
 import { Denom } from '../../../consts/denom';
 import { StakerService } from '../../../services/api/staker.service';
-import { AssetInfo } from '../../../services/api/staker/query_msg';
 import { ExecuteMsg as StakerExecuteMsg } from '../../../services/api/staker/execute_msg';
 import { PricePipe } from 'src/app/pipes/price.pipe';
+import {Asset} from '../../../services/api/staker/query_msg';
+
+const DEPOSIT_FEE = '0.001';
 
 @Component({
   selector: 'app-asset-card',
@@ -667,7 +667,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
           pair_asset: assetDenom.info, // Psi
           provide_asset: {
             amount: depositTVL.toString(),
-            info: { native_token: { denom: Denom.USD } } as AssetInfo
+            info: { native_token: { denom: Denom.USD } }
           }
         }
       });

@@ -60,7 +60,6 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     const farmConfigTask = this.nlunaPsiFarmService.query({ config: {} });
 
     // action
-    // TODO
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nLunaPsiFarm)?.weight || 0;
