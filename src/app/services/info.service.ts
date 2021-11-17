@@ -205,13 +205,21 @@ export class InfoService {
     }
   }
 
+  private cleanSymbol(symbol: string) {
+    if (symbol.startsWith('wh')) {
+      return symbol.substr(2);
+    } else {
+      return symbol;
+    }
+  }
+
   async ensureCoinInfos() {
     await this.ensurePoolInfoLoaded();
     const tasks = Object.keys(this.poolInfos)
       .filter(key => !this.coinInfos[key])
       .map(async key => {
         const it = await this.token.query(key, { token_info: {} });
-        this.coinInfos[key] = it.symbol;
+        this.coinInfos[key] = this.cleanSymbol(it.symbol);
       });
     if (tasks.length) {
       await Promise.all(tasks);
