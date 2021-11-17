@@ -100,7 +100,6 @@ export class OrionFarmInfoService implements FarmInfoService {
     });
     return rewardInfo.reward_infos;
   }
-}
 
   get farmGovContract() {
     return this.terrajs.settings.orionGov;

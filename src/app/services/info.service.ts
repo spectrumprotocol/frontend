@@ -304,17 +304,15 @@ export class InfoService {
     this.tokenBalances[assetToken] = (await this.token.balance(assetToken)).balance;
   }
 
-  async refreshPoolResponse(assetToken: string, skipLp = false) {
+  async refreshPoolResponse(assetToken: string) {
     const pairInfo = this.pairInfos[assetToken];
     const tasks: Promise<any>[] = [];
     tasks.push(this.token.balance(assetToken)
       .then(it => this.tokenBalances[assetToken] = it.balance));
     tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
       .then(it => this.poolResponses[assetToken] = it));
-    if (!skipLp) {
-      tasks.push(this.token.balance(pairInfo.liquidity_token)
-        .then(it => this.lpTokenBalances[pairInfo.liquidity_token] = it.balance));
-    }
+    tasks.push(this.token.balance(pairInfo.liquidity_token)
+      .then(it => this.lpTokenBalances[pairInfo.liquidity_token] = it.balance));
     await Promise.all(tasks);
   }
 

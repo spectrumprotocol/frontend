@@ -21,7 +21,7 @@ import { Denom } from '../../../consts/denom';
 import { StakerService } from '../../../services/api/staker.service';
 import { ExecuteMsg as StakerExecuteMsg } from '../../../services/api/staker/execute_msg';
 import { PricePipe } from 'src/app/pipes/price.pipe';
-import {Asset} from '../../../services/api/staker/query_msg';
+import { Asset } from '../../../services/api/staker/query_msg';
 
 const DEPOSIT_FEE = '0.001';
 
@@ -54,6 +54,11 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   withdrawMode: 'tokentoken' | 'lp' | 'ust' = 'tokentoken';
 
   withdrawAmt: number;
+  withdrawUST: string;
+  withdrawMinUST: string;
+  withdrawTokenPrice: string;
+  withdrawBaseTokenPrice: string;
+
   grossLpTokenUST: string;
   depositFeeTokenUST: string;
   netLpTokenUST: string;
@@ -91,7 +96,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     private lpBalancePipe: LpBalancePipe,
     private tokenService: TokenService,
     private staker: StakerService,
-    private pricePipe: PricePipe,
+    private terraSwap: TerraSwapService,
   ) { }
 
   ngOnInit() {
@@ -101,7 +106,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       if (this.terrajs.isConnected && this.belowSection && !this.belowSection.collapsed) {
         const tasks: Promise<any>[] = [];
         if (this.vault.poolInfo.pairSymbol !== 'UST') {
-          tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.farmTokenContract, true));
+          tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.farmTokenContract));
         }
         tasks.push(this.info.refreshPoolResponse(this.vault.assetToken));
         await Promise.all(tasks);
@@ -470,22 +475,68 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.depositType = undefined;
   }
 
-  private updatePrice() {
-    if (this.vault.poolInfo.pairSymbol === 'UST') {
-      this.tokenPrice = floor18Decimal(this.pricePipe.transform(this.info.poolResponses[this.vault.assetToken]));
-    } else {
-      const [baseAsset, denomAsset] = this.findAssetBaseAndDenom();
-      this.basedTokenPrice = floor18Decimal(div(denomAsset.amount, baseAsset.amount));
-      this.tokenPrice = floor18Decimal(this.pricePipe.transform(this.info.poolResponses[this.vault.poolInfo.farmTokenContract]));
-    }
-  }
-
   @debounce(250)
-  withdrawAmtChanged() {
+  async withdrawAmtChanged() {
     if (this.withdrawMode !== 'ust') {
       return;
     }
-    this.updatePrice();
+
+    if (this.vault.poolInfo.pairSymbol === 'UST') {
+      const poolResponse = this.info.poolResponses[this.vault.assetToken];
+      const [tokenAsset, ustAsset] = poolResponse.assets[0].info.native_token
+        ? [poolResponse.assets[1], poolResponse.assets[0]]
+        : [poolResponse.assets[0], poolResponse.assets[1]];
+      const ustAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
+        .times(ustAsset.amount).div(poolResponse.total_share).integerValue();
+      const tokenAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
+        .times(tokenAsset.amount).div(poolResponse.total_share).integerValue().toString();
+      const simulate = await this.terraSwap.query(this.vault.pairInfo.contract_addr, {
+        simulation: {
+          offer_asset: {
+            info: tokenAsset.info,
+            amount: tokenAmt,
+          }
+        }
+      });
+      this.withdrawTokenPrice = floor18Decimal(div(tokenAmt, simulate.return_amount));
+      this.withdrawUST = ustAmt.plus(simulate.return_amount).toString();
+      this.withdrawMinUST = ustAmt.plus(times(simulate.return_amount, 1 - +this.SLIPPAGE)).toString();
+    } else {
+      const poolResponse = this.info.poolResponses[this.vault.assetToken];
+      const [tokenA, tokenB] = poolResponse.assets[0].info.token['contract_addr'] === this.vault.assetToken
+        ? [poolResponse.assets[1], poolResponse.assets[0]]
+        : [poolResponse.assets[0], poolResponse.assets[1]];
+      const tokenAAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
+        .times(tokenA.amount).div(poolResponse.total_share).integerValue();
+      const tokenBAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
+        .times(tokenB.amount).div(poolResponse.total_share).integerValue().toString();
+      const simulate = await this.terraSwap.query(this.vault.pairInfo.contract_addr, {
+        simulation: {
+          offer_asset: {
+            info: tokenB.info,
+            amount: tokenBAmt,
+          }
+        }
+      });
+      this.withdrawBaseTokenPrice = floor18Decimal(div(tokenBAmt, simulate.return_amount));
+      const withdrawA = tokenAAmt.plus(simulate.return_amount);
+      const withdrawMinA = tokenAAmt.plus(times(simulate.return_amount, 1 - +this.SLIPPAGE));
+
+      const simulate2 = await this.terraSwap.query(this.info.pairInfos[tokenA.info.token['contract_addr']].contract_addr, {
+        simulation: {
+          offer_asset: {
+            info: tokenA.info,
+            amount: withdrawA.toString(),
+          }
+        }
+      });
+      this.withdrawTokenPrice = floor18Decimal(div(withdrawA, simulate2.return_amount));
+      this.withdrawUST = simulate2.return_amount;
+      this.withdrawMinUST = withdrawMinA.times(simulate2.return_amount)
+        .div(withdrawA)
+        .times(1 - +this.SLIPPAGE)
+        .toString();
+    }
   }
 
   async doWithdraw() {
@@ -525,7 +576,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
           zap_to_unbond: {
             sell_asset: { token: { contract_addr: this.vault.poolInfo.asset_token } },
             target_asset: { native_token: { denom: Denom.USD } },
-            belief_price: this.tokenPrice,
+            belief_price: this.withdrawTokenPrice,
             max_spread: this.SLIPPAGE,
           },
         };
@@ -535,8 +586,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
             sell_asset: { token: { contract_addr: this.vault.poolInfo.farmTokenContract } },
             sell_asset_b: { token: { contract_addr: this.vault.poolInfo.asset_token } },
             target_asset: { native_token: { denom: Denom.USD } },
-            belief_price: this.tokenPrice,
-            belief_price_b: this.basedTokenPrice,
+            belief_price: this.withdrawTokenPrice,
+            belief_price_b: this.withdrawBaseTokenPrice,
             max_spread: this.SLIPPAGE,
           },
         };
@@ -555,6 +606,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       await this.terrajs.post([unbond, withdrawUst]);
     }
     this.withdrawAmt = undefined;
+    this.withdrawUST = undefined;
+    this.withdrawMinUST = undefined;
   }
 
   private getWithdrawMsg(all?: boolean): MsgExecuteContract {
@@ -647,7 +700,6 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       this.depositFeeUST = undefined;
       this.netLpUST = undefined;
     }
-    this.updatePrice();
     let grossLp: BigNumber;
     const depositTVL = new BigNumber(this.depositUSTAmtUST).times(CONFIG.UNIT);
     if (this.vault.poolInfo.pairSymbol === 'UST') {
@@ -659,6 +711,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       });
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
+      this.tokenPrice = res.belief_price;
     } else {
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
       const res = await this.staker.query({
@@ -672,6 +725,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       });
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
+      this.tokenPrice = res.belief_price;
+      this.basedTokenPrice = res.belief_price_b;
     }
 
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
