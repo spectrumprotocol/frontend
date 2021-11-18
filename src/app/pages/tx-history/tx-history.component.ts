@@ -86,17 +86,20 @@ const txHistoryFactory = {
 
     return { desc, action: 'Farm' as const };
   },
-  withdrawFarm: (farm: string, baseTokenSymbol: string, denomTokenSymbol: string, lpAmount: number, demand?: { denomTokenAmount: number, baseTokenAmount?: number }) => {
+  withdrawFarm: (farm: string, baseTokenSymbol: string, denomTokenSymbol: string, lpAmount: number, isWithdrawToUST: boolean, demand?: { tokenAAmount: number, tokenBAmount?: number }) => {
     let desc = 'Withdrawn';
 
     const lp = `${lpAmount} ${baseTokenSymbol}-${denomTokenSymbol} LP`;
 
     if (!demand) {
       desc += ` ${lp}`;
+    } else if (!isWithdrawToUST){
+      const { tokenAAmount, tokenBAmount } = demand;
+      desc += tokenBAmount ? ` ${tokenBAmount} ${baseTokenSymbol},` : '';
+      desc += ` ${tokenAAmount} ${denomTokenSymbol} (${lp})`;
     } else {
-      const { denomTokenAmount, baseTokenAmount } = demand;
-      desc += baseTokenAmount ? ` ${baseTokenAmount} ${baseTokenSymbol},` : '';
-      desc += ` ${denomTokenAmount} ${denomTokenSymbol} (${lp})`;
+      const { tokenAAmount } = demand;
+      desc += ` ${tokenAAmount} UST (${lp})`;
     }
 
     desc += ` from ${farm} farm`;
@@ -443,7 +446,6 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       let baseTokenSymbol;
       let denomTokenSymbol;
 
-
       const pair_asset_b_token_contract_addr = zapToBondMsg.pair_asset_b?.token?.contract_addr;
       if (pair_asset_b_token_contract_addr){
         baseTokenSymbol = this.info.coinInfos[pair_asset_b_token_contract_addr];
@@ -471,7 +473,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const farm = farmInfo?.farm;
       const denomTokenSymbol = farmInfo?.pairSymbol;
 
-      return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount);
+      return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, false);
     }
 
     if (
@@ -486,18 +488,28 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === secondLastMsg.contract);
       const refundAssets = fromContractEvent.attributes.find(o => o.key === 'refund_assets')?.value.split(',');
       const [uusdAmount, tokenAmount] = (refundAssets[0].match(alphabetRegExp)[0] === 'uusd' ? refundAssets : [refundAssets[1], refundAssets[0]])
-        .map(value => +value.match(numberRegExp)[0] / CONFIG.UNIT || 0); // TODO wait for zap to unbond to work
+        .map(value => +value.match(numberRegExp)[0] / CONFIG.UNIT || 0);
       const farm = farmInfo?.farm;
       const denomTokenSymbol = farmInfo?.pairSymbol;
 
       if (withdrawLiquidityMsg) {
-        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, { denomTokenAmount: uusdAmount, baseTokenAmount: tokenAmount });
+        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, false,{ tokenAAmount: uusdAmount, tokenBAmount: tokenAmount });
       }
 
-      const swappedAmount = +fromContractEvent.attributes.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT || 0;
-      const totalAmount = +plus(uusdAmount, swappedAmount);
+      const zap_to_unbond = ensureBase64toObject(sendExecuteMsg?.msg['zap_to_unbond']);
+      if (zap_to_unbond['sell_asset_b']){
+        const uusdAskAssetIndex = fromContractEvent?.attributes.findIndex(o => o.key === 'ask_asset' && o.value === Denom.USD);
+        const uusdReturnAmountKeyIndex = fromContractEvent?.attributes[+uusdAskAssetIndex + 2];
+        const uusdReturnAmount = uusdReturnAmountKeyIndex.key === 'return_amount' ? +uusdReturnAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
 
-      return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, { denomTokenAmount: totalAmount });
+        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, true, { tokenAAmount: uusdReturnAmount });
+
+      } else {
+        const swappedAmount = +fromContractEvent.attributes.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT || 0;
+        const totalAmount = +plus(uusdAmount, swappedAmount);
+
+        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, true, { tokenAAmount: totalAmount });
+      }
     }
 
     if (lastMsg.execute_msg['update_bond'] && this.info.farmInfos.find(o => o.farmContract === lastMsg.contract)) {
