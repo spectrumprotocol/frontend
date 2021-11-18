@@ -61,10 +61,10 @@ export class VaultComponent implements OnInit, OnDestroy {
       .subscribe(async connected => {
         this.loading = true;
         this.info.updateVaults();
-        this.refresh();
+        this.refresh(true);
         this.info.refreshPool();
         await this.info.initializeVaultData(connected);
-        this.refresh();
+        this.refresh(true);
         this.loading = false;
         this.height = await this.terrajs.getHeight();
         this.lastSortBy = undefined;
@@ -98,7 +98,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   @debounce(250)
-  refresh() {
+  refresh(resetFilterOnEmpty?: boolean) {
     let vaults = this.activeFarm === 'All' ? this.info.allVaults : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm);
     if (this.lastSortBy !== this.sortBy) {
       switch (this.sortBy) {
@@ -118,7 +118,12 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.lastSortBy = this.sortBy;
     }
     if (this.showDepositedPoolOnly) {
+      const oldVaults = vaults;
       vaults = vaults.filter(it => +this.info.rewardInfos?.[it.assetToken]?.bond_amount >= 10);
+      if (vaults.length === 0 && resetFilterOnEmpty) {
+        this.showDepositedPoolOnly = false;
+        vaults = oldVaults;
+      }
     }
     if (this.search) {
       vaults = vaults.filter(it => it.symbol.toLowerCase().includes(this.search.toLowerCase()));
