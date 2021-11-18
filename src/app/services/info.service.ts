@@ -428,20 +428,21 @@ export class InfoService {
     try {
       const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
       Object.assign(this.coinInfos, data.coinInfos);
+      Object.assign(this.tokenInfos, data.tokenInfos);
       this.stat = data.stat;
       this.pairInfos = data.pairInfos;
       this.poolInfos = data.poolInfos;
       localStorage.setItem('coinInfos', JSON.stringify(this.coinInfos));
+      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
       localStorage.setItem('stat', JSON.stringify(this.stat));
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
       localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-
       if (skipPoolResponses) {
         this.poolResponses = data.poolResponses;
         localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
       }
     } catch (ex) {
-      //fallback if api die
+      // fallback if api die
       await Promise.all([this.ensureCoinInfos(), this.refreshStat()]);
     }
   }
