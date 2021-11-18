@@ -99,7 +99,7 @@ export const networks: Record<string, ISettings> = {
     nEthPsiStaking: 'terra1lws09x0slx892ux526d6atwwgdxnjg58uan8ph', // nEthPsiLP: 'terra1y8kxhfg22px5er32ctsgjvayaj8q36tr590qtp'
     nEthToken: 'terra178v546c407pdnx5rer3hu8s2c0fc924k74ymnn',
     nEthPsiFarm: '',
-    orionGov: 'terra135mjmscm37mp5tu5ghp00lp374fsjaqksmjfh',
+    orionGov: 'terra135mjmscm37mp5tu5ghp00lp374fsjaqksmjfh8',
     orionStaking: 'terra1q8q6y03452e44pztw8kr8zcdkjtxuz8vq9t8uq',
     orionToken: 'terra1mddcdx0ujx89f38gu7zspk2r2ffdl5enyz2u03', // orionLP terra14ffp0waxcck733a9jfd58d86h9rac2chf5xhev
     orionFarm: 'terra106en784zr4kpe6phlaj8c8t3aeqgn3xsugaelx',
