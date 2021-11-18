@@ -11,6 +11,8 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 export interface Vault {
   symbol: string;
+  decimals: number;
+  unit: number;
   assetToken: string;
   lpToken: string;
   pairInfo: PairInfo;

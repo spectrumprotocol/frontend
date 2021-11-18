@@ -404,7 +404,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
           nativeTokenAmount = (+asset.amount - +taxAmount) / CONFIG.UNIT;
         } else if (asset.info?.token) {
           tokenSymbol = this.info.coinInfos[asset.info?.token.contract_addr];
-          tokenAmount = +asset.amount / CONFIG.UNIT;
+          tokenAmount = +asset.amount / this.info.tokenInfos[asset.info?.token.contract_addr].unit;
         }
       }
 
@@ -416,7 +416,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
 
       const provideAmount = +fromContractEvent?.attributes.find(o => o.key === 'provide_amount')?.value / CONFIG.UNIT || 0;
       const offerAmount = +fromContractEvent?.attributes.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT || 0;
-      const returnAmount = +fromContractEvent?.attributes.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT || 0;
+      const returnAmount = +fromContractEvent?.attributes.find(o => o.key === 'return_amount')?.value / this.info.tokenInfos[zapToBondMsg.pair_asset.token.contract_addr].unit || 0;
       const lpAmount = +fromContractEvent?.attributes.find(o => o.key === 'share')?.value / CONFIG.UNIT || 0;
       const price = roundSixDecimal(offerAmount / returnAmount);
       const farm = this.info.farmInfos.find(o => o.farmContract === zapToBondMsg.contract)?.farm;
@@ -447,9 +447,10 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const tokenSymbol = this.info.coinInfos[unbondMsg.asset_token];
       const farm = this.info.farmInfos.find(o => o.farmContract === secondLastMsg.contract)?.farm;
       const refundAssets = fromContractEvent.attributes.find(o => o.key === 'refund_assets')?.value.split(',');
-      const [uusdAmount, tokenAmount] = (refundAssets[0].match(alphabetRegExp)[0] === 'uusd' ? refundAssets : [refundAssets[1], refundAssets[0]])
-        .map(value => +value.match(numberRegExp)[0] / CONFIG.UNIT || 0);
-
+      const [uusdAmountRaw, tokenAmountRaw] = (refundAssets[0].match(alphabetRegExp)[0] === 'uusd' ? refundAssets : [refundAssets[1], refundAssets[0]])
+        .map(value => +value.match(numberRegExp)[0] || 0);
+      const uusdAmount = uusdAmountRaw / CONFIG.UNIT;
+      const tokenAmount = tokenAmountRaw / this.info.tokenInfos[unbondMsg.asset_token].unit;
       if (withdrawLiquidityMsg) {
         return txHistoryFactory.withdrawFarm(farm, tokenSymbol, lpAmount, { uusdAmount, tokenAmount });
       }

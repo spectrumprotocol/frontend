@@ -46,6 +46,13 @@ export type Portfolio = {
   farms: Map<string, PortfolioItem>;
 };
 
+export type TokenInfo = {
+  name: string;
+  symbol: string;
+  decimals: number;
+  unit: number;
+}
+
 const HEIGHT_PER_YEAR = 365 * 24 * 60 * 60 * 1000 / BLOCK_TIME;
 
 @Injectable({
@@ -90,6 +97,11 @@ export class InfoService {
       if (rewardInfoJson) {
         this.rewardInfos = JSON.parse(rewardInfoJson);
       }
+      const tokenInfoJson = localStorage.getItem('tokenInfos');
+      if (tokenInfoJson) {
+        this.tokenInfos = JSON.parse(tokenInfoJson);
+      }
+
     } catch (e) { }
   }
   userUstAmount: string;
@@ -103,6 +115,7 @@ export class InfoService {
   poolInfos: Record<string, PoolInfo>;
   pairInfos: Record<string, PairInfo> = {};
   coinInfos: Record<string, string> = {};
+  tokenInfos: Record<string, TokenInfo> = {};
 
   stat: Stat;
 
@@ -215,11 +228,19 @@ export class InfoService {
       .filter(key => !this.coinInfos[key])
       .map(async key => {
         const it = await this.token.query(key, { token_info: {} });
+        
         this.coinInfos[key] = this.cleanSymbol(it.symbol);
+        this.tokenInfos[key] = {
+          name: it.name,
+          symbol: it.symbol,
+          decimals: it.decimals,
+          unit: 10 ** it.decimals,
+        };
       });
     if (tasks.length) {
       await Promise.all(tasks);
       localStorage.setItem('coinInfos', JSON.stringify(this.coinInfos));
+      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
     }
   }
 
@@ -420,7 +441,7 @@ export class InfoService {
         localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
       }
     } catch (ex) {
-      // fallback if api die
+      //fallback if api die
       await Promise.all([this.ensureCoinInfos(), this.refreshStat()]);
     }
   }
@@ -449,6 +470,8 @@ export class InfoService {
 
       const vault: Vault = {
         symbol: this.coinInfos[key],
+        decimals: this.tokenInfos[key]?.decimals,
+        unit: this.tokenInfos[key]?.unit,
         assetToken: key,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
