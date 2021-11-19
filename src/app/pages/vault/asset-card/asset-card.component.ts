@@ -193,12 +193,11 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       const amountToken = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.unit);
       const amountUST = amountToken.times(ust.amount).div(asset.amount).integerValue();
 
-      const grossLp = (gt(pool.total_share, 0)
+      const grossLp = gt(pool.total_share, 0)
         ? BigNumber.minimum(
           amountUST.times(pool.total_share).div(ust.amount),
           amountToken.times(pool.total_share).div(asset.amount))
-        : amountToken.times(amountUST).sqrt()
-      ).div(CONFIG.UNIT);
+        : amountToken.times(amountUST).sqrt();
       if (this.vault.pairStat) {
         const depositTVL = amountUST.multipliedBy('2');
         const depositFee = this.vault.poolInfo.farm === 'Spectrum'
@@ -217,20 +216,21 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
       let amountBase: BigNumber;
       let amountDenom: BigNumber;
+      const denomUnit = this.info.tokenInfos[assetDenom.info.token['contract_addr']].unit;
       if (inputFromA) {
-        amountBase = new BigNumber(this.depositTokenAAmtTokenToken).times(CONFIG.UNIT);
+        amountBase = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.unit);
         amountDenom = amountBase.times(assetDenom.amount).div(assetBase.amount).integerValue();
-        this.depositTokenBAmtTokenToken = amountDenom.div(CONFIG.UNIT).toNumber();
+        this.depositTokenBAmtTokenToken = amountDenom.div(denomUnit).toNumber();
       } else {
-        amountDenom = new BigNumber(this.depositTokenBAmtTokenToken).times(CONFIG.UNIT);
+        amountDenom = new BigNumber(this.depositTokenBAmtTokenToken).times(denomUnit);
         amountBase = amountDenom.times(assetBase.amount).div(assetDenom.amount).integerValue();
-        this.depositTokenAAmtTokenToken = amountBase.div(CONFIG.UNIT).toNumber();
+        this.depositTokenAAmtTokenToken = amountBase.div(this.vault.unit).toNumber();
       }
 
       const grossLp = gt(pool.total_share, 0)
         ? BigNumber.minimum(
           amountDenom.times(pool.total_share).div(assetDenom.amount),
-          amountBase.times(pool.total_share).div(assetDenom.amount))
+          amountBase.times(pool.total_share).div(assetBase.amount))
         : amountBase.times(amountDenom).sqrt();
       if (this.vault.pairStat) {
         const depositTVL = new BigNumber(this.lpBalancePipe.transform(grossLp.toString(), this.info.poolResponses, this.vault.assetToken));
@@ -786,7 +786,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   setMaxDepositTokenBTokenToken() {
     this.tokenAToBeStatic = false;
-    this.depositTokenBAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.farmTokenContract] / CONFIG.UNIT;
+    this.depositTokenBAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.farmTokenContract] / +this.info.tokenInfos[this.vault.poolInfo.farmTokenContract].unit;
     this.depositTokenBTokenTokenChanged(true);
   }
 

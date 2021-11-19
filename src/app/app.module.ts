@@ -44,6 +44,7 @@ import { NgxGoogleAnalyticsModule, NgxGoogleAnalyticsRouterModule } from 'ngx-go
 import { CONFIG } from './consts/config';
 import { FooterComponent } from './footer/footer.component';
 import { LpSplitPipe } from './pipes/lp-split.pipe';
+import { PricePipe } from './pipes/price.pipe';
 import { ToDatePipe } from './pipes/to-date.pipe';
 import { BalancePipe } from './pipes/balance.pipe';
 import { LpBalancePipe } from './pipes/lp-balance.pipe';
@@ -101,6 +102,7 @@ registerLocaleData(locale, 'en');
     UnitPipe,
     RewardInfoPipe,
     LpSplitPipe,
+    PricePipe,
     ToDatePipe,
     BalancePipe,
     LpBalancePipe,
@@ -141,8 +143,8 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
