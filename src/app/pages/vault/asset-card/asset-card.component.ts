@@ -481,9 +481,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       }
     };
     const simulateSwapUSTtoTokenResult = await this.terraSwapService.query(this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken);
-    this.depositUSTBeliefPriceBuy = new BigNumber(halfUST)
-      .times(this.vault.unit)
-      .div(simulateSwapUSTtoTokenResult.return_amount).toFixed(18);
+    this.depositUSTBeliefPriceBuy = floor18Decimal(times(div(halfUST, simulateSwapUSTtoTokenResult.return_amount), this.vault.unit));
 
     const pool = this.info.poolResponses[this.vault.assetToken];
     const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
