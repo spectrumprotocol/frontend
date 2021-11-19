@@ -131,7 +131,7 @@
               <div *ngIf="depositUSTAmountTokenUST" @fade class="mt-3 pool-info">
                 <div class="row">
                   <div class="col">Terraswap Price</div>
-                  <div class="col text-end">{{info.poolResponses[vault.assetToken] | price | number }} UST</div>
+                  <div class="col text-end">{{vault.assetToken | price | number }} UST</div>
                 </div>
                 <div class="row">
                   <div class="col">Gross LP</div>
