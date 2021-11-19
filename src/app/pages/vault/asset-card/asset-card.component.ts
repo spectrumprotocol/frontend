@@ -263,7 +263,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
               contract_addr: this.vault.assetToken
             },
           },
-          belief_price: this.depositUSTBeliefPriceBuy,
+          belief_price: this.toContractPrice(this.depositUSTBeliefPriceBuy, 6, this.vault.decimals),
           max_spread: '0.01',
           compound_rate: auto_compound_ratio
         }
@@ -288,6 +288,12 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.netLpUST = undefined;
 
     this.depositType = undefined;
+  }
+
+  private toContractPrice(price: string, offer_decimals: number, ask_decimals: number) {
+    return offer_decimals === ask_decimals
+      ? price
+      : times(price, 10 ** (offer_decimals - ask_decimals));
   }
 
   async doWithdraw() {
