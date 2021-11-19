@@ -46,6 +46,13 @@ export type Portfolio = {
   farms: Map<string, PortfolioItem>;
 };
 
+export type TokenInfo = {
+  name: string;
+  symbol: string;
+  decimals: number;
+  unit: number;
+};
+
 const HEIGHT_PER_YEAR = 365 * 24 * 60 * 60 * 1000 / BLOCK_TIME;
 
 @Injectable({
@@ -74,10 +81,6 @@ export class InfoService {
       if (pairJson) {
         this.pairInfos = JSON.parse(pairJson);
       }
-      const coinJson = localStorage.getItem('coinInfos');
-      if (coinJson) {
-        this.coinInfos = JSON.parse(coinJson);
-      }
       const statJson = localStorage.getItem('stat');
       if (statJson) {
         this.stat = JSON.parse(statJson);
@@ -90,6 +93,11 @@ export class InfoService {
       if (rewardInfoJson) {
         this.rewardInfos = JSON.parse(rewardInfoJson);
       }
+      const tokenInfoJson = localStorage.getItem('tokenInfos');
+      if (tokenInfoJson) {
+        this.tokenInfos = JSON.parse(tokenInfoJson);
+      }
+
     } catch (e) { }
   }
   userUstAmount: string;
@@ -102,7 +110,7 @@ export class InfoService {
   private poolInfoNetwork: string;
   poolInfos: Record<string, PoolInfo>;
   pairInfos: Record<string, PairInfo> = {};
-  coinInfos: Record<string, string> = {};
+  tokenInfos: Record<string, TokenInfo> = {};
 
   stat: Stat;
 
@@ -213,17 +221,23 @@ export class InfoService {
     }
   }
 
-  async ensureCoinInfos() {
+  async ensureTokenInfos() {
     await this.ensurePoolInfoLoaded();
     const tasks = Object.keys(this.poolInfos)
-      .filter(key => !this.coinInfos[key])
+      .filter(key => !this.tokenInfos[key])
       .map(async key => {
         const it = await this.token.query(key, { token_info: {} });
-        this.coinInfos[key] = this.cleanSymbol(it.symbol);
+
+        this.tokenInfos[key] = {
+          name: it.name,
+          symbol: this.cleanSymbol(it.symbol),
+          decimals: it.decimals,
+          unit: 10 ** it.decimals,
+        };
       });
     if (tasks.length) {
       await Promise.all(tasks);
-      localStorage.setItem('coinInfos', JSON.stringify(this.coinInfos));
+      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
     }
   }
 
@@ -413,28 +427,27 @@ export class InfoService {
   async retrieveCachedStat(skipPoolResponses = false) {
     // try {
     //   const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-    //   Object.assign(this.coinInfos, data.coinInfos);
+    //   Object.assign(this.tokenInfos, data.tokenInfos);
     //   this.stat = data.stat;
     //   this.pairInfos = data.pairInfos;
     //   this.poolInfos = data.poolInfos;
-    //   localStorage.setItem('coinInfos', JSON.stringify(this.coinInfos));
+    //   localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
     //   localStorage.setItem('stat', JSON.stringify(this.stat));
     //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
     //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-    //
     //   if (skipPoolResponses) {
     //     this.poolResponses = data.poolResponses;
     //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
     //   }
     // } catch (ex) {
-    //   // fallback if api die
-    await Promise.all([this.ensureCoinInfos(), this.refreshStat()]);
+      // fallback if api die
+      await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
     // }
   }
 
   updateVaults() {
     const token = this.terrajs.settings.specToken;
-    if (!this.coinInfos?.[token]) {
+    if (!this.tokenInfos?.[token]) {
       return;
     }
     this.allVaults = [];
@@ -455,7 +468,9 @@ export class InfoService {
       const apy = Math.max(compoundApy, stakeApy);
 
       const vault: Vault = {
-        symbol: this.coinInfos[key],
+        symbol: this.tokenInfos[key]?.symbol,
+        decimals: this.tokenInfos[key]?.decimals,
+        unit: this.tokenInfos[key]?.unit,
         assetToken: key,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,

@@ -60,7 +60,7 @@ const txHistoryFactory = {
       let lpDesc = `${lpAmount} ${tokenASymbol}-${tokenBSymbol} LP`;
       lpDesc += !isSpec ? ' (before deposit fee)' : '';
 
-      if ('returnAmountB' in provide){
+      if ('returnAmountB' in provide) {
         desc += ` ${provideAmount} UST for ${lpDesc} which bought <br>${returnAmount} ${tokenBSymbol} at price ${price} UST, ${returnAmountB} ${tokenASymbol} at price ${priceB} ${tokenBSymbol}`;
       } else {
         desc += ` ${provideAmount} UST for ${lpDesc} which bought <br>${returnAmount} ${tokenASymbol} at price ${price} UST`;
@@ -93,7 +93,7 @@ const txHistoryFactory = {
 
     if (!demand) {
       desc += ` ${lp}`;
-    } else if (!isWithdrawToUST){
+    } else if (!isWithdrawToUST) {
       const { tokenAAmount, tokenBAmount } = demand;
       desc += tokenBAmount ? ` ${tokenBAmount} ${baseTokenSymbol},` : '';
       desc += ` ${tokenAAmount} ${denomTokenSymbol} (${lp})`;
@@ -176,7 +176,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         if (connected) {
           this.loading = true;
           if (this.txHistoryList.length === 0) {
-            await this.info.ensureCoinInfos();
+            await this.info.ensureTokenInfos();
             await this.populateTxHistory();
           }
           this.loading = false;
@@ -226,7 +226,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
   }
 
   async processTxItem(txsItem: any): Promise<TxHistory> {
-    try{
+    try {
       const result = await this.interpretTxInfo(txsItem);
       if (!result) {
         return null;
@@ -238,7 +238,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         txhash: txsItem.txhash,
         timestamp: new Date(txsItem.timestamp),
       };
-    } catch (e){
+    } catch (e) {
       console.error('ERROR processTxItem >>', txsItem);
       console.error(e);
     }
@@ -345,7 +345,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
           continue;
         }
 
-        const assetToken = this.info.coinInfos[msg.execute_msg['withdraw'].asset_token];
+        const assetToken = this.info.tokenInfos[msg.execute_msg['withdraw'].asset_token]?.symbol;
         let poolName: string;
 
         if (assetToken) {
@@ -394,7 +394,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === sendExecuteMsg.contract);
       const farm = farmInfo?.farm;
       const lpAmount = +sendExecuteMsg.amount / CONFIG.UNIT || 0;
-      const baseTokenSymbol = this.info.coinInfos[bondMsg.asset_token];
+      const baseTokenSymbol = this.info.tokenInfos[bondMsg.asset_token]?.symbol;
       const denomTokenSymbol = farmInfo?.pairSymbol;
       const compoundRate = +bondMsg.compound_rate;
 
@@ -418,7 +418,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
           denomTokenSymbol = farmInfo?.pairSymbol;
           denomTokenAmount = (+asset.amount - +taxAmount) / CONFIG.UNIT;
         } else if (asset.info?.token) {
-          const symbol = this.info.coinInfos[asset.info?.token.contract_addr];
+          const symbol = this.info.tokenInfos[asset.info?.token.contract_addr]?.symbol;
           if (symbol === farmInfo.pairSymbol) {
             denomTokenSymbol = symbol;
             denomTokenAmount = +asset.amount / CONFIG.UNIT;
@@ -437,7 +437,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
 
       const provideAmount = +fromContractEvent?.attributes.find(o => o.key === 'provide_amount')?.value / CONFIG.UNIT || 0;
       const offerAmount = +fromContractEvent?.attributes.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT || 0;
-      const returnAmount = +fromContractEvent?.attributes.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT || 0;
+      const returnAmount = +fromContractEvent?.attributes.find(o => o.key === 'return_amount')?.value / this.info.tokenInfos[zapToBondMsg.pair_asset.token.contract_addr]?.unit || 0;
       const lpAmount = +fromContractEvent?.attributes.find(o => o.key === 'share')?.value / CONFIG.UNIT || 0;
       const price = roundSixDecimal(offerAmount / returnAmount);
       const compoundRate = +zapToBondMsg.compound_rate;
@@ -447,9 +447,9 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       let denomTokenSymbol;
 
       const pair_asset_b_token_contract_addr = zapToBondMsg.pair_asset_b?.token?.contract_addr;
-      if (pair_asset_b_token_contract_addr){
-        baseTokenSymbol = this.info.coinInfos[pair_asset_b_token_contract_addr];
-        denomTokenSymbol = this.info.coinInfos[zapToBondMsg.pair_asset.token.contract_addr];
+      if (pair_asset_b_token_contract_addr) {
+        baseTokenSymbol = this.info.tokenInfos[pair_asset_b_token_contract_addr]?.symbol;
+        denomTokenSymbol = this.info.tokenInfos[zapToBondMsg.pair_asset.token.contract_addr]?.symbol;
         const denomTokenAskAssetIndex = fromContractEvent?.attributes.findIndex(o => o.key === 'ask_asset' && o.value === pair_asset_b_token_contract_addr);
         const denomTokenOfferAmountKeyIndex = fromContractEvent?.attributes[+denomTokenAskAssetIndex + 1];
         const denomTokenReturnAmountKeyIndex = fromContractEvent?.attributes[+denomTokenAskAssetIndex + 2];
@@ -458,7 +458,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         const priceDenom = roundSixDecimal(denomTokenOfferAmount / denomReturnAmountDenom);
         return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { provideAmount, returnAmount, price, returnAmountB: denomReturnAmountDenom, priceB: priceDenom });
       } else {
-        baseTokenSymbol = this.info.coinInfos[zapToBondMsg.pair_asset.token.contract_addr];
+        baseTokenSymbol = this.info.tokenInfos[zapToBondMsg.pair_asset.token.contract_addr]?.symbol;
         denomTokenSymbol = 'UST';
         return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { provideAmount, returnAmount, price });
       }
@@ -468,7 +468,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const unbondMsg = lastMsg.execute_msg['unbond'];
 
       const lpAmount = +unbondMsg.amount / CONFIG.UNIT;
-      const baseTokenSymbol = this.info.coinInfos[unbondMsg.asset_token];
+      const baseTokenSymbol = this.info.tokenInfos[unbondMsg.asset_token]?.symbol;
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === lastMsg.contract);
       const farm = farmInfo?.farm;
       const denomTokenSymbol = farmInfo?.pairSymbol;
@@ -484,20 +484,22 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const withdrawLiquidityMsg = sendExecuteMsg.msg['withdraw_liquidity'];
 
       const lpAmount = +sendExecuteMsg.amount / CONFIG.UNIT;
-      const tokenSymbol = this.info.coinInfos[unbondMsg.asset_token];
+      const tokenSymbol = this.info.tokenInfos[unbondMsg.asset_token]?.symbol;
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === secondLastMsg.contract);
       const refundAssets = fromContractEvent.attributes.find(o => o.key === 'refund_assets')?.value.split(',');
-      const [uusdAmount, tokenAmount] = (refundAssets[0].match(alphabetRegExp)[0] === 'uusd' ? refundAssets : [refundAssets[1], refundAssets[0]])
-        .map(value => +value.match(numberRegExp)[0] / CONFIG.UNIT || 0);
+      const [uusdAmountRaw, tokenAmountRaw] = (refundAssets[0].match(alphabetRegExp)[0] === 'uusd' ? refundAssets : [refundAssets[1], refundAssets[0]])
+        .map(value => +value.match(numberRegExp)[0] || 0);
+      const uusdAmount = uusdAmountRaw / CONFIG.UNIT;
+      const tokenAmount = tokenAmountRaw / this.info.tokenInfos[unbondMsg.asset_token]?.unit;
       const farm = farmInfo?.farm;
       const denomTokenSymbol = farmInfo?.pairSymbol;
 
       if (withdrawLiquidityMsg) {
-        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, false,{ tokenAAmount: uusdAmount, tokenBAmount: tokenAmount });
+        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, false, { tokenAAmount: uusdAmount, tokenBAmount: tokenAmount });
       }
 
       const zap_to_unbond = ensureBase64toObject(sendExecuteMsg?.msg['zap_to_unbond']);
-      if (zap_to_unbond['sell_asset_b']){
+      if (zap_to_unbond['sell_asset_b']) {
         const uusdAskAssetIndex = fromContractEvent?.attributes.findIndex(o => o.key === 'ask_asset' && o.value === Denom.USD);
         const uusdReturnAmountKeyIndex = fromContractEvent?.attributes[+uusdAskAssetIndex + 2];
         const uusdReturnAmount = uusdReturnAmountKeyIndex.key === 'return_amount' ? +uusdReturnAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
@@ -515,7 +517,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     if (lastMsg.execute_msg['update_bond'] && this.info.farmInfos.find(o => o.farmContract === lastMsg.contract)) {
       const updateBondMsg = lastMsg.execute_msg['update_bond'];
 
-      const tokenSymbol = this.info.coinInfos[updateBondMsg.asset_token];
+      const tokenSymbol = this.info.tokenInfos[updateBondMsg.asset_token]?.symbol;
       const totalLP = +updateBondMsg.amount_to_auto + +updateBondMsg.amount_to_stake;
       const rawAmountToAuto = updateBondMsg.amount_to_auto;
       const rawAmountToStake = updateBondMsg.amount_to_stake;
