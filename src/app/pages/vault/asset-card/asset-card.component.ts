@@ -20,8 +20,6 @@ import { TerraSwapService } from '../../../services/api/terraswap.service';
 import { Denom } from '../../../consts/denom';
 import { StakerService } from '../../../services/api/staker.service';
 import { ExecuteMsg as StakerExecuteMsg } from '../../../services/api/staker/execute_msg';
-import { PricePipe } from 'src/app/pipes/price.pipe';
-import { Asset } from '../../../services/api/staker/query_msg';
 
 const DEPOSIT_FEE = '0.001';
 
@@ -195,7 +193,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       const amountToken = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.unit);
       const amountUST = amountToken.times(ust.amount).div(asset.amount).integerValue();
 
-    const grossLp = (gt(pool.total_share, 0)
+      const grossLp = (gt(pool.total_share, 0)
         ? BigNumber.minimum(
           amountUST.times(pool.total_share).div(ust.amount),
           amountToken.times(pool.total_share).div(asset.amount))
@@ -213,7 +211,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
       const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountUST.toString(), denom: 'uusd' }));
       this.depositUSTAmountTokenUST = amountUST.plus(tax.amount.toString())
-      .div(CONFIG.UNIT)
+        .div(CONFIG.UNIT)
         .toNumber();
     } else {
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
@@ -418,7 +416,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
                 contract_addr: this.vault.assetToken
               },
             },
-            belief_price: this.tokenPrice,
+            belief_price: this.toContractPrice(this.tokenPrice, 6, this.vault.decimals),
             max_spread: CONFIG.SLIPPAGE_TOLERANCE,
             compound_rate: auto_compound_ratio,
           }
@@ -474,6 +472,18 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     this.netLpUST = undefined;
 
     this.depositType = undefined;
+  }
+
+  private toContractPrice(price: string, offer_decimals: number, ask_decimals: number) {
+    return offer_decimals === ask_decimals
+      ? price
+      : times(price, 10 ** (offer_decimals - ask_decimals));
+  }
+
+  private toUIPrice(price: string, offer_decimals: number, ask_decimals: number) {
+    return offer_decimals === ask_decimals
+      ? price
+      : times(price, 10 ** (ask_decimals - offer_decimals));
   }
 
   @debounce(250)
@@ -712,7 +722,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       });
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
-      this.tokenPrice = res.belief_price;
+      this.tokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.decimals);
     } else {
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
       const res = await this.staker.query({
@@ -726,8 +736,9 @@ export class AssetCardComponent implements OnInit, OnDestroy {
         }
       });
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
-      this.tokenPrice = res.belief_price;
-      this.basedTokenPrice = res.belief_price_b;
+      const denomDecimals = this.info.tokenInfos[assetDenom.info.token['contract_addr']]?.decimals || 6;
+      this.tokenPrice = this.toUIPrice(res.belief_price, 6, denomDecimals);
+      this.basedTokenPrice = this.toUIPrice(res.belief_price_b, denomDecimals, this.vault.decimals);
     }
 
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
