@@ -467,11 +467,11 @@ export class AssetCardComponent implements OnInit, OnDestroy {
     const halfUSTbeforeTax = floor(div(times(this.depositUSTAmtUST, CONFIG.UNIT), 2));
     const tax = await this.terrajs.lcdClient.utils.calculateTax(
       Coin.fromData({ amount: halfUSTbeforeTax, denom: 'uusd' }));
-    const halfUST = minus(halfUSTbeforeTax, tax.amount.toString());
+    const halfUST = div(minus(halfUSTbeforeTax, tax.amount.toString()), CONFIG.UNIT);
     const simulateSwapUSTtoToken = {
       simulation: {
         offer_asset: {
-          amount: halfUST,
+          amount: times(halfUST, CONFIG.UNIT),
           info: {
             native_token: {
               denom: Denom.USD
@@ -481,19 +481,21 @@ export class AssetCardComponent implements OnInit, OnDestroy {
       }
     };
     const simulateSwapUSTtoTokenResult = await this.terraSwapService.query(this.depositUSTFoundPoolAddress, simulateSwapUSTtoToken);
-    this.depositUSTBeliefPriceBuy = new BigNumber(halfUST).div(simulateSwapUSTtoTokenResult.return_amount).toFixed(18);
+    this.depositUSTBeliefPriceBuy = new BigNumber(halfUST)
+      .times(this.vault.unit)
+      .div(simulateSwapUSTtoTokenResult.return_amount).toFixed(18);
 
     const pool = this.info.poolResponses[this.vault.assetToken];
     const [asset, ust] = pool.assets[0].info.native_token ? [pool.assets[1], pool.assets[0]] : [pool.assets[0], pool.assets[1]];
 
     const grossLp = (gt(pool.total_share, 0)
       ? BigNumber.minimum(
-        new BigNumber(halfUST).times(pool.total_share).div(ust.amount),
+        new BigNumber(halfUST).times(CONFIG.UNIT).times(pool.total_share).div(ust.amount),
         new BigNumber(simulateSwapUSTtoTokenResult.return_amount).times(pool.total_share).div(asset.amount))
-      : new BigNumber(halfUST)
+      : new BigNumber(halfUST).times(CONFIG.UNIT)
         .times(simulateSwapUSTtoTokenResult.return_amount)
         .sqrt()).div(CONFIG.UNIT);
-    const depositTVL = new BigNumber(halfUST).multipliedBy('2').div(CONFIG.UNIT);
+    const depositTVL = new BigNumber(halfUST).multipliedBy('2');
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
       grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
     this.netLpUST = grossLp.minus(depositFee).toString();
