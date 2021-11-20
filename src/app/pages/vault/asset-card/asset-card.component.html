@@ -3,6 +3,8 @@
   <div class="card-body">
     <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
       class="badge bg-primary position-absolute badge-deposited">Deposited</span>
+      <span *ngIf="DISABLED_VAULTS.includes(vault.symbol)"
+        class="badge bg-danger position-absolute badge-disabled">Deposit Disabled</span>
     <div (click)="this.toggleAssetCard()" aria-controls="belowSection" aria-expanded="false"
       class="row asset-card-info">
       <div class="col-12 col-md-3 text-center">
@@ -77,7 +79,7 @@
     </div>
     <div #belowSection="mdbCollapse" class="mt-3 bg-dark p-3 spec-form" mdbCollapse>
       <mdb-tabs [fill]="true">
-        <mdb-tab title="Deposit">
+        <mdb-tab title="Deposit" *ngIf="!DISABLED_VAULTS.includes(vault.symbol)">
           <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
             <div *ngIf="depositMode === 'tokentoken'" class="mt-3">
               <div class="small">
@@ -435,7 +437,7 @@
           </form>
 
         </mdb-tab>
-        <mdb-tab title="Reallocate" *ngIf="!vault.poolInfo.forceDepositType">
+        <mdb-tab title="Reallocate" *ngIf="!vault.poolInfo.forceDepositType && !DISABLED_VAULTS.includes(vault.symbol)">
           <form #formReallocate="ngForm" class="needs-validation p-3" novalidate>
             <div class="small mb-3">
               Reallocate auto-stake and auto-compound ratio of deposited {{ vault.symbol
