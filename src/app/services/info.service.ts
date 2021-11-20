@@ -428,29 +428,29 @@ export class InfoService {
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
-    // try {
-    //   const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-    //   if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
-    //     throw (data);
-    //   }
-    //   Object.assign(this.tokenInfos, data.tokenInfos);
-    //   this.stat = data.stat;
-    //   this.pairInfos = data.pairInfos;
-    //   this.poolInfos = data.poolInfos;
-    //   localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-    //   localStorage.setItem('stat', JSON.stringify(this.stat));
-    //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-    //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-    //   if (skipPoolResponses) {
-    //     this.poolResponses = data.poolResponses;
-    //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-    //   }
-    // } catch (ex) {
+    try {
+      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
+        throw (data);
+      }
+      Object.assign(this.tokenInfos, data.tokenInfos);
+      this.stat = data.stat;
+      this.pairInfos = data.pairInfos;
+      this.poolInfos = data.poolInfos;
+      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+      localStorage.setItem('stat', JSON.stringify(this.stat));
+      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+      if (skipPoolResponses) {
+        this.poolResponses = data.poolResponses;
+        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+      }
+    } catch (ex) {
       // fallback if api die
-      // console.error('Error in retrieveCachedStat: fallback local info service data init');
-      // console.error(ex);
+      console.error('Error in retrieveCachedStat: fallback local info service data init');
+      console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
-    // }
+    }
   }
 
   updateVaults() {

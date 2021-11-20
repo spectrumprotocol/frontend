@@ -87,6 +87,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   };
   bufferUST = 3.5;
 
+  DISABLED_VAULTS: Array<string> = ['mAMC'];
+
   constructor(
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
