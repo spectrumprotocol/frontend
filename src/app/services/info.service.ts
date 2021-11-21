@@ -166,6 +166,9 @@ export class InfoService {
   async refreshPoolInfos() {
     const poolInfos: Record<string, PoolInfo> = {};
     const tasks = this.farmInfos.map(async farmInfo => {
+      if (!farmInfo.farmContract) {
+        return;
+      }
       const pools = await farmInfo.queryPoolItems();
       for (const pool of pools) {
         poolInfos[pool.asset_token] = Object.assign(pool,

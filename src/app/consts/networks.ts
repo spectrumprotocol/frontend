@@ -98,10 +98,10 @@ export const networks: Record<string, ISettings> = {
     nexusFarm: 'terra1j2hdp4jelqe9tkfwnsx5mlheqagaryxhqwr4h2',
     nLunaPsiStaking: 'terra1hs4ev0ghwn4wr888jwm56eztfpau6rjcd8mczc',
     nLunaToken: 'terra10f2mt82kjnkxqj2gepgwl637u2w4ue2z5nhz5j', // nLunaPsiLP: 'terra1tuw46dwfvahpcwf3ulempzsn9a0vhazut87zec'
-    nLunaPsiFarm: '',
+    nLunaPsiFarm: 'terra19kzel57gvx42e628k6frh624x5vm2kpck9cr9c',
     nEthPsiStaking: 'terra1lws09x0slx892ux526d6atwwgdxnjg58uan8ph', // nEthPsiLP: 'terra1y8kxhfg22px5er32ctsgjvayaj8q36tr590qtp'
     nEthToken: 'terra178v546c407pdnx5rer3hu8s2c0fc924k74ymnn',
-    nEthPsiFarm: '',
+    nEthPsiFarm: 'terra1lmm7xjareer3fd040kz2epw93hg20p9f64uh98',
     orionGov: 'terra135mjmscm37mp5tu5ghp00lp374fsjaqksmjfh8',
     orionStaking: 'terra1q8q6y03452e44pztw8kr8zcdkjtxuz8vq9t8uq',
     orionToken: 'terra1mddcdx0ujx89f38gu7zspk2r2ffdl5enyz2u03', // orionLP terra14ffp0waxcck733a9jfd58d86h9rac2chf5xhev
