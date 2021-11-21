@@ -18,9 +18,8 @@ export interface ConfigInfo {
   controller: string;
   controller_fee: Decimal;
   deposit_fee: Decimal;
-  nexus_gov: string;
-  nexus_staking: string;
-  nexus_token: string;
+  kujira_staking: string;
+  kujira_token: string;
   owner: string;
   platform: string;
   platform_fee: Decimal;

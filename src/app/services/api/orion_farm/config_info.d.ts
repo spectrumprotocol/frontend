@@ -18,9 +18,9 @@ export interface ConfigInfo {
   controller: string;
   controller_fee: Decimal;
   deposit_fee: Decimal;
-  nexus_gov: string;
-  nexus_staking: string;
-  nexus_token: string;
+  orion_gov: string;
+  orion_staking: string;
+  orion_token: string;
   owner: string;
   platform: string;
   platform_fee: Decimal;
