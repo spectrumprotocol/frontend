@@ -179,7 +179,7 @@
                 Already have LP token? Deposit here, or
                 <a href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
               </div>
-              <div class="text-end small mt-3 text-muted">
+              <div class="text-end small mt-3 text-muted fw-bold">
                 <span>Balance: {{+info.lpTokenBalances[vault.lpToken] | unit}} {{ vault.symbol }}-UST LP</span>
               </div>
               <div class="input-group">
@@ -218,7 +218,7 @@
               <div class="small">
                 Use UST to buy {{ vault.symbol }} and create {{ vault.symbol }}-UST LP. This option has the same price exposure and risk of impermanent loss as other deposit options.
               </div>
-              <div class="text-end small mt-3 text-muted">
+              <div class="text-end small mt-3 text-muted fw-bold">
                 <span>Balance: {{ info.userUstAmount | number }} UST</span>
               </div>
               <div class="input-group">
@@ -414,7 +414,7 @@
             </div>
               <button (click)="doDeposit()"
                 [disabled]="formDeposit.invalid"
-                class="btn btn-primary" type="submit">Deposit</button>
+                class="btn btn-primary mb-3" type="submit">Deposit</button>
               <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" class="text-end small pt-3 text-muted">
                 <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank" class="link-no-decoration">
                   * fees applied
