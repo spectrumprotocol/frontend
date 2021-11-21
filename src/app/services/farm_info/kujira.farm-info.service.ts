@@ -114,23 +114,20 @@ export class KujiraFarmInfoService implements FarmInfoService {
     return null;
   }
 
-  async getKujiraLPStat(psiPoolResponse: PoolResponse, unixTimeSecond) {
+  async getKujiraLPStat(kujiPoolResponse: PoolResponse, unixTimeSecond) {
     const configTask = this.wasm.query(this.terrajs.settings.kujiraStaking, { config: {} });
     const stateTask = this.wasm.query(this.terrajs.settings.kujiraStaking, { state: { time_seconds: +unixTimeSecond } });
     const [config, state] = await Promise.all([configTask, stateTask]);
-    const psiPoolUSTAmount = psiPoolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? psiPoolResponse.assets[1].amount : psiPoolResponse.assets[0].amount;
-    const psiPoolPSIAmount = psiPoolResponse.assets[1]?.info?.token ? psiPoolResponse.assets[1].amount : psiPoolResponse.assets[0].amount;
-    const psiPrice = div(psiPoolUSTAmount, psiPoolPSIAmount);
-    const current_distribution_schedule = config.distribution_schedule.find(obj => unixTimeSecond >= +obj.start_time && unixTimeSecond <= +obj.end_time);
-    if (!current_distribution_schedule) {
-      return {
-        apr: 0
-      };
-    }
-    const totalMint = +current_distribution_schedule.amount;
-    const c = new BigNumber(psiPoolUSTAmount).multipliedBy(2).div(psiPoolResponse.total_share);
-    const s = new BigNumber(state.total_bond_amount).multipliedBy(c);
-    const apr = new BigNumber(totalMint).multipliedBy(psiPrice).div(s);
+    const distributionSchedule = config.distribution_schedule.find((e => e.start_time <= unixTimeSecond && unixTimeSecond <= e.end_time));
+    if (!distributionSchedule){
+          return {
+            apr: 0
+          };
+      }
+    const kujiAmount = kujiPoolResponse.assets.find(asset => asset.info.token['contract_addr'] === this.terrajs.settings.kujiraToken)?.amount ?? 0;
+    const i = +state.total_bond_amount / +kujiPoolResponse.total_share * +kujiAmount * 2;
+    const duration = distributionSchedule.end_time - distributionSchedule.start_time;
+    const apr = 31536e3 * (distributionSchedule.amount / duration) / (0 === i ? 1e6 : i);
     return {
       apr,
     };
