@@ -61,8 +61,8 @@
     color: white;
 }
 
-.pd-2 {
-  padding: 2px;
+.pd-5 {
+  padding: 5px;
 }
 
 .switch {
@@ -135,15 +135,3 @@
     border-radius: 6px;
     background-image: linear-gradient(268deg, #00ade7 94%, #050831 4%);
   }
-
-@media (max-width: 414px) {
-    .filter {
-      display: none;
-    }
-}
-
-@media (min-width: 414px) and (max-width: 768px) {
-  .filter {
-    display: none;
-  }
-}

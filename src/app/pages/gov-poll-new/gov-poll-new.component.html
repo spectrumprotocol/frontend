@@ -1,19 +1,8 @@
 <main>
     <div class="container py-5">
-        <!-- <div class="row">
+        <div class="row">
             <div class="col-12">
                 <h2><a class="fas fa-angle-left" routerLink="/gov" ></a> Create poll</h2>
-            </div>
-        </div> -->
-        <div class="row detail-header">
-            <div class="col-3 col-md-1">
-                <a routerLink="/gov" class="ms-3 text-reset fs-5">
-                    <img src="/assets/Icon _ Back.svg">
-                </a>
-            </div>
-            <div class="col-9 col-md-11">
-                 <h4>Create poll</h4>
-                <div class="seperator"></div>
             </div>
         </div>
         <div class="row pt-3">
@@ -99,10 +88,10 @@
                             </div>
                             <div class="col-12">
                                 <div mdbDropdown class="btn-group" #dropdown>
-                                    <button type="button" class="btn btn-outline" (click)="pushMsg('')">
+                                    <button type="button" class="btn btn-secondary" (click)="pushMsg('')">
                                         Add execution message
                                     </button>
-                                    <button type="button" class="btn btn-outline dropdown-toggle dropdown-toggle-split"
+                                    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
                                         mdbDropdownToggle aria-expanded="false">
                                         <span class="visually-hidden">Toggle Dropdown</span>
                                     </button>
@@ -120,7 +109,7 @@
                                                 class="fas fa-info-circle info-icon"
                                                 mdbTooltip="If poll pass, you will get refund. If not, amount will be distributed to stakers."></i></label>
                                     </div>
-                                    <div class="col-6 text-end small text-muted fw-bold">
+                                    <div class="col-6 text-end small text-muted">
                                         Balance: {{ maxAmount | number }} SPEC
                                     </div>
                                 </div>
