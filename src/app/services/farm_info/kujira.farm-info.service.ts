@@ -23,9 +23,10 @@ export class KujiraFarmInfoService implements FarmInfoService {
   farm = 'Kujira';
   tokenSymbol = 'KUJI';
   autoCompound = true;
-  autoStake = true;
+  autoStake = false;
   farmColor = '#E53935';
   pairSymbol = 'UST';
+  auditWarning = true;
 
   constructor(
     private gov: GovService,
