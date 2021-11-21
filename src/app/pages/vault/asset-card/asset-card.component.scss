@@ -44,6 +44,10 @@
   margin-left: -10px;
 }
 
+.token-denom{
+  margin-left: -10px;
+}
+
 .loading-asset-card {
   background-color: rgba(79, 79, 79, 0.8);
 }
@@ -82,7 +86,7 @@
   border-bottom-right-radius: 0.25rem;
 }
 
-.badge-depositable {
+.badge-disabled {
   top: 0;
   right: 0;
   border-top-left-radius: 0;
@@ -169,4 +173,8 @@
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
   margin-right: 0px;
+}
+
+.input-group-text-denom{
+  border-width: 1px !important;
 }

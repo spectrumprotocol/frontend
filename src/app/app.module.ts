@@ -63,8 +63,10 @@ import { FloorPipe } from './pipes/floor.pipe';
 import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
 import { ValkyrieFarmInfoService } from './services/farm_info/valkyrie.farm-info.service';
 import {NexusFarmInfoService} from './services/farm_info/nexus.farm-info.service';
-import {WithdrawUstPipe} from './pipes/withdraw-ust.pipe';
+import {OrionFarmInfoService} from './services/farm_info/orion.farm-info.service';
 import { ManageRewardsComponent } from './pages/vault/manage-rewards/manage-rewards.component';
+import {NlunaPsiFarmInfoService} from './services/farm_info/nluna-psi.farm-info.service';
+import {NethPsiFarmInfoService} from './services/farm_info/neth-psi.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -97,7 +99,6 @@ registerLocaleData(locale, 'en');
     // StepDirective,
     TradeComponent,
     AssetCardComponent,
-    VaultDialogComponent,
     UrlPipe,
     UnitPipe,
     RewardInfoPipe,
@@ -113,8 +114,8 @@ registerLocaleData(locale, 'en');
     UnstakeAllComponent,
     GovPoolComponent,
     FloorPipe,
-    WithdrawUstPipe,
     ManageRewardsComponent,
+    VaultDialogComponent
   ],
   imports: [
     AppRoutingModule,
@@ -144,6 +145,9 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },

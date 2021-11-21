@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { WalletService } from 'src/app/services/api/wallet.service';
+import { WalletService } from '../../services/api/wallet.service';
 import { CONFIG } from '../../consts/config';
 import { GovService } from '../../services/api/gov.service';
 import { ConfigInfo } from '../../services/api/gov/config_info';
@@ -10,8 +10,8 @@ import { InfoService } from '../../services/info.service';
 import { TerrajsService } from '../../services/terrajs.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { GovPoolDetail } from './gov-pool/gov-pool.component';
-import { div, gt, minus, plus, times } from 'src/app/libs/math';
-import { BalanceResponse } from 'src/app/services/api/gov/balance_response';
+import { div, gt, minus, plus } from '../../libs/math';
+import { BalanceResponse } from '../../services/api/gov/balance_response';
 
 const LIMIT = 10;
 

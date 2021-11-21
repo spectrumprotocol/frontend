@@ -1,3 +1,6 @@
 export const Denom = {
-  USD : 'uusd'
+  USD : 'uusd',
+  display: {
+    ['uusd']: 'UST'
+  }
 };

@@ -6,7 +6,11 @@ import { PoolItem } from '../api/pylon_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
+import {
+  FarmInfoService,
+  PairStat,
+  PoolInfo
+} from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { MsgExecuteContract } from '@terra-money/terra.js';
@@ -20,6 +24,7 @@ export class PylonFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#00cfda';
+  pairSymbol = 'UST';
 
   constructor(
     private gov: GovService,
@@ -118,5 +123,4 @@ export class PylonFarmInfoService implements FarmInfoService {
       }
     );
   }
-
 }

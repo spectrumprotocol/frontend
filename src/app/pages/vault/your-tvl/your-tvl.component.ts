@@ -3,6 +3,7 @@ import { InfoService } from '../../../services/info.service';
 import { Subscription } from 'rxjs';
 import { TerrajsService } from '../../../services/terrajs.service';
 import { MdbModalRef } from 'mdb-angular-ui-kit';
+import {FarmInfoService} from '../../../services/farm_info/farm-info.service';
 
 interface ChartData {
   name: string;
@@ -22,6 +23,9 @@ export class YourTvlComponent implements OnInit, OnDestroy {
   chartColors = {
     domain: []
   };
+
+  farmInfoList: FarmInfoService[];
+
   private connected: Subscription;
   private heightChanged: Subscription;
 
@@ -33,7 +37,8 @@ export class YourTvlComponent implements OnInit, OnDestroy {
 
   // because totalValueItems input is delayed
   ngOnInit(): void {
-    this.chartColors.domain = [...this.info.farmInfos.map(farmInfo => farmInfo.farmColor), '#ED7B84', '#f5dbcb', '#D6D5B3', '#7EB77F'];
+    this.farmInfoList = [...new Map(this.info.farmInfos.map(farmInfo => [farmInfo.farm, farmInfo])).values()];
+    this.chartColors.domain = [...this.farmInfoList.map(farmInfo => farmInfo.farmColor), '#ED7B84', '#f5dbcb', '#D6D5B3', '#7EB77F'];
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         if (connected && !this.chartDataList) {

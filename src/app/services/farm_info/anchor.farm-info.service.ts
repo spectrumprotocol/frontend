@@ -6,11 +6,16 @@ import { PoolItem } from '../api/anchor_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/anchor_farm/reward_info_response';
 import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
+import {
+  FarmInfoService,
+  PairStat,
+  PoolInfo
+} from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { HttpClient } from '@angular/common/http';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class AnchorFarmInfoService implements FarmInfoService {
@@ -19,6 +24,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#3bac3b';
+  pairSymbol = 'UST';
 
   constructor(
     private gov: GovService,
@@ -119,5 +125,4 @@ export class AnchorFarmInfoService implements FarmInfoService {
       }
     );
   }
-
 }

@@ -91,7 +91,7 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-8 col-md-3">
+      <div class="col-8 col-sm-8 col-md-3">
         <div class="card box-left">
           <div class="card-body p-10">
             <div class="d-flex">
@@ -104,21 +104,24 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-2 col-md-2">
+      <div class="col-2 col-sm-2 col-md-2">
         <div class="card box-left">
-          <div class="card-body pd-5">
+          <div class="card-body pd-2">
             <div class="d-flex">
               <div mdbDropdown class="dropdown w-100 text-center" #dropdownFarmFilter>
-                <button mdbDropdownToggle class="btn dropdown-toggle b-none" type="button" aria-expanded="false">
+                <button mdbDropdownToggle class="btn b-none" type="button" aria-expanded="false">
                   <img *ngIf="activeFarm !== 'All'" [src]="activeFarm | url:'icon'" width="24" height="24"><img *ngIf="activeFarm === 'All'" src="../../../assets/Icon _ Farms.svg" width="24" height="24">
                   <span class="d-none d-sm-none d-md-none d-lg-inline">{{activeFarm}} {{ activeFarm === "All" ? "Farms" : "Farm"}}</span> 
+                  <span class="text-end filter">
+                    <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
+                  </span>
                 </button>
                 <ul mdbDropdownMenu class="dropdown-menu">
                   <li>
                     <a class="dropdown-item" [class.active]="activeFarm === 'All'"
                       (click)="activeFarm = 'All'; refresh()">All</a>
                   </li>
-                  <li *ngFor="let farmInfo of info.farmInfos">
+                  <li *ngFor="let farmInfo of farmInfoDropdownList">
                     <a  class="dropdown-item"
                       [class.active]="activeFarm === farmInfo.farm"
                       (click)="activeFarm = farmInfo.farm; refresh()"> <img [src]="farmInfo.farm | url:'icon'" class="farm-logo"> {{farmInfo.farm}}</a>
@@ -129,13 +132,16 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-2 col-md-2">
+      <div class="col-2 col-sm-2 col-md-2">
         <div class="card box-left">
-          <div class="card-body pd-5">
+          <div class="card-body pd-2">
             <div mdbDropdown class="dropdown w-100 text-center" #dropdownSortBy>
-              <button mdbDropdownToggle class="btn dropdown-toggle b-none" type="button" aria-expanded="false">
+              <button mdbDropdownToggle class="btn b-none" type="button" aria-expanded="false">
                 <img src="../../../assets/Icon _ SortBy.svg" width="24" height="24"> 
                 <span class="d-none d-sm-none d-md-none d-lg-inline">Sort by</span>
+                <span class="text-end filter">
+                  <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
+                </span>
               </button>
               <ul mdbDropdownMenu class="dropdown-menu">
                 <li>
