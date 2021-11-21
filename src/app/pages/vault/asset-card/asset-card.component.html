@@ -610,7 +610,7 @@
           </div>
           <div *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'" class="d-grid mt-3">
             <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake
-              {{vault.poolInfo.token_symbol}} +
+              <span *ngIf="vault.poolInfo.auto_stake">{{vault.poolInfo.token_symbol}} +</span>
               SPEC</button>
           </div>
         </mdb-tab>
