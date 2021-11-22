@@ -5,27 +5,17 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+export type Cw20HookMsg = {
+  bond: {
+    asset_token: string;
+    compound_rate?: Decimal | null;
+    staker_addr?: string | null;
+    [k: string]: unknown;
+  };
+};
 /**
  * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
  *
  * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
  */
 export type Decimal = string;
-
-export interface ConfigInfo {
-  base_denom: string;
-  community_fee: Decimal;
-  controller: string;
-  controller_fee: Decimal;
-  deposit_fee: Decimal;
-  orion_gov: string;
-  orion_staking: string;
-  orion_token: string;
-  owner: string;
-  platform: string;
-  platform_fee: Decimal;
-  spectrum_gov: string;
-  spectrum_token: string;
-  terraswap_factory: string;
-  [k: string]: unknown;
-}

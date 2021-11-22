@@ -328,6 +328,11 @@ input[type="number"] {
   background: linear-gradient(315deg, darken($orion, 7%) 0%, $orion 50%);
 }
 
+.bg-Kujira {
+  background: $kujira;
+  background: -webkit-linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);
+  background: linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);
+}
 
 .bg-your-rewards {
   background: #ed7b84;

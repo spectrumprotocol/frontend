@@ -26,26 +26,12 @@ export type Uint128 = string;
  */
 export type Decimal = string;
 
-export interface RewardInfoResponse {
-  reward_infos: RewardInfoResponseItem[];
-  staker_addr: string;
-  [k: string]: unknown;
-}
-export interface RewardInfoResponseItem {
-  asset_token: string;
-  auto_bond_amount: Uint128;
-  auto_bond_share: Uint128;
-  auto_spec_share_index: Decimal;
-  bond_amount: Uint128;
-  deposit_amount?: Uint128 | null;
-  deposit_time?: number | null;
-  farm_share: Uint128;
-  farm_share_index: Decimal;
-  pending_farm_reward: Uint128;
-  pending_spec_reward: Uint128;
-  spec_share: Uint128;
-  stake_bond_amount: Uint128;
-  stake_bond_share: Uint128;
-  stake_spec_share_index: Decimal;
+export interface StateInfo {
+  earning: Uint128;
+  earning_spec: Uint128;
+  previous_spec_share: Uint128;
+  spec_share_index: Decimal;
+  total_farm_share: Uint128;
+  total_weight: number;
   [k: string]: unknown;
 }

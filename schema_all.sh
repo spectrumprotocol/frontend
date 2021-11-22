@@ -10,3 +10,6 @@ npx json2ts -i ../contracts/contracts/spectrum_pylon_farm/schema/ -o ./src/app/s
 npx json2ts -i ../contracts/contracts/spectrum_terraworld_farm/schema/ -o ./src/app/services/api/terraworld_farm
 npx json2ts -i ../contracts/contracts/spectrum_valkyrie_farm/schema/ -o ./src/app/services/api/valkyrie_farm
 npx json2ts -i ../contracts/contracts/spectrum_orion_farm/schema/ -o ./src/app/services/api/orion_farm
+npx json2ts -i ../contracts/contracts/spectrum_nexus_farm/schema/ -o ./src/app/services/api/nexus_farm
+npx json2ts -i ../contracts/contracts/spectrum_nexus_nasset_psi_farm/schema/ -o ./src/app/services/api/nexus_nassets_psi_farm
+npx json2ts -i ../contracts/contracts/spectrum_kujira_farm/schema/ -o ./src/app/services/api/kujira_farm

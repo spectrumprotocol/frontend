@@ -67,6 +67,7 @@ import {OrionFarmInfoService} from './services/farm_info/orion.farm-info.service
 import { ManageRewardsComponent } from './pages/vault/manage-rewards/manage-rewards.component';
 import {NlunaPsiFarmInfoService} from './services/farm_info/nluna-psi.farm-info.service';
 import {NethPsiFarmInfoService} from './services/farm_info/neth-psi.farm-info.service';
+import {KujiraFarmInfoService} from './services/farm_info/kujira.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -143,6 +144,7 @@ registerLocaleData(locale, 'en');
     },
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: KujiraFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },

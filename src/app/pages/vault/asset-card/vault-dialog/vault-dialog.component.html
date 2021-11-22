@@ -50,7 +50,7 @@
                       <div class="f-12 fw-bold sub-topic">Daily Rate</div>
                       <div class="fs-6 fw-bold">{{ vault.pairStat?.dpr || 0 | percent }}</div>
                     </div>
-          
+
                     <div class="col-12 col-sm-6 col-md-2 text-end">
                       <div class="f-12">LP Deposited</div>
                       <div class="fs-6 fw-bold text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
@@ -638,8 +638,8 @@
               from ALL Mirror vaults</button>
           </div>
           <div *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'" class="d-grid mt-3">
-            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake
-              {{vault.poolInfo.token_symbol}} +
+            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">
+              <span *ngIf="vault.poolInfo.auto_stake">{{vault.poolInfo.token_symbol}} +</span>
               SPEC</button>
           </div>
         </mdb-tab>
