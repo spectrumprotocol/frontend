@@ -108,7 +108,7 @@ export const networks: Record<string, ISettings> = {
     orionFarm: 'terra106en784zr4kpe6phlaj8c8t3aeqgn3xsugaelx',
     kujiraStaking: 'terra1cf9q9lq7tdfju95sdw78y9e34a6qrq3rrc6dre',
     kujiraToken: 'terra1xfsdgcemqwxp4hhnyk4rle6wr22sseq7j07dnn', // kujiraLP: 'terra1cmqv3sjew8kcm3j907x2026e4n0ejl2jackxlx'
-    kujiraFarm: '',
+    kujiraFarm: 'terra15x4hysms59x5eek6esg3f2jycalpypdcl6sy7j',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',

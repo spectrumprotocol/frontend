@@ -9,7 +9,6 @@ import { TerrajsService } from '../terrajs.service';
 import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { MsgExecuteContract } from '@terra-money/terra.js';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 
 @Injectable()
