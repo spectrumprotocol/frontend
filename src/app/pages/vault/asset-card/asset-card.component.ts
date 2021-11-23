@@ -79,7 +79,7 @@ export class AssetCardComponent implements OnInit, OnDestroy {
 
   WITHDRAW_UST_MAX_SPREAD = CONFIG.WITHDRAW_UST_MAX_SPREAD;
 
-  DISABLED_VAULTS: Array<string> = ["mAMC"];
+  DISABLED_VAULTS: Array<string> = ["mAMC", "mGME"];
 
   constructor(
     public terrajs: TerrajsService,
