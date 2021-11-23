@@ -2,11 +2,11 @@
   <span class="position-absolute" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
     <div class="badge-staked badge-progress badge-staked-vault">Deposited</div>
   </span>
-  <span class="position-absolute" *ngIf="DISABLED_VAULTS.includes(vault.symbol)">
+  <span class="position-absolute" *ngIf="info.DISABLED_VAULTS.includes(vault.symbol)">
       <div class="badge-staked badge-progress badge-staked-vault">Deposit Disabled</div>
   </span>
   <div class="card-body">
-    <div *ngIf="!isGrid" (click)="openModal()" aria-controls="belowSection" aria-expanded="false"
+    <div *ngIf="!isGrid" (click)="openModal()"
       class="row asset-card-info">
       <div class="col-12 col-md-3 text-center">
         <div class="p-2 bulk-name-container">
@@ -83,7 +83,7 @@
         </div>
       </div>
     </div>
-    <div *ngIf="isGrid" (click)="openModal()" aria-controls="belowSection" aria-expanded="false"
+    <div *ngIf="isGrid" (click)="openModal()"
     class="row asset-card-info">
     <div class="col-12  d-flex justify-content-center">
       <div class="p-2 p-l-0 bulk-name-container">
@@ -105,7 +105,7 @@
             <div>
               <div class="f-12 fw-bold sub-topic">TVL</div>
             </div>
-            <div> 
+            <div>
               <div class="fs-6 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
             </div>
           </div>
@@ -113,7 +113,7 @@
             <div>
               <div class="f-12 fw-bold sub-topic">APY</div>
             </div>
-            <div> 
+            <div>
               <div class="fs-6 fw-bold">
                 <span *ngIf="vault.apy > vault.pairStat?.farmApr">
                   <span class="text-pairstat text-decoration-line-through">
@@ -130,7 +130,7 @@
             <div>
               <div class="f-12 fw-bold sub-topic">Daily</div>
             </div>
-            <div> 
+            <div>
               <div class="fs-6 fw-bold">{{ vault.pairStat?.dpr || 0 | percent }}</div>
             </div>
           </div>

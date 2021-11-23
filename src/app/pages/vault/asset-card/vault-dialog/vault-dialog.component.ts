@@ -30,13 +30,11 @@ const DEPOSIT_FEE = '0.001';
   animations: [fade],
   providers: [LpBalancePipe]
 })
-export class VaultDialogComponent implements OnInit {
-  mockData;
-  vaultData;
-  vault;
+export class VaultDialogComponent implements OnInit, OnDestroy {
+  vault: Vault;
   @ViewChild('formDeposit') formDeposit: NgForm;
   @ViewChild('formWithdraw') formWithdraw: NgForm;
-  @ViewChild('belowSection') belowSection: MdbCollapseDirective;
+
   UNIT: number = CONFIG.UNIT;
   SLIPPAGE = CONFIG.SLIPPAGE_TOLERANCE;
 
@@ -71,7 +69,7 @@ export class VaultDialogComponent implements OnInit {
   tokenPrice: string;
   basedTokenPrice: string;
 
-  height: number;
+  // height: number;
 
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
@@ -86,10 +84,10 @@ export class VaultDialogComponent implements OnInit {
     hideLimitLabels: true,
   };
   bufferUST = 3.5;
-
-  DISABLED_VAULTS: Array<string> = ['mAMC'];
-  auto_compound_percent_reallocate_left = 0;
-  constructor(public modalRef: MdbModalRef<VaultDialogComponent>,
+  
+  auto_compound_percent_reallocate_left = 0; // TODO
+  constructor(
+    public modalRef: MdbModalRef<VaultDialogComponent>,
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
     public info: InfoService,
@@ -101,64 +99,39 @@ export class VaultDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.vault = this.vaultData;
-    this.terrajs.getHeight().then(h => this.height = h);
-    // this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
-
-    //   if (this.terrajs.isConnected && this.belowSection && !this.belowSection.collapsed) {
-    //     const tasks: Promise<any>[] = [];
-    //     if (this.vault.poolInfo.pairSymbol !== 'UST') {
-    //       tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.farmTokenContract));
-    //     }
-    //     tasks.push(this.info.refreshPoolResponse(this.vault.assetToken));
-    //     await Promise.all(tasks);
-    //     if (this.depositTokenAAmtTokenToken && this.tokenAToBeStatic) {
-    //       this.depositTokenATokenTokenChanged(true);
-    //     } else if (this.depositTokenBAmtTokenToken && !this.tokenAToBeStatic) {
-    //       this.depositTokenBTokenTokenChanged(true);
-    //     }
-    //     if (this.withdrawAmt) {
-    //       this.withdrawAmtChanged();
-    //     }
-    //   }
-    // });
+    // this.terrajs.getHeight().then(h => this.height = h);
+    this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
+      if (this.terrajs.isConnected) {
+        const tasks: Promise<any>[] = [];
+        if (this.vault.poolInfo.pairSymbol !== 'UST') {
+          tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.farmTokenContract));
+        }
+        tasks.push(this.info.refreshPoolResponse(this.vault.assetToken));
+        await Promise.all(tasks);
+        if (this.depositTokenAAmtTokenToken && this.tokenAToBeStatic) {
+          this.depositTokenATokenTokenChanged(true);
+        } else if (this.depositTokenBAmtTokenToken && !this.tokenAToBeStatic) {
+          this.depositTokenBTokenTokenChanged(true);
+        }
+        if (this.withdrawAmt) {
+          this.withdrawAmtChanged();
+        }
+      }
+    });
     this.refreshData();
   }
 
   async refreshData() {
-    // await this.info.refreshPoolResponse(this.vault.assetToken);
-    //     if (this.depositTokenAmtTokenUST) {
-    //       this.depositTokenUSTChanged();
-    //     }
-    // if (isNaN(this.auto_compound_percent_reallocate)) {
-    //   this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
-    // }
-    // if (this.vault.poolInfo.forceDepositType) {
-    //   this.depositType = this.vault.poolInfo.forceDepositType as any;
-    // }
-  }
-
-  async openModal() {
-    this.modalRef = this.modalService.open(VaultDialogComponent, { 
-      modalClass: 'modal-lg modal-dialog-centered',
-      data: {
-      mockData: this,
-      vaultData: this.vault
-    }});
-  }
-
-  ngOnDestroy() {
-    this.heightChanged.unsubscribe();
-  }
-
-  toggleAssetCard() {
-    this.belowSection.toggle();
     if (isNaN(this.auto_compound_percent_reallocate)) {
       this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
     }
     if (this.vault.poolInfo.forceDepositType) {
       this.depositType = this.vault.poolInfo.forceDepositType as any;
     }
+  }
+
+  ngOnDestroy() {
+    this.heightChanged.unsubscribe();
   }
 
   setMaxDepositTokenATokenToken() {

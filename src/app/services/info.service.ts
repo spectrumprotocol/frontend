@@ -126,6 +126,8 @@ export class InfoService {
 
   portfolio: Portfolio;
 
+  DISABLED_VAULTS: Array<string> = ['mAMC'];
+
   async refreshBalance(opt: { spec?: boolean; ust?: boolean; lp?: boolean }) {
     if (!this.terrajs.isConnected) {
       return;
