@@ -113,7 +113,7 @@ export class PylonFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.pylonGov,
           amount,
-          msg: toBase64({ stake_voting_tokens: {} })
+          msg: toBase64({ stake: {} })
         }
       }
     );
