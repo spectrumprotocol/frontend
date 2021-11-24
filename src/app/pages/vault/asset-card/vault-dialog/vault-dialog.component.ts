@@ -84,8 +84,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     hideLimitLabels: true,
   };
   bufferUST = 3.5;
-  
-  auto_compound_percent_reallocate_left = 0; // TODO
+
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
     public terrajs: TerrajsService,
