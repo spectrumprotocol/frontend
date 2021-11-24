@@ -185,6 +185,7 @@ export class InfoService {
               ? undefined
               : farmInfo.autoCompound ? 'compound' : 'stake',
             pairSymbol: farmInfo.pairSymbol,
+            auditWarning: farmInfo.auditWarning,
           });
       }
     });

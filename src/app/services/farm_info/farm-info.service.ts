@@ -13,7 +13,8 @@ export type PoolInfo = PoolItem & {
   token_symbol: string;
   farmTokenContract: string;
   farmContract: string;
-  pairSymbol: string
+  pairSymbol: string;
+  auditWarning?: boolean;
 };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
