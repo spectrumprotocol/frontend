@@ -48,18 +48,19 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
     const rewardInfoTask = this.valkyrieStaking.query({ staker_info: { staker: this.terrajs.settings.valkyrieFarm } });
     const farmConfigTask = this.valkyrieFarm.query({ config: {} });
-    const valkyrieStatTask = this.httpClient.get<any>(this.terrajs.settings.valkyrieAPI + '/liquidity-provision/stake/apr').toPromise();
-    const valkyrieGovTask = this.httpClient.get<any>(this.terrajs.settings.valkyrieAPI + '/governance/stake/apr').toPromise();
+    //const valkyrieStatTask = this.httpClient.get<any>(this.terrajs.settings.valkyrieAPI + '/liquidity-provision/stake/apr').toPromise();
+    //const valkyrieGovTask = this.httpClient.get<any>(this.terrajs.settings.valkyrieAPI + '/governance/stake/apr').toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.valkyrieFarm)?.weight || 0;
-    const valkyrieStat = await valkyrieStatTask;
-    const valkyrieGov = await valkyrieGovTask;
+    //const valkyrieStat = await valkyrieStatTask;
+    //const valkyrieGov = await valkyrieGovTask;
     const pairs: Record<string, PairStat> = {};
 
-    const poolApr = +(valkyrieStat?.data?.apr || 0);
+    //const poolApr = +(valkyrieStat?.data?.apr || 0);
+    const poolApr = 0;
     pairs[this.terrajs.settings.valkyrieToken] = createPairStat(poolApr, this.terrajs.settings.valkyrieToken);
 
     const rewardInfo = await rewardInfoTask;
@@ -86,8 +87,10 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
       const poolInfo = poolInfos[token];
       const stat: PairStat = {
         poolApr,
-        poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: +(valkyrieGov?.data?.apr || 0),
+        //poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
+        //farmApr: +(valkyrieGov?.data?.apr || 0),
+        poolApy: 0,
+        farmApr: 0,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
