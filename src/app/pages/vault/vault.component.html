@@ -7,6 +7,15 @@
         <span class="sub-topic">Provide liquidity here. Spectrum will collect rewards for you. Plus, you will earn SPEC tokens.</span>
       </div>
     </div>
+    <div class="container pt-5">
+      <div class="row">
+        <div class="d-flex justify-content-end pe-0">
+          <div class="d-inline-block f-14">Audited by <a href="https://github.com/HalbornSecurity/PublicReports/blob/master/CosmWasm%20Smart%20Contract%20Audits/Spectrum_Protocol_CosmWasm_Smart_Contract_Security_Audit_Halborn_Report_v1_1.pdf" target="_blank">
+            <img src="assets/halborn_logo.svg" alt="Halborn" class="platform-logo-halborn"></a>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row g-3 pt-3">
       <div class="col-12 col-md-6">
         <div class="card box-left">
@@ -37,7 +46,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-xl-4">
         <div class="card box-left">
           <div class="card-body">
             <div class="card-text">
@@ -45,16 +54,15 @@
                 mdbTooltip="Your provided liquidity, staked rewards, and staked SPEC"></i>
             </div>
             <h3 class="card-title">
-              <span *ngIf="+info.myTvl" class="fas fa-chevron-up animate-up text-success"></span>&nbsp;<app-digit
+              <span *ngIf="+info.myTvl" class="fas fa-chevron-up animate-up text-success"></span><app-digit
                 [value]="info.myTvl"></app-digit> <span class="cur-title"> UST</span>
-                <!--  -->
                 <a role="button" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
                 (click)="openYourTVL()"><img class="float-end " src="../../../assets/Icon _ PieChart.svg"></a>
             </h3>
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-8">
+      <div class="col-12 col-xl-8">
         <!--   -->
         <app-unstake-all *ngIf="terrajs.isConnected"></app-unstake-all>
       </div>
@@ -97,7 +105,7 @@
             <div class="d-flex">
               <div class="form-group has-search">
                 <span class="fa fa-search form-control-feedback"></span>
-                <input type="text" class="form-control" placeholder="Search Vaults" aria-label="Search"
+                <input type="text" class="form-control placeholder-white" placeholder="Search Vaults" aria-label="Search"
                 aria-describedby="search-addon" [(ngModel)]="search" (ngModelChange)="refresh()" >
               </div>
             </div>
@@ -111,7 +119,7 @@
               <div mdbDropdown class="dropdown w-100 text-center" #dropdownFarmFilter>
                 <button mdbDropdownToggle class="btn b-none" type="button" aria-expanded="false">
                   <img *ngIf="activeFarm !== 'All'" [src]="activeFarm | url:'icon'" width="24" height="24"><img *ngIf="activeFarm === 'All'" src="../../../assets/Icon _ Farms.svg" width="24" height="24">
-                  <span class="d-none d-sm-none d-md-none d-lg-inline">{{activeFarm}} {{ activeFarm === "All" ? "Farms" : "Farm"}}</span> 
+                  <span class="text-dropdown d-none d-sm-none d-md-none d-lg-inline">{{activeFarm}} {{ activeFarm === "All" ? "Farms" : "Farm"}}</span> 
                   <span class="text-end filter">
                     <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
                   </span>
@@ -138,7 +146,7 @@
             <div mdbDropdown class="dropdown w-100 text-center" #dropdownSortBy>
               <button mdbDropdownToggle class="btn b-none" type="button" aria-expanded="false">
                 <img src="../../../assets/Icon _ SortBy.svg" width="24" height="24"> 
-                <span class="d-none d-sm-none d-md-none d-lg-inline">Sort by</span>
+                <span class="text-dropdown d-none d-sm-none d-md-none d-lg-inline">Sort by</span>
                 <span class="text-end filter">
                   <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
                 </span>

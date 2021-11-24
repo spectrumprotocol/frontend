@@ -56,30 +56,6 @@
                 info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span>
             </div>
           </div>
-          <!-- <div class="col-12 col-sm-6 col-md-4">
-            <div class="fs-6 mt-2">Staked SPEC</div>
-            <div class="fs-5"><span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10"
-                class="fas fa-chevron-up animate-up text-success"></span>
-              {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit: 6 : '1.0-2'}}
-              <span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10" class="small text-muted">
-                &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | balance:
-                info.poolResponses[terrajs.settings.specToken] |
-                unit: 6 : '1.0-2' }})</span>
-            </div>
-            <div *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake">
-              <div class="fs-6 mt-2">
-                Staked
-                <span>{{vault.poolInfo.token_symbol}} <i class="fas fa-info-circle info-icon"
-                    mdbTooltip="{{vault.poolInfo.token_symbol}} will be earned from auto-stake strategy. If you select auto-compound, LP will be earned."></i></span>
-              </div>
-              <div class="fs-5">{{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit: vault.decimals : '1.0-2'}}
-                <span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_farm_reward" class="small text-muted">
-                  &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
-                  info.poolResponses[vault.poolInfo.farmTokenContract] |
-                  unit: vault.decimals : '1.0-2' }})</span>
-              </div>
-            </div>
-          </div> -->
         </div>
       </div>
     </div>

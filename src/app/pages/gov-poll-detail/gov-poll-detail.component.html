@@ -58,17 +58,17 @@
                 <div class="card-header">
                     Vote
                 </div>
-                <div class="card-body">
+                <div class="card-body vote-container">
                     <form class="needs-validation" novalidate #form="ngForm">
                         <div class="text-end small mt-5 text-muted fw-bold">
                             <span>Balance: {{ maxAmount | number }} SPEC</span>
                         </div>
                         <div class="input-group mb-5">
-                            <input type="number" class="form-control" placeholder="0.00" name="amount"
+                            <input type="number" class="form-control fix-border-grey" placeholder="0.00" name="amount"
                                 [(ngModel)]="amount" [min]="0.000001" [max]="maxAmount" [step]="0.000001" required
                                 #amountCtl="ngModel" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'"
                                 [class.is-invalid]="(form.submitted || amountCtl.touched) && amountCtl.invalid" />
-                            <button class="btn btn-outline-primary" type="button" (click)="setMax()">
+                            <button class="btn btn-max" type="button" (click)="setMax()">
                                 Max
                             </button>
                             <div class="invalid-feedback" *ngIf="amount > maxAmount">

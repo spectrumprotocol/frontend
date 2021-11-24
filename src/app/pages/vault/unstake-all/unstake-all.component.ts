@@ -65,9 +65,9 @@ export class UnstakeAllComponent {
   async manageRewards() {
     // TODO:: remove
 
-    if (!this.info.portfolio?.total_reward_ust) {
-      return;
-    }
+    // if (!this.info.portfolio?.total_reward_ust) {
+    //   return;
+    // }
 
     const modal = await import('../manage-rewards/manage-rewards.component');
     this.modalService.open(modal.ManageRewardsComponent, {

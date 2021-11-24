@@ -58,6 +58,7 @@ body {
   color: $apy-error;
 }
 
+
 .spec-form {
   max-width: 740px;
   margin: 0 auto;
@@ -699,4 +700,8 @@ i.fa-sort-down {
 
 .switch-grey {
   background-color: $gray-980;
+}
+
+.btn-max {
+  background-color: $max-btn;
 }

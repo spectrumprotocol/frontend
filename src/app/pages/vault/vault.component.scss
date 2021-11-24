@@ -135,3 +135,23 @@
     border-radius: 6px;
     background-image: linear-gradient(268deg, #00ade7 94%, #050831 4%);
   }
+
+
+.placeholder-white::placeholder {
+  color: #F5F5F5;
+}
+
+.placeholder-white:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #F5F5F5;
+}
+
+.text-dropdown {
+  font-size: 15px;
+  font-weight: normal;
+}
+
+@media screen and (max-width: 1200px) {
+  .filter {
+    display: none;
+  }
+}

@@ -20,7 +20,7 @@
       <div class="card spec-form bg-gray height-350">
         <div class="card-body card-trade">
           <mdb-tabs [fill]="true">
-            <mdb-tab title="Buy Spec">
+            <mdb-tab title="Buy SPEC">
               <form class="needs-validation" novalidate #formBuySPEC="ngForm">
                 <ng-container *ngTemplateOutlet="slippage"></ng-container>
                 <div class="d-flex justify-content-between">
@@ -86,11 +86,11 @@
                 </div>
                 <div class="d-grid mt-3">
                   <button type="submit" class="btn btn-primary" (click)="doBuySPEC()"
-                    [disabled]="cannotBuySPEC()">Sell Spec</button>
+                    [disabled]="cannotBuySPEC()">Sell SPEC</button>
                 </div>
               </form>
             </mdb-tab>
-            <mdb-tab title="Sell Spec">
+            <mdb-tab title="Sell SPEC">
               <form class="needs-validation" novalidate #formSellSPEC="ngForm">
                 <ng-container *ngTemplateOutlet="slippage"></ng-container>
                 <div class="d-flex justify-content-between">
@@ -98,7 +98,7 @@
                     <span>From</span>
                   </div>
                   <div class="text-end mt-3 fw-bold">
-                    <span>Balance: {{ infoService.userUstAmount || 0 | number }} SPEC</span>
+                    <span>Balance: {{ infoService.userSpecAmount || 0 | number }} SPEC</span>
                   </div>
                 </div> 
                 <div class="input-group">
@@ -156,7 +156,7 @@
                 </div>
                 <div class="d-grid mt-3">
                   <button type="submit" class="btn btn-primary" (click)="doSellSPEC()"
-                    [disabled]="cannotSellSPEC()">Sell Spec</button>
+                    [disabled]="cannotSellSPEC()">Sell SPEC</button>
                 </div>
               </form>
             </mdb-tab>

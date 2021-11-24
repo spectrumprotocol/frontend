@@ -73,7 +73,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
-  auto_compound_percent_reallocate: number;
+  auto_compound_percent_reallocate: number = 0;
   ngx_slider_option: NgxSliderOptions = {
     animate: false,
     step: 1,
@@ -85,7 +85,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   };
   bufferUST = 3.5;
   
-  auto_compound_percent_reallocate_left = 0; // TODO
+  auto_compound_percent_reallocate_left = 0;
+  auto_compound_percent_deposit_left = 0;
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
     public terrajs: TerrajsService,
@@ -670,9 +671,14 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   autoCompoundChanged() {
+    this.auto_compound_percent_deposit_left = 100 - this.auto_compound_percent_deposit;
     const percent = this.auto_compound_percent_deposit / 100;
     this.vault['totalMixApy'] = this.vault.stakeApy * (1 - percent) + this.vault.compoundApy * percent;
     this.vault['mixApy'] = this.vault['totalMixApy'] - this.vault.specApy;
+  }
+
+  rellocateAutoCompound() {
+    this.auto_compound_percent_reallocate_left = 100 - this.auto_compound_percent_reallocate;
   }
 
   @debounce(250)

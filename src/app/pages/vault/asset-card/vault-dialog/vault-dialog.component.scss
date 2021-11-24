@@ -134,6 +134,10 @@
     margin: -10px 5px 0 5px;
 }
 
-.btn-max {
-    background-color: $max-btn;
+.icon-plus {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    background-size: 100% 100%;
+    background: url("/assets/Icon_Plus.svg") no-repeat;
 }

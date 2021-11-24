@@ -13,7 +13,7 @@ import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
   styleUrls: ['./menubar.component.scss']
 })
 export class MenubarComponent implements OnInit, OnDestroy {
-
+  isOpen = false;
   constructor(
     public terrajs: TerrajsService,
     public info: InfoService,
