@@ -448,6 +448,14 @@ a.link-no-decoration {
   background-color: #1b1f26;
 }
 
+.btn-outline-light:disabled,
+.btn-outline-primary.disabled {
+  border: 0;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 6px;
+}
+
 .dropdown-item {
   cursor: pointer;
 }
