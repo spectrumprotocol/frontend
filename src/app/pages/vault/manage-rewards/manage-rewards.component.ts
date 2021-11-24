@@ -6,6 +6,7 @@ import { plus } from '../../../libs/math';
 import { InfoService, Portfolio } from '../../../services/info.service';
 import { TerrajsService } from '../../../services/terrajs.service';
 import {GovService} from '../../../services/api/gov.service';
+import {GoogleAnalyticsService} from 'ngx-google-analytics';
 
 type MapToKeyValue<T> = T extends Map<infer X, infer Y> ? KeyValue<X, Y> : never;
 
@@ -18,7 +19,8 @@ export class ManageRewardsComponent implements OnInit{
     public modalRef: MdbModalRef<ManageRewardsComponent>,
     public info: InfoService,
     private terrajs: TerrajsService,
-    private gov: GovService
+    private gov: GovService,
+    protected $gaService: GoogleAnalyticsService,
   ) { }
 
   availablePoolDays: number[] = [];
@@ -69,4 +71,46 @@ export class ManageRewardsComponent implements OnInit{
   trackTokensMap = (_: number, value: MapToKeyValue<Portfolio['tokens']>) => {
     return value.key;
   }
+
+  getUnstakeAllMsg(): MsgExecuteContract[] {
+    const rewardInfosKeys = Object.keys(this.info.rewardInfos);
+    const rewardInfosKeysThatHavePendingRewards: string[] = [];
+    for (const key of rewardInfosKeys) {
+      if (+this.info.rewardInfos[key].pending_farm_reward > 0 || +this.info.rewardInfos[key].pending_spec_reward > 0) {
+        rewardInfosKeysThatHavePendingRewards.push(key);
+      }
+    }
+    const farmNameListThatHavePendingRewards: Set<string> = new Set();
+    for (const key of rewardInfosKeysThatHavePendingRewards) {
+      farmNameListThatHavePendingRewards.add(this.info.poolInfos[key].farm);
+    }
+    const msgExecuteContractList: MsgExecuteContract[] = [];
+    for (const farmName of farmNameListThatHavePendingRewards) {
+      const findFarm = this.info.farmInfos.find(f => f.farm === farmName);
+      msgExecuteContractList.push(new MsgExecuteContract(
+        this.terrajs.address,
+        findFarm.farmContract,
+        {
+          withdraw: {}
+        }
+      ));
+    }
+    const mintMsg = new MsgExecuteContract(
+      this.terrajs.address,
+      this.terrajs.settings.gov,
+      {
+        mint: {}
+      }
+    );
+    return [mintMsg, ...msgExecuteContractList];
+  }
+
+  async unstakeAll() {
+    this.$gaService.event('CLICK_UNSTAKE_ALL_REWARDS');
+    if (!this.info.portfolio?.total_reward_ust) {
+      return;
+    }
+    await this.terrajs.post(this.getUnstakeAllMsg());
+  }
+
 }

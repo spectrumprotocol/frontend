@@ -104,5 +104,10 @@
           </tr>
       </tbody>
     </table>
-  </div>
+    <div class="text-center">
+      <button class="btn btn-primary ms-2" type="button" aria-expanded="false" (click)="unstakeAll()"
+              title="Unstake all rewards in vaults and withdraw to your wallet" [disabled]="!info.portfolio?.total_reward_ust">
+        Claim Staked Rewards
+      </button>
+    </div>
 </div>
