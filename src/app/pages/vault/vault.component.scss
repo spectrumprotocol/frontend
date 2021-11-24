@@ -155,3 +155,21 @@
     display: none;
   }
 }
+
+@media screen and (max-width: 385px) {
+  .mobile-icon {
+    position: absolute;
+    top: 13px;
+    left: 10px;
+  }
+}
+
+.md-icon {
+  font-size: 18px;
+}
+
+.dropdown {
+  button {
+    box-shadow: none;
+  }
+}

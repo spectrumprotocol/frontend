@@ -135,7 +135,7 @@
                   <span>Balance: {{ info.userUstAmount | number }} UST</span>
                 </div>
                 <div class="input-group">
-                  <span class="input-group-text igt-fixwidth">UST</span>
+                  <span class="input-group-text igt-fixwidth ps-4 fw-bold"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle deposit-icon me-1"  width="24" height="24">UST</span>
                   <input #depositAmountUSTTokenUSTCtl="ngModel" [(ngModel)]="depositUSTAmountTokenUST"
                     [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" readonly
                     [max]="+info.userUstAmount - this.bufferUST" [min]="0.000001" [step]="0.000001"
@@ -211,7 +211,7 @@
                 Already have LP token? Deposit here, or
                 <a href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
               </div>
-              <div class="text-end small mt-3 text-muted fw-bold">
+              <div class="text-end mt-3 fw-bold">
                 <span>Balance: {{+info.lpTokenBalances[vault.lpToken] | unit}} {{ vault.symbol
                   }}-{{vault.poolInfo.pairSymbol}} LP</span>
               </div>
@@ -626,17 +626,28 @@
 <ng-template #depositModeSection>
   <div mdbDropdown class="dropdown" #dropdownDepositMode>
     <button mdbDropdownToggle class="btn dropdown-toggle btn-drop" type="button">
-      <ng-container *ngIf="depositMode === 'tokentoken'">{{ vault.symbol }}</ng-container>
-      <ng-container *ngIf="depositMode === 'lp'">{{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</ng-container>
-      <ng-container *ngIf="depositMode === 'ust'">UST</ng-container>
+      <ng-container *ngIf="depositMode === 'tokentoken'"><img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }}</ng-container>
+      <ng-container *ngIf="depositMode === 'lp'">
+        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1"> 
+        {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</ng-container>
+      <ng-container *ngIf="depositMode === 'ust'"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle deposit-icon me-1"  width="24" height="24">UST</ng-container>
     </button>
     <ul mdbDropdownMenu class="dropdown-menu">
       <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('tokentoken')"
-          [class.active]="depositMode === 'tokentoken'">{{vault.symbol}} + {{vault.poolInfo.pairSymbol}}</a></li>
+          [class.active]="depositMode === 'tokentoken'">
+          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+          {{vault.symbol}} + {{vault.poolInfo.pairSymbol}}
+        </a></li>
       <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('lp')"
-          [class.active]="depositMode === 'lp'">{{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</a></li>
+          [class.active]="depositMode === 'lp'">
+          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust"> 
+          {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</a></li>
       <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('ust')"
-          [class.active]="depositMode === 'ust'">UST</a></li>
+          [class.active]="depositMode === 'ust'">
+          <img [src]="'UST' | url:'icon'" width="25" height="25" class="deposit-ust">UST</a></li>
     </ul>
   </div>
 </ng-template>
@@ -644,18 +655,29 @@
 <ng-template #withdrawModeSection>
   <div mdbDropdown class="dropdown" #dropdownWithdrawMode>
     <button mdbDropdownToggle class="btn dropdown-toggle btn-drop" type="button">
-      <ng-container *ngIf="withdrawMode === 'tokentoken'">{{ vault.symbol }} + {{ vault.poolInfo.pairSymbol }}
+      <ng-container *ngIf="withdrawMode === 'tokentoken'"><img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }} + {{ vault.poolInfo.pairSymbol }}
       </ng-container>
-      <ng-container *ngIf="withdrawMode === 'lp'">{{ vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP</ng-container>
-      <ng-container *ngIf="withdrawMode === 'ust'">UST</ng-container>
+      <ng-container *ngIf="withdrawMode === 'lp'">
+        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
+        <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1"> 
+        {{ vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP</ng-container>
+      <ng-container *ngIf="withdrawMode === 'ust'"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle deposit-icon me-1"  width="24" height="24">UST</ng-container>
     </button>
     <ul mdbDropdownMenu class="dropdown-menu">
       <li><a class="dropdown-item" (click)="withdrawMode = 'tokentoken'; dropdownWithdrawMode.hide()"
-          [class.active]="withdrawMode === 'tokentoken'">{{vault.symbol}} + {{vault.poolInfo.pairSymbol}}</a></li>
+          [class.active]="withdrawMode === 'tokentoken'">
+          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust"> 
+          {{vault.symbol}} + {{vault.poolInfo.pairSymbol}}</a></li>
       <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdownWithdrawMode.hide()"
-          [class.active]="withdrawMode === 'lp'">{{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</a></li>
+          [class.active]="withdrawMode === 'lp'">
+          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust"> 
+          {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</a></li>
       <li *ngIf="vault.poolInfo.farm !== 'Spectrum'"><a class="dropdown-item"
-          (click)="withdrawMode = 'ust'; dropdownWithdrawMode.hide()" [class.active]="withdrawMode === 'ust'">UST</a>
+          (click)="withdrawMode = 'ust'; dropdownWithdrawMode.hide()" [class.active]="withdrawMode === 'ust'">
+          <img [src]="'UST' | url:'icon'" width="25" height="25" class="deposit-ust">
+          UST</a>
       </li>
     </ul>
   </div>

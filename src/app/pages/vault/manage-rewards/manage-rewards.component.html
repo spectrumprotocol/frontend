@@ -19,7 +19,7 @@
       </div>
     </div>
   </div>
-  <div class="table-responsive text-nowrap">
+  <div class="table-responsive">
     <table class="table">
       <thead>
         <tr>
@@ -47,61 +47,25 @@
               <small class="text-muted">(${{ token.value.pending_reward_ust | number: '1.0-2' }})</small>
             </td>
             <td class="ps-1 pe-1">
-              <div *ngIf="token.key === 'SPEC'" class="d-grid d-lg-flex gap-2">
-                <ng-container *ngFor="let day of availablePoolDays">
-                  <button class="btn btn-primary p-2" *ngIf="day === 0" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
-                  <button class="btn btn-primary p-2" *ngIf="day !== 0" (click)="moveToGov(token.key, day)">Move to {{day}}-Day Locked Gov</button>
-                </ng-container>
-              </div>
-              <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.key).autoStake" class="btn btn-primary p-2" (click)="moveToGov(token.key)">Move to Gov</button>
+              <section class="w-100 row">
+                <div *ngIf="token.key === 'SPEC'">
+                  <ng-container *ngFor="let day of availablePoolDays">
+                    <div class="col" *ngIf="day === 0">
+                      <button class="btn btn-primary  f-12" *ngIf="day === 0" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
+                    </div>
+                    <div class="col" *ngIf="day !== 0" >
+                      <button class="btn btn-primary  f-12" *ngIf="day !== 0" (click)="moveToGov(token.key, day)">Move to {{day}}-Day Locked Gov</button>
+                    </div>
+                  </ng-container>
+                </div>
+                <div class="col" *ngIf="token.key !== 'SPEC'">
+                  <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.key).autoStake" class="btn btn-primary  f-12" (click)="moveToGov(token.key)">Move to Gov</button>
+                </div>
+              </section>
             </td>
           </tr>
           <!--  -->
         </ng-container>
-        <tr class="switch-grey">
-            <td>
-              <img [src]="'SPEC' | url:'icon'" height="32" class="rounded-circle">
-              SPEC
-            </td>
-            <td>
-              100%
-            </td>
-            <td>
-              232323232
-              <small class="text-muted">($23232323)</small>
-            </td>
-            <td class="ps-1 pe-1">
-              <div>
-                <ng-container>
-                  <button class="btn btn-primary p-2" (click)="moveToGov('SPEC')">Move to No Lock Gov</button>
-                  <button class="btn btn-primary p-2" (click)="moveToGov('SPEC', 1)">Move to 1-Day Locked Gov</button>
-                </ng-container>
-              </div>
-              <button class="btn btn-primary p-2" (click)="moveToGov('SPEC')">Move to Gov</button>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <img [src]="'MIR' | url:'icon'" height="32" class="rounded-circle">
-              SPEC
-            </td>
-            <td>
-              10dsdss0%
-            </td>
-            <td>
-              232asdas323232
-              <small class="text-muted">($232dsasa32323)</small>
-            </td>
-            <td class="ps-1 pe-1">
-              <div class="">
-                <ng-container>
-                  <button class="btn btn-primary p-2" (click)="moveToGov('SPEC')">Move to No Lock Gov</button>
-                  <button class="btn btn-primary p-2" (click)="moveToGov('SPEC', 1)">Move to 1-Day Locked Gov</button>
-                </ng-container>
-              </div>
-              <button class="btn btn-primary p-2" (click)="moveToGov('SPEC')">Move to Gov</button>
-            </td>
-          </tr>
       </tbody>
     </table>
     <div class="text-center">

@@ -178,3 +178,33 @@
 .input-group-text-denom{
   border-width: 1px !important;
 }
+
+.badge-deposit-disabled {
+  height: fit-content;
+  width: 70px;
+  background: $primary;
+  position: relative;
+  border-top-right-radius: 0.3rem;
+  font-size: 11px;
+  padding-left: 23px;
+  background: $primary;
+  width: 125px;
+  &::before {
+      border-right: 15px solid $primary;
+  }
+}
+
+.badge-deposit-disabled:before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 17px solid $main-bg;
+  border-right: 15px solid $primary;
+  width: 0;
+}
+
+.grid-badge {
+  right: 0;
+}

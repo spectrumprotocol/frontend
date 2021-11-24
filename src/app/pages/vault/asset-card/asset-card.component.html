@@ -2,8 +2,8 @@
   <span class="position-absolute" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
     <div class="badge-staked badge-progress badge-staked-vault">Deposited</div>
   </span>
-  <span class="position-absolute" *ngIf="info.DISABLED_VAULTS.includes(vault.symbol)">
-      <div class="badge-staked badge-progress badge-staked-vault">Deposit Disabled</div>
+  <span class="position-absolute grid-badge mb-1" *ngIf="info.DISABLED_VAULTS.includes(vault.symbol)">
+      <div class="badge-deposit-disabled badge-staked-vault">Deposit Disabled</div>
   </span>
   <div class="card-body">
     <div *ngIf="!isGrid" (click)="openModal()"
@@ -20,7 +20,7 @@
       </div>
       <div class="col-12 col-md-9">
         <div class="row">
-          <div class="col-12 col-sm-12 col-md-4">
+          <div class="col-12 col-sm-12 col-md-3">
             <div class="f-12 fw-bold sub-topic">TVL</div>
             <div class="fs-6 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
           </div>
@@ -39,14 +39,14 @@
                 {{vault.apy | percent}}</span>
             </div>
           </div>
-          <div class="col-12 col-sm-6 col-md-3">
+          <div class="col-12 col-sm-6 col-md-2">
             <div class="f-12 fw-bold sub-topic">
               <!-- <i class="fas fa-info-circle info-icon"
               mdbTooltip="Estimated rate of return per day"></i> -->
               Daily</div>
             <div class="fs-6 fw-bold">{{ vault.pairStat?.dpr || 0 | percent }}</div>
           </div>
-          <div class="col-12 col-sm-6 col-md-2 text-end">
+          <div class="col-12 col-sm-6 col-md-4 text-end">
             <div class="f-12">LP Balance</div>
             <div class="fs-6 fw-bold text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
               <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"

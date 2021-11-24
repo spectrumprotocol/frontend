@@ -362,13 +362,13 @@ a.link-no-decoration {
   text-decoration: underline;
 }
 
-.table {
-  background-color: $btn-bg;
-  tr {
-    border-style: none;
-    border: 0 transparent;
-    margin: 0 10px 0 10px;
-    display: block;
+.reward-table {
+  .table {
+    background-color: $btn-bg;
+    tr {
+      border-style: none;
+      border: 0 transparent;
+    }
   }
 }
 
@@ -712,4 +712,14 @@ i.fa-sort-down {
 
 .btn-max {
   background-color: $max-btn;
+}
+
+.btn-secondary {
+  color: $dark;
+}
+
+.reward-container {
+  button {
+    height: 40px;
+  }
 }

@@ -28,9 +28,9 @@ export class UnstakeAllComponent {
   async manageRewards() {
     // TODO:: remove
 
-    // if (this.disableManageRewards()) {
-    //   return;
-    // }
+    if (this.disableManageRewards()) {
+      return;
+    }
 
     const modal = await import('../manage-rewards/manage-rewards.component');
     this.modalService.open(modal.ManageRewardsComponent, {

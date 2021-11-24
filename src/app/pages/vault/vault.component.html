@@ -21,11 +21,12 @@
         <div class="card box-left">
           <div class="card-body">
             <p class="card-text">
-              Total Value Locked <i class="fas fa-info-circle info-icon"
-                mdbTooltip="Total value of provided liquidity and staked SPEC"></i>
+              Total Value Locked
             </p>
             <h3 class="card-title">
               <app-digit [value]="+info.stat?.tvl / UNIT"></app-digit> <span class="cur-title"> UST</span>
+              <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon"
+                mdbTooltip="Total value of provided liquidity and staked SPEC"></i>
             </h3>
           </div>
         </div>
@@ -117,8 +118,9 @@
           <div class="card-body pd-2">
             <div class="d-flex">
               <div mdbDropdown class="dropdown w-100 text-center" #dropdownFarmFilter>
-                <button mdbDropdownToggle class="btn b-none" type="button" aria-expanded="false">
-                  <img *ngIf="activeFarm !== 'All'" [src]="activeFarm | url:'icon'" width="24" height="24"><img *ngIf="activeFarm === 'All'" src="../../../assets/Icon _ Farms.svg" width="24" height="24">
+                <button mdbDropdownToggle class="btn" type="button" aria-expanded="false">
+                  <img *ngIf="activeFarm !== 'All'" class="mobile-icon" [src]="activeFarm | url:'icon'" width="24" height="24">
+                  <img *ngIf="activeFarm === 'All'"  class="mobile-icon" src="../../../assets/Icon _ Farms.svg" width="24" height="24">
                   <span class="text-dropdown d-none d-sm-none d-md-none d-lg-inline">{{activeFarm}} {{ activeFarm === "All" ? "Farms" : "Farm"}}</span> 
                   <span class="text-end filter">
                     <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
@@ -144,8 +146,8 @@
         <div class="card box-left">
           <div class="card-body pd-2">
             <div mdbDropdown class="dropdown w-100 text-center" #dropdownSortBy>
-              <button mdbDropdownToggle class="btn b-none" type="button" aria-expanded="false">
-                <img src="../../../assets/Icon _ SortBy.svg" width="24" height="24"> 
+              <button mdbDropdownToggle class="btn" type="button" aria-expanded="false">
+                <img class="mobile-icon" src="../../../assets/Icon _ SortBy.svg" width="24" height="24"> 
                 <span class="text-dropdown d-none d-sm-none d-md-none d-lg-inline">Sort by</span>
                 <span class="text-end filter">
                   <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
