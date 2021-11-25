@@ -87,7 +87,8 @@ export class AssetCardComponent implements OnInit, OnDestroy {
   };
   bufferUST = 3.5;
 
-  DISABLED_VAULTS: Array<string> = ['mAMC'];
+  WITHDRAW_UST_MAX_SPREAD = CONFIG.SLIPPAGE_TOLERANCE;
+  DISABLED_VAULTS: Array<string> = ['mAMC', 'mGME', 'VKR'];
 
   constructor(
     public terrajs: TerrajsService,

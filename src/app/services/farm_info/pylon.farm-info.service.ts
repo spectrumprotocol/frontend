@@ -4,7 +4,6 @@ import { PylonFarmService } from '../api/pylon-farm.service';
 import { PylonStakingService } from '../api/pylon-staking.service';
 import { PoolItem } from '../api/pylon_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
-import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
 import {
   FarmInfoService,
@@ -16,6 +15,7 @@ import { firstValueFrom } from 'rxjs';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
+import { VaultsResponse } from '../api/gov/vaults_response';
 
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
@@ -27,7 +27,6 @@ export class PylonFarmInfoService implements FarmInfoService {
   pairSymbol = 'UST';
 
   constructor(
-    private gov: GovService,
     private pylonFarm: PylonFarmService,
     private terrajs: TerrajsService,
     private pylonStaking: PylonStakingService,
@@ -51,14 +50,13 @@ export class PylonFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
     const rewardInfoTask = this.pylonStaking.query({ staker_info: { block_height: +height, staker: this.terrajs.settings.pylonFarm } });
     const farmConfigTask = this.pylonFarm.query({ config: {} });
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.pylonFarm)?.weight || 0;
     const pylonLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/liquidity/v1/overview`));
     const pylonGovStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/governance/v1/overview`));
@@ -118,7 +116,7 @@ export class PylonFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.pylonGov,
           amount,
-          msg: toBase64({ stake_voting_tokens: {} })
+          msg: toBase64({ stake: {} })
         }
       }
     );

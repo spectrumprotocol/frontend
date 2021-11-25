@@ -4,7 +4,6 @@ import { AnchorFarmService } from '../api/anchor-farm.service';
 import { AnchorStakingService } from '../api/anchor-staking.service';
 import { PoolItem } from '../api/anchor_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/anchor_farm/reward_info_response';
-import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
 import {
   FarmInfoService,
@@ -15,6 +14,7 @@ import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { HttpClient } from '@angular/common/http';
+import { VaultsResponse } from '../api/gov/vaults_response';
 import {Denom} from '../../consts/denom';
 
 @Injectable()
@@ -27,7 +27,6 @@ export class AnchorFarmInfoService implements FarmInfoService {
   pairSymbol = 'UST';
 
   constructor(
-    private gov: GovService,
     private anchorFarm: AnchorFarmService,
     private terrajs: TerrajsService,
     private anchorStaking: AnchorStakingService,
@@ -51,7 +50,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
     const rewardInfoTask = this.anchorStaking.query({ staker_info: { block_height: +height, staker: this.terrajs.settings.anchorFarm } });
     const farmConfigTask = this.anchorFarm.query({ config: {} });
@@ -60,7 +59,6 @@ export class AnchorFarmInfoService implements FarmInfoService {
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.anchorFarm)?.weight || 0;
     const anchorStat = await anchorStatTask;
     const anchorGov = await anchorGovTask;

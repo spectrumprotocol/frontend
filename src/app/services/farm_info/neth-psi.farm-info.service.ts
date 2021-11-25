@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import BigNumber from 'bignumber.js';
-import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
 import {
   FarmInfoService,
@@ -17,6 +16,7 @@ import { RewardInfoResponseItem } from '../api/nexus_nassets_psi_farm/reward_inf
 import {NethPsiFarmService} from '../api/neth-psi-farm.service';
 import {NethPsiStakingService} from '../api/neth-psi-staking.service';
 import {BalancePipe} from '../../pipes/balance.pipe';
+import { VaultsResponse } from '../api/gov/vaults_response';
 
 @Injectable()
 export class NethPsiFarmInfoService implements FarmInfoService {
@@ -29,7 +29,6 @@ export class NethPsiFarmInfoService implements FarmInfoService {
   baseSymbol = 'nEth';
 
   constructor(
-    private gov: GovService,
     private nethPsiFarmService: NethPsiFarmService,
     private terrajs: TerrajsService,
     private apollo: Apollo,
@@ -54,14 +53,13 @@ export class NethPsiFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
     const unixTimeSecond = Math.floor(Date.now() / 1000);
     const rewardInfoTask = this.nethPsiStakingService.query({ staker_info: { time_seconds: +unixTimeSecond, staker: this.terrajs.settings.nEthPsiFarm } });
     const farmConfigTask = this.nethPsiFarmService.query({ config: {} });
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nEthPsiFarm)?.weight || 0;
     const nexusLPStat = await this.getnEthPsiLPStat(poolResponses[this.terrajs.settings.nEthToken], unixTimeSecond);
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
@@ -78,8 +76,7 @@ export class NethPsiFarmInfoService implements FarmInfoService {
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
-    const govConfig = await this.gov.config();
-    const communityFeeRate = +farmConfig.community_fee * (1 - +govConfig.warchest_ratio);
+    const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[this.terrajs.settings.nEthToken];
     const psiAsset = p.assets.find(a => a.info.token?.['contract_addr'] === this.terrajs.settings.nexusToken);
     if (!psiAsset) {
