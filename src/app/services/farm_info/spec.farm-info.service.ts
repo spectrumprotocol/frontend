@@ -7,6 +7,7 @@ import { FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem }
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
+import { VaultsResponse } from '../api/gov/vaults_response';
 
 @Injectable()
 export class SpecFarmInfoService implements FarmInfoService {
@@ -17,7 +18,6 @@ export class SpecFarmInfoService implements FarmInfoService {
   farmColor = '#fc5185';
 
   constructor(
-    private gov: GovService,
     private specFarm: SpecFarmService,
     private terrajs: TerrajsService,
   ) { }
@@ -39,9 +39,8 @@ export class SpecFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.specFarm)?.weight || 0;
 
     const pairs: Record<string, PairStat> = {};

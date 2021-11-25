@@ -12,6 +12,7 @@ import { Denom } from '../../consts/denom';
 import { NexusFarmService } from '../api/nexus-farm.service';
 import { RewardInfoResponseItem } from '../api/nexus_farm/reward_info_response';
 import { NexusStakingService } from '../api/nexus-staking.service';
+import { VaultsResponse } from '../api/gov/vaults_response';
 
 @Injectable()
 export class NexusFarmInfoService implements FarmInfoService {
@@ -22,7 +23,6 @@ export class NexusFarmInfoService implements FarmInfoService {
   farmColor = '#F4B6C7';
 
   constructor(
-    private gov: GovService,
     private nexusFarm: NexusFarmService,
     private terrajs: TerrajsService,
     private apollo: Apollo,
@@ -46,14 +46,13 @@ export class NexusFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
     const unixTimeSecond = Math.floor(Date.now() / 1000);
     const rewardInfoTask = this.nexusStaking.query({ staker_info: { time_seconds: +unixTimeSecond, staker: this.terrajs.settings.nexusFarm } });
     const farmConfigTask = this.nexusFarm.query({ config: {} });
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nexusFarm)?.weight || 0;
     const nexusLPStat = await this.getNexusLPStat(poolResponses[this.terrajs.settings.nexusToken], unixTimeSecond);
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
@@ -70,8 +69,7 @@ export class NexusFarmInfoService implements FarmInfoService {
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
-    const govConfig = await this.gov.config();
-    const communityFeeRate = +farmConfig.community_fee * (1 - +govConfig.warchest_ratio);
+    const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[this.terrajs.settings.nexusToken];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {

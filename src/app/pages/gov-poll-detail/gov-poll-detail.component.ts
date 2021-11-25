@@ -137,9 +137,39 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
         )
       ]);
     } else if (action === 'Execute poll') {
-      await this.gov.handle({ poll_execute: { poll_id } });
+      await this.terrajs.post([
+        new MsgExecuteContract(
+          this.terrajs.address,
+          this.terrajs.settings.gov,
+          {
+            mint: { }
+          }
+        ),
+        new MsgExecuteContract(
+          this.terrajs.address,
+          this.terrajs.settings.gov,
+          {
+            poll_execute: { poll_id }
+          },
+        )
+      ]);
     } else if (action === 'Expire poll') {
-      await this.gov.handle({ poll_expire: { poll_id } });
+      await this.terrajs.post([
+        new MsgExecuteContract(
+          this.terrajs.address,
+          this.terrajs.settings.gov,
+          {
+            mint: { }
+          }
+        ),
+        new MsgExecuteContract(
+          this.terrajs.address,
+          this.terrajs.settings.gov,
+          {
+            poll_expire: { poll_id }
+          },
+        )
+      ]);
     }
 
     this.router.navigateByUrl('/gov');
