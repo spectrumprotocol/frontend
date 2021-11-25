@@ -17,7 +17,7 @@ import { LpBalancePipe } from '../pipes/lp-balance.pipe';
 import { Vault } from '../pages/vault/vault.component';
 import { HttpClient } from '@angular/common/http';
 import { memoize } from 'utils-decorators';
-import {Denom} from '../consts/denom';
+import { Denom } from '../consts/denom';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -44,6 +44,13 @@ export type Portfolio = {
   avg_tokens_apr?: number;
   tokens: Map<string, PendingReward & { apr?: number }>;
   farms: Map<string, PortfolioItem>;
+};
+
+export type TokenInfo = {
+  name: string;
+  symbol: string;
+  decimals: number;
+  unit: number;
 };
 
 const HEIGHT_PER_YEAR = 365 * 24 * 60 * 60 * 1000 / BLOCK_TIME;
@@ -74,10 +81,6 @@ export class InfoService {
       if (pairJson) {
         this.pairInfos = JSON.parse(pairJson);
       }
-      const coinJson = localStorage.getItem('coinInfos');
-      if (coinJson) {
-        this.coinInfos = JSON.parse(coinJson);
-      }
       const statJson = localStorage.getItem('stat');
       if (statJson) {
         this.stat = JSON.parse(statJson);
@@ -90,6 +93,11 @@ export class InfoService {
       if (rewardInfoJson) {
         this.rewardInfos = JSON.parse(rewardInfoJson);
       }
+      const tokenInfoJson = localStorage.getItem('tokenInfos');
+      if (tokenInfoJson) {
+        this.tokenInfos = JSON.parse(tokenInfoJson);
+      }
+
     } catch (e) { }
   }
   userUstAmount: string;
@@ -102,11 +110,11 @@ export class InfoService {
   private poolInfoNetwork: string;
   poolInfos: Record<string, PoolInfo>;
   pairInfos: Record<string, PairInfo> = {};
-  coinInfos: Record<string, string> = {};
+  tokenInfos: Record<string, TokenInfo> = {};
 
   stat: Stat;
 
-  rewardInfos: Record<string, RewardInfoResponseItem & { farm: string }> = {};
+  rewardInfos: Record<string, RewardInfoResponseItem & { farm: string, farmContract: string }> = {};
   tokenBalances: Record<string, string> = {};
   lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
@@ -158,6 +166,9 @@ export class InfoService {
   async refreshPoolInfos() {
     const poolInfos: Record<string, PoolInfo> = {};
     const tasks = this.farmInfos.map(async farmInfo => {
+      if (!farmInfo.farmContract) {
+        return;
+      }
       const pools = await farmInfo.queryPoolItems();
       for (const pool of pools) {
         poolInfos[pool.asset_token] = Object.assign(pool,
@@ -171,7 +182,8 @@ export class InfoService {
             forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
               ? undefined
               : farmInfo.autoCompound ? 'compound' : 'stake',
-            auditWarning: farmInfo.auditWarning
+            pairSymbol: farmInfo.pairSymbol,
+            auditWarning: farmInfo.auditWarning,
           });
       }
     });
@@ -186,11 +198,14 @@ export class InfoService {
     const tasks = Object.keys(this.poolInfos)
       .filter(key => !this.pairInfos[key])
       .map(async key => {
+        const tokenA = { token: { contract_addr: key } };
+        const tokenB = this.poolInfos[key].pairSymbol === 'UST'
+          ? { native_token: { denom: Denom.USD } }
+          : { token: { contract_addr: this.poolInfos[key].farmTokenContract } };
         const it = await this.terraSwapFactory.query({
           pair: {
             asset_infos: [
-              { token: { contract_addr: key } },
-              { native_token: { denom: 'uusd' } }
+              tokenA, tokenB
             ]
           }
         });
@@ -202,17 +217,31 @@ export class InfoService {
     }
   }
 
-  async ensureCoinInfos() {
+  private cleanSymbol(symbol: string) {
+    if (symbol.startsWith('wh')) {
+      return symbol.substr(2);
+    } else {
+      return symbol;
+    }
+  }
+
+  async ensureTokenInfos() {
     await this.ensurePoolInfoLoaded();
     const tasks = Object.keys(this.poolInfos)
-      .filter(key => !this.coinInfos[key])
+      .filter(key => !this.tokenInfos[key])
       .map(async key => {
         const it = await this.token.query(key, { token_info: {} });
-        this.coinInfos[key] = it.symbol;
+
+        this.tokenInfos[key] = {
+          name: it.name,
+          symbol: this.cleanSymbol(it.symbol),
+          decimals: it.decimals,
+          unit: 10 ** it.decimals,
+        };
       });
     if (tasks.length) {
       await Promise.all(tasks);
-      localStorage.setItem('coinInfos', JSON.stringify(this.coinInfos));
+      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
     }
   }
 
@@ -243,7 +272,7 @@ export class InfoService {
         for (const key of Object.keys(this.stat.pairs)) {
           if (!stat.pairs[key]) {
             stat.pairs[key] = this.stat.pairs[key];
-          }
+      }
         }
       }
     });
@@ -273,7 +302,7 @@ export class InfoService {
   private async refreshGovStat(stat: Stat) {
     const poolTask = this.refreshPool();
 
-    const state = await this.gov.query({ state: { } });
+    const state = await this.gov.query({ state: {} });
     stat.govStaked = state.total_staked;
     stat.govPoolCount = state.pools.length;
 
@@ -287,12 +316,16 @@ export class InfoService {
     const tasks = this.farmInfos.map(async farmInfo => {
       const rewards = await farmInfo.queryRewards();
       for (const reward of rewards) {
-        rewardInfos[reward.asset_token] = { ...reward, farm: farmInfo.farm };
+        rewardInfos[reward.asset_token] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
       }
     });
     await Promise.all(tasks);
     this.rewardInfos = rewardInfos;
     localStorage.setItem('rewardInfos', JSON.stringify(rewardInfos));
+  }
+
+  async refreshTokenBalance(assetToken: string) {
+    this.tokenBalances[assetToken] = (await this.token.balance(assetToken)).balance;
   }
 
   async refreshPoolResponse(assetToken: string) {
@@ -351,9 +384,8 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      const poolResponse = this.poolResponses[vault.assetToken];
-      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, poolResponse) / CONFIG.UNIT || 0;
-      const farmInfo = this.farmInfos.find(it => it.farm === this.poolInfos[vault.assetToken].farm);
+      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.assetToken) / CONFIG.UNIT || 0;
+      const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.assetToken].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
       tvl += bond_amount;
@@ -364,8 +396,8 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        const farmPoolResponse = this.poolResponses[farmInfo.farmTokenContract];
-        const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, farmPoolResponse) / CONFIG.UNIT || 0;
+        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.farmTokenContract];
+        const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
         tvl += pending_farm_reward_ust;
         portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_ust += pending_farm_reward_ust;
         portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
@@ -384,7 +416,7 @@ export class InfoService {
     const pendingTokenRewards = [...portfolio.tokens.values()].filter(value => value.pending_reward_token > 0);
     portfolio.avg_tokens_apr = pendingTokenRewards.every(pr => pr.apr)
       ? pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token * pr.apr, 0) /
-        pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token, 0)
+      pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token, 0)
       : undefined;
 
     this.portfolio = portfolio;
@@ -405,28 +437,32 @@ export class InfoService {
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
       const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      Object.assign(this.coinInfos, data.coinInfos);
+      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
+        throw (data);
+      }
+      Object.assign(this.tokenInfos, data.tokenInfos);
       this.stat = data.stat;
       this.pairInfos = data.pairInfos;
       this.poolInfos = data.poolInfos;
-      localStorage.setItem('coinInfos', JSON.stringify(this.coinInfos));
+      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
       localStorage.setItem('stat', JSON.stringify(this.stat));
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
       localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-
       if (skipPoolResponses) {
         this.poolResponses = data.poolResponses;
         localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
       }
     } catch (ex) {
       // fallback if api die
-      await Promise.all([this.ensureCoinInfos(), this.refreshStat()]);
+      console.error('Error in retrieveCachedStat: fallback local info service data init');
+      console.error(ex);
+      await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
     }
   }
 
   updateVaults() {
     const token = this.terrajs.settings.specToken;
-    if (!this.coinInfos?.[token]) {
+    if (!this.tokenInfos?.[token]) {
       return;
     }
     this.allVaults = [];
@@ -447,7 +483,9 @@ export class InfoService {
       const apy = Math.max(compoundApy, stakeApy);
 
       const vault: Vault = {
-        symbol: this.coinInfos[key],
+        symbol: this.tokenInfos[key]?.symbol,
+        decimals: this.tokenInfos[key]?.decimals,
+        unit: this.tokenInfos[key]?.unit,
         assetToken: key,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,

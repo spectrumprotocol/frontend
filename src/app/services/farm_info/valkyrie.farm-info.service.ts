@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { GovService } from '../api/gov.service';
 import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../libs/base64';
+import {
+  FarmInfoService,
+  PairStat,
+  PoolInfo
+} from './farm-info.service';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { HttpClient } from '@angular/common/http';
 import { ValkyrieFarmService } from '../api/valkyrie-farm.service';
 import { ValkyrieStakingService } from '../api/valkyrie-staking.service';
 import { PoolItem } from '../api/valkyrie_farm/pools_response';
@@ -20,6 +22,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#ffe646';
+  pairSymbol = 'UST';
 
   constructor(
     private terrajs: TerrajsService,
@@ -111,13 +114,12 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
       this.terrajs.address,
       this.terrajs.settings.valkyrieToken,
       {
-        send: {
-          contract: this.terrajs.settings.valkyrieGov,
-          amount,
-          msg: toBase64({ stake_governance_token: {} })
-        }
+          send: {
+            contract: this.terrajs.settings.valkyrieGov,
+            amount,
+            msg: toBase64({stake_governance_token: {}})
+          }
       }
     );
   }
-
 }

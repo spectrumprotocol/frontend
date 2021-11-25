@@ -12,11 +12,11 @@ export class UnitPipe implements PipeTransform {
     private decimalPipe: DecimalPipe
   ) { }
 
-  transform(value: any, digitsInfo?: string) {
+  transform(value: any, decimals?: number, digitsInfo?: string) {
     if (value == null) {
       return value;
     }
-    return this.decimalPipe.transform(div(value, CONFIG.UNIT), digitsInfo);
+    return this.decimalPipe.transform(div(value, decimals ? 10 ** decimals : CONFIG.UNIT), !digitsInfo && decimals ? `1.0-${decimals}` : digitsInfo );
   }
 
 }

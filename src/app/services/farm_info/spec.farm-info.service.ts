@@ -1,13 +1,19 @@
 import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { GovService } from '../api/gov.service';
 import { SpecFarmService } from '../api/spec-farm.service';
 import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem } from './farm-info.service';
+import {
+  FarmInfoService,
+  PairStat,
+  PoolInfo,
+  PoolItem,
+  RewardInfoResponseItem
+} from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class SpecFarmInfoService implements FarmInfoService {
@@ -16,6 +22,7 @@ export class SpecFarmInfoService implements FarmInfoService {
   autoCompound = false;
   autoStake = true;
   farmColor = '#fc5185';
+  pairSymbol = 'UST';
 
   constructor(
     private specFarm: SpecFarmService,
@@ -94,5 +101,4 @@ export class SpecFarmInfoService implements FarmInfoService {
       }
     );
   }
-
 }

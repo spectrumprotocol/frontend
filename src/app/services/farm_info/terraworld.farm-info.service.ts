@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { GovService } from '../api/gov.service';
 import { TerraworldFarmService } from '../api/terraworld-farm.service';
 import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem } from './farm-info.service';
+import {
+  FarmInfoService,
+  PairStat,
+  PoolInfo,
+  PoolItem,
+  RewardInfoResponseItem
+} from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
@@ -21,6 +26,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
   autoStake = true;
   auditWarning = true;
   farmColor = '#249fd4';
+  pairSymbol = 'UST';
 
   constructor(
     private terraworldFarm: TerraworldFarmService,
@@ -148,5 +154,4 @@ export class TerraworldFarmInfoService implements FarmInfoService {
       apy,
     };
   }
-
 }

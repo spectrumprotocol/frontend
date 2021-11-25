@@ -1,16 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import BigNumber from 'bignumber.js';
-import { GovService } from '../api/gov.service';
 import { MirrorFarmService } from '../api/mirror-farm.service';
 import { MirrorStakingService } from '../api/mirror-staking.service';
 import { RewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo, PoolItem } from './farm-info.service';
+import {
+  FarmInfoService,
+  PairStat,
+  PoolInfo,
+  PoolItem
+} from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class MirrorFarmInfoService implements FarmInfoService {
@@ -20,6 +25,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#232C45';
+  pairSymbol = 'UST';
 
   constructor(
     private apollo: Apollo,
@@ -144,5 +150,4 @@ export class MirrorFarmInfoService implements FarmInfoService {
       }
     );
   }
-
 }

@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { TerrajsService } from '../../services/terrajs.service';
 import { InfoService } from '../../services/info.service';
 import { debounce } from 'utils-decorators';
-import { PairStat, PoolInfo } from '../../services/farm_info/farm-info.service';
+import {FarmInfoService, PairStat, PoolInfo} from '../../services/farm_info/farm-info.service';
 import { CONFIG } from '../../consts/config';
 import { MdbDropdownDirective, MdbModalService } from 'mdb-angular-ui-kit';
 import { PairInfo } from '../../services/api/terraswap_factory/pair_info';
@@ -11,6 +11,8 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 export interface Vault {
   symbol: string;
+  decimals: number;
+  unit: number;
   assetToken: string;
   lpToken: string;
   pairInfo: PairInfo;
@@ -40,9 +42,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   sortBy = 'multiplier';
   activeFarm = 'All';
   UNIT = CONFIG.UNIT;
-  myStaked: string;
   myTvl = 0;
   height: number;
+  farmInfoDropdownList: FarmInfoService[];
 
   @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
   @ViewChild('dropdownSortBy') dropdownSortBy: MdbDropdownDirective;
@@ -55,16 +57,17 @@ export class VaultComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    this.farmInfoDropdownList = [...new Map(this.info.farmInfos.map(farmInfo => [farmInfo.farm, farmInfo])).values()];
     this.showDepositedPoolOnly = localStorage.getItem('deposit') === 'true';
     this.loading = true;
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         this.loading = true;
         this.info.updateVaults();
-        this.refresh();
+        this.refresh(true);
         this.info.refreshPool();
         await this.info.initializeVaultData(connected);
-        this.refresh();
+        this.refresh(true);
         this.loading = false;
         this.height = await this.terrajs.getHeight();
         this.lastSortBy = undefined;
@@ -98,7 +101,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   @debounce(250)
-  refresh() {
+  refresh(resetFilterOnEmpty?: boolean) {
     let vaults = this.activeFarm === 'All' ? this.info.allVaults : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm);
     if (this.lastSortBy !== this.sortBy) {
       switch (this.sortBy) {
@@ -118,7 +121,12 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.lastSortBy = this.sortBy;
     }
     if (this.showDepositedPoolOnly) {
+      const oldVaults = vaults;
       vaults = vaults.filter(it => +this.info.rewardInfos?.[it.assetToken]?.bond_amount >= 10);
+      if (vaults.length === 0 && resetFilterOnEmpty) {
+        this.showDepositedPoolOnly = false;
+        vaults = oldVaults;
+      }
     }
     if (this.search) {
       vaults = vaults.filter(it => it.symbol.toLowerCase().includes(this.search.toLowerCase()));

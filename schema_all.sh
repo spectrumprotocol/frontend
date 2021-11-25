@@ -9,3 +9,4 @@ npx json2ts -i ../contracts/contracts/spectrum_anchor_farm/schema/ -o ./src/app/
 npx json2ts -i ../contracts/contracts/spectrum_pylon_farm/schema/ -o ./src/app/services/api/pylon_farm
 npx json2ts -i ../contracts/contracts/spectrum_terraworld_farm/schema/ -o ./src/app/services/api/terraworld_farm
 npx json2ts -i ../contracts/contracts/spectrum_valkyrie_farm/schema/ -o ./src/app/services/api/valkyrie_farm
+npx json2ts -i ../contracts/contracts/spectrum_orion_farm/schema/ -o ./src/app/services/api/orion_farm

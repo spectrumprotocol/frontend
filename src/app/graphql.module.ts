@@ -10,7 +10,7 @@ export function createApollo(httpLink: HttpLink): Record<string, ApolloClientOpt
       cache: new InMemoryCache(),
     },
     mirrorTest: {
-      link: httpLink.create({ uri: 'https://bombay-graph.mirror.finance/graphql' }),
+      link: httpLink.create({ uri: 'https://graph.mirror.finance/graphql' }), // bombay graph is down
       cache: new InMemoryCache(),
     },
     anchor: {
