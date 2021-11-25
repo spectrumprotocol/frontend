@@ -36,3 +36,11 @@
     background-color: $btn-bg;
     border-color: rgba(255, 255, 255, 0.5);
 }
+
+.navbar-collapse {
+    .navbar-nav {
+        li > a {
+            padding: 10px;
+        }
+    }
+}
