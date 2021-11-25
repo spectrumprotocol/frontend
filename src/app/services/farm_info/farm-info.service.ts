@@ -7,7 +7,7 @@ import {MsgExecuteContract} from '@terra-money/terra.js';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem;
-export type PoolInfo = PoolItem & { farm: string; token_symbol: string; farmTokenContract: string; farmContract: string };
+export type PoolInfo = PoolItem & { farm: string; token_symbol: string; farmTokenContract: string; farmContract: string; auditWarning?: boolean; };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
 export interface PairStat {

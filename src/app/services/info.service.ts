@@ -178,7 +178,8 @@ export class InfoService {
             auto_stake: farmInfo.autoStake,
             forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
               ? undefined
-              : farmInfo.autoCompound ? 'compound' : 'stake'
+              : farmInfo.autoCompound ? 'compound' : 'stake',
+            auditWarning: farmInfo.auditWarning
           });
       }
     });
