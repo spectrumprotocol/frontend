@@ -6,6 +6,7 @@ import { RewardInfoResponseItem as SpecRewardInfoResponseItem } from '../api/spe
 import { InjectionToken } from '@angular/core';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
+import { VaultsResponse } from '../api/gov/vaults_response';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem;
 export type PoolInfo = PoolItem & {
@@ -13,7 +14,8 @@ export type PoolInfo = PoolItem & {
   token_symbol: string;
   farmTokenContract: string;
   farmContract: string;
-  pairSymbol: string
+  pairSymbol: string;
+  auditWarning?: boolean;
 };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
@@ -55,7 +57,7 @@ export interface FarmInfoService {
   readonly farmColor: string;
 
   queryPoolItems(): Promise<PoolItem[]>;
-  queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>>;
+  queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>>;
   queryRewards(): Promise<RewardInfoResponseItem[]>;
   getStakeGovMsg?(amount: string, additionalData?: object): MsgExecuteContract;
 }
