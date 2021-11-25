@@ -129,10 +129,9 @@
           <div class="d-grid gap-3">
             <div>
               <div class="small text-muted text-end fw-bold">
-                Balance: {{ detail.userAvailableBalance | number }} SPEC
-                <i *ngIf="detail.userBalance !== detail.userAvailableBalance" class="fas fa-info-circle"
-                  [mdbTooltip]="'Locked: ' + (+detail.userBalance - +detail.userAvailableBalance | number) + ' SPEC from voting'">
-                </i>
+                Balance: {{ detail.userAvailableBalance | number }} SPEC <span *ngIf="detail.userBalance !== detail.userAvailableBalance">
+                  (Locked: {{+detail.userBalance - +detail.userAvailableBalance | number}} SPEC from voting)
+                </span>
               </div>
               <div class="input-group">
                 <span class="input-group-text igt-fixwidth fw-bold" [ngClass]="{'is-invalid': withdrawAmountModel.invalid }">SPEC</span>

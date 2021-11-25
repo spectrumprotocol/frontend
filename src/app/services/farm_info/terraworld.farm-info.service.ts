@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { GovService } from '../api/gov.service';
 import { TerraworldFarmService } from '../api/terraworld-farm.service';
 import { TerrajsService } from '../terrajs.service';
 import {
@@ -17,6 +16,7 @@ import {HttpClient} from '@angular/common/http';
 import {WasmService} from '../api/wasm.service';
 import {div, times} from '../../libs/math';
 import {Denom} from '../../consts/denom';
+import { VaultsResponse } from '../api/gov/vaults_response';
 
 @Injectable()
 export class TerraworldFarmInfoService implements FarmInfoService {
@@ -29,7 +29,6 @@ export class TerraworldFarmInfoService implements FarmInfoService {
   pairSymbol = 'UST';
 
   constructor(
-    private gov: GovService,
     private terraworldFarm: TerraworldFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService
@@ -52,14 +51,13 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
     const rewardInfoTask = this.wasm.query(this.terrajs.settings.terraworldStaking, { staker_info: { block_height: +height, staker: this.terrajs.settings.terraworldFarm } });
     const farmConfigTask = this.terraworldFarm.query({ config: {} });
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.terraworldFarm)?.weight || 0;
     const terraworldLPStat = await this.getTerraworldLPStat(poolResponses[this.terrajs.settings.terraworldToken]);
     const terraworldGovStat = await this.getTerraworldGovStat();

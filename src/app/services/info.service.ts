@@ -257,19 +257,25 @@ export class InfoService {
       govApr: 0,
       govPoolCount: 1,
     };
+    const vaultsTask = this.gov.vaults();
     await this.refreshPoolInfos();
     await this.refreshPoolResponses();
+    const vaults = await vaultsTask;
     const tasks = this.farmInfos.map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
         .filter(it => it[1].farm === farmInfo.farm));
       try {
-        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses);
+        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults);
         Object.assign(stat.pairs, pairStats);
       } catch (e) {
         if (!this.stat) {
           throw e;
         }
-        Object.assign(stat.pairs, this.stat.pairs);
+        for (const key of Object.keys(this.stat.pairs)) {
+          if (!stat.pairs[key]) {
+            stat.pairs[key] = this.stat.pairs[key];
+      }
+        }
       }
     });
     await Promise.all([
