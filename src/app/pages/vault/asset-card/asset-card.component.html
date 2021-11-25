@@ -545,12 +545,6 @@
               </div>
               <div *ngIf="withdrawMode === 'ust'">
                 <div class="d-flex">
-                  <div>Expected receive </div>
-                  <div class="margin-left-auto">
-                    {{ withdrawUST | unit }} UST
-                  </div>
-                </div>
-                <div class="d-flex">
                   <div>
                     <span>Minimum receive </span>
                     <i mdbTooltip="based on slippage tolerance {{ SLIPPAGE | percent}}"
@@ -563,6 +557,9 @@
               </div>
             </div>
             <div class="d-grid mt-3">
+              <div *ngIf="withdrawMode === 'ust'" class="card-text small text-info mb-1">
+                <i class="fas fa-info-circle"></i> With this option, withdrawn assets will be automatically sold to UST.
+              </div>
               <button (click)="doWithdraw()" [disabled]="withdrawAmtCtl.invalid" class="btn btn-primary"
                 type="submit">Withdraw</button>
             </div>
