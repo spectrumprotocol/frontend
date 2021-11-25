@@ -26,8 +26,6 @@ export class UnstakeAllComponent {
   }
 
   async manageRewards() {
-    // TODO:: remove
-
     if (this.disableManageRewards()) {
       return;
     }

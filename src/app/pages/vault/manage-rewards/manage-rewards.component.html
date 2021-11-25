@@ -8,14 +8,14 @@
 <div class="modal-body">
   <div class="bg-dark p-3 rounded mb-3">
     <div class="row">
-      <div class="col-12 col-sm-6">
+      <div class="col-6 col-md-6">
         <div>Avg. APR <i class="fas fa-info-circle info-icon"
           mdbTooltip="Average APR from Gov staking"></i></div>
         <div class="h5 mb-0">{{ info.portfolio?.avg_tokens_apr | percent }}</div>
       </div>
-      <div class="mt-2 col-12 mt-sm-0 col-sm-6 text-sm-end">
+      <div class="col-6 col-md-6 text-sm-end">
         <div>Total Value Staked</div>
-        <div class="h5 mb-0">{{ info.portfolio?.total_reward_ust | number: '1.0-2' }} UST</div>
+        <div class="h5 mb-0 text-end">{{ info.portfolio?.total_reward_ust | number: '1.0-2' }} UST</div>
       </div>
     </div>
   </div>
@@ -51,7 +51,7 @@
                 <div *ngIf="token.key === 'SPEC'">
                   <ng-container *ngFor="let day of availablePoolDays">
                     <div class="col" *ngIf="day === 0">
-                      <button class="btn btn-primary  f-12" *ngIf="day === 0" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
+                      <button class="btn btn-primary f-12" *ngIf="day === 0" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
                     </div>
                     <div class="col" *ngIf="day !== 0" >
                       <button class="btn btn-primary  f-12" *ngIf="day !== 0" (click)="moveToGov(token.key, day)">Move to {{day}}-Day Locked Gov</button>
@@ -65,6 +65,62 @@
             </td>
           </tr>
           <!--  -->
+          <tr class="switch-grey">
+            <td>
+              <img [src]="'MIR' | url:'icon'" height="32" class="rounded-circle">
+              MIR
+            </td>
+            <td class="d-none d-sm-table-cell">
+             100%
+            </td>
+            <td>
+             1000
+              <small class="text-muted">($10000)</small>
+            </td>
+            <td class="ps-1 pe-1">
+              <section class="w-100 row reward-btn">
+                <div *ngIf="false">
+                  <div class="col" *ngIf="true">
+                    <button class="btn btn-primary  f-12" (click)="moveToGov('MIR')">Move to No Lock Gov</button>
+                  </div>
+                  <div class="col" *ngIf="false" >
+                    <button class="btn btn-primary  f-12" (click)="moveToGov('MIR', 1)">Move to 1-Day Locked Gov</button>
+                  </div>
+                </div>
+                <div class="col" *ngIf="true">
+                  <button *ngIf="true" class="btn btn-primary  f-12" (click)="moveToGov('MIR')">Move to Gov</button>
+                </div>
+              </section>
+            </td>
+          </tr>
+          <tr class="switch-grey">
+            <td>
+              <img [src]="'SPEC' | url:'icon'" height="32" class="rounded-circle">
+              SPEC
+            </td>
+            <td class="d-none d-sm-table-cell">
+             1030%
+            </td>
+            <td>
+             10100
+              <small class="text-muted">($100020)</small>
+            </td>
+            <td class="ps-1 pe-1">
+              <section class="w-100 row reward-btn">
+                <div *ngIf="true">
+                  <div class="col" *ngIf="true">
+                    <button class="btn btn-primary f-12" (click)="moveToGov('MIR')">Move to No Lock Gov</button>
+                  </div>
+                  <div class="col" *ngIf="false" >
+                    <button class="btn btn-primary f-12" (click)="moveToGov('MIR', 1)">Move to 1-Day Locked Gov</button>
+                  </div>
+                </div>
+                <div class="col" *ngIf="false">
+                  <button *ngIf="true" class="btn btn-primary  f-12" (click)="moveToGov('MIR')">Move to Gov</button>
+                </div>
+              </section>
+            </td>
+          </tr>
         </ng-container>
       </tbody>
     </table>

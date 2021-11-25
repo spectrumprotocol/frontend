@@ -730,15 +730,10 @@ i.fa-sort-down {
     font-size: 12px;
   }
 
-  .btn-outline-auto {
-    font-size: 12px;
-  }
-
-  .btn-auto {
-    font-size: 12px;
-  }
-
-  .auto-compound {
+  .btn-outline-auto, 
+  .btn-auto,
+  .auto-compound
+   {
     font-size: 12px;
   }
 
@@ -773,18 +768,11 @@ i.fa-sort-down {
   .needs-validation  {
     padding: 0 !important;
   }
+
+  .reward-btn {
+    button {
+      width: max-content;
+      margin-right: 10px;
+    }
+  }
 }
-
-
-
-// @include media-breakpoint-between(sm, xl) {
-//   .tab-container {
-//       margin: 10px 5px 5px 5px;
-//   }
-// }
-
-// @include media-breakpoint-only(xs) {
-//   .tab-container {
-//       margin-top: 5px;
-//   }
-// }
