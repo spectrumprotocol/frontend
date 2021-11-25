@@ -10,14 +10,13 @@ import { FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
+import { VaultsResponse } from '../api/gov/vaults_response';
 
 @Injectable()
 export class OrionFarmInfoService implements FarmInfoService {
 
   constructor(
-    private gov: GovService,
     private orionFarm: OrionFarmService,
     private terrajs: TerrajsService,
     private orionStaking: OrionStakingService,
@@ -43,14 +42,13 @@ export class OrionFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
     const unixTimeSecond = Math.floor(Date.now() / 1000);
     const rewardInfoTask = this.orionStaking.query({ staker_info: { timestamp: +unixTimeSecond, staker: this.terrajs.settings.orionFarm } });
     const farmConfigTask = this.orionFarm.query({ config: {} });
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govVaults = await this.gov.vaults();
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.orionFarm)?.weight || 0;
     const orionLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.orionAPI}/staking`));
     const pairs: Record<string, PairStat> = {};
