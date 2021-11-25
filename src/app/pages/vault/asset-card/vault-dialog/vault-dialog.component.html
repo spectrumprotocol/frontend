@@ -13,10 +13,10 @@
       <i class="margin-left-auto margin-top-close-button fas fa-times fa-lg pe-2" role="button" (click)="modalRef.close()"></i>
   </div>
    <div class="modal-body">
-    <div class="row ms-1 me-1">
+    <div class="row top-card ms-1 me-1">
       <div class="card card-sm box-left">
           <div class="card-body p-1">
-              <div class="col-12">
+              <div class="col-12 d-none d-sm-block">
                   <div class="row">
                     <div class="col-12 col-sm-12 col-md-3">
                       <div class="f-12 fw-bold sub-topic">TVL</div>
@@ -41,7 +41,7 @@
                             <span class="text-pairstat">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
                           </span>&nbsp;
                         </span>
-                        <!-- [class.text-pairstat]="vault.apy > vault.pairStat?.farmApr" -->
+                        <!-- [class.text-primary]="vault.apy > vault.pairStat?.farmApr" -->
                         <span class="fw-bold">
                           {{vault.apy | percent}}</span>
                       </div>
@@ -75,6 +75,51 @@
                         </div>
                     </div>
                   </div>
+                </div>
+                <div class="d-block d-sm-none">
+                  <div class="d-flex">
+                    <div class="p-2 flex-grow-1 f-12">Total Value Locked:</div>
+                    <div class="p-2 f-12 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
+                  </div>
+                  <div class="d-flex">
+                    <div class="p-2 flex-grow-1 f-12">APY</div>
+                    <div class="p-2 f-12 fw-bold">
+                      <span *ngIf="vault.apy > vault.pairStat?.farmApr">
+                      <span class="text-pairstat text-decoration-line-through">
+                        <span class="text-pairstat">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
+                      </span>&nbsp;
+                    </span>
+                    <!-- [class.text-primary]="vault.apy > vault.pairStat?.farmApr" -->
+                    <span class="fw-bold">
+                      {{vault.apy | percent}}</span></div>
+                  </div>
+                  <div class="d-flex">
+                    <div class="p-2 flex-grow-1 f-12">Daily Rate</div>
+                    <div class="p-2 f-12 fw-bold">{{ vault.pairStat?.dpr || 0 | percent }}</div>
+                  </div>
+                  <div class="d-flex">
+                    <div class="p-2 flex-grow-1 f-12">LP Deposited</div>
+                    <div class="p-2 f-12 fw-bold text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
+                      <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
+                        [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i>
+                      <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10" class="small text-muted">
+                        &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
+                        info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span></div>
+                  </div>
+                  <div class="d-flex">
+                    <div class="p-2 flex-grow-1 f-12">Staked SPEC</div>
+                    <div class="p-2 f-12 fw-bold text-primaryg"><span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10"
+                      class="fas fa-chevron-up animate-up text-success"></span>
+                      {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit: 6 : '1.0-2'}}
+                  <span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10" class="small text-muted">
+                      &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | balance:
+                      info.poolResponses[terrajs.settings.specToken] |
+                      unit: 6 : '1.0-2' }})</span></div>
+                  </div>
+                  <!-- <div class="d-flex">
+                    <div class="p-2 flex-grow-1">Stake ANC ?</div>
+                    <div class="p-2">Flex item</div>
+                  </div> -->
                 </div>
           </div>
       </div>
@@ -604,15 +649,15 @@
               </small>
             </div>
           </div>
-          <div *ngIf="vault.poolInfo.farm === 'Spectrum'" class="d-grid mt-3">
+          <div *ngIf="vault.poolInfo.farm === 'Spectrum'" class="d-grid mt-3 mb-3">
             <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake SPEC</button>
           </div>
-          <div *ngIf="vault.poolInfo.farm === 'Mirror'" class="d-grid mt-3">
+          <div *ngIf="vault.poolInfo.farm === 'Mirror'" class="d-grid mt-3 mb-3">
             <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake MIR + SPEC</button>
             <button (click)="doClaimReward(true)" class="btn btn-secondary mt-2" type="submit">Unstake MIR + SPEC
               from ALL Mirror vaults</button>
           </div>
-          <div *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'" class="d-grid mt-3">
+          <div *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'" class="d-grid mt-3 mb-3">
             <button (click)="doClaimReward()" class="btn btn-primary" type="submit">
               <span *ngIf="vault.poolInfo.auto_stake">{{vault.poolInfo.token_symbol}} +</span>
               SPEC</button>

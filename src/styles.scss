@@ -723,3 +723,68 @@ i.fa-sort-down {
     height: 40px;
   }
 }
+
+
+@include media-breakpoint-only(xs) {
+  .nav-tabs .nav-link {
+    font-size: 12px;
+  }
+
+  .btn-outline-auto {
+    font-size: 12px;
+  }
+
+  .btn-auto {
+    font-size: 12px;
+  }
+
+  .auto-compound {
+    font-size: 12px;
+  }
+
+  .mixed-details {
+    .col {
+      font-size: 12px;
+    }
+  }
+
+  .tab-container{
+    div, span {
+      font-size: 12px;
+    }
+  }
+
+  .auto-compound {
+    span {
+      font-size: 12px;
+    }
+  }
+
+  .tab-content {
+    button {
+      font-size: 12px;
+    }
+  }
+
+  .dropdown, .dropdown-toggle {
+    font-size: 12px !important;
+  }
+
+  .needs-validation  {
+    padding: 0 !important;
+  }
+}
+
+
+
+// @include media-breakpoint-between(sm, xl) {
+//   .tab-container {
+//       margin: 10px 5px 5px 5px;
+//   }
+// }
+
+// @include media-breakpoint-only(xs) {
+//   .tab-container {
+//       margin-top: 5px;
+//   }
+// }
