@@ -49,7 +49,7 @@
     <button type="button" class="btn btn-dark" *ngIf="!terrajs.address" (click)="connect()"><i
         class="fas fa-wallet"></i> <span class="text-muted">
         {{walletText}} </span></button>
-      
+
 
         <button
         class="navbar-toggler d-md-none"
@@ -59,6 +59,7 @@
         aria-controls="navbarToggleExternalContent"
         aria-expanded="false"
         aria-label="Toggle navigation"
+        (click)="externalContent.toggle()"
       >
         <i class="fas fa-bars"></i>
       </button>
@@ -81,7 +82,7 @@
   </div>
 </nav> -->
 
-<div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+<div mdbCollapse #externalContent="mdbCollapse" class="collapse navbar-collapse" id="navbarToggleExternalContent">
   <div class="p-4">
     <h5 class="text-white h4">Collapsed content</h5>
     <span class="text-muted">Toggleable via the navbar brand.</span>
