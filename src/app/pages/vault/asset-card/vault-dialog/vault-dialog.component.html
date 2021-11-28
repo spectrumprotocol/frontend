@@ -16,7 +16,7 @@
     <div class="row top-card ms-1 me-1">
       <div class="card card-sm box-left">
           <div class="card-body p-1">
-              <div class="col-12 d-none d-sm-block">
+              <div class="col-12 d-none d-xl-block">
                   <div class="row">
                     <div class="col-12 col-sm-12 col-md-3">
                       <div class="f-12 fw-bold sub-topic">TVL</div>
@@ -75,8 +75,9 @@
                         </div>
                     </div>
                   </div>
+                
                 </div>
-                <div class="d-block d-sm-none">
+                <div class="d-block d-xl-none d-xxl-none">
                   <div class="d-flex">
                     <div class="p-2 flex-grow-1 f-12">Total Value Locked:</div>
                     <div class="p-2 f-12 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
