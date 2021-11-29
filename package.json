@@ -13,7 +13,7 @@
   "dependencies": {
     "@angular-slider/ngx-slider": "^2.0.3",
     "@angular/animations": "~12.2.13",
-    "@angular/cdk": "~11.2.9",
+    "@angular/cdk": "~12.2.13",
     "@angular/common": "~12.2.13",
     "@angular/compiler": "~12.2.13",
     "@angular/core": "~12.2.13",
@@ -39,7 +39,6 @@
     "hammerjs": "~2.0.8",
     "mdb-angular-ui-kit": "^1.5.1",
     "ngx-google-analytics": "^11.2.1",
-    "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rxjs": "^7.4.0",
     "timeago.js": "^4.0.2",
