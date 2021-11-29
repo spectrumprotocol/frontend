@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TerrajsService } from '../../services/terrajs.service';
 import { InfoService } from '../../services/info.service';
@@ -34,7 +34,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   private connected: Subscription;
   private heightChanged: Subscription;
   private lastSortBy: string;
-
+  public innerWidth: any;
   loading = true;
   vaults: Vault[] = [];
   search: string;
@@ -61,6 +61,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.farmInfoDropdownList = [...new Map(this.info.farmInfos.map(farmInfo => [farmInfo.farm, farmInfo])).values()];
     this.showDepositedPoolOnly = localStorage.getItem('deposit') === 'true';
     this.loading = true;
+    this.triggerWidth();
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         this.loading = true;
@@ -88,6 +89,19 @@ export class VaultComponent implements OnInit, OnDestroy {
         await this.info.updateMyTvl();
       }
     });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.triggerWidth();
+  }
+
+  triggerWidth() {
+    this.innerWidth = window.innerWidth;
+    console.log(this.innerWidth);
+    if(Number(this.innerWidth) <= Number(1024)) {
+      this.isGrid = false;
+    }
   }
 
   ngOnDestroy() {

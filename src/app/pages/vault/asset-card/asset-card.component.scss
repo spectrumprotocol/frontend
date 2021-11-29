@@ -207,3 +207,15 @@
 .grid-badge {
   right: 0;
 }
+
+@media screen and (max-width: 1199px) {
+  .grid-container {
+    .mAssetIcon-list-sm {
+      margin-left: 10px;
+    }
+    .name-detail {
+      padding-left: 16px;
+      padding-top: 5px;
+    }
+  }
+}
