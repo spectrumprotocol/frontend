@@ -5,7 +5,7 @@ import { ModalService } from '../services/modal.service';
 import { TruncatePipe } from '../pipes/truncate.pipe';
 import { InfoService } from '../services/info.service';
 import { Subscription, switchMap, tap } from 'rxjs';
-import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
+import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
 
 @Component({
   selector: 'app-menubar',
@@ -13,7 +13,9 @@ import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
   styleUrls: ['./menubar.component.scss']
 })
 export class MenubarComponent implements OnInit, OnDestroy {
-  isOpen = false;
+
+  @ViewChild('dropdown') dropdown: MdbDropdownDirective;
+
   constructor(
     public terrajs: TerrajsService,
     public info: InfoService,
@@ -23,7 +25,6 @@ export class MenubarComponent implements OnInit, OnDestroy {
   ) { }
 
   private processes: Subscription;
-  @ViewChild('dropdown') dropdown: MdbDropdownDirective;
 
   walletText = 'Connect Wallet';
 

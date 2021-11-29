@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { InfoService } from '../../../services/info.service';
 import { Subscription } from 'rxjs';
 import { TerrajsService } from '../../../services/terrajs.service';
-import { MdbModalRef } from 'mdb-angular-ui-kit';
 import {FarmInfoService} from '../../../services/farm_info/farm-info.service';
+import {MdbModalRef} from 'mdb-angular-ui-kit/modal';
 
 interface ChartData {
   name: string;

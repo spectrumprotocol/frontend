@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Msg } from '@terra-money/terra.js';
-import { MdbModalRef } from 'mdb-angular-ui-kit';
 import { CONFIG } from '../../consts/config';
 import { TerrajsService } from '../terrajs.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import {MdbModalRef} from 'mdb-angular-ui-kit/modal';
 
 @Component({
   selector: 'app-tx-post',

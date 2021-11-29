@@ -9,7 +9,6 @@ import { TerrajsService } from '../../../services/terrajs.service';
 import { Vault } from '../vault.component';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { InfoService } from '../../../services/info.service';
-import { MdbCollapseDirective, MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit';
 import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
 import { debounce } from 'utils-decorators';
@@ -21,6 +20,7 @@ import { Denom } from '../../../consts/denom';
 import { StakerService } from '../../../services/api/staker.service';
 import { ExecuteMsg as StakerExecuteMsg } from '../../../services/api/staker/execute_msg';
 import { VaultDialogComponent } from './vault-dialog/vault-dialog.component';
+import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
 
 @Component({
   selector: 'app-asset-card',

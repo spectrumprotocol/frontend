@@ -3,12 +3,12 @@ import { Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult } from 
 import { ISettings, networks } from '../consts/networks';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
-import { MdbModalService } from 'mdb-angular-ui-kit';
 import { filter, startWith } from 'rxjs/operators';
 import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus, getChainOptions } from '@terra-money/wallet-provider';
 import { checkAvailableExtension } from '@terra-money/wallet-provider/utils/checkAvailableExtension';
 import { ModalService } from './modal.service';
 import { throttleAsync } from 'utils-decorators';
+import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 
 export const BLOCK_TIME = 6500; // 6.5s
 export const DEFAULT_NETWORK = 'mainnet';
