@@ -73,6 +73,8 @@ import {MdbTabsModule} from 'mdb-angular-ui-kit/tabs';
 import {MdbCollapseModule} from 'mdb-angular-ui-kit/collapse';
 import {MdbFormsModule} from 'mdb-angular-ui-kit/forms';
 import {MdbValidationModule} from 'mdb-angular-ui-kit/validation';
+import {ModalService} from './services/modal.service';
+import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -146,6 +148,7 @@ registerLocaleData(locale, 'en');
   ],
   providers: [
     // { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true},
+    MdbModalService,
     {
       provide: APP_INITIALIZER,
       useFactory: (terrajs: TerrajsService) => () => setTimeout(() => terrajs.connect(true), 1000),
