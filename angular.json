@@ -73,7 +73,8 @@
               "bignumber.js",
               "react",
               "react/jsx-runtime",
-              "zen-observable"
+              "zen-observable",
+              "@walletconnect/environment"
             ]
           },
           "configurations": {
