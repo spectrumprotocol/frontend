@@ -9,7 +9,6 @@ import { TerrajsService } from '../../../../services/terrajs.service';
 import { Vault } from '../../vault.component';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { InfoService } from '../../../../services/info.service';
-import { MdbCollapseDirective, MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit';
 import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
 import { debounce } from 'utils-decorators';
@@ -20,6 +19,7 @@ import { TerraSwapService } from '../../../../services/api/terraswap.service';
 import { Denom } from '../../../../consts/denom';
 import { StakerService } from '../../../../services/api/staker.service';
 import { ExecuteMsg as StakerExecuteMsg } from '../../../../services/api/staker/execute_msg';
+import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
 
 const DEPOSIT_FEE = '0.001';
 
@@ -73,7 +73,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
-  auto_compound_percent_reallocate: number = 0;
+  auto_compound_percent_reallocate = 0;
   ngx_slider_option: NgxSliderOptions = {
     animate: false,
     step: 1,
@@ -84,7 +84,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     hideLimitLabels: true,
   };
   bufferUST = 3.5;
-  
+
   auto_compound_percent_reallocate_left = 0;
   auto_compound_percent_deposit_left = 0;
   constructor(

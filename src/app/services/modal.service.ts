@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ModalComponent } from './modal/modal.component';
-import { MdbModalService } from 'mdb-angular-ui-kit';
+import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 
 export type IconType = 'info' | 'warning' | 'danger' | 'question' | 'success';
 

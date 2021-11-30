@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { InfoService } from '../../../services/info.service';
 import { TerrajsService } from '../../../services/terrajs.service';
-import { MsgExecuteContract } from '@terra-money/terra.js';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { CONFIG } from '../../../consts/config';
-import { floor, times } from '../../../libs/math';
-import { MdbModalService } from 'mdb-angular-ui-kit';
+import {MdbModalService} from 'mdb-angular-ui-kit/modal';
+
 
 @Component({
   selector: 'app-unstake-all',

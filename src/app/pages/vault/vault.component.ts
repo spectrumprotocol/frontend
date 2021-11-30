@@ -5,9 +5,10 @@ import { InfoService } from '../../services/info.service';
 import { debounce } from 'utils-decorators';
 import {FarmInfoService, PairStat, PoolInfo} from '../../services/farm_info/farm-info.service';
 import { CONFIG } from '../../consts/config';
-import { MdbDropdownDirective, MdbModalService } from 'mdb-angular-ui-kit';
 import { PairInfo } from '../../services/api/terraswap_factory/pair_info';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import {MdbModalService} from 'mdb-angular-ui-kit/modal';
+import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
 
 export interface Vault {
   symbol: string;

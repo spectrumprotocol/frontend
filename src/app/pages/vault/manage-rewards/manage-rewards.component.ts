@@ -1,7 +1,7 @@
 import { KeyValue } from '@angular/common';
 import {Component, OnInit} from '@angular/core';
 import { MsgExecuteContract } from '@terra-money/terra.js';
-import { MdbModalRef } from 'mdb-angular-ui-kit';
+import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { plus } from '../../../libs/math';
 import { InfoService, Portfolio } from '../../../services/info.service';
 import { TerrajsService } from '../../../services/terrajs.service';
