@@ -203,7 +203,7 @@
 
     <div class="row pt-2 g-3">
       <ng-container *ngFor="let vault of vaults; trackBy: vaultId">
-        <div [ngClass]="{'col-md-3': isGrid, 'col-md-12': !isGrid  }">
+        <div [ngClass]="{'col-lg-3': isGrid, 'col-12': !isGrid  }">
           <app-asset-card [vault]="vault" [isGrid]="isGrid"></app-asset-card>
         </div>
       </ng-container>
