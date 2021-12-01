@@ -55,7 +55,8 @@
                 mdbTooltip="Your provided liquidity, staked rewards, and staked SPEC"></i>
             </div>
             <h3 class="card-title">
-              <span *ngIf="+info.myTvl" class="fas fa-chevron-up animate-up text-success"></span><app-digit
+              <span *ngIf="+info.myTvl" class="fas fa-chevron-up animate-up text-success pe-1"></span>
+              <app-digit
                 [value]="info.myTvl"></app-digit> <span class="cur-title"> UST</span>
                 <a role="button" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
                 (click)="openYourTVL()"><img class="float-end " src="../../../assets/Icon _ PieChart.svg"></a>
@@ -70,11 +71,13 @@
 
       <div class="col-12 col-md-5">
         <div class="card box-left">
-          <div class="card-body p-10 d-none d-sm-none d-md-none d-lg-block">
+          <div class="card-body p-10 d-none d-sm-none d-md-block">
             <div class="d-flex justify-content-between">
               <div>
-                <img src="{{ isGrid ? '../../../assets/Icon-grid-white.svg' : '../../../assets/Icon-grid-grey.svg' }}" (click)="isGrid = true">
-                <img src="{{ !isGrid ? '../../../assets/Icon-list-white.svg' : '../../../assets/Icon-list-grey.svg' }}" (click)="isGrid = false">
+                <div class="d-md-none d-lg-block">
+                  <img src="{{ isGrid ? '../../../assets/Icon-grid-white.svg' : '../../../assets/Icon-grid-grey.svg' }}" (click)="isGrid = true">
+                  <img src="{{ !isGrid ? '../../../assets/Icon-list-white.svg' : '../../../assets/Icon-list-grey.svg' }}" (click)="isGrid = false">
+                </div>
               </div>
               <div> 
                   <span class="align-sub">Deposited only</span>
