@@ -31,11 +31,11 @@ export class UnstakeAllComponent {
     }
     const farmNameListThatHavePendingRewards: Set<string> = new Set();
     for (const key of rewardInfosKeysThatHavePendingRewards) {
-      farmNameListThatHavePendingRewards.add(this.info.poolInfos[key].farm);
+      farmNameListThatHavePendingRewards.add(this.info.poolInfos[key].farmContract);
     }
     const msgExecuteContractList: MsgExecuteContract[] = [];
-    for (const farmName of farmNameListThatHavePendingRewards) {
-      const findFarm = this.info.farmInfos.find(f => f.farm === farmName);
+    for (const farmContract of farmNameListThatHavePendingRewards) {
+      const findFarm = this.info.farmInfos.find(f => f.farmContract === farmContract);
       msgExecuteContractList.push(new MsgExecuteContract(
         this.terrajs.address,
         findFarm.farmContract,
