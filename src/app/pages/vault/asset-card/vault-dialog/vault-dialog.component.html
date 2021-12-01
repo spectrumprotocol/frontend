@@ -19,10 +19,10 @@
               <div class="col-12 d-none d-xl-block">
                   <div class="row">
                     <div class="col-12 col-sm-12 col-md-3">
-                      <div class="f-12 fw-bold sub-topic">TVL</div>
+                      <div class="f-16 fw-bold sub-topic">TVL</div>
                       <div class="fs-6 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
                       <div class="mt-1">
-                          <div class="f-12 fw-bold sub-topic">Staked SPEC</div>
+                          <div class="f-16 fw-bold sub-topic">Staked SPEC</div>
                           <div class="fs-6 fw-bold text-primary"><span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10"
                               class="fas fa-chevron-up animate-up text-success"></span>
                               {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit: 6 : '1.0-2'}}
@@ -34,7 +34,7 @@
                       </div>
                   </div>
                     <div class="col-12 col-sm-6 col-md-3">
-                      <div class="f-12 fw-bold sub-topic">APY</div>
+                      <div class="f-16 fw-bold sub-topic">APY</div>
                       <div class="fs-6 fw-bold">
                         <span *ngIf="vault.apy > vault.pairStat?.farmApr">
                           <span class="text-pairstat text-decoration-line-through">
@@ -47,12 +47,12 @@
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 col-md-3">
-                      <div class="f-12 fw-bold sub-topic">Daily Rate</div>
+                      <div class="f-16 fw-bold sub-topic">Daily Rate</div>
                       <div class="fs-6 fw-bold">{{ vault.pairStat?.dpr || 0 | percent }}</div>
                     </div>
 
                     <div class="col-12 col-sm-6 col-md-3 text-end">
-                      <div class="f-12">LP Deposited</div>
+                      <div class="f-16">LP Deposited</div>
                       <div class="fs-6 fw-bold text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
                         <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
                           [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i>
@@ -62,7 +62,7 @@
                       </div>
 
                       <div *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake">
-                          <div class="f-12 fw-bold sub-topic mt-1">
+                          <div class="f-16 fw-bold sub-topic mt-1">
                             Staked  <span>{{vault.poolInfo.token_symbol}} <i class="fas fa-info-circle info-icon"
                               mdbTooltip="{{vault.poolInfo.token_symbol}} will be earned from auto-stake strategy. If you select auto-compound, LP will be earned."></i></span>
                           </div>
@@ -75,16 +75,16 @@
                         </div>
                     </div>
                   </div>
-                
+
                 </div>
                 <div class="d-block d-xl-none d-xxl-none">
                   <div class="d-flex">
-                    <div class="p-2 flex-grow-1 f-12">Total Value Locked:</div>
-                    <div class="p-2 f-12 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
+                    <div class="p-2 flex-grow-1 f-14">Total Value Locked:</div>
+                    <div class="p-2 f-14 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
                   </div>
                   <div class="d-flex">
-                    <div class="p-2 flex-grow-1 f-12">APY</div>
-                    <div class="p-2 f-12 fw-bold">
+                    <div class="p-2 flex-grow-1 f-14">APY</div>
+                    <div class="p-2 f-14 fw-bold">
                       <span *ngIf="vault.apy > vault.pairStat?.farmApr">
                       <span class="text-pairstat text-decoration-line-through">
                         <span class="text-pairstat">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
@@ -95,12 +95,12 @@
                       {{vault.apy | percent}}</span></div>
                   </div>
                   <div class="d-flex">
-                    <div class="p-2 flex-grow-1 f-12">Daily Rate</div>
-                    <div class="p-2 f-12 fw-bold">{{ vault.pairStat?.dpr || 0 | percent }}</div>
+                    <div class="p-2 flex-grow-1 f-14">Daily Rate</div>
+                    <div class="p-2 f-14 fw-bold">{{ vault.pairStat?.dpr || 0 | percent }}</div>
                   </div>
                   <div class="d-flex">
-                    <div class="p-2 flex-grow-1 f-12">LP Deposited</div>
-                    <div class="p-2 f-12 fw-bold text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
+                    <div class="p-2 flex-grow-1 f-14">LP Deposited</div>
+                    <div class="p-2 f-14 fw-bold text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
                       <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
                         [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i>
                       <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10" class="small text-muted">
@@ -108,8 +108,8 @@
                         info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span></div>
                   </div>
                   <div class="d-flex">
-                    <div class="p-2 flex-grow-1 f-12">Staked SPEC</div>
-                    <div class="p-2 f-12 fw-bold text-primaryg"><span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10"
+                    <div class="p-2 flex-grow-1 f-14">Staked SPEC</div>
+                    <div class="p-2 f-14 fw-bold text-primaryg"><span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10"
                       class="fas fa-chevron-up animate-up text-success"></span>
                       {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit: 6 : '1.0-2'}}
                   <span *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10" class="small text-muted">
@@ -501,7 +501,7 @@
             </div>
             <div class="d-flex flex-row justify-content-between">
               <div class="slider-compound-stake flex-grow-1 custom-slider">
-                <ngx-slider [(value)]="auto_compound_percent_reallocate" 
+                <ngx-slider [(value)]="auto_compound_percent_reallocate"
                 (valueChange)="this.rellocateAutoCompound()"
                 [options]="ngx_slider_option" ></ngx-slider>
               </div>
@@ -672,7 +672,7 @@
       <ng-container *ngIf="depositMode === 'tokentoken'"><img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }}</ng-container>
       <ng-container *ngIf="depositMode === 'lp'">
         <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1"> 
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
         {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</ng-container>
       <ng-container *ngIf="depositMode === 'ust'"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle deposit-icon me-1"  width="24" height="24">UST</ng-container>
     </button>
@@ -686,7 +686,7 @@
       <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('lp')"
           [class.active]="depositMode === 'lp'">
           <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust"> 
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
           {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</a></li>
       <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('ust')"
           [class.active]="depositMode === 'ust'">
@@ -702,7 +702,7 @@
       </ng-container>
       <ng-container *ngIf="withdrawMode === 'lp'">
         <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
-        <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1"> 
+        <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
         {{ vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP</ng-container>
       <ng-container *ngIf="withdrawMode === 'ust'"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle deposit-icon me-1"  width="24" height="24">UST</ng-container>
     </button>
@@ -710,12 +710,12 @@
       <li><a class="dropdown-item" (click)="withdrawMode = 'tokentoken'; dropdownWithdrawMode.hide()"
           [class.active]="withdrawMode === 'tokentoken'">
           <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust"> 
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
           {{vault.symbol}} + {{vault.poolInfo.pairSymbol}}</a></li>
       <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdownWithdrawMode.hide()"
           [class.active]="withdrawMode === 'lp'">
           <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust"> 
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
           {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</a></li>
       <li *ngIf="vault.poolInfo.farm !== 'Spectrum'"><a class="dropdown-item"
           (click)="withdrawMode = 'ust'; dropdownWithdrawMode.hide()" [class.active]="withdrawMode === 'ust'">
