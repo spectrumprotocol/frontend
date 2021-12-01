@@ -1,5 +1,10 @@
 @import "src/scss/variables";
 
+.no-padding{
+  padding-left: unset;
+  padding-right: unset;
+}
+
 .bulk-name-container {
   position: relative;
   .name-detail {
