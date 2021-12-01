@@ -45,7 +45,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   UNIT = CONFIG.UNIT;
   myTvl = 0;
   height: number;
-  isGrid = true;
+  isGrid: boolean;
   farmInfoDropdownList: FarmInfoService[];
 
   @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
@@ -56,13 +56,14 @@ export class VaultComponent implements OnInit, OnDestroy {
     public terrajs: TerrajsService,
     private modalService: MdbModalService,
     protected $gaService: GoogleAnalyticsService,
-  ) { }
+  ) {
+    this.onResize(null);
+  }
 
   async ngOnInit() {
     this.farmInfoDropdownList = [...new Map(this.info.farmInfos.map(farmInfo => [farmInfo.farm, farmInfo])).values()];
     this.showDepositedPoolOnly = localStorage.getItem('deposit') === 'true';
     this.loading = true;
-    this.triggerWidth();
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         this.loading = true;
@@ -92,17 +93,31 @@ export class VaultComponent implements OnInit, OnDestroy {
     });
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event) {
-    this.triggerWidth();
+  setIsGrid(isGrid: boolean){
+    if (isGrid){
+      this.isGrid = true;
+      localStorage.setItem('isGrid', 'true');
+    } else {
+      this.isGrid = false;
+      localStorage.setItem('isGrid', 'false');
+    }
   }
 
-  triggerWidth() {
-    this.innerWidth = window.innerWidth;
-    if(Number(this.innerWidth) >= 991 && Number(this.innerWidth) <= Number(1024)) {
-      this.isGrid = false;
-    } else {
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    if (this.shouldBeGrid() || (!localStorage.getItem('isGrid') || localStorage.getItem('isGrid') === 'true')){
       this.isGrid = true;
+    } else {
+      this.isGrid = false;
+    }
+  }
+
+  shouldBeGrid() {
+    this.innerWidth = window.innerWidth;
+    if (+this.innerWidth <= 991) {
+      return true;
+    } else {
+      return false;
     }
   }
 
