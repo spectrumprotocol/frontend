@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="table-responsive">
-    <table class="table">
+    <table class="table table-reward">
       <thead>
         <tr>
           <th class="sub-topic">Token</th>
@@ -45,19 +45,19 @@
               {{ token.value.pending_reward_token | number }}
               <small class="text-muted">(${{ token.value.pending_reward_ust | number: '1.0-2' }})</small>
             </td>
-            <td class="ps-1 pe-1">
-              <section class="w-100 row">
-                <div *ngIf="token.key === 'SPEC'">
+            <td class="ps-1 pe-1 container-fluid">
+              <section class="row w-100 btn-group">
+                <ng-container *ngIf="token.key === 'SPEC'">
                   <ng-container *ngFor="let day of availablePoolDays">
-                    <div class="col" *ngIf="day === 0">
+                    <div class="col-auto" *ngIf="day === 0">
                       <button class="btn btn-primary f-12" *ngIf="day === 0" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
                     </div>
-                    <div class="col" *ngIf="day !== 0" >
+                    <div class="col-auto" *ngIf="day !== 0" >
                       <button class="btn btn-primary  f-12" *ngIf="day !== 0" (click)="moveToGov(token.key, day)">Move to {{day}}-Day Locked Gov</button>
                     </div>
                   </ng-container>
-                </div>
-                <div class="col" *ngIf="token.key !== 'SPEC'">
+                </ng-container>
+                <div class="col-auto" *ngIf="token.key !== 'SPEC'">
                   <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.key).autoStake" class="btn btn-primary  f-12" (click)="moveToGov(token.key)">Move to Gov</button>
                 </div>
               </section>

@@ -727,6 +727,19 @@ i.fa-sort-down {
   }
 }
 
+.table-reward {
+  .info-icon {
+    position: absolute;
+    padding-top: 6px;
+  }
+  .btn-group {
+    box-shadow: none;
+    button {
+      width: max-content;
+    }
+  }
+  
+}
 
 @include media-breakpoint-only(xs) {
   .nav-tabs .nav-link {
@@ -776,6 +789,14 @@ i.fa-sort-down {
     button {
       width: max-content;
       margin-right: 10px;
+    }
+  }
+}
+
+@include media-breakpoint-between(xs, md) {
+  .btn-group {
+    button {
+      margin: 5px;
     }
   }
 }

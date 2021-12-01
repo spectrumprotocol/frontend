@@ -1,4 +1,9 @@
 @import "../asset-card.component.scss";
+
+.modal-body {
+    padding: 0;
+}
+
 .btn-close {
     color: white;
 }
@@ -90,7 +95,7 @@
     padding: 15px;
     border-radius: 6px;
     background-color: $gray-950;
-    width: fit-content;
+    width: max-content;
 }
 
 .dropdown {
