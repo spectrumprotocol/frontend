@@ -8,7 +8,7 @@
   <div class="card-body">
     <div *ngIf="!isGrid" (click)="openModal()"
       class="row asset-card-info">
-      <div class="col-12 col-md-3 text-center">
+      <div class="col-12 col-md-4 text-center">
         <div class="p-2 bulk-name-container">
           <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle mAssetIcon mt-2 float-start">
           <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle mAssetIcon-sm ust-outline mt-2 float-start">
@@ -18,7 +18,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-9">
+      <div class="col-12 col-md-8">
         <div class="row">
           <div class="col-12 col-sm-12 col-md-3">
             <div class="f-12 fw-bold sub-topic">TVL</div>
