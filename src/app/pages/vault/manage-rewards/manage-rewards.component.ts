@@ -13,6 +13,7 @@ type MapToKeyValue<T> = T extends Map<infer X, infer Y> ? KeyValue<X, Y> : never
 @Component({
   selector: 'app-manage-rewards',
   templateUrl: './manage-rewards.component.html',
+  styleUrls: ['./manage-rewards.component.scss'],
 })
 export class ManageRewardsComponent implements OnInit{
   constructor(
