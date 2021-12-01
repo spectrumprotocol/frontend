@@ -20,11 +20,11 @@
       </div>
       <div class="col-12 col-md-9">
         <div class="row">
-          <div class="col-12 col-sm-12 col-md-3">
+          <div class="col-12 col-sm-4 col-lg-3 col-md-4 mt-1">
             <div class="f-12 fw-bold sub-topic">TVL</div>
             <div class="fs-6 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
           </div>
-          <div class="col-12 col-sm-6 col-md-3">
+          <div class="col-12 col-sm-3 col-lg-3 col-md-3 mt-1">
             <div class="f-12 fw-bold sub-topic">
               <!-- <i class="fas fa-info-circle info-icon"
               mdbTooltip="APY (Annual Percentage Yield) is the rate of return with compound interest in one year."></i> -->
@@ -39,14 +39,14 @@
                 {{vault.apy | percent}}</span>
             </div>
           </div>
-          <div class="col-12 col-sm-6 col-md-2">
+          <div class="col-12 col-sm-2 col-lg-2 col-md-2 mt-1">
             <div class="f-12 fw-bold sub-topic">
               <!-- <i class="fas fa-info-circle info-icon"
               mdbTooltip="Estimated rate of return per day"></i> -->
               Daily</div>
             <div class="fs-6 fw-bold">{{ vault.pairStat?.dpr || 0 | percent }}</div>
           </div>
-          <div class="col-12 col-sm-6 col-md-4 text-end">
+          <div class="col-12 col-sm-3 col-lg-4 col-md-3 mt-1 text-end">
             <div class="f-12">LP Balance</div>
             <div class="fs-6 fw-bold text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
               <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
