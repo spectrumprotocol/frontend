@@ -69,8 +69,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   tokenPrice: string;
   basedTokenPrice: string;
 
-  // height: number;
-
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
   auto_compound_percent_reallocate = 0;

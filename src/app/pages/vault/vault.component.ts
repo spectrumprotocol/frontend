@@ -99,7 +99,6 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   triggerWidth() {
     this.innerWidth = window.innerWidth;
-    console.log(this.innerWidth);
     if(Number(this.innerWidth) >= 991 && Number(this.innerWidth) <= Number(1024)) {
       this.isGrid = false;
     } else {
