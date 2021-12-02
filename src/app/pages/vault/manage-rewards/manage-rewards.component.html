@@ -21,7 +21,6 @@
   </div>
 <div class="row">
   <div class="col-12">
-
     <div class="table-responsive">
       <table class="table table-reward">
         <thead>
@@ -48,7 +47,7 @@
                 {{ token.value.pending_reward_token | number }}
                 <small class="text-muted">(${{ token.value.pending_reward_ust | number: '1.0-2' }})</small>
               </td>
-              <td class="ps-1 pe-1 container-fluid">
+              <td class="container-fluid">
                 <section class="row btn-group text-end float-end pe-2">
                   <ng-container *ngIf="token.key === 'SPEC'">
                     <ng-container *ngFor="let day of availablePoolDays">
