@@ -31,7 +31,7 @@
       <div class="fs-6 sub-topic">Breakdown</div>
     </div>
     <ng-container *ngFor="let chartData of chartDataList; let i = index;">
-      <div class="d-flex" *ngIf="chartData.value > 0.01" [ngClass]="{'switch-grey': 0 === i % 2}">
+      <div class="d-flex ptb-10" *ngIf="chartData.value > 0.01" [ngClass]="{'switch-grey': 0 === i % 2}">
         <span class="legend-square bg-{{getColorItem(chartData.name)}}"></span> {{chartData.name}} farm
         <span class="margin-left-auto">
           <app-digit [duration]=300 [value]="chartData.value" [format]="'1.2-2'"></app-digit> UST
