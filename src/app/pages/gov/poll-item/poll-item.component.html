@@ -20,18 +20,19 @@
             <div class="card-body">
                 <div class="px-2">
                     <div *ngIf="votes_ratio < +config.quorum">
-                        <div class="text-center sub-topic small" [style.width]="+config.quorum * 2 | percent">
+                        <div class="text-center sub-topic small mb-2 quorum-above-vote-bar"
+                             [style.padding-left]="+config.quorum * 0.6 | percent">
                             <small>Quorum {{ +config.quorum | percent }}</small>
                         </div>
                         <div class="indicator border-end border-light" [style.width]="+config.quorum | percent"></div>
                     </div>
                     <div *ngIf="votes_ratio >= +config.quorum">
-                        <div class="text-center sub-topic small mb-2"
-                            [style.width]="votes_ratio * +config.threshold * 2.2 | percent">
+                        <div class="text-center sub-topic small mb-2 threshold-above-vote-bar"
+                            [style.padding-left]="+votes_ratio * 0.5 | percent">
                             <small>Threshold {{ +config.threshold | percent }}</small>
                         </div>
-                        <!-- <div class="indicator border-end border-light" [style.width]="votes_ratio * +config.threshold | percent">
-                        </div> -->
+                        <div class="indicator border-end border-light" [style.width]="votes_ratio * +config.threshold | percent">
+                        </div>
                     </div>
                     <div class="progress">
                         <div class="progress-bar bg-success" role="progressbar" [style.width]="yes_ratio | percent"></div>
