@@ -18,7 +18,7 @@
                         <div class="card-body">
                             <form class="needs-validation" novalidate #form="ngForm">
                                 <div class="row g-3 mt-3 mb-5">
-                                    <div class="col-12">
+                                    <div class="col-12 mb-3">
                                         <mdb-form-control>
                                             <input type="text" mdbInput [mdbValidate] class="form-control form-control-lg bg-grey" id="title"
                                                 name="title" [(ngModel)]="title" required autofocus #titleCtl="ngModel"
@@ -29,7 +29,7 @@
                                             </mdb-error>
                                         </mdb-form-control>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-12 mb-3">
                                         <mdb-form-control>
                                             <textarea type="text" mdbInput [mdbValidate] class="form-control bg-grey" id="description"
                                                 required rows="4" name="description" [(ngModel)]="description"
@@ -41,7 +41,7 @@
                                             </mdb-error>
                                         </mdb-form-control>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-12 mb-3">
                                         <mdb-form-control>
                                             <input type="url" mdbInput [mdbValidate] class="form-control form-control-lg bg-grey" id="link" name="link"
                                                 [(ngModel)]="link" #linkCtl="ngModel" [minlength]="12" [maxlength]="128"
@@ -56,7 +56,7 @@
                                         <div class="card" *ngFor="let item of executeMsgs; let i = index" @fade>
                                             <div class="card-body bg-grey d-flex">
                                                 <div class="row g-3">
-                                                    <div class="col-10">
+                                                    <div class="col-10 mb-3">
                                                         <mdb-form-control>
                                                             <input type="text" mdbInput [mdbValidate] class="form-control form-control-lg bg-grey"
                                                                 id="contract{{i}}" name="contract{{i}}"
@@ -73,10 +73,10 @@
                                                         </mdb-form-control>
                                                     </div>
                                                     <div class="col-2">
-                                                        <button type="button" class="btn btn-danger"
+                                                        <button type="button" class="btn btn-danger f-12"
                                                             (click)="executeMsgs.splice(i, 1)">Remove</button>
                                                     </div>
-                                                    <div class="col-10">
+                                                    <div class="col-10 mb-3">
                                                         <mdb-form-control>
                                                             <textarea type="text" mdbInput [mdbValidate] class="form-control bg-grey"
                                                                 id="msg{{i}}" name="msg{{i}}" rows="5" [(ngModel)]="item.execute.msg"
