@@ -75,11 +75,11 @@
             <div class="d-flex justify-content-between">
               <div>
                 <div class="d-md-none d-lg-block">
-                  <img src="{{ isGrid ? '../../../assets/Icon-grid-white.svg' : '../../../assets/Icon-grid-grey.svg' }}" (click)="isGrid = true">
-                  <img src="{{ !isGrid ? '../../../assets/Icon-list-white.svg' : '../../../assets/Icon-list-grey.svg' }}" (click)="isGrid = false">
+                  <img src="{{ isGrid ? '../../../assets/Icon-grid-white.svg' : '../../../assets/Icon-grid-grey.svg' }}" (click)="setIsGrid(true)">
+                  <img src="{{ !isGrid ? '../../../assets/Icon-list-white.svg' : '../../../assets/Icon-list-grey.svg' }}" (click)="setIsGrid(false)">
                 </div>
               </div>
-              <div> 
+              <div>
                   <span class="align-sub">Deposited only</span>
                   <label class="switch">
                     <input type="checkbox" id="showDepositedPoolOnly"
