@@ -31,7 +31,7 @@
       <div class="fs-6 sub-topic">Breakdown</div>
     </div>
     <ng-container *ngFor="let farmInfo of farmInfoList; let i = index;">
-      <div class="d-flex" *ngIf="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust > 0.01" [ngClass]="{'switch-grey': 0 === i % 2}">
+      <div class="d-flex ptb-10" *ngIf="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust > 0.01" [ngClass]="{'switch-grey': 0 === i % 2}">
         <span class="legend-square bg-{{farmInfo.farm}}"></span> {{farmInfo.farm}} farm
         <span class="margin-left-auto">
           <app-digit [duration]=300 [value]="info.portfolio?.farms.get(farmInfo.farm).bond_amount_ust" [format]="'1.2-2'"></app-digit> UST
@@ -39,7 +39,6 @@
         </span>
       </div>
     </ng-container>
-    <div class="pt-2"></div>
     <div class="d-flex ptb-10" [ngClass]="{'switch-grey': 0 === farmInfoList?.length % 2}" *ngIf="info.portfolio?.gov.pending_reward_ust > 0.01">
       <span class="legend-square bg-item0"></span> SPEC staked in Gov
       <span class="margin-left-auto">

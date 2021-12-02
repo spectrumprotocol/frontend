@@ -279,58 +279,43 @@ input[type="number"] {
 }
 
 .bg-Spectrum {
-  background: $spectrum;
-  border: solid 1px #fb2b6b;
-  // background: -webkit-linear-gradient(315deg, darken($spectrum, 7%) 0%, $spectrum 50%);
-  // background: linear-gradient(315deg, darken($spectrum, 7%) 0%, $spectrum 50%);
+  background: $spectrum-bg;
+  border: solid 1px $spectrum;
 }
 
 .bg-Mirror {
-  background: $mirror;
+  background: $mirror-bg;
   border: solid 1px #fff;
-  // background: -webkit-linear-gradient(315deg, darken($mirror, 7%) 0%, $mirror 50%);
-  // background: linear-gradient(315deg, darken($mirror, 7%) 0%, $mirror 50%);
 }
 
 .bg-Anchor {
-  background: $anchor;
-  border: solid 1px #4bdb4b;
-  // background: -webkit-linear-gradient(315deg, darken($anchor, 7%) 0%, $anchor 50%);
-  // background: linear-gradient(315deg, darken($anchor, 7%) 0%, $anchor 50%);
+  background: $anchor-bg;
+  border: solid 1px $anchor;
 }
 
 .bg-Pylon {
-  background: $pylon;
-  border: solid 1px #01dcf9;
-  // background: -webkit-linear-gradient(315deg, darken($pylon, 7%) 0%, $pylon 50%);
-  // background: linear-gradient(315deg, darken($pylon, 7%) 0%, $pylon 50%);
+  background: $pylon-bg;
+  border: solid 1px $pylon;
 }
 
 .bg-Terraworld {
-  background: $terraworld;
-  border: solid 1px #f7ca3b;
-  // background: -webkit-linear-gradient(315deg, darken($terraworld, 7%) 0%, $terraworld 50%);
-  // background: linear-gradient(315deg, darken($terraworld, 7%) 0%, $terraworld 50%);
+  background: $terraworld-bg;
+  border: solid 1px $terraworld;
 }
 
 .bg-Valkyrie {
-  background: $valkyrie;
-  border: solid 1px #F5FE00;
-  // background: -webkit-linear-gradient(315deg, darken($valkyrie, 7%) 0%, $valkyrie 50%);
-  // background: linear-gradient(315deg, darken($valkyrie, 7%) 0%, $valkyrie 50%);
+  background: $valkyrie-bg;
+  border: solid 1px $valkyrie;
 }
 
 .bg-Nexus {
-  background: $nexus;
-  border: solid 1px #F4B6C7;
-  // background: -webkit-linear-gradient(315deg, darken($nexus, 7%) 0%, $nexus 50%);
-  // background: linear-gradient(315deg, darken($nexus, 7%) 0%, $nexus 50%);
+  background: $nexus-bg;
+  border: solid 1px $nexus;
 }
 
 .bg-Orion {
-  background: $orion;
-  background: -webkit-linear-gradient(315deg, darken($orion, 7%) 0%, $orion 50%);
-  background: linear-gradient(315deg, darken($orion, 7%) 0%, $orion 50%);
+  background: $orion-bg;
+  border: solid 1px $orion;
 }
 
 .bg-Kujira {
@@ -645,7 +630,7 @@ i.fa-sort-down {
 
 .badge-progress {
     background: $primary;
-    width: 100px;
+    width: 90px;
     &::before {
         border-left: 15px solid $primary;
     }
