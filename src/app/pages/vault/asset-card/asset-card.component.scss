@@ -184,6 +184,15 @@
   border-width: 1px !important;
 }
 
+
+.badge-disabled {
+  background: $primary;
+  width: 90px;
+  &::before {
+      border-left: 15px solid $primary;
+  }
+}
+
 .badge-deposit-disabled {
   height: fit-content;
   width: 70px;

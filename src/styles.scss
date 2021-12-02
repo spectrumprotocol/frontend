@@ -627,10 +627,9 @@ i.fa-sort-down {
   }
 }
 
-
 .badge-progress {
     background: $primary;
-    width: 90px;
+    width: 100px;
     &::before {
         border-left: 15px solid $primary;
     }

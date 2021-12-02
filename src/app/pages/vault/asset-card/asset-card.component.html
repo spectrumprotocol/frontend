@@ -1,6 +1,6 @@
 <div class="card asset-card hover-shadow">
   <span class="position-absolute" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
-    <div class="badge-staked badge-progress badge-staked-vault text-white">Deposited</div>
+    <div class="badge-staked badge-disabled badge-staked-vault text-white">Deposited</div>
   </span>
   <span class="position-absolute grid-badge mb-1" *ngIf="info.DISABLED_VAULTS.includes(vault.symbol)">
       <div class="badge-deposit-disabled badge-staked-vault">Deposit Disabled</div>
