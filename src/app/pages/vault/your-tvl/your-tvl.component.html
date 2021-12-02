@@ -32,7 +32,7 @@
     </div>
     <ng-container *ngFor="let chartData of chartDataList; let i = index;">
       <div class="d-flex ptb-10" *ngIf="chartData.value > 0.01" [ngClass]="{'switch-grey': 0 === i % 2}">
-        <span class="legend-square bg-{{getColorItem(chartData.name)}}"></span> {{chartData.name}} farm
+        <span class="legend-square" [style.background-color]="chartColors.domain[i]"></span> {{chartData.name}} farm
         <span class="margin-left-auto">
           <app-digit [duration]=300 [value]="chartData.value" [format]="'1.2-2'"></app-digit> UST
           <div class="your-tvl-percentage">(<app-digit [duration]=300 [value]="chartData.value * 100 / info.myTvl" [format]="'1.2-2'"></app-digit> %)</div>

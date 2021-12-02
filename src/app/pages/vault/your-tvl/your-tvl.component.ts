@@ -85,15 +85,4 @@ export class YourTvlComponent implements OnInit, OnDestroy {
   closeModal() {
     this.modalRef.close();
   }
-
-  getColorItem(chartDataName: string){
-    if (this.farmInfoName.includes(chartDataName)){
-      return chartDataName;
-    } else if (chartDataName === specStakedInGov){
-      return 'item0';
-    } else if (chartDataName === totalStakedInVaults){
-      return 'item1';
-    }
-    return null;
-  }
 }
