@@ -21,14 +21,14 @@
                 <div class="px-2">
                     <div *ngIf="votes_ratio < +config.quorum">
                         <div class="text-center sub-topic small mb-2 quorum-above-vote-bar"
-                        [ngStyle]="{ 'left': quorum <= 50 ? quorum + '%' : 'auto', 'right': quorum > 50 ? 100 - quorum + '%' : 'auto' }">
+                        [ngStyle]="{ 'left': quorumPositioning <= 50 ? quorumPositioning + '%' : 'auto', 'right': quorumPositioning > 50 ? 100 - quorumPositioning + '%' : 'auto' }">
                             <small>Quorum {{ +config.quorum | percent }}</small>
                         </div>
                         <div class="indicator border-end border-light" [style.width]="+config.quorum | percent"></div>
                     </div>
                     <div *ngIf="votes_ratio >= +config.quorum">
                         <div class="text-center sub-topic small mb-2 threshold-above-vote-bar"
-                        [ngStyle]="{ 'left': threshold <= 50 ? threshold + '%' : 'auto', 'right': threshold > 50 ? 100 - threshold + '%' : 'auto' }">
+                            [style.padding-left]="+votes_ratio * 0.5 | percent">
                             <small>Threshold {{ +config.threshold | percent }}</small>
                         </div>
                         <div class="indicator border-end border-light" [style.width]="votes_ratio * +config.threshold | percent">
