@@ -113,18 +113,18 @@
         <div class="col-12 text-center p-2">
           <div><h6>LP Balance</h6></div>
           <div class="card card-deposit box-left" style="min-height: 53px;">
-            <div class="card-body p-1 min-53" *ngIf="!!info.rewardInfos[vault.assetToken]?.bond_amount">
+            <div class="card-body p-1 min-53" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
               <div class="fs-6 fw-bold text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
                 <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
                   [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i>
               </div>
               <div class="m-t-05">
-                <span class="f-12 text-muted" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10" class="small text-muted">
+                <span class="f-12 text-muted small" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
                   &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
                   info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span>
               </div>
             </div>
-            <div class="card-body p-1 min-53" *ngIf="!info.rewardInfos[vault.assetToken]?.bond_amount">
+            <div class="card-body p-1 min-53" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount < 10">
               <div class="fs-6 fw-bold p-2">-</div>
             </div>
           </div>
