@@ -431,12 +431,12 @@
                 <div class="row pt-3 pb-3">
                   <div class="col">
                       <div class="auto-compound text-center">
-                          Auto Stake <span class="fs-6 fw-bold text-primary">{{ auto_compound_percent_deposit }} %</span>
+                          Auto Stake <span class="fs-6 fw-bold text-primary">{{ 100 - auto_compound_percent_deposit }} %</span>
                       </div>
                   </div>
                   <div class="col text-end">
                       <div class="auto-compound text-center float-end">
-                        Auto Compound <span class="fs-6 fw-bold text-primary">{{ auto_compound_percent_deposit_left }} %</span>
+                        Auto Compound <span class="fs-6 fw-bold text-primary">{{ auto_compound_percent_deposit }} %</span>
                     </div>
                   </div>
                 </div>
@@ -502,19 +502,18 @@
             <div class="d-flex flex-row justify-content-between">
               <div class="slider-compound-stake flex-grow-1 custom-slider">
                 <ngx-slider [(value)]="auto_compound_percent_reallocate"
-                (valueChange)="this.rellocateAutoCompound()"
                 [options]="ngx_slider_option" ></ngx-slider>
               </div>
             </div>
             <div class="row pt-3 pb-3">
               <div class="col">
                   <div class="auto-compound text-center">
-                      Auto Stake <span class="fs-6 fw-bold text-primary">{{ auto_compound_percent_reallocate }} %</span>
+                      Auto Stake <span class="fs-6 fw-bold text-primary">{{ 100 - auto_compound_percent_reallocate }} %</span>
                   </div>
               </div>
               <div class="col text-end">
                   <div class="auto-compound text-center float-end">
-                    Auto Compound <span class="fs-6 fw-bold text-primary">{{ 100 - auto_compound_percent_reallocate }} %</span>
+                    Auto Compound <span class="fs-6 fw-bold text-primary">{{ auto_compound_percent_reallocate }} %</span>
                 </div>
               </div>
             </div>

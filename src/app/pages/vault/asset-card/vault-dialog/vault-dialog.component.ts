@@ -82,9 +82,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     hideLimitLabels: true,
   };
   bufferUST = 3.5;
-
-  auto_compound_percent_reallocate_left = 0;
-  auto_compound_percent_deposit_left = 0;
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
     public terrajs: TerrajsService,
@@ -121,9 +118,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   async refreshData() {
-    if (isNaN(this.auto_compound_percent_reallocate)) {
-      this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
-    }
+    this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
     if (this.vault.poolInfo.forceDepositType) {
       this.depositType = this.vault.poolInfo.forceDepositType as any;
     }
@@ -669,14 +664,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   autoCompoundChanged() {
-    this.auto_compound_percent_deposit_left = 100 - this.auto_compound_percent_deposit;
     const percent = this.auto_compound_percent_deposit / 100;
     this.vault['totalMixApy'] = this.vault.stakeApy * (1 - percent) + this.vault.compoundApy * percent;
     this.vault['mixApy'] = this.vault['totalMixApy'] - this.vault.specApy;
-  }
-
-  rellocateAutoCompound() {
-    this.auto_compound_percent_reallocate_left = 100 - this.auto_compound_percent_reallocate;
   }
 
   @debounce(250)
