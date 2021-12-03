@@ -107,7 +107,7 @@
               <div class="f-12 fw-bold sub-topic">Daily</div>
             </div>
             <div>
-              <div class="fs-6 fw-bold">{{ vault.pairStat?.dpr || 0 | percent }}</div>
+              <div class="fs-6 fw-bold">{{useShortNumber ? (+vault.pairStat?.dpr|| 0 | shortNumber:'apy') : (vault.pairStat?.dpr || 0 | percent)}}</div>
             </div>
           </div>
         </div>
