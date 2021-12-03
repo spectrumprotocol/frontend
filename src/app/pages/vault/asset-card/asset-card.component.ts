@@ -15,8 +15,9 @@ import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
   providers: [LpBalancePipe]
 })
 export class AssetCardComponent implements OnInit {
-  @Input() isGrid;
+  @Input() isGrid: boolean;
   @Input() vault: Vault;
+  @Input() useShortNumber: boolean;
 
   modalRef: MdbModalRef<VaultDialogComponent>;
   constructor(

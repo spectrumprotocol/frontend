@@ -82,7 +82,7 @@
               <div class="f-12 fw-bold sub-topic">TVL</div>
             </div>
             <div>
-              <div class="fs-6 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
+              <div class="fs-6 fw-bold">{{useShortNumber ? (+vault.pairStat?.tvl || 0 | shortNumber:'tvl') : (+vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2')}} UST</div>
             </div>
           </div>
           <div class="d-flex justify-content-between">
@@ -93,12 +93,12 @@
               <div class="fs-6 fw-bold">
                 <span *ngIf="vault.apy > vault.pairStat?.farmApr">
                   <span class="text-pairstat text-decoration-line-through">
-                    <span class="text-pairstat">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
+                    <span class="text-pairstat">{{useShortNumber ? (+vault.pairStat?.poolApr || 0 | shortNumber:'apy') : (vault.pairStat?.poolApr || 0 | percent)}}</span>
                   </span>&nbsp;
                 </span>
                 <!-- [class.text-pairstat]="vault.apy > vault.pairStat?.farmApr" -->
-                <span class="fw-bold">
-                  {{vault.apy | percent}}</span>
+<!--                TODO check here-->
+                <span class="fw-bold">{{useShortNumber ? (+vault.apy || 0 | shortNumber:'apy') : (vault.apy | percent)}}</span>
               </div>
             </div>
           </div>

@@ -47,6 +47,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   height: number;
   isGrid: boolean;
   farmInfoDropdownList: FarmInfoService[];
+  shouldBeGrid: boolean;
 
   @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
   @ViewChild('dropdownSortBy') dropdownSortBy: MdbDropdownDirective;
@@ -105,19 +106,20 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    if (this.shouldBeGrid() || (!localStorage.getItem('isGrid') || localStorage.getItem('isGrid') === 'true')){
+    this.updateShouldBeGrid();
+    if (this.shouldBeGrid || (!localStorage.getItem('isGrid') || localStorage.getItem('isGrid') === 'true')){
       this.isGrid = true;
     } else {
       this.isGrid = false;
     }
   }
 
-  shouldBeGrid() {
+  updateShouldBeGrid() {
     this.innerWidth = window.innerWidth;
     if (+this.innerWidth <= 991) {
-      return true;
+      this.shouldBeGrid = true;
     } else {
-      return false;
+      this.shouldBeGrid = false;
     }
   }
 
