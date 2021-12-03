@@ -21,6 +21,7 @@
 .indicator {
     height: 4px;
     border-color: #A4A5A8 !important;
+    margin-top: 20px;
 }
 
 .progress {
@@ -30,11 +31,14 @@
 }
 
 .threshold-above-vote-bar{
-  margin-left: -2.5em;
   width: fit-content;
+  position: absolute;
+  top: 5px;
 }
 
 .quorum-above-vote-bar{
   width: fit-content;
+  position: absolute;
+  top: 5px;
 }
 
