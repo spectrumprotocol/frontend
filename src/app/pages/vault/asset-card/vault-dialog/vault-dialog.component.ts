@@ -71,7 +71,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
-  auto_compound_percent_reallocate = 0;
+  auto_compound_percent_reallocate = 50;
   ngx_slider_option: NgxSliderOptions = {
     animate: false,
     step: 1,
@@ -95,7 +95,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // this.terrajs.getHeight().then(h => this.height = h);
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
       if (this.terrajs.isConnected) {
         const tasks: Promise<any>[] = [];
@@ -118,7 +117,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   async refreshData() {
-    this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
+    if (this.info.rewardInfos[this.vault.assetToken]){
+      this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
+    }
     if (this.vault.poolInfo.forceDepositType) {
       this.depositType = this.vault.poolInfo.forceDepositType as any;
     }
