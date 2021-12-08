@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-12">
         <h4>Governance</h4>
-        <div class="seperator"></div>
+        <!-- <div class="seperator"></div> -->
         <span class="sub-topic">Stake your SPEC here, all changes in Spectrum must be done through SPEC stakers.</span>
       </div>
     </div>
@@ -147,12 +147,12 @@
       </div>
     </div>
     <div class="row pt-3 g-4" *ngIf="config && info.stat?.govStaked">
-      <div class="col-md-6" *ngFor="let poll of polls">
+      <div class="col-12 col-lg-6" *ngFor="let poll of polls">
         <app-poll-item [poll]="poll" [config]="config" [staked]="+info.stat.govStaked" link="gov">
         </app-poll-item>
       </div>
       <div class="d-grid gap-2 col-4 mx-auto">
-        <button type="button" class="btn btn-outline-default border-1" *ngIf="hasMore"
+        <button type="button" class="btn btn-secondary border-1" *ngIf="hasMore"
           (click)="pollMore()">More</button>
       </div>
     </div>

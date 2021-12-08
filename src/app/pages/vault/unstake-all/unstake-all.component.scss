@@ -1,8 +1,17 @@
 .btn-lg {
-    font-size: 17px;
+    font-size: 14px;
     font-weight: bold;
+    height: 42px;
 }
 
-.p-t-2 {
-    padding-top: 0.3em;
+.icon-history {
+    margin-top: -4px;
 }
+
+
+@media screen and (max-width: 385px) {
+    .float-end {
+        padding-top: 1rem;
+    }
+}
+  

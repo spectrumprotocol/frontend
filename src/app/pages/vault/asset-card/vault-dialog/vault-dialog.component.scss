@@ -1,7 +1,10 @@
 @import "../asset-card.component.scss";
 
 .modal-body {
-    padding: 0;
+    // padding: 0;
+    .card {
+        background-color: #222830;
+    }
 }
 
 .btn-close {

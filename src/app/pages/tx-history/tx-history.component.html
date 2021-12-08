@@ -8,7 +8,7 @@
       </div>
       <div class="col-9 col-md-11">
            <h4>Transaction History</h4>
-          <div class="seperator"></div>
+          <!-- <div class="seperator"></div> -->
       </div>
   </div>
     <!-- <div class="row">
@@ -46,7 +46,7 @@
       <span *ngIf="!terrajs.isConnected">Please connect wallet first</span>
     </div>
     <div *ngIf="currentTxOffset !== undefined && !loading" class="d-flex justify-content-center">
-      <button type="button" class="btn btn-outline-default border-1" (click)="loadMore()">
+      <button type="button" class="btn btn-secondary border-1" (click)="loadMore()">
         <span *ngIf="!loading && currentTxOffset !== undefined">More</span>
       </button>
     </div>

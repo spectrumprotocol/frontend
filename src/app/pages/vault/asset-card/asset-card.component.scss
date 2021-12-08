@@ -58,7 +58,7 @@
 }
 
 .min-53 {
-  min-height: 53px;
+  min-height: 83px;
 }
 
 .asset-card-info {
@@ -94,9 +94,9 @@
 .badge-disabled {
   top: 0;
   right: 0;
-  border-top-left-radius: 0;
+  border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.2rem;
-  border-bottom-left-radius: 0.25rem;
+  border-bottom-left-radius: 0rem;
   border-bottom-right-radius: 0;
 }
 

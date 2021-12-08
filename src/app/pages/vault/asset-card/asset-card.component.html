@@ -21,26 +21,26 @@
       <div class="col-12 col-md-9">
         <div class="row">
           <div class="col-12 col-sm-4 col-lg-3 col-md-4 mt-1">
-            <div class="f-12 fw-bold sub-topic">TVL</div>
+            <div class="f-12 sub-topic">TVL</div>
             <div class="fs-6 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
           </div>
           <div class="col-12 col-sm-3 col-lg-3 col-md-3 mt-1">
-            <div class="f-12 fw-bold sub-topic">
+            <div class="f-12 sub-topic">
               <!-- <i class="fas fa-info-circle info-icon"
               mdbTooltip="APY (Annual Percentage Yield) is the rate of return with compound interest in one year."></i> -->
               APY</div>
-            <div class="fs-6 fw-bold">
+            <div class="f-14">
               <span *ngIf="vault.apy > vault.pairStat?.poolApr">
                 <span class="text-pairstat text-decoration-line-through">
                   <span class="text-pairstat">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
                 </span>&nbsp;
               </span>
-              <span class="fw-bold">
+              <span class="fs-6 fw-bold">
                 {{vault.apy | percent}}</span>
             </div>
           </div>
           <div class="col-12 col-sm-2 col-lg-2 col-md-2 mt-1">
-            <div class="f-12 fw-bold sub-topic">
+            <div class="f-12 sub-topic">
               <!-- <i class="fas fa-info-circle info-icon"
               mdbTooltip="Estimated rate of return per day"></i> -->
               Daily</div>
@@ -48,7 +48,7 @@
           </div>
           <div class="col-12 col-sm-3 col-lg-4 col-md-3 mt-1 text-end">
             <div class="f-12">LP Balance</div>
-            <div class="fs-6 fw-bold text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
+            <div class="f-14 text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
               <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
                 [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i>
               <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10" class="small text-muted">
@@ -79,54 +79,86 @@
         <div class="col-12">
           <div class="d-flex justify-content-between">
             <div>
-              <div class="f-12 fw-bold sub-topic">TVL</div>
+              <div class="f-12 sub-topic">TVL</div>
             </div>
             <div>
-              <div class="fs-6 fw-bold">{{useShortNumber ? (+vault.pairStat?.tvl || 0 | shortNumber:'tvl') : (+vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2')}} UST</div>
+              <div class="f-14">{{useShortNumber ? (+vault.pairStat?.tvl || 0 | shortNumber:'tvl') : (+vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2')}} UST</div>
             </div>
           </div>
           <div class="d-flex justify-content-between">
             <div>
-              <div class="f-12 fw-bold sub-topic">APY</div>
+              <div class="f-12 sub-topic">APY</div>
             </div>
             <div>
-              <div class="fs-6 fw-bold">
+              <div class="f-14">
                 <span *ngIf="vault.apy > vault.pairStat?.poolApr">
                   <span class="text-pairstat text-decoration-line-through">
                     <span class="text-pairstat">{{useShortNumber ? (+vault.pairStat?.poolApr || 0 | shortNumber:'apy') : (vault.pairStat?.poolApr || 0 | percent)}}</span>
                   </span>&nbsp;
                 </span>
                 <!-- [class.text-pairstat]="vault.apy > vault.pairStat?.farmApr" -->
-                <span class="fw-bold">{{useShortNumber ? (+vault.apy || 0 | shortNumber:'apy') : (vault.apy | percent)}}</span>
+                <span>{{useShortNumber ? (+vault.apy || 0 | shortNumber:'apy') : (vault.apy | percent)}}</span>
               </div>
             </div>
           </div>
           <div class="d-flex justify-content-between">
             <div>
-              <div class="f-12 fw-bold sub-topic">Daily</div>
+              <div class="f-12 sub-topic">Daily</div>
             </div>
             <div>
-              <div class="fs-6 fw-bold">{{useShortNumber ? (+vault.pairStat?.dpr|| 0 | shortNumber:'apy') : (vault.pairStat?.dpr || 0 | percent)}}</div>
+              <div class="f-14">{{useShortNumber ? (+vault.pairStat?.dpr|| 0 | shortNumber:'apy') : (vault.pairStat?.dpr || 0 | percent)}}</div>
             </div>
           </div>
         </div>
         <div class="col-12 text-center p-2">
-          <div><h6>LP Balance</h6></div>
           <div class="card card-deposit box-left" style="min-height: 53px;">
-            <div class="card-body p-1 min-53" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
-              <div class="fs-6 fw-bold text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
-                <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
-                  [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i>
+            <div class="card-body p-2 min-53">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="f-12 sub-topic">LP Balance</div>
+                </div>
+                <div>
+                  <!-- <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
+                    [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i> -->
+                    <div class="f-14 text-primary" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}} <span class="f-12 text-muted small" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
+                      &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
+                      info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span></div>
+                    <div *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount < 10">
+                      <div class="f-14">-</div>
+                    </div>
+                </div>
               </div>
-              <div class="m-t-05">
-                <span class="f-12 text-muted small" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
-                  &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
-                  info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span>
+              <div class="d-flex justify-content-between" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount < 10">
+                <div>
+                  <div class="f-12 sub-topic">Staked SPEC</div>
+                </div>
+                <div>
+                  <div class="f-14 text-primary"> {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit: 6 : '1.0-2'}} 
+                    <span class="f-12 text-muted small" *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10">
+                    &nbsp;($TODO)</span></div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between" *ngIf="false">
+                <div>
+                  <div class="f-12 sub-topic">Staked ANC</div>
+                </div>
+                <div>
+                  <div class="f-14 text-primary"> ??
+                    <span class="f-12 text-muted small" *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10">
+                    &nbsp;($TODO ?)</span></div>
+                </div>
               </div>
             </div>
-            <div class="card-body p-1 min-53" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount < 10">
-              <div class="fs-6 fw-bold p-2">-</div>
-            </div>
+            <!-- <div class="card-body p-2 min-53" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount < 10">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="f-12 sub-topic">LP Balance</div>
+                </div>
+                <div>
+                  <div class="f-14">-</div>
+                </div>
+              </div>
+            </div> -->
           </div>
         </div>
       </div>

@@ -48,7 +48,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   isGrid: boolean;
   farmInfoDropdownList: FarmInfoService[];
   shouldBeGrid: boolean;
-
+  marketCap = 100;
   @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
   @ViewChild('dropdownSortBy') dropdownSortBy: MdbDropdownDirective;
 

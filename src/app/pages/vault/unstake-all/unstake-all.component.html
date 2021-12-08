@@ -18,32 +18,22 @@
 
 <div class="card box-left">
   <div class="row card-body">
-    <div class="col-sm-12 col-md-6">
-        <div class="card-text">
+    <div class="col-12 col-md-4">
+        <div class="card-text sub-topic">
           Total Staked
         </div>
-          <h3 class="card-title">
-<!--            <ng-container *ngFor="let item of (info.portfolio?.tokens | keyvalue: asIsOrder); trackBy: key">-->
-<!--              <ng-container *ngIf="item.value['pending_reward_token'] > 0.01">-->
-<!--                <span class="fw-bold text-primary">-->
-<!--                  <app-digit [value]="item.value['pending_reward_token']"></app-digit>-->
-<!--                </span> {{item.key}}-->
-<!--                <i class="fas fa-info-circle info-icon  me-1"-->
-<!--                  mdbTooltip="${{item.value['pending_reward_ust'] | number: '1.0-2'}}"></i>-->
-<!--              </ng-container>-->
-<!--            </ng-container>-->
+          <h3 class="card-title text-primary">
             <app-digit [value]="info.portfolio?.total_reward_ust"></app-digit> <span class="cur-title"> UST</span>
-              <!-- <a role="button" class="margin-left-auto text-light small"><img class="float-end " src="../../../assets/Icon _ PieChart.svg"></a> -->
           </h3>
       </div>
-      <div class="col-sm-12 col-md-6">
-        <div class="float-end p-t-2">
+      <div class="col-12 col-md-8">
+        <div class="float-end">
           <button class="btn btn-lg btn-outline-light ms-2" type="button" aria-expanded="false" (click)="manageRewards()" [disabled]="disableManageRewards()"
           title="Unstake all SPEC, MIR, ANC, and MINE rewards in vaults and withdraw to your wallet">
           Manage rewards
           </button>
-          <a routerLink="/tx-history" routerLinkActive="active"><button type="button" class="btn btn-lg btn-outline-light ms-2"
-            title="Show transaction history"><img width="27" height="27" src="../../../assets/Icon _ History.svg"></button></a>
+          <a routerLink="/tx-history" routerLinkActive="active"><button type="button" class="btn btn-lg btn-outline-light ms-2" style="padding: 10px;"
+            title="Show transaction history"><img width="27" height="27" class="icon-history" src="../../../assets/Icon _ History.svg"></button></a>
         </div>
       </div>
   </div>
