@@ -9,6 +9,8 @@ import { PairInfo } from '../../services/api/terraswap_factory/pair_info';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
+import {WalletService} from '../../services/api/wallet.service';
+import {TokenService} from '../../services/api/token.service';
 
 export interface Vault {
   symbol: string;
@@ -48,7 +50,10 @@ export class VaultComponent implements OnInit, OnDestroy {
   isGrid: boolean;
   farmInfoDropdownList: FarmInfoService[];
   shouldBeGrid: boolean;
-  marketCap = 100;
+
+  supply = 0;
+  marketCap = 0;
+
   @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
   @ViewChild('dropdownSortBy') dropdownSortBy: MdbDropdownDirective;
 
@@ -57,6 +62,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     public terrajs: TerrajsService,
     private modalService: MdbModalService,
     protected $gaService: GoogleAnalyticsService,
+    private wallet: WalletService,
+    private token: TokenService
   ) {
     this.onResize(null);
   }
@@ -76,6 +83,14 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.height = await this.terrajs.getHeight();
         this.lastSortBy = undefined;
+        Promise.all([
+          this.token.query(this.terrajs.settings.specToken, { token_info: {} }),
+          this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform),
+        ])
+          .then(it => {
+            this.supply = +it[0].total_supply - +it[1].staked_amount - +it[1].unstaked_amount;
+            this.marketCap = this.supply / CONFIG.UNIT * Number(this.info.specPrice);
+          });
       });
     this.heightChanged = this.terrajs.heightChanged.subscribe(async i => {
       if (this.loading || !i) {
