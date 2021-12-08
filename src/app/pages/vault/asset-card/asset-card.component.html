@@ -1,17 +1,17 @@
 <div class="card asset-card hover-shadow">
   <span class="position-absolute" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
-    <div class="badge-staked badge-disabled badge-staked-vault text-white">Deposited</div>
+    <div class="badge-disabled text-white">Deposited</div>
   </span>
   <span class="position-absolute grid-badge mb-1" *ngIf="info.DISABLED_VAULTS.includes(vault.symbol)">
-      <div class="badge-deposit-disabled badge-staked-vault">Deposit Disabled</div>
+      <div class="badge-deposit-disabled">Deposit Disabled</div>
   </span>
-  <div class="card-body">
+  <div class="card-body" style="padding: 15px;" [ngClass]="{'min-268': isGrid}">
     <div *ngIf="!isGrid" (click)="openModal()"
       class="row asset-card-info">
       <div class="col-12 col-md-3 text-center no-padding">
         <div class="p-2 bulk-name-container">
-          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle mAssetIcon mt-2 float-start">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle mAssetIcon-sm ust-outline mt-2 float-start">
+          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle mAssetIcon-list ust-outline mt-2 float-start">
+          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle mAssetIcon-list-sm mt-2 float-start">
           <div class="name-detail">
             <h6 class="m-0"> {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</h6>
             <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
@@ -60,11 +60,11 @@
       </div>
     </div>
     <div *ngIf="isGrid" (click)="openModal()"
-    class="row asset-card-info grid-container">
+    class="row asset-card-info grid-container pt-3">
     <div class="col-12 d-flex justify-content-center no-padding">
       <div class="pt-2 p-l-0 bulk-name-container">
-        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle mAssetIcon-list-sm float-start">
         <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle mAssetIcon-list ust-outline float-start">
+        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle mAssetIcon-list-sm float-start">
         <div class="name-detail">
           <h6 class="m-0">{{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</h6>
           <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
@@ -72,7 +72,7 @@
       </div>
     </div>
     <div>
-      <hr>
+      <div class="dot-line"></div>
     </div>
     <div class="col-12">
       <div class="row">
@@ -111,8 +111,8 @@
           </div>
         </div>
         <div class="col-12 text-center p-2">
-          <div class="card card-deposit box-left" style="min-height: 53px;">
-            <div class="card-body p-2 min-53">
+          <div class="card card-deposit box-left height-53">
+            <div class="card-body p-2">
               <div class="d-flex justify-content-between">
                 <div>
                   <div class="f-12 sub-topic">LP Balance</div>
@@ -120,7 +120,7 @@
                 <div>
                   <!-- <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
                     [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i> -->
-                    <div class="f-14 text-primary" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}} <span class="f-12 text-muted small" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
+                    <div class="f-14 text-primary" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}} <span class="f-12 text-white small" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
                       &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
                       info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span></div>
                     <div *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount < 10">
@@ -128,37 +128,27 @@
                     </div>
                 </div>
               </div>
-              <div class="d-flex justify-content-between" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount < 10">
+              <div class="d-flex justify-content-between" *ngIf="vault.poolInfo.farm === 'Spectrum' && !!info.rewardInfos[vault.assetToken]?.pending_spec_reward">
                 <div>
                   <div class="f-12 sub-topic">Staked SPEC</div>
                 </div>
                 <div>
-                  <div class="f-14 text-primary"> {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit: 6 : '1.0-2'}} 
-                    <span class="f-12 text-muted small" *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10">
-                    &nbsp;($TODO)</span></div>
+                  <div class="f-14 text-primary">  {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
+                    <span class="f-12 text-white small">
+                    &nbsp;  (${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | unit: 6 : '1.0-2' }})</span></div>
                 </div>
               </div>
-              <div class="d-flex justify-content-between" *ngIf="false">
+              <div class="d-flex justify-content-between" *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake && !!info.rewardInfos[vault.assetToken]?.pending_farm_reward">
                 <div>
-                  <div class="f-12 sub-topic">Staked ANC</div>
+                  <div class="f-12 sub-topic">Staked {{ vault.poolInfo.token_symbol }}</div>
                 </div>
                 <div>
-                  <div class="f-14 text-primary"> ??
-                    <span class="f-12 text-muted small" *ngIf="+info.rewardInfos[vault.assetToken]?.pending_spec_reward >= 10">
-                    &nbsp;($TODO ?)</span></div>
+                  <div class="f-14 text-primary"> {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit : vault.decimals }}
+                    <span class="f-12 text-white small">
+                    &nbsp;  (${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | unit: vault.decimals : '1.0-2' }})</span></div>
                 </div>
               </div>
             </div>
-            <!-- <div class="card-body p-2 min-53" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount < 10">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <div class="f-12 sub-topic">LP Balance</div>
-                </div>
-                <div>
-                  <div class="f-14">-</div>
-                </div>
-              </div>
-            </div> -->
           </div>
         </div>
       </div>

@@ -9,27 +9,6 @@
   }
 }
 
-.badge-staked {
-  height: fit-content;
-  width: 70px;
-  background: $primary;
-  position: relative;
-  border-top-left-radius: 0.5rem;
-  font-size: 11px;
-  padding-left: 10px;
-}
-
-.badge-staked:before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  border-bottom: 17px solid $main-bg;
-  border-left: 15px solid $primary;
-  width: 0;
-}
-
-
 .gov-pool-container {
   .card-body {
     padding: 2em 2em;

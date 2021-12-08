@@ -509,7 +509,7 @@ h3.card-title {
 .card-deposit {
   margin: 7.5px 0 0;
   border-radius: 4px;
-  background-color: $btn-bg;
+  background-color: $grey-990;
 }
 
 .card-text {
@@ -535,20 +535,6 @@ h3.card-title {
 .sub-topic {
   color: rgba(255, 255, 255, 0.6);
 }
-
-// .nav-tabs {
-//   border-radius: 6px;
-//   background-color: $gray-950;
-//   width: 100%;
-// }
-
-// .nav-tabs .nav-link {
-//   margin: 5px;
-//   border: none;
-//   font-size: 16px;
-//   text-transform: none;
-// }
-
 
 .nav-tabs {
   border-radius: 6px;
@@ -588,23 +574,40 @@ h3.card-title {
 }
 
 .tab-container {
+  .nav {
+    margin-bottom: 0!important;
+  }
+
+  .tab-content {
+      background-color: $grey-990 !important;
+      margin-left: 5px;
+      margin-right: 5px;
+      .tab-pane {
+        margin-top: -5px;
+      }
+  }
+
   .nav-tabs {
       background-color: transparent !important;
+      font-size: 14px;
   }
       
   .nav-tabs .nav-link {
-      background-color: $gray-950;
+      background-color: rgba(255, 255, 255, 0.09);
       border-radius: 4px;
+      font-size: 14px;
       color: $white;
       border: 0 !important;
       padding: 15px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
   }
 
   .nav-link.active {
-      margin: 5px;
       border-radius: 6px;
       border: 0 !important;
-      background-color: $primary !important;
+      border-radius: 6px 6px 0px 0px;
+      background-color: $grey-990 !important;
       padding: 15px;
   }
 }
@@ -636,36 +639,29 @@ i.fa-sort-down {
   color: $gray-300;
 }
 
-
 .badge-staked {
   height: fit-content;
-  width: 80px;
+  width: fit-content;
+  padding: 2px 10px;
+  background: $primary;
+  position: relative;
+  border-top-left-radius: 0.5rem;
+  font-size: 11px;
+}
+
+.badge-disabled {
+  height: fit-content;
+  width: fit-content;
+  padding: 2px 10px;
   background: $primary;
   position: relative;
   border-top-left-radius: 0.3rem;
   font-size: 11px;
-  padding-left: 10px;
   color: black;
-  &::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    border-bottom: 17px solid $second-bg;
-    border-left: 15px solid $primary;
-    width: 0;
-  }
-}
-
-.badge-staked-vault {
-  &::before {
-    border-bottom: 17px solid $main-bg;
-  }
 }
 
 .badge-progress {
     background: $primary;
-    width: 100px;
     &::before {
         border-left: 15px solid $primary;
     }
@@ -685,14 +681,12 @@ i.fa-sort-down {
     }
 }
 
-
 .badge-rejected {
     background: $text-error;
     &::before {
         border-left: 15px solid $text-error;
     }
 }
-
 
 .badge-expired {
     background: $gray-400;
@@ -811,18 +805,18 @@ i.fa-sort-down {
   }
 }
 
-
 .btn-secondary {
-  background-color: rgba(252, 81, 133, 0);
+  background-color: rgba(252, 81, 133, 0) !important;
   border: 1px solid white;
   box-shadow: none;
+  color: white !important;
 }
 
 .btn-secondary:hover {
   border-color: $primary;
   outline: 0;
-  background-color: rgba(252, 81, 133, 0);
-  color: white;
+  background-color: rgba(252, 81, 133, 0) !important;
+  color: white !important;
 }
 
 @include media-breakpoint-between(xs, md) {
@@ -843,9 +837,3 @@ i.fa-sort-down {
 .modal-manage-rewards{
   max-width: 900px !important;
 }
-
-// @include media-breakpoint-between(lg, xxl) {
-//   .table-responsive {
-//     overflow-y: hidden;
-//   }
-// }

@@ -14,39 +14,23 @@
   }
 }
 
-.mAssetIcon {
-  width: 40px;
-  height: 40px;
-  padding: 4px;
-  background-color: black;
-  position: relative;
-  top: -5px;
-}
-
-.mAssetIcon-sm {
-  width: 30px;
-  height: 30px;
-  padding: 2px;
-  background-color: white;
-}
-
 .mAssetIcon-list {
-  width: 48px;
-  height: 48px;
+  width: 33px;
+  height: 33px;
   padding: 4px;
   background-color: white;
 }
 .mAssetIcon-list-sm {
-  width: 48px;
-  height: 48px;
+  width: 33px;
+  height: 33px;
   padding: 2px;
   background-color: $main-bg;
   position: inherit;
+  margin-left: -10px;
 }
 
 .ust-outline {
   border: 1px solid;
-  margin-left: -10px;
 }
 
 .token-denom{
@@ -57,8 +41,8 @@
   background-color: rgba(79, 79, 79, 0.8);
 }
 
-.min-53 {
-  min-height: 83px;
+.min-268 {
+  min-height: 268px;
 }
 
 .asset-card-info {
@@ -82,22 +66,23 @@
   color: rgb(4, 180, 48);
 }
 
-.badge-deposited {
-  top: 0;
-  left: 0;
-  border-top-left-radius: 0.2rem;
-  border-top-right-radius: 0;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0.25rem;
-}
-
 .badge-disabled {
   top: 0;
   right: 0;
   border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.2rem;
-  border-bottom-left-radius: 0rem;
-  border-bottom-right-radius: 0;
+  background: $primary;
+  width: fit-content;
+  padding: 2px 10px;
+}
+
+.badge-deposit-disabled {
+  height: fit-content;
+  width: fit-content;
+  padding: 2px 10px;
+  background: $text-error;
+  position: relative;
+  border-top-right-radius: 0.3rem;
+  font-size: 11px;
 }
 
 @-webkit-keyframes mover {
@@ -184,42 +169,21 @@
   border-width: 1px !important;
 }
 
-
-.badge-disabled {
-  background: $primary;
-  width: 90px;
-  &::before {
-      border-left: 15px solid $primary;
-  }
-}
-
-.badge-deposit-disabled {
-  height: fit-content;
-  width: 70px;
-  background: $text-error;
-  position: relative;
-  border-top-right-radius: 0.3rem;
-  font-size: 11px;
-  padding-left: 23px;
-  width: 125px;
-  &::before {
-      border-right: 15px solid $text-error;
-  }
-}
-
-.badge-deposit-disabled:before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border-bottom: 17px solid $main-bg;
-  border-right: 15px solid $text-error;
-  width: 0;
-}
-
 .grid-badge {
   right: 0;
+}
+
+
+.height-53 {
+  min-height: 53;
+}
+
+.dot-line {
+    height: 1px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed hsla(0, 0%, 100%, 0.1);
+    background-color: transparent;
 }
 
 @media screen and (max-width: 1199px) {
