@@ -101,13 +101,13 @@ body {
 
 .fix-border {
   height: unset !important;
-  border-left: none !important;
+  // border-left: none !important;
 }
 
 .igt-fixwidth {
   height: 48px;
-  border: 0;
-  background-color: $gray-950;
+  border: 1px solid $gray-970;
+  background-color: $gray-960;
 }
 
 .igt-fixwidth-vault {
@@ -234,7 +234,11 @@ input[type="number"] {
 .hover-shadow:hover,
 .card.hover-shadow:hover {
   border: 1px solid $primary;
-  // transition: all 0.3s ease-in-out;
+  background-color: #303947;
+  -webkit-transform: translate(0px, -5px);
+  -ms-transform: translate(0px, -5px);
+  transform: translate(0px, -5px);
+  mix-blend-mode: normal;
 }
 
 .bg-primary,
@@ -481,11 +485,19 @@ h3.card-title {
 }
 
 .card {
-  background-color: $main-bg;
+  background-color: $grey-990;
   border-radius: 0.4rem;
   .card-body {
     padding: 0.5em;
   }
+}
+
+.card-grey {
+  background-color: $grey-990;
+}
+
+.asset-card {
+  background-color: $gray-950 !important;
 }
 
 .card-md {
@@ -509,7 +521,6 @@ h3.card-title {
 .card-deposit {
   margin: 7.5px 0 0;
   border-radius: 4px;
-  background-color: $grey-990;
 }
 
 .card-text {
@@ -730,7 +741,9 @@ i.fa-sort-down {
 }
 
 .btn-max {
-  background-color: $max-btn;
+  background-color: $gray-970;
+  font-size: 14px;
+  padding: 12px;
 }
 
 // .btn-secondary {
@@ -830,6 +843,21 @@ i.fa-sort-down {
   .table-reward {
     .col-12 {
       padding-bottom: 10px;
+    }
+  }
+
+  .col-mb {
+    width: 100%;
+    flex: auto;
+  }
+}
+
+@include media-breakpoint-between(xs, lg) {
+  .col-mbp {
+    width: 100%;
+    flex: auto;
+    .mt-5 {
+      margin-top: 1rem!important;
     }
   }
 }

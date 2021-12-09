@@ -1,13 +1,11 @@
 @import "../asset-card.component.scss";
 
-.modal-body {
-    .card {
-        background-color: $grey-990;
-    }
-}
-
 .btn-close {
     color: white;
+}
+
+.card-title {
+    display: flex;
 }
 
 .tab-container {
@@ -18,10 +16,11 @@
     }
 
     .fix-border {
-        text-align: right;
-        border: 1px solid $white;
-        background-color: $gray-950;
-        border: 0;
+        border-radius: 0px;
+        color: #fff;
+        border: 1px solid $gray-970;
+        background-color: $gray-960;
+        // border: 0;
         &:focus {
             box-shadow: none;
         }
@@ -29,6 +28,10 @@
 
     .fix-border::placeholder {
         color: $white;
+    }
+
+    .fw-bold-600 {
+        font-weight: 600;
     }
 }
 
@@ -100,11 +103,11 @@
 
 .dropdown {
     .btn-drop {
-        background-color: $gray-950;
-        border: 0;
+        background-color: $gray-960;
+        border: 1px solid $gray-970;
         height: 48px;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 12px;
         box-shadow: none;
         &:focus {
             box-shadow: none;
@@ -137,10 +140,13 @@
     margin: -10px 5px 0 5px;
 }
 
-.icon-plus {
-    width: 30px;
-    height: 30px;
-    display: inline-block;
-    background-size: 100% 100%;
-    background: url("/assets/Icon_Plus.svg") no-repeat;
+.image-6 {
+    // padding-right: 20px;
+    // padding-left: 20px;
+    opacity: 0.23;
+    // max-width: 100%;
+    // vertical-align: middle;
+    // display: inline-block;
+    padding-top: 10px;
+    opacity: 0.23;
 }

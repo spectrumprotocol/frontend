@@ -5,7 +5,7 @@
   <span class="position-absolute grid-badge mb-1" *ngIf="info.DISABLED_VAULTS.includes(vault.symbol)">
       <div class="badge-deposit-disabled">Deposit Disabled</div>
   </span>
-  <div class="card-body" style="padding: 15px;" [ngClass]="{'min-268': isGrid}">
+  <div class="card-body pt-15" [ngClass]="{'min-268': isGrid}">
     <div *ngIf="!isGrid" (click)="openModal()"
       class="row asset-card-info">
       <div class="col-12 col-md-3 text-center no-padding">
@@ -111,7 +111,7 @@
           </div>
         </div>
         <div class="col-12 text-center p-2">
-          <div class="card card-deposit box-left height-53">
+          <div class="card card-deposit card-grey box-left height-53">
             <div class="card-body p-2">
               <div class="d-flex justify-content-between">
                 <div>
