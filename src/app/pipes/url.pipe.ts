@@ -17,6 +17,7 @@ export class UrlPipe implements PipeTransform {
           return `${MIRROR_ICON_URL}/${symbol.slice(1)}.png`;
         }
         switch (symbol) {
+          case 'UST': return '/assets/UST.png';
           case 'Spectrum': return '/assets/SPEC.png';
           case 'SPEC': return '/assets/SPEC.png';
           case 'Anchor': return 'https://whitelist.anchorprotocol.com/logo/ANC.png';
