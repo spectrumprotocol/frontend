@@ -23,6 +23,8 @@
     position: relative;
 }
 
-button {
-    height: 48px;
+.btn-group {
+    .btn {
+        border-radius: 6px;
+    }
 }

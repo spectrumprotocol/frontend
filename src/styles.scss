@@ -51,6 +51,15 @@ body {
   }
 }
 
+.btn-sm {
+  font-size: 14px;
+  font-weight: bold;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .btn-primary {
   box-shadow: none;
   :disabled {
@@ -131,8 +140,8 @@ h3.card-title {
   font-size: 14px;
 }
 
-.f-25 {
-  font-size: 25px;
+.f-22 {
+  font-size: 22px;
 }
 
 .f-14-600 {
@@ -499,6 +508,9 @@ input[type="number"] {
       border: none;
       font-size: 16px;
       text-transform: none;
+      &:hover {
+        background-color: transparent;
+      }
   }
 
   .nav-link.active {
@@ -775,7 +787,7 @@ i.fa-sort-down {
 
 @include media-breakpoint-between(xs, md) {
   .btn-group {
-    button {
+    button, a {
       margin: 5px;
       padding: 5px;
     }
