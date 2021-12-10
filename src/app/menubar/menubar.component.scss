@@ -21,18 +21,16 @@
 .nav-item {
     font-weight: bold;
     font-size: 14px;
-    padding-left: 25px;
-    padding-right: 25px;
-    padding-top: 5px;
     .nav-link {
         color: white;
+        padding: 10px 20px !important;
+        margin: 5px !important;
+        width: 120px;
     }
 }
 
 .nav-item .active {
     border-radius: 6px;
-    padding-top: 5px;
-    padding-bottom: 5px;
     background-color: $btn-bg;
     border-color: rgba(255, 255, 255, 0.5);
 }
@@ -43,4 +41,8 @@
             padding: 10px;
         }
     }
+}
+
+.btn-sm {
+    font-size: 12px;
 }
