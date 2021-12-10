@@ -543,6 +543,9 @@ input[type="number"] {
       background-color: $grey-990 !important;
       padding: 15px;
   }
+  *:focus {
+    outline: none !important;
+  }
 }
 
 .footer {
