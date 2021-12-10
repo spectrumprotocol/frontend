@@ -10,7 +10,7 @@ export class ShortNumPipe implements PipeTransform {
     private num: DecimalPipe
   ) { }
 
-  transform(value: number, digitInfo?: string) {
+  transform(value: number, digitInfo = '1.0-2') {
     if (typeof value !== 'number') {
       return null;
     }
@@ -18,15 +18,15 @@ export class ShortNumPipe implements PipeTransform {
       return this.num.transform(value, digitInfo);
     }
 
-    const units = 'kMBT';
+    const units = 'kM';
 
-    const order = Math.min(Math.floor(Math.log(value) / Math.log(1000)), 4);
+    const order = Math.min(Math.floor(Math.log(value) / Math.log(1000)), 2);
 
     const unitname = units[order - 1];
-    const num = Math.floor(value / 1000 ** order);
+    const num = value / 1000 ** order;
 
     // output number remainder + unitname
-    return num + unitname;
+    return this.num.transform(num, digitInfo) + unitname;
   }
 
 }

@@ -22,7 +22,7 @@
         <div class="row">
           <div class="col-12 col-sm-4 col-lg-3 col-md-4 mt-1">
             <div class="f-12 sub-topic">TVL</div>
-            <div class="fs-6 fw-bold">{{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} UST</div>
+            <div class="fs-6 fw-bold">{{+vault.pairStat?.tvl / UNIT || 0 | shortNum }} UST</div>
           </div>
           <div class="col-12 col-sm-3 col-lg-3 col-md-3 mt-1">
             <div class="f-12 sub-topic">
@@ -49,8 +49,8 @@
           <div class="col-12 col-sm-3 col-lg-4 col-md-3 mt-1 text-end">
             <div class="f-12">LP Balance</div>
             <div class="f-14 text-primary">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
-              <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
-                [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i>
+              <!-- <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
+                [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i> -->
               <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10" class="small text-muted">
                 &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
                 info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span>
@@ -82,7 +82,7 @@
               <div class="f-12 sub-topic">TVL</div>
             </div>
             <div>
-              <div class="f-14">{{useShortNumber ? (+vault.pairStat?.tvl || 0 | shortNumber:'tvl') : (+vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2')}} UST</div>
+              <div class="f-14">{{+vault.pairStat?.tvl / UNIT || 0 | shortNum }} UST</div>
             </div>
           </div>
           <div class="d-flex justify-content-between">
@@ -93,11 +93,11 @@
               <div class="f-14">
                 <span *ngIf="vault.apy > vault.pairStat?.poolApr">
                   <span class="sub-topic text-decoration-line-through">
-                    <span class="sub-topic">{{useShortNumber ? (+vault.pairStat?.poolApr || 0 | shortNumber:'apy') : (vault.pairStat?.poolApr || 0 | percent)}}</span>
+                    <span class="sub-topic">{{vault.pairStat?.poolApr || 0 | percent}}</span>
                   </span>&nbsp;
                 </span>
                 <!-- [class.sub-topic]="vault.apy > vault.pairStat?.farmApr" -->
-                <span>{{useShortNumber ? (+vault.apy || 0 | shortNumber:'apy') : (vault.apy | percent)}}</span>
+                <span>{{vault.apy | percent}}</span>
               </div>
             </div>
           </div>
@@ -106,7 +106,7 @@
               <div class="f-12 sub-topic">Daily</div>
             </div>
             <div>
-              <div class="f-14">{{useShortNumber ? (+vault.pairStat?.dpr|| 0 | shortNumber:'apy') : (vault.pairStat?.dpr || 0 | percent)}}</div>
+              <div class="f-14">{{vault.pairStat?.dpr || 0 | percent}}</div>
             </div>
           </div>
         </div>
@@ -128,7 +128,7 @@
                     </div>
                 </div>
               </div>
-              <div class="d-flex justify-content-between" *ngIf="vault.poolInfo.farm === 'Spectrum' && !!info.rewardInfos[vault.assetToken]?.pending_spec_reward">
+              <!-- <div class="d-flex justify-content-between" *ngIf="vault.poolInfo.farm === 'Spectrum' && !!info.rewardInfos[vault.assetToken]?.pending_spec_reward">
                 <div>
                   <div class="f-12 sub-topic">Staked SPEC</div>
                 </div>
@@ -147,7 +147,7 @@
                     <span class="f-12 text-white small">
                     &nbsp;  (${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | unit: vault.decimals : '1.0-2' }})</span></div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

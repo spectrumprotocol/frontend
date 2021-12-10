@@ -79,7 +79,7 @@
         <div class="card box-left">
           <div class="card-body">
             <p class="card-text sub-topic">
-              Stake SPEC
+              SPEC reward
             </p>
             <h3 class="card-title text-primary">
               {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
@@ -89,7 +89,7 @@
           </div>
         </div>
       </div>
-      <div class="col col-mb">
+      <div class="col col-mb" *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake">
         <div class="card box-left">
           <div class="card-body">
             <p class="card-text sub-topic">
@@ -621,14 +621,13 @@
             </div>
           </form>
         </mdb-tab>
-        <mdb-tab title="Unstake">
+        <mdb-tab title="Claim">
           <div class="p-3">
             <div class="small mt-6">
-              All your rewards are automatically staked in gov vaults to earn gov income.
             </div>
             <div class="row mt-3">
               <div class="col">
-                Staked SPEC
+                SPEC reward
                 <small class="text-primary">APR: {{ info.stat?.govApr | percent }}</small>
               </div>
               <div class="col text-end">
@@ -655,16 +654,16 @@
               </div>
             </div>
             <div *ngIf="vault.poolInfo.farm === 'Spectrum'" class="d-grid mt-3 mb-3">
-              <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake SPEC</button>
+              <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Claim SPEC</button>
             </div>
             <div *ngIf="vault.poolInfo.farm === 'Mirror'" class="d-grid mt-3 mb-3">
-              <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake MIR + SPEC</button>
-              <button (click)="doClaimReward(true)" class="btn btn-secondary mt-2" type="submit">Unstake MIR + SPEC
+              <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Claim MIR + SPEC</button>
+              <button (click)="doClaimReward(true)" class="btn btn-secondary mt-2" type="submit">Claim MIR + SPEC
                 from ALL Mirror vaults</button>
             </div>
             <div *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'" class="d-grid mt-3 mb-3">
               <button (click)="doClaimReward()" class="btn btn-primary" type="submit">
-                <span *ngIf="vault.poolInfo.auto_stake">{{vault.poolInfo.token_symbol}} +</span>
+                <span *ngIf="vault.poolInfo.auto_stake">Claim {{vault.poolInfo.token_symbol}} +</span>
                 SPEC</button>
             </div>
           </div>

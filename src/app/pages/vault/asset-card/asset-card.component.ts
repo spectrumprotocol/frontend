@@ -6,6 +6,7 @@ import { InfoService } from '../../../services/info.service';
 import { LpBalancePipe } from '../../../pipes/lp-balance.pipe';
 import { VaultDialogComponent } from './vault-dialog/vault-dialog.component';
 import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
+import { CONFIG } from 'src/app/consts/config';
 
 @Component({
   selector: 'app-asset-card',
@@ -17,7 +18,8 @@ import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
 export class AssetCardComponent implements OnInit {
   @Input() isGrid: boolean;
   @Input() vault: Vault;
-  @Input() useShortNumber: boolean;
+
+  UNIT = CONFIG.UNIT;
 
   modalRef: MdbModalRef<VaultDialogComponent>;
   constructor(
