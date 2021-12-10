@@ -194,7 +194,6 @@
                 placeholder="0.0%"
                 mdbInput [min]="0.001" [step]="0.001" [max]="50" #slippageNumInput="ngModel" (ngModelChange)="setSlippage()"
                 [class.is-invalid]="slippageNumInput.touched && slippageNumInput.invalid" />
-              <!-- <i class="fas fa-percent percentage-center"></i> -->
             </div>
             </form>
             <div class="text-end">

@@ -31,8 +31,8 @@
               APY</div>
             <div class="f-14">
               <span *ngIf="vault.apy > vault.pairStat?.poolApr">
-                <span class="text-pairstat text-decoration-line-through">
-                  <span class="text-pairstat">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
+                <span class="sub-topic text-decoration-line-through">
+                  <span class="sub-topic">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
                 </span>&nbsp;
               </span>
               <span class="fs-6 fw-bold">
@@ -92,11 +92,11 @@
             <div>
               <div class="f-14">
                 <span *ngIf="vault.apy > vault.pairStat?.poolApr">
-                  <span class="text-pairstat text-decoration-line-through">
-                    <span class="text-pairstat">{{useShortNumber ? (+vault.pairStat?.poolApr || 0 | shortNumber:'apy') : (vault.pairStat?.poolApr || 0 | percent)}}</span>
+                  <span class="sub-topic text-decoration-line-through">
+                    <span class="sub-topic">{{useShortNumber ? (+vault.pairStat?.poolApr || 0 | shortNumber:'apy') : (vault.pairStat?.poolApr || 0 | percent)}}</span>
                   </span>&nbsp;
                 </span>
-                <!-- [class.text-pairstat]="vault.apy > vault.pairStat?.farmApr" -->
+                <!-- [class.sub-topic]="vault.apy > vault.pairStat?.farmApr" -->
                 <span>{{useShortNumber ? (+vault.apy || 0 | shortNumber:'apy') : (vault.apy | percent)}}</span>
               </div>
             </div>
