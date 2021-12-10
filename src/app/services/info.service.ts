@@ -416,10 +416,8 @@ export class InfoService {
     this.myTvl = tvl;
 
     const pendingTokenRewards = [...portfolio.tokens.values()].filter(value => value.pending_reward_token > 0);
-    portfolio.avg_tokens_apr = pendingTokenRewards.every(pr => pr.apr)
-      ? pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token * pr.apr, 0) /
-      pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token, 0)
-      : undefined;
+    portfolio.avg_tokens_apr = pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token * (pr.apr || 0), 0) /
+      pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token, 0);
 
     this.portfolio = portfolio;
   }

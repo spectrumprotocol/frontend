@@ -268,6 +268,11 @@ input[type="number"] {
   }
 }
 
+.hover-shadow,
+.card.hover-shadow {
+  border: 0 none $primary;
+}
+
 .hover-shadow:hover,
 .card.hover-shadow:hover {
   border: 1px solid $primary;

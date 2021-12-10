@@ -75,7 +75,6 @@ import {MdbFormsModule} from 'mdb-angular-ui-kit/forms';
 import {MdbValidationModule} from 'mdb-angular-ui-kit/validation';
 import {ModalService} from './services/modal.service';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
-import {ShortNumberPipe} from './pipes/shortNumber.pipe';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -125,7 +124,6 @@ registerLocaleData(locale, 'en');
     FloorPipe,
     ManageRewardsComponent,
     VaultDialogComponent,
-    ShortNumberPipe
   ],
   imports: [
     AppRoutingModule,
@@ -173,7 +171,6 @@ registerLocaleData(locale, 'en');
     UnitPipe,
     BalancePipe,
     LpBalancePipe,
-    ShortNumberPipe,
     { provide: LOCALE_ID, useValue: 'en' },
   ],
   bootstrap: [AppComponent]
