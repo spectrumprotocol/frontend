@@ -165,16 +165,6 @@
   font-size: 18px;
 }
 
-.dropdown {
-  button {
-    box-shadow: none;
-  }
-}
-
-.h-47 {
-  height: 47px;
-}
-
 .mg-10 {
   margin-top: -10px;
 }
@@ -185,6 +175,11 @@
 .mg-3 {
   margin-top: -3px;
 }
+
+.border-6 {
+  border-radius: 6px;
+}
+
 
 @media screen and (max-width: 1200px) {
   .filter {
@@ -198,4 +193,16 @@
     top: 13px;
     left: 10px;
   }
+}
+
+.dropdown {
+    button {
+      box-shadow: none;
+      height: 46px;
+    }
+    &.active-border {
+      border: 1px solid $primary;
+      border-radius: 6px;
+      height: 44px;
+    }
 }

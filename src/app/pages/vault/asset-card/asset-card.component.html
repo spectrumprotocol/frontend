@@ -120,7 +120,7 @@
                 <div>
                   <!-- <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
                     [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle info-icon"></i> -->
-                    <div class="f-14 text-primary" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}} <span class="f-12 text-white small" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
+                    <div class="card-title text-primary" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">{{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}} <span class="f-12 text-white small" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
                       &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
                       info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span></div>
                     <div *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount < 10">
@@ -133,7 +133,7 @@
                   <div class="f-12 sub-topic">Staked SPEC</div>
                 </div>
                 <div>
-                  <div class="f-14 text-primary">  {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
+                  <div class="card-title text-primary">  {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
                     <span class="f-12 text-white small">
                     &nbsp;  (${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | unit: 6 : '1.0-2' }})</span></div>
                 </div>
@@ -143,7 +143,7 @@
                   <div class="f-12 sub-topic">Staked {{ vault.poolInfo.token_symbol }}</div>
                 </div>
                 <div>
-                  <div class="f-14 text-primary"> {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit : vault.decimals }}
+                  <div class="card-title text-primary"> {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit : vault.decimals }}
                     <span class="f-12 text-white small">
                     &nbsp;  (${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | unit: vault.decimals : '1.0-2' }})</span></div>
                 </div>

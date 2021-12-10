@@ -10,12 +10,12 @@
 }
 
 .navbar-bg {
-    background-color: $main-bg;
+    background-color: $grey-990;
     box-shadow: none;
 }
 
 .navbar-sm-bg {
-    background-color: $main-bg;
+    background-color: $grey-990;
 }
 
 .nav-item {
@@ -43,4 +43,9 @@
             padding: 10px;
         }
     }
+}
+
+.navbar-toggler {
+    padding: 14px;
+    background-color: $gray-950;
 }

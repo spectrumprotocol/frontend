@@ -16,9 +16,9 @@
       title="Show transaction history"><i class="fas fa-history"></i></button></a>
 </div> -->
 
-<div class="card box-left">
+<div class="card box-left unstake-container">
   <div class="row card-body card-grey m-0">
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-4 p-0">
         <div class="card-text sub-topic">
           Total staked
         </div>
@@ -28,12 +28,14 @@
       </div>
       <div class="col-12 col-md-8">
         <div class="float-end">
-          <button class="btn btn-lg btn-outline-light ms-2" type="button" aria-expanded="false" (click)="manageRewards()" [disabled]="disableManageRewards()"
-          title="Unstake all SPEC, MIR, ANC, and MINE rewards in vaults and withdraw to your wallet">
-          Manage rewards
-          </button>
-          <a routerLink="/tx-history" routerLinkActive="active"><button type="button" class="btn btn-lg btn-outline-light ms-2 p-10"
-            title="Show transaction history"><img width="27" height="27" class="icon-history" src="../../../assets/Icon _ History.svg"></button></a>
+          <span class="btn-group w-100">
+            <button class="btn btn-lg btn-outline-light ms-2" type="button" aria-expanded="false" (click)="manageRewards()" [disabled]="disableManageRewards()"
+            title="Unstake all SPEC, MIR, ANC, and MINE rewards in vaults and withdraw to your wallet">
+            Manage rewards
+            </button>
+            <a routerLink="/tx-history" routerLinkActive="active"><button type="button" class="btn btn-lg btn-outline-light ms-2 p-2"
+              title="Show transaction history"><img width="27" height="27" class="icon-history" src="../../../assets/Icon _ History.svg"></button></a>
+          </span>
         </div>
       </div>
   </div>

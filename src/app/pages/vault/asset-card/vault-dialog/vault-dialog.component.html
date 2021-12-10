@@ -67,6 +67,8 @@
               <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10" class="small text-white">
                 &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
                 info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span>
+                <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
+                  [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle text-white info-icon margin-left-auto loat-end md-icon mg-10"></i>
             </h3>
           </div>
         </div>
@@ -565,8 +567,9 @@
         </mdb-tab>
         <mdb-tab title="Withdraw">
           <form #formWithdraw="ngForm" class="needs-validation p-3" novalidate>
-            <div class="text-end small mt-3 text-muted">
-              <span>Deposited: {{ info.rewardInfos[vault.assetToken]?.bond_amount || 0 | unit }} {{
+            <div class="text-end small mt-3 mb-1 fw-bold">
+              <span class="sub-topic">Deposited: </span>
+              <span class="text-white">{{ info.rewardInfos[vault.assetToken]?.bond_amount || 0 | unit }} {{
                 vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP</span>
             </div>
             <div class="input-group">
@@ -621,49 +624,51 @@
           </form>
         </mdb-tab>
         <mdb-tab title="Unstake">
-          <div class="small mt-6">
-            All your rewards are automatically staked in gov vaults to earn gov income.
-          </div>
-          <div class="row mt-3">
-            <div class="col">
-              Staked SPEC
-              <small class="text-primary">APR: {{ info.stat?.govApr | percent }}</small>
+          <div class="p-3">
+            <div class="small mt-6">
+              All your rewards are automatically staked in gov vaults to earn gov income.
             </div>
-            <div class="col text-end">
-              {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
-              <small class="text-muted">
-                (${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | balance:
-                info.poolResponses[terrajs.settings.specToken] |
-                unit: 6 : '1.0-2' }})
-              </small>
+            <div class="row mt-3">
+              <div class="col">
+                Staked SPEC
+                <small class="text-primary">APR: {{ info.stat?.govApr | percent }}</small>
+              </div>
+              <div class="col text-end">
+                {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
+                <small class="text-muted">
+                  (${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | balance:
+                  info.poolResponses[terrajs.settings.specToken] |
+                  unit: 6 : '1.0-2' }})
+                </small>
+              </div>
             </div>
-          </div>
-          <div *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="row">
-            <div class="col">
-              Staked {{ vault.poolInfo.token_symbol }}
-              <small class="text-primary">APR: {{ vault.pairStat?.farmApr | percent }}</small>
+            <div *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="row">
+              <div class="col">
+                Staked {{ vault.poolInfo.token_symbol }}
+                <small class="text-primary">APR: {{ vault.pairStat?.farmApr | percent }}</small>
+              </div>
+              <div class="col text-end">
+                {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit : vault.decimals }}
+                <small class="text-muted">
+                  (${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
+                  info.poolResponses[vault.poolInfo.farmTokenContract] |
+                  unit: vault.decimals : '1.0-2' }})
+                </small>
+              </div>
             </div>
-            <div class="col text-end">
-              {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit : vault.decimals }}
-              <small class="text-muted">
-                (${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
-                info.poolResponses[vault.poolInfo.farmTokenContract] |
-                unit: vault.decimals : '1.0-2' }})
-              </small>
+            <div *ngIf="vault.poolInfo.farm === 'Spectrum'" class="d-grid mt-3 mb-3">
+              <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake SPEC</button>
             </div>
-          </div>
-          <div *ngIf="vault.poolInfo.farm === 'Spectrum'" class="d-grid mt-3 mb-3">
-            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake SPEC</button>
-          </div>
-          <div *ngIf="vault.poolInfo.farm === 'Mirror'" class="d-grid mt-3 mb-3">
-            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake MIR + SPEC</button>
-            <button (click)="doClaimReward(true)" class="btn btn-secondary mt-2" type="submit">Unstake MIR + SPEC
-              from ALL Mirror vaults</button>
-          </div>
-          <div *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'" class="d-grid mt-3 mb-3">
-            <button (click)="doClaimReward()" class="btn btn-primary" type="submit">
-              <span *ngIf="vault.poolInfo.auto_stake">{{vault.poolInfo.token_symbol}} +</span>
-              SPEC</button>
+            <div *ngIf="vault.poolInfo.farm === 'Mirror'" class="d-grid mt-3 mb-3">
+              <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Unstake MIR + SPEC</button>
+              <button (click)="doClaimReward(true)" class="btn btn-secondary mt-2" type="submit">Unstake MIR + SPEC
+                from ALL Mirror vaults</button>
+            </div>
+            <div *ngIf="vault.poolInfo.farm !== 'Mirror' && vault.poolInfo.farm !== 'Spectrum'" class="d-grid mt-3 mb-3">
+              <button (click)="doClaimReward()" class="btn btn-primary" type="submit">
+                <span *ngIf="vault.poolInfo.auto_stake">{{vault.poolInfo.token_symbol}} +</span>
+                SPEC</button>
+            </div>
           </div>
         </mdb-tab>
       </mdb-tabs>

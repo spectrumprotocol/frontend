@@ -1,17 +1,18 @@
-.btn-lg {
-    font-size: 14px;
-    font-weight: bold;
-    height: 42px;
-}
-
-.icon-history {
-    margin-top: -4px;
-}
-
-
-@media screen and (max-width: 385px) {
-    .float-end {
-        padding-top: 1rem;
+.unstake-container {
+    .btn-lg {
+        font-size: 14px;
+        font-weight: bold;
+        height: 42px;
+    }
+    
+    .icon-history {
+        margin-top: -4px;
+    }
+    
+    .btn-group {
+        box-shadow: none;
+        .btn {
+            border-radius: 6px;
+        }
     }
 }
-  

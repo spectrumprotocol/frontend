@@ -31,7 +31,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-3">
+      <div class="col-6 col-md-3">
         <div class="card card-grey box-left">
           <div class="card-body">
             <p class="card-text sub-topic">
@@ -47,7 +47,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-3">
+      <div class="col-6 col-md-3">
         <div class="card card-grey box-left">
           <div class="card-body">
             <p class="card-text sub-topic">
@@ -98,9 +98,19 @@
         <app-unstake-all *ngIf="terrajs.isConnected"></app-unstake-all>
       </div>
 
-      <div class="col-12 col-md-5">
+
+   <!--  TODO:: waiting for announcement flag -->
+      <div class="col-12">
+        <div class="terra-container m-2">
+          nLuna-Psi and nEth-Psi Nexus Vaults are now live on Spectrum Protocol!
+          <br>
+          Auto-compound and auto-stake your LPs and earn 
+        </div>
+      </div> 
+
+      <div class="col-12 col-md-5 ">
         <div class="card box-left">
-          <div class="card-body card-grey d-none d-sm-none d-md-block">
+          <div class="card-body card-grey d-none d-sm-none d-md-block border-6">
             <div class="d-flex justify-content-between">
               <div>
                 <div class="d-md-none d-lg-block">
@@ -118,7 +128,7 @@
               </div>
           </div>
           </div>
-          <div class="card-body card-grey d-block d-md-none">
+          <div class="card-body card-grey d-block d-md-none border-6">
             <div class="d-flex justify-content-end">
               <div>
                   <span class="align-sub">Deposited only</span>
@@ -134,7 +144,7 @@
       </div>
       <div class="col-8 col-sm-8 col-md-3">
         <div class="card box-left">
-          <div class="card-body card-grey">
+          <div class="card-body card-grey border-6">
             <div class="d-flex">
               <div class="form-group has-search">
                 <span class="fa fa-search form-control-feedback mg-3"></span>
@@ -147,10 +157,11 @@
       </div>
       <div class="col-2 col-sm-2 col-md-2">
         <div class="card box-left">
-          <div class="card-body card-grey p-0">
+          <div class="card-body card-grey p-0 border-6">
             <div class="d-flex">
-              <div mdbDropdown class="dropdown w-100 text-center" #dropdownFarmFilter>
-                <button mdbDropdownToggle class="btn p-0 h-47" type="button" aria-expanded="false">
+              <div mdbDropdown class="dropdown w-100 text-center" 
+              [class.active-border]="activeFarm !== 'All'" #dropdownFarmFilter>
+                <button mdbDropdownToggle class="btn p-0"  type="button" aria-expanded="false">
                   <img *ngIf="activeFarm !== 'All'" class="mobile-icon" [src]="activeFarm | url:'icon'" width="24" height="24">
                   <img *ngIf="activeFarm === 'All'"  class="mobile-icon" src="../../../assets/Icon _ Farms.svg" width="24" height="24">
                   <span class="text-dropdown d-none d-md-none d-lg-inline ps-2 sub-topic">{{activeFarm}} {{ activeFarm === "All" ? "farms" : "farm"}}</span>
@@ -176,9 +187,9 @@
       </div>
       <div class="col-2 col-sm-2 col-md-2">
         <div class="card box-left">
-          <div class="card-body p-0">
-            <div mdbDropdown class="dropdown w-100 text-center" #dropdownSortBy>
-              <button mdbDropdownToggle class="btn p-0 h-47" type="button" aria-expanded="false">
+          <div class="card-body p-0 border-6">
+            <div mdbDropdown class="dropdown w-100 text-center" [class.active-border]="sortBy !== 'multiplier'" #dropdownSortBy>
+              <button mdbDropdownToggle class="btn p-0" type="button" aria-expanded="false">
                 <img class="mobile-icon" src="../../../assets/Icon _ SortBy.svg" width="24" height="24">
                 <span class="text-dropdown d-none d-sm-none d-md-none d-lg-inline sub-topic">Sort by</span>
                 <span class="text-end filter">
@@ -208,17 +219,6 @@
         </div>
       </div>
     </div>
-
-   <!--  TODO:: waiting for announcement flag -->
-    <div class="row pt-4">
-      <div class="col-12">
-        <div class="terra-container m-2">
-          nLuna-Psi and nEth-Psi Nexus Vaults are now live on Spectrum Protocol!
-          <br>
-          Auto-compound and auto-stake your LPs and earn 
-        </div>
-      </div>
-    </div> 
 
     <div *ngIf="loading" class="d-flex align-items-center justify-content-center pt-3"><span
         class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...</div>

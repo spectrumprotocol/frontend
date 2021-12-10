@@ -32,7 +32,7 @@ body {
   line-height: normal;
   letter-spacing: normal;
   color: #fff;
-
+  box-shadow: none;
 }
 
 .btn-xl {
@@ -130,10 +130,6 @@ body {
   margin-top: 0.25rem;
   font-size: 0.875em;
   color: #dd794a;
-}
-
-.pool-info {
-  font-size: 0.875em;
 }
 
 .info-icon {
@@ -521,6 +517,7 @@ h3.card-title {
 .card-deposit {
   margin: 7.5px 0 0;
   border-radius: 4px;
+  box-shadow: none;
 }
 
 .card-text {
@@ -818,14 +815,14 @@ i.fa-sort-down {
   }
 }
 
-.btn-secondary {
+.btn-secondary, .btn-outline-light {
   background-color: rgba(252, 81, 133, 0) !important;
   border: 1px solid white;
   box-shadow: none;
   color: white !important;
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover, .btn-outline-light:hover {
   border-color: $primary;
   outline: 0;
   background-color: rgba(252, 81, 133, 0) !important;
@@ -850,6 +847,20 @@ i.fa-sort-down {
     width: 100%;
     flex: auto;
   }
+
+  .unstake-container {
+    .float-end {
+      padding-top: 1rem;
+      float: none !important;
+    }
+  }
+
+  .tab-content {
+    margin-top: -4px;
+    .tab-pane {
+      padding: 10px;
+    }
+  }
 }
 
 @include media-breakpoint-between(xs, lg) {
@@ -860,6 +871,10 @@ i.fa-sort-down {
       margin-top: 1rem!important;
     }
   }
+}
+
+.modal-header {
+  border-bottom: 0;
 }
 
 .modal-manage-rewards{
