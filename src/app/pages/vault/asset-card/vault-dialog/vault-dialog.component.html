@@ -137,10 +137,9 @@
                     </div>
                 </div>
             </div>
-             <!-- TODO -->
             <div class="row">
               <div class="col col-mbp">
-                  <div class="text-end small mt-3 mb-1 fw-bold">
+                  <div class="text-end small margin-18 mb-1 fw-bold">
                     <span class="sub-topic">Balance: </span>
                     <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.assetToken]"
                       class="spinner-grow spinner-small mb-1" role="status" aria-hidden="true">
@@ -171,10 +170,11 @@
               <div class="col col-mbp">
                 <ng-container *ngIf="vault.poolInfo.pairSymbol === 'UST'">
                   <div class="text-end mt-3 fw-bold-600 mb-1">
-                    <span><span class="sub-topic"> Balance: </span> {{ info.userUstAmount | number }} UST</span>
+                    <span class="sub-topic">Balance: </span> 
+                    <span class="text-white">{{ info.userUstAmount | number }} UST</span>
                   </div>
                   <div class="input-group">
-                    <span class="input-group-text igt-fixwidth ps-4 fw-bold-600"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle me-1"  width="24" height="24">UST</span>
+                    <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle me-1" width="24" height="24">UST</span>
                     <input #depositAmountUSTTokenUSTCtl="ngModel" [(ngModel)]="depositUSTAmountTokenUST"
                       [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" readonly
                       [max]="+info.userUstAmount - this.bufferUST" [min]="0.000001" [step]="0.000001"
@@ -204,7 +204,7 @@
                       {{ vault.poolInfo.token_symbol }}</span>
                   </div>
                   <div class="input-group">
-                    <span class="input-group-text igt-fixwidth ps-4 fw-bold-600"><img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle me-1" width="24" height="24">{{vault.poolInfo.token_symbol}}</span>
+                    <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"><img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle me-1" width="24" height="24">{{vault.poolInfo.token_symbol}}</span>
                     <input #depositTokenBAmtTokenTokenCtl="ngModel"
                       (input)="depositTokenBTokenTokenChanged(false, $event)" [(ngModel)]="depositTokenBAmtTokenToken"
                       [class.is-invalid]="(formDeposit.submitted || depositTokenBAmtTokenTokenCtl.touched) && depositTokenBAmtTokenTokenCtl.invalid"
@@ -709,10 +709,10 @@
       <ng-container *ngIf="withdrawMode === 'tokentoken'"><img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }} + {{ vault.poolInfo.pairSymbol }}
       </ng-container>
       <ng-container *ngIf="withdrawMode === 'lp'">
-        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
+        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1"> 
         <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
         {{ vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP</ng-container>
-      <ng-container *ngIf="withdrawMode === 'ust'"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle deposit-icon me-1"  width="24" height="24">UST</ng-container>
+      <ng-container *ngIf="withdrawMode === 'ust'"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">UST</ng-container>
     </button>
     <ul mdbDropdownMenu class="dropdown-menu">
       <li><a class="dropdown-item" (click)="withdrawMode = 'tokentoken'; dropdownWithdrawMode.hide()"
