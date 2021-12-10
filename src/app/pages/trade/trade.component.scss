@@ -25,26 +25,34 @@
 
     span.is-invalid {
         border: 1px solid $text-error;
-        border-right: none;
-    }
+      }
 
     .fix-border {
         text-align: right;
-        border: 1px solid $white;
-        background-color: $gray-950;
-        border: 0;
+        border-radius: 0px;
+        color: #fff;
+        border: 1px solid $gray-970;
+        background-color: $gray-960;
         &:focus {
             box-shadow: none;
-            border-left: none;
         }
-    }
+      }
 
-    .fix-border::placeholder {
+      .fix-border::placeholder {
         color: $white;
-    }
+      }
+      
+      .fix-border.is-invalid {
+        border: 1px solid $text-error;
+        z-index: 5;
+      }
+      
+      .fw-bold-600 {
+        font-weight: 600;
+      }
       
     .is-invalid {
-        border: 1px solid $text-error;
+        // border: 1px solid $text-error;
         &:focus, .is-invalid:hover {
             box-shadow: none;
         }

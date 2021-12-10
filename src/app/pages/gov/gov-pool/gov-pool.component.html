@@ -59,7 +59,7 @@
             <div>
               <div class="text-end small margin-18 mb-1 fw-bold">
                 <span class="sub-topic">Balance: </span>
-                <span>{{ walletBalance | number }} SPEC</span>
+                <span class="text-white">{{ walletBalance | number }} SPEC</span>
               </div>
               <div class="input-group">
                 <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{'is-invalid': depositAmountModel.invalid }">SPEC</span>
@@ -97,8 +97,9 @@
               </div>
             </div>
             <div>
-              <div class="small text-muted text-end fw-bold">
-                Balance: {{ detail.userBalance | number }} SPEC
+              <div class="text-end small margin-18 mb-1 fw-bold">
+                <span class="sub-topic">Balance: </span>
+                <span class="text-white">{{ detail.userBalance | number }} SPEC</span>
               </div>
               <div class="input-group">
                 <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{ 'is-invalid' : moveAmountModel.invalid }">SPEC</span>
@@ -129,8 +130,10 @@
         <mdb-tab title="Withdraw">
           <div class="d-grid gap-3">
             <div>
-              <div class="small text-muted text-end fw-bold">
-                Balance: {{ detail.userAvailableBalance | number }} SPEC <span *ngIf="detail.userBalance !== detail.userAvailableBalance">
+              <div class="text-end small margin-18 mb-1 fw-bold">
+                <span class="sub-topic">Balance: </span>
+                <span class="text-white">{{ detail.userAvailableBalance | number }} SPEC</span>
+                <span *ngIf="detail.userBalance !== detail.userAvailableBalance">
                   (Locked: {{+detail.userBalance - +detail.userAvailableBalance | number}} SPEC from voting)
                 </span>
               </div>
