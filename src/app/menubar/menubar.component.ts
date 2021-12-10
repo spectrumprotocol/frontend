@@ -74,7 +74,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
   }
 
   private getWalletText() {
-    return `${this.truncate.transform(this.terrajs.address)} (${this.terrajs.network.name})`;
+    return this.truncate.transform(this.terrajs.address);
   }
 
   async connect() {

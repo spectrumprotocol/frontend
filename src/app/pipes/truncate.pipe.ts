@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class TruncatePipe implements PipeTransform {
 
-  transform(value: string, h = 6, t = 6): unknown {
+  transform(value: string, h = 6, t = 6): string {
     if (!value) {
       return;
     }

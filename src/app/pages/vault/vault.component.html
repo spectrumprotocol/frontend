@@ -19,7 +19,7 @@
     <div class="row g-1 pt-3">
       <div class="col-12 col-md-6">
         <div class="card card-grey box-left">
-          <div class="card-body">
+          <div class="card-body ps-3">
             <p class="card-text sub-topic">
               Total value locked
             </p>
@@ -33,7 +33,7 @@
       </div>
       <div class="col-6 col-md-3">
         <div class="card card-grey box-left">
-          <div class="card-body">
+          <div class="card-body ps-3">
             <p class="card-text sub-topic">
               SPEC price
             </p>
@@ -49,7 +49,7 @@
       </div>
       <div class="col-6 col-md-3">
         <div class="card card-grey box-left">
-          <div class="card-body">
+          <div class="card-body ps-3">
             <p class="card-text sub-topic">
               Market cap
             </p>
@@ -68,7 +68,7 @@
               </div>
               <div class="flex-grow-1 ms-3">
                 <div class="card-text sub-topic">
-                  My Total value <i class="fas fa-info-circle info-icon"
+                  My total value <i class="fas fa-info-circle info-icon"
                   mdbTooltip="Your provided liquidity, staked rewards, and staked SPEC"></i>
               </div>
               <h3 class="card-title text-primary">
@@ -114,8 +114,12 @@
             <div class="d-flex justify-content-between">
               <div>
                 <div class="d-md-none d-lg-block">
-                  <img src="{{ isGrid ? '../../../assets/Icon-grid-white.svg' : '../../../assets/Icon-grid-grey.svg' }}" (click)="setIsGrid(true)">
-                  <img src="{{ !isGrid ? '../../../assets/Icon-list-white.svg' : '../../../assets/Icon-list-grey.svg' }}" (click)="setIsGrid(false)">
+                  <a style="cursor:pointer" (click)="setIsGrid(true)">
+                    <img [src]="isGrid ? '../../../assets/Icon-grid-white.svg' : '../../../assets/Icon-grid-grey.svg'">
+                  </a>
+                  <a style="cursor:pointer" (click)="setIsGrid(false)">
+                    <img [src]="!isGrid ? '../../../assets/Icon-list-white.svg' : '../../../assets/Icon-list-grey.svg'">
+                  </a>
                 </div>
               </div>
               <div>
@@ -219,6 +223,17 @@
         </div>
       </div>
     </div>
+
+   <!--  TODO:: waiting for announcement flag -->
+    <!-- <div class="row pt-4">
+      <div class="col-12">
+        <div class="terra-container m-2">
+          nLuna-Psi and nEth-Psi Nexus Vaults are now live on Spectrum Protocol!
+          <br>
+          Auto-compound and auto-stake your LPs and earn 
+        </div>
+      </div>
+    </div>  -->
 
     <div *ngIf="loading" class="d-flex align-items-center justify-content-center pt-3"><span
         class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...</div>

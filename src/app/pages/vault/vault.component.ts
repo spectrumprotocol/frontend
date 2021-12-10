@@ -3,14 +3,14 @@ import { Subscription } from 'rxjs';
 import { TerrajsService } from '../../services/terrajs.service';
 import { InfoService } from '../../services/info.service';
 import { debounce } from 'utils-decorators';
-import {FarmInfoService, PairStat, PoolInfo} from '../../services/farm_info/farm-info.service';
+import { FarmInfoService, PairStat, PoolInfo } from '../../services/farm_info/farm-info.service';
 import { CONFIG } from '../../consts/config';
 import { PairInfo } from '../../services/api/terraswap_factory/pair_info';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import {MdbModalService} from 'mdb-angular-ui-kit/modal';
-import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
-import {WalletService} from '../../services/api/wallet.service';
-import {TokenService} from '../../services/api/token.service';
+import { MdbModalService } from 'mdb-angular-ui-kit/modal';
+import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
+import { WalletService } from '../../services/api/wallet.service';
+import { TokenService } from '../../services/api/token.service';
 
 export interface Vault {
   symbol: string;
@@ -109,8 +109,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     });
   }
 
-  setIsGrid(isGrid: boolean){
-    if (isGrid){
+  setIsGrid(isGrid: boolean) {
+    if (isGrid) {
       this.isGrid = true;
       localStorage.setItem('isGrid', 'true');
     } else {
@@ -122,7 +122,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.updateShouldBeGrid();
-    if (this.shouldBeGrid || (!localStorage.getItem('isGrid') || localStorage.getItem('isGrid') === 'true')){
+    if (this.shouldBeGrid || (!localStorage.getItem('isGrid') || localStorage.getItem('isGrid') === 'true')) {
       this.isGrid = true;
     } else {
       this.isGrid = false;
