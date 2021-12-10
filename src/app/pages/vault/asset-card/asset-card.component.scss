@@ -14,26 +14,15 @@
   }
 }
 
-.mAssetIcon-list {
-  width: 33px;
-  height: 33px;
-  padding: 4px;
-  background-color: white;
-}
-.mAssetIcon-list-sm {
+.assetIcon {
   width: 33px;
   height: 33px;
   padding: 2px;
-  background-color: $main-bg;
-  position: inherit;
-  margin-left: -10px;
-}
-
-.ust-outline {
-  border: 1px solid;
 }
 
 .token-denom{
+  position: inherit;
+  //z-index: -1;
   margin-left: -10px;
 }
 
@@ -195,7 +184,7 @@
     .mAssetIcon-list-sm {
       margin-left: 10px;
     }
-    .mAssetIcon-list{
+    .assetIcon{
       margin-right: 16px;
     }
     .name-detail {

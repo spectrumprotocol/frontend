@@ -2,8 +2,10 @@
    <div class="modal-header pb-0">
     <div class="col-11 d-flex justify-content-center">
         <div class="p-2 p-l-0 bulk-name-container">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle mAssetIcon-list ust-outline float-start">
-          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle mAssetIcon-list-sm float-start">
+          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
+          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start token-denom">
+<!--          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon-list-sm float-start">-->
+<!--          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle assetIcon ust-outline float-start">-->
           <div class="name-detail">
             <h6 class="m-0"> {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</h6>
             <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
@@ -108,7 +110,7 @@
               Staked ASTRO
             </p>
             <h3 class="card-title text-primary">
-              1 
+              1
                     <span class="small text-white">
                     &nbsp;  ($1)</span>
             </h3>
@@ -160,13 +162,11 @@
                   </div>
               </div>
               <div class="col-1 col-mbp">
-                <ng-container *ngIf="vault.poolInfo.pairSymbol === 'UST'">
                   <div class="mt-5 icon-between-inputs">
                       <div>
                         <img src="/assets/plus.svg" loading="lazy" width="20" alt="" class="image-6">
                       </div>
                   </div>
-                </ng-container>
               </div>
               <div class="col col-mbp">
                 <ng-container *ngIf="vault.poolInfo.pairSymbol === 'UST'">
@@ -193,34 +193,35 @@
                     </span>
                   </div>
                 </ng-container>
-              </div>
-            </div>
-              <ng-container *ngIf="vault.poolInfo.pairSymbol !== 'UST'">
-                <div class="text-end mt-3 mb-1 fw-bold-600">
-                  <span class="sub-topic mb-1">Balance: </span>
-                  <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.farmTokenContract]"
-                    class="spinner-grow spinner-small mb-1" role="status" aria-hidden="true">
+                <ng-container *ngIf="vault.poolInfo.pairSymbol !== 'UST'">
+                  <div class="text-end mt-3 mb-1 fw-bold-600">
+                    <span class="sub-topic mb-1">Balance: </span>
+                    <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.farmTokenContract]"
+                          class="spinner-grow spinner-small mb-1" role="status" aria-hidden="true">
                     <span class="visually-hidden">Loading...</span>
                   </span>
-                  <span class="text-white">{{ info.tokenBalances[vault.poolInfo.farmTokenContract] | unit }}
-                    {{ vault.poolInfo.token_symbol }}</span>
-                </div>
+                    <span class="text-white">{{ info.tokenBalances[vault.poolInfo.farmTokenContract] | unit }}
+                      {{ vault.poolInfo.token_symbol }}</span>
+                  </div>
 
-                <div class="input-group">
+                  <div class="input-group">
                   <span
                     class="btn btn-outline-primary btn-first input-group-text-denom">{{vault.poolInfo.token_symbol}}</span>
-                  <input #depositTokenBAmtTokenTokenCtl="ngModel"
-                    (input)="depositTokenBTokenTokenChanged(false, $event)" [(ngModel)]="depositTokenBAmtTokenToken"
-                    [class.is-invalid]="(formDeposit.submitted || depositTokenBAmtTokenTokenCtl.touched) && depositTokenBAmtTokenTokenCtl.invalid"
-                    [max]="+info.tokenBalances[vault.poolInfo.farmTokenContract] / info.tokenInfos[vault.poolInfo.farmTokenContract].unit" [min]="0.000001"
-                    [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
-                    class="form-control fix-border" name="depositTokenBAmtTokenTokenCtl" required
-                    type="number" />
-                  <button (click)="setMaxDepositTokenBTokenToken()" class="btn btn-outline-primary last" type="button">
-                    Max
-                  </button>
-                </div>
-              </ng-container>
+                    <input #depositTokenBAmtTokenTokenCtl="ngModel"
+                           (input)="depositTokenBTokenTokenChanged(false, $event)" [(ngModel)]="depositTokenBAmtTokenToken"
+                           [class.is-invalid]="(formDeposit.submitted || depositTokenBAmtTokenTokenCtl.touched) && depositTokenBAmtTokenTokenCtl.invalid"
+                           [max]="+info.tokenBalances[vault.poolInfo.farmTokenContract] / info.tokenInfos[vault.poolInfo.farmTokenContract].unit" [min]="0.000001"
+                           [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
+                           class="form-control fix-border" name="depositTokenBAmtTokenTokenCtl" required
+                           type="number" />
+                    <button (click)="setMaxDepositTokenBTokenToken()" class="btn btn-outline-primary last" type="button">
+                      Max
+                    </button>
+                  </div>
+                </ng-container>
+
+              </div>
+            </div>
               <div *ngIf="depositUSTAmountTokenUST || depositTokenBAmtTokenToken" @fade class="mt-3 pool-info">
                 <div class="row">
                   <div class="col">Terraswap Price</div>
@@ -682,21 +683,21 @@
       <ng-container *ngIf="depositMode === 'tokentoken'"><img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }}</ng-container>
       <ng-container *ngIf="depositMode === 'lp'">
         <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
+        <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
         {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</ng-container>
-      <ng-container *ngIf="depositMode === 'ust'"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle deposit-icon me-1"  width="24" height="24">UST</ng-container>
+      <ng-container *ngIf="depositMode === 'ust'"><img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1"  width="24" height="24">UST</ng-container>
     </button>
     <ul mdbDropdownMenu class="dropdown-menu">
       <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('tokentoken')"
           [class.active]="depositMode === 'tokentoken'">
           <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
           {{vault.symbol}} + {{vault.poolInfo.pairSymbol}}
         </a></li>
       <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('lp')"
           [class.active]="depositMode === 'lp'">
           <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
           {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</a></li>
       <li><a class="dropdown-item" (click)="dropdownDepositMode.hide(); changeDepositMode('ust')"
           [class.active]="depositMode === 'ust'">
@@ -712,7 +713,7 @@
       </ng-container>
       <ng-container *ngIf="withdrawMode === 'lp'">
         <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
-        <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
+        <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
         {{ vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP</ng-container>
       <ng-container *ngIf="withdrawMode === 'ust'"><img [src]="'UST' | url:'icon'"class="img-fluid rounded-circle deposit-icon me-1"  width="24" height="24">UST</ng-container>
     </button>
@@ -720,12 +721,12 @@
       <li><a class="dropdown-item" (click)="withdrawMode = 'tokentoken'; dropdownWithdrawMode.hide()"
           [class.active]="withdrawMode === 'tokentoken'">
           <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
           {{vault.symbol}} + {{vault.poolInfo.pairSymbol}}</a></li>
       <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdownWithdrawMode.hide()"
           [class.active]="withdrawMode === 'lp'">
           <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
-          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
           {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</a></li>
       <li *ngIf="vault.poolInfo.farm !== 'Spectrum'"><a class="dropdown-item"
           (click)="withdrawMode = 'ust'; dropdownWithdrawMode.hide()" [class.active]="withdrawMode === 'ust'">
