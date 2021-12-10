@@ -115,6 +115,9 @@
         border: 0;
         background-color: $gray-950;
         font-weight: bold;
+        &:hover {
+            z-index: 0;
+        }
     }
 }
 
@@ -147,6 +150,7 @@
     .dropdown-toggle {
         border-bottom-right-radius: 0;
         border-top-right-radius: 0;
+        padding: 10px;
     }
 }
 

@@ -17,8 +17,8 @@
 </div> -->
 
 <div class="card box-left unstake-container">
-  <div class="row card-body card-grey m-0">
-    <div class="col-12 col-md-4 p-0">
+  <div class="row card-body card-grey m-0 border-6">
+    <div class="col-12 col-md-4 p-0 total">
         <div class="card-text sub-topic">
           Total rewards
         </div>
@@ -26,7 +26,7 @@
             <app-digit [value]="info.portfolio?.total_reward_ust"></app-digit> <span class="cur-title text-white"> UST</span>
           </h3>
       </div>
-      <div class="col-12 col-md-8">
+      <div class="col-12 col-md-8 p-0">
         <div class="float-end">
           <span class="btn-group w-100">
             <button class="btn btn-lg btn-outline-light ms-2" type="button" aria-expanded="false" (click)="manageRewards()" [disabled]="disableManageRewards()"
