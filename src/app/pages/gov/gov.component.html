@@ -36,7 +36,7 @@
               <h3 class="card-title">
                 <app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit>
                   <span class="cur-title"> SPEC (<app-digit
-                    [value]="supply ? +info.stat?.govStaked * 100 / supply : 0"></app-digit>%)
+                    [value]="info.circulation ? +info.stat?.govStaked * 100 / +info.circulation : 0"></app-digit>%)
                     <i class="fas fa-info-circle info-icon"
                     mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
                   </span>
@@ -51,7 +51,7 @@
                 Circulation Supply
               </p>
               <h3 class="card-title">
-                <app-digit [value]="+supply / UNIT"></app-digit> 
+                <app-digit [value]="+info.circulation / UNIT"></app-digit> 
                 <span class="cur-title"> SPEC
                   <i class="fas fa-info-circle info-icon"
                   mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
@@ -67,7 +67,7 @@
                 Market Capitalization
               </p>
               <h3 class="card-title">
-                <app-digit *ngIf="marketCap" [value]="marketCap"></app-digit>&nbsp;<span class="cur-title" *ngIf="marketCap">UST</span>
+                <app-digit *ngIf="info.marketCap" [value]="info.marketCap"></app-digit>&nbsp;<span class="cur-title" *ngIf="info.marketCap">UST</span>
               </h3>
             </div>
           </div>
@@ -80,39 +80,22 @@
     </h4>
     
     <div class="row g-1 pt-3">
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-6">
         <div class="card card-grey box-left">
           <div class="card-body ps-3">
             <p class="card-text sub-topic">
               Staked in Gov
             </p>
             <h3 class="card-title">
-                <app-digit [value]="myStaked / UNIT"></app-digit>
+                <app-digit [value]="+myBalance?.balance / UNIT"></app-digit>
                 <span class="cur-title">SPEC</span>
             </h3>
-            <p class="h-7" *ngIf="!!!stakedInGovAPR || myStaked === 0"></p>
-            <p *ngIf="stakedInGovAPR && myStaked > 0" class="small text-primary mb-0">{{stakedInGovAPR | percent}} APR</p>
+            <p class="h-7" *ngIf="!myBalance?.balance"></p>
+            <p *ngIf="myBalance?.balance" class="small text-primary mb-0">{{stakedInGovAPR | percent}} APR</p>
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-3">
-        <div class="card card-grey box-left">
-          <div class="card-body ps-3">
-            <p class="card-text sub-topic">
-              Staked in Vaults
-            </p>
-            <h3 class="card-title">
-              <app-digit [value]="+info.portfolio?.tokens.get('SPEC').pending_reward_token">
-              </app-digit>
-              <span class="cur-title"> SPEC
-              </span>
-            </h3>
-            <p class="h-7" *ngIf="!!!stakedInVaultsAPR || +info.portfolio?.tokens.get('SPEC').pending_reward_token === 0"></p>
-            <p *ngIf="stakedInVaultsAPR && +info.portfolio?.tokens.get('SPEC').pending_reward_token > 0" class="small text-primary mb-0">{{stakedInVaultsAPR | percent}} APR</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-md-5">
+      <div class="col-12 col-md-6">
         <div class="card card-grey box-left">
           <div class="card-body ps-3">
             <p class="card-text sub-topic">

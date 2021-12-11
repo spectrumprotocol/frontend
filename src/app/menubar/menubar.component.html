@@ -2,28 +2,29 @@
   <div class="container">
     <a class="navbar-brand" routerLink="/"><img src="/assets/logo.png" class="logo" /></a>
     <!-- Left links -->
-      <ul class="navbar-nav d-none d-md-flex">
-<!--        <li class="nav-item">-->
-<!--          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>-->
-<!--        </li>-->
-        <li class="nav-item">
-          <a class="nav-link text-center" routerLink="/vaults" routerLinkActive="active">Vaults</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-center" routerLink="/trade" routerLinkActive="active">Trade SPEC</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-center" routerLink="/gov" routerLinkActive="active">Gov</a>
-        </li>
-      </ul>
+    <ul class="navbar-nav d-none d-md-flex">
+      <!--        <li class="nav-item">-->
+      <!--          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>-->
+      <!--        </li>-->
+      <li class="nav-item">
+        <a class="nav-link text-center" routerLink="/vaults" routerLinkActive="active">Vaults</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-center" routerLink="/trade" routerLinkActive="active">Trade SPEC</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-center" routerLink="/gov" routerLinkActive="active">Gov</a>
+      </li>
+    </ul>
     <!-- Left links -->
 
     <!--- right links -->
     <div mdbDropdown class="dropdown" *ngIf="terrajs.address" #dropdown>
       <button class="btn btn-dark dropdown-toggle btn-sm" type="button" mdbDropdownToggle>
         <i class="fas fa-wallet"></i> <span class="text-muted d-none d-md-inline"> {{walletText}}
-          <span *ngIf="terrajs.network.name !== 'mainnet'" class="text-danger"> ({{terrajs.network.name}})</span> |</span> 
-          {{info.userUstAmount | number : '1.0-2'}} UST
+          <span *ngIf="terrajs.network.name !== 'mainnet'" class="text-danger"> ({{terrajs.network.name}})</span>
+          |</span>
+        {{info.userUstAmount | number : '1.0-2'}} UST
       </button>
       <ul mdbDropdownMenu class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
         <li>
@@ -47,22 +48,12 @@
       </ul>
     </div>
     <button type="button" class="btn btn-dark btn-sm" *ngIf="!terrajs.address" (click)="connect()"><i
-        class="fas fa-wallet"></i> <span class="text-muted">
-        {{walletText}} </span></button>
-
-
-        <button
-        class="navbar-toggler d-md-none bg-gray"
-        type="button"
-        data-mdb-toggle="collapse"
-        data-mdb-target="#navbarToggleMobileMenu"
-        aria-controls="navbarToggleMobileMenu"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-        (click)="mobileMenu.toggle()"
-      >
-        <i class="fas fa-bars"></i>
-      </button>
+        class="fas fa-wallet"></i> <span class="text-muted">&nbsp;{{walletText}} </span></button>
+    <button class="navbar-toggler d-md-none bg-gray" type="button" data-mdb-toggle="collapse"
+      data-mdb-target="#navbarToggleMobileMenu" aria-controls="navbarToggleMobileMenu" aria-expanded="false"
+      aria-label="Toggle navigation" (click)="mobileMenu.toggle()">
+      <i class="fas fa-bars"></i>
+    </button>
     <!--- right links -->
   </div>
 </nav>
