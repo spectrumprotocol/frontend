@@ -48,10 +48,20 @@
       </ul>
     </div>
     <button type="button" class="btn btn-dark btn-sm" *ngIf="!terrajs.address" (click)="connect()"><i
-        class="fas fa-wallet"></i> <span class="text-muted">&nbsp;{{walletText}} </span></button>
-    <button class="navbar-toggler d-md-none bg-gray" type="button" data-mdb-toggle="collapse"
-      data-mdb-target="#navbarToggleMobileMenu" aria-controls="navbarToggleMobileMenu" aria-expanded="false"
-      aria-label="Toggle navigation" (click)="mobileMenu.toggle()">
+        class="fas fa-wallet"></i>&nbsp;<span class="text-muted">
+        {{walletText}} </span></button>
+
+
+        <button
+        class="navbar-toggler d-md-none bg-gray"
+        type="button"
+        data-mdb-toggle="collapse"
+        data-mdb-target="#navbarToggleMobileMenu"
+        aria-controls="navbarToggleMobileMenu"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+        (click)="mobileMenu.toggle()"
+      >
       <i class="fas fa-bars"></i>
     </button>
     <!--- right links -->

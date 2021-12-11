@@ -1,15 +1,15 @@
-<div class="modal-header">
-    <h4 class="modal-title">Choose connection type</h4>
+<div class="modal-header text-center">
+    <h4 class="modal-title w-100">Connect to a wallet</h4>
 </div>
 <div class="modal-body">
-    <div class="d-grid gap-2">
-        <button type="button" *ngIf="types.includes('CHROME_EXTENSION')" class="btn btn-secondary btn-xl" (click)="connect('CHROME_EXTENSION')">
+    <div class="d-grid gap-3">
+        <button type="button" *ngIf="types.includes('CHROME_EXTENSION')" class="btn btn-connect" (click)="connect('CHROME_EXTENSION')">
             <img src="/assets/Terra.svg" /> Terra Station Extension
         </button>
-        <button type="button" *ngIf="types.includes('WEBEXTENSION')" class="btn btn-secondary btn-xl" (click)="connect('WEBEXTENSION')">
+        <button type="button" *ngIf="types.includes('WEBEXTENSION')" class="btn btn-connect" (click)="connect('WEBEXTENSION')">
             <img src="/assets/Terra.svg" /> Terra Station Extension
         </button>
-        <button type="button" *ngIf="types.includes('WALLETCONNECT')" class="btn btn-secondary btn-xl" (click)="connect('WALLETCONNECT')">
+        <button type="button" *ngIf="types.includes('WALLETCONNECT')" class="btn btn-connect" (click)="connect('WALLETCONNECT')">
             <img src="/assets/WalletConnect.png" /> Wallet Connect
         </button>
     </div>
