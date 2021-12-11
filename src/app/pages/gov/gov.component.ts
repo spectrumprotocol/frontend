@@ -12,6 +12,7 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { GovPoolDetail } from './gov-pool/gov-pool.component';
 import { div, gt, minus, plus } from '../../libs/math';
 import { BalanceResponse } from '../../services/api/gov/balance_response';
+import { StateInfo } from '../../services/api/gov/state_info';
 
 const LIMIT = 10;
 
@@ -25,13 +26,11 @@ export class GovComponent implements OnInit, OnDestroy {
   polls: PollInfo[] = [];
   hasMore = false;
   config: ConfigInfo;
-  supply = 0;
-  marketCap = 0;
-  myStaked = 0;
   myPendingReward = 0;
   stakedInGovAPR = 0;
-  stakedInVaultsAPR = 0;
   filteredStatus = '' as PollStatus;
+  stateInfo: StateInfo;
+  myBalance: BalanceResponse;
   UNIT = CONFIG.UNIT;
   private connected: Subscription;
 
@@ -39,8 +38,6 @@ export class GovComponent implements OnInit, OnDestroy {
     private gov: GovService,
     public info: InfoService,
     private terrajs: TerrajsService,
-    private token: TokenService,
-    private wallet: WalletService,
     protected $gaService: GoogleAnalyticsService
   ) { }
 
@@ -48,26 +45,10 @@ export class GovComponent implements OnInit, OnDestroy {
     this.$gaService.event('VIEW_GOV_PAGE');
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
-        Promise.all([
-          this.token.query(this.terrajs.settings.specToken, { token_info: {} }),
-          this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform),
-          this.info.refreshPool(),
-        ])
-          .then(it => {
-            this.supply = +it[0].total_supply - +it[1].staked_amount - +it[1].unstaked_amount;
-            this.marketCap = this.supply / CONFIG.UNIT * Number(this.info.specPrice);
-            this.fetchPoolDetails();
-          });
+        this.fetchPoolDetails();
         this.gov.config()
           .then(it => this.config = it);
         this.pollReset();
-        if (connected) {
-          this.gov.balance()
-            .then(it => this.myStaked = +it.balance);
-          this.info.updateVaults();
-          await this.info.initializeVaultData(connected);
-          await this.info.updateMyTvl();
-        }
       });
   }
 
@@ -100,18 +81,20 @@ export class GovComponent implements OnInit, OnDestroy {
   }
 
   async fetchPoolDetails() {
-    const [stateInfo, balanceResponse] = await Promise.all([
-      this.gov.state(),
-      this.terrajs.connected.value ? this.gov.balance() : Promise.resolve(null as BalanceResponse),
-      this.info.refreshStat(),
+    await Promise.all([
+      this.gov.state().then(it => this.stateInfo = it),
+      this.terrajs.isConnected
+        ? this.gov.balance().then(it => this.myBalance = it)
+        : Promise.resolve(null as BalanceResponse),
+      this.info.retrieveCachedStat(),
     ]);
 
     const vaultFeeByPools = {};
     let lockedBalance = '0';
 
-    const vaultFeeSlice = this.info.stat.vaultFee / stateInfo.pools.length;
-    for (let n = 0; n < stateInfo.pools.length; n++) {
-      const involvedPools = stateInfo.pools.slice(n);
+    const vaultFeeSlice = this.info.stat.vaultFee / this.stateInfo.pools.length;
+    for (let n = 0; n < this.stateInfo.pools.length; n++) {
+      const involvedPools = this.stateInfo.pools.slice(n);
       const sumTotalBalance = involvedPools.reduce((sum, pool) => sum + +pool.total_balance, 0);
 
       for (const pool of involvedPools) {
@@ -120,14 +103,14 @@ export class GovComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (balanceResponse) {
-      const mostLockedBalance = balanceResponse.locked_balance.reduce((c, [_, { balance }]) => Math.max(c, +balance), 0);
+    if (this.myBalance) {
+      const mostLockedBalance = this.myBalance.locked_balance.reduce((c, [_, { balance }]) => Math.max(c, +balance), 0);
       lockedBalance = div(mostLockedBalance, CONFIG.UNIT);
     }
 
-    this.poolDetails = stateInfo.pools
+    this.poolDetails = this.stateInfo.pools
       .map((pool) => {
-        const balanceInfo = balanceResponse?.pools.find(p => p.days === pool.days);
+        const balanceInfo = this.myBalance?.pools.find(p => p.days === pool.days);
         const userBalance = div(balanceInfo?.balance ?? 0, CONFIG.UNIT);
         const unlockAt = balanceInfo?.unlock ? new Date(balanceInfo.unlock * 1000) : null;
         const poolTvl = +pool.total_balance * +this.info.specPrice;
@@ -166,19 +149,13 @@ export class GovComponent implements OnInit, OnDestroy {
 
   calculateAPR() {
     let sumGovAPR = 0;
-    let vaultsAPR = 0;
     let totalStaked = 0;
     for (const pool of this.poolDetails) {
-      if (pool.days === 0) {
-        vaultsAPR = pool.apr;
-      }
       sumGovAPR += +pool.userBalance * pool.apr;
       totalStaked += +pool.userBalance;
     }
 
-    this.stakedInVaultsAPR = vaultsAPR;
     this.stakedInGovAPR = sumGovAPR / totalStaked;
-
   }
 
   trackPoolDetails(_: unknown, poolDetail: GovPoolDetail) {
