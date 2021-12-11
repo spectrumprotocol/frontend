@@ -9,8 +9,6 @@ import { PairInfo } from '../../services/api/terraswap_factory/pair_info';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { MdbModalService } from 'mdb-angular-ui-kit/modal';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
-import { WalletService } from '../../services/api/wallet.service';
-import { TokenService } from '../../services/api/token.service';
 
 export interface Vault {
   symbol: string;
