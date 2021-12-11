@@ -67,10 +67,6 @@ body {
   }
 }
 
-.btn-xl {
-  height: 60px;
-}
-
 .btn-secondary, .btn-outline-light {
   background-color: rgba(252, 81, 133, 0) !important;
   border: 1px solid white;
@@ -92,7 +88,7 @@ body {
   border-style: solid;
   border-width: 2px;
   border-radius: 6px;
-  background-color: #1b1f26;
+  background-color: $btn-bg;
 }
 
 .btn-outline-light:disabled,
@@ -101,6 +97,17 @@ body {
   border-style: solid;
   border-width: 2px;
   border-radius: 6px;
+}
+
+.btn-connect {
+  height: 60px;
+  background-color: $grey-990 !important;
+  color: white !important;
+  border: 1px solid white;
+  &:hover {
+    border-color: $primary;
+    outline: 0;
+  }
 }
 
 // text-size
@@ -149,6 +156,11 @@ h3.card-title {
   font-weight: 600;
 }
 
+.f-16-500 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
 .spec-form {
   max-width: 740px;
   margin: 0 auto;
@@ -163,6 +175,10 @@ h3.card-title {
   width: 60px;
   text-align: right;
   border: 1px solid $spectrum;
+  &:focus {
+    border: 1px solid $spectrum;
+    background-color: transparent;
+  }
 }
 
 .fix-border {
@@ -580,6 +596,27 @@ input[type="number"] {
   }
 }
 
+.card-trade {
+  .nav-tabs {
+    padding: 5px;
+    border-radius: 200px;
+  }
+  .nav-link {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-radius: 200px;
+    background-color: $gray-940;
+  }
+
+  .nav-link.active {
+      // margin-right: 20px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      border-radius: 200px;
+      background-color: $grey-990;
+  }
+}
+
 .footer {
   float: right;
   padding-right: 0;
@@ -682,10 +719,11 @@ i.fa-sort-down {
 .dropdown-menu {
   box-shadow: none;
   .dropdown-item {
-      background-color: $gray-950;
+      background-color: $grey-990;
+      border: 0;
       color: white;
       &.active {
-          background-color: $dropdown-active;
+          background-color: $gray-950;
       }
   }
 }
@@ -693,7 +731,7 @@ i.fa-sort-down {
 .detail-header {
   i,img {
       padding: 5px;
-      background-color: #29303a;
+      background-color: $main-bg;
       color: white;
       border-radius: 50%;
     }
