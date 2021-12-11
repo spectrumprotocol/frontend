@@ -19,6 +19,33 @@
 .tab-container {
     border-radius: 6px;
     padding-top: 10px;
+    span.is-invalid {
+        border: 1px solid $text-error;
+    }
+
+    .fix-border {
+        border-radius: 0px;
+        color: #fff;
+        border: 1px solid $gray-970;
+        background-color: $gray-960;
+        &:focus {
+            box-shadow: none;
+        }
+    }
+
+    .fix-border::placeholder {
+        color: $white;
+    }
+
+    .fix-border.is-invalid {
+        border: 1px solid $text-error;
+        // margin: 1px;
+        z-index: 5;
+    }
+
+    .fw-bold-600 {
+        font-weight: 600;
+    }
 }
 
 .card-green {

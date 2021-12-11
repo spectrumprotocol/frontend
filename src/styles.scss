@@ -282,9 +282,11 @@ input[type="number"] {
 
 .form-control {
   background-color: transparent;
-  // &:focus {
-  //   background-color: #3e3e3e;
-  // }
+  border: 1px solid #414851;
+  &:focus {
+    background-color: transparent;
+    border: 1px solid #414851;
+  }
   &::placeholder {
     color: $gray-600;
   }
