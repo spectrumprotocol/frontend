@@ -49,6 +49,9 @@ body {
   :disabled {
     box-shadow: none;
   }
+  &:focus,&:hover {
+    box-shadow: none;
+  }
 }
 
 .btn-sm {
