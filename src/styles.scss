@@ -468,6 +468,10 @@ input[type="number"] {
   background-color: $gray-950 !important;
 }
 
+.min-asset-card {
+  min-height: 210px;
+}
+
 .card-md {
   background-color: $btn-bg;
   .card-body {
@@ -870,6 +874,11 @@ i.fa-sort-down {
     .mt-5 {
       margin-top: 1rem!important;
     }
+  }
+  
+  .pool-mobile {
+    padding: 0 !important;
+    margin-top: 10px;
   }
 }
 
