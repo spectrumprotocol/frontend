@@ -165,7 +165,6 @@ h3.card-title {
 }
 
 .spec-form {
-  max-width: 740px;
   margin: 0 auto;
   border-radius: 0.25rem;
   .fee {
@@ -613,6 +612,9 @@ input[type="number"] {
     padding-bottom: 20px;
     border-radius: 200px;
     background-color: $gray-940;
+    &:hover, &:focus {
+      background-color: $gray-940;
+    }
   }
 
   .nav-link.active {
@@ -725,6 +727,8 @@ i.fa-sort-down {
 
 .dropdown-menu {
   box-shadow: none;
+  background-color: $grey-990;
+  margin-top: 0px;
   .dropdown-item {
       background-color: $grey-990;
       border: 0;

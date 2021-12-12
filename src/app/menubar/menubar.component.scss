@@ -19,9 +19,10 @@
 }
 
 .nav-item {
-    font-weight: bold;
-    font-size: 14px;
+    background-color: $grey-990;
     .nav-link {
+        font-weight: bold;
+        font-size: 14px;
         color: white;
         padding: 10px 20px !important;
         margin: 5px !important;
