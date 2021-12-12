@@ -3,19 +3,11 @@
     <div class="row">
       <div class="col-12">
         <h4>Governance</h4>
-        <!-- <div class="seperator"></div> -->
         <span class="sub-topic">Stake your SPEC here, all changes in Spectrum must be done through SPEC stakers.</span>
       </div>
     </div>
     <div class="mb-5">
       <div class="row mt-3 mb-5">
-        <!-- <div class="col-6">
-          <a class="btn btn-sm btn-outline-light" 
-          href="https://github.com/spectrumprotocol/contracts/issues" 
-          target="_blank">Join
-            Forum</a>
-          <button type="button" class="btn btn-sm btn-primary ms-3 mt-3" routerLink="/gov/poll/new">Create Poll</button>
-        </div> -->
         <div class="col-6 p-0">
             <span class="btn-group w-100">
               <a class="btn btn-sm btn-outline-light" 
@@ -150,8 +142,19 @@
           (click)="pollMore()">More</button>
       </div>
     </div>
-    <div class="row pt-5">
+    <!-- <div class="row pt-5">
       <div class="col align-self-end">
+        <app-footer></app-footer>
+      </div>
+    </div> -->
+    <div class="row pt-5 footer-container">
+      <div class="col-12 col-lg-6 logo-mobile">
+        <div class="d-inline-block f-12">
+          Audited by <a href="https://github.com/HalbornSecurity/PublicReports/blob/master/CosmWasm%20Smart%20Contract%20Audits/Spectrum_Protocol_CosmWasm_Smart_Contract_Security_Audit_Halborn_Report_v1_1.pdf" target="_blank">
+            <img src="assets/halborn_logo.svg" alt="Halborn" class="platform-logo-halborn"></a>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6 text-end">
         <app-footer></app-footer>
       </div>
     </div>

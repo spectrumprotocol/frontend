@@ -865,6 +865,23 @@ i.fa-sort-down {
       padding: 10px;
     }
   }
+
+  .dropdown {
+    button {
+      box-shadow: none;
+      height: 38px !important;
+    }
+  }
+  .logo-mobile {
+    text-align: right;
+    display: block !important;
+  }
+
+  .footer-container {
+    .logo-mobile {
+      padding-bottom: 5px;
+    }
+  }
 }
 
 @include media-breakpoint-between(xs, lg) {
