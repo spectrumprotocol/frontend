@@ -7,7 +7,7 @@
                 </a>
             </div>
             <div class="col-9 col-md-11">
-                 <h4>Create poll</h4>
+                <h4>Create poll</h4>
                 <!-- <div class="seperator"></div> -->
             </div>
         </div>
@@ -20,20 +20,23 @@
                                 <div class="row g-3 mt-3 mb-5">
                                     <div class="col-12 mb-3">
                                         <mdb-form-control>
-                                            <input type="text" mdbInput [mdbValidate] class="form-control form-control-lg bg-grey" id="title"
-                                                name="title" [(ngModel)]="title" required autofocus #titleCtl="ngModel"
+                                            <input type="text" mdbInput [mdbValidate]
+                                                class="form-control form-control-lg bg-grey" id="title" name="title"
+                                                [(ngModel)]="title" required autofocus #titleCtl="ngModel"
                                                 [minlength]="4" [maxlength]="64" />
                                             <label for="title" mdbLabel class="form-label">Title</label>
-                                            <mdb-error class="pt-2" *ngIf="(form.submitted || titleCtl.touched) && titleCtl.invalid">
+                                            <mdb-error class="pt-2"
+                                                *ngIf="(form.submitted || titleCtl.touched) && titleCtl.invalid">
                                                 Title must be between 4 and 64 characters
                                             </mdb-error>
                                         </mdb-form-control>
                                     </div>
                                     <div class="col-12 mb-3">
                                         <mdb-form-control>
-                                            <textarea type="text" mdbInput [mdbValidate] class="form-control bg-grey" id="description"
-                                                required rows="4" name="description" [(ngModel)]="description"
-                                                #descriptionCtl="ngModel" [minlength]="4" [maxlength]="256"></textarea>
+                                            <textarea type="text" mdbInput [mdbValidate] class="form-control bg-grey"
+                                                id="description" required rows="4" name="description"
+                                                [(ngModel)]="description" #descriptionCtl="ngModel" [minlength]="4"
+                                                [maxlength]="256"></textarea>
                                             <label for="description" mdbLabel class="form-label">Description</label>
                                             <mdb-error class="pt-2"
                                                 *ngIf="(form.submitted || descriptionCtl.touched) && descriptionCtl.invalid">
@@ -43,7 +46,8 @@
                                     </div>
                                     <div class="col-12 mb-3">
                                         <mdb-form-control>
-                                            <input type="url" mdbInput [mdbValidate] class="form-control form-control-lg bg-grey" id="link" name="link"
+                                            <input type="url" mdbInput [mdbValidate]
+                                                class="form-control form-control-lg bg-grey" id="link" name="link"
                                                 [(ngModel)]="link" #linkCtl="ngModel" [minlength]="12" [maxlength]="128"
                                                 pattern="^https?://.*" />
                                             <label for="link" mdbLabel class="form-label">Link (optional)</label>
@@ -58,15 +62,15 @@
                                                 <div class="row g-3">
                                                     <div class="col-10 mb-3">
                                                         <mdb-form-control>
-                                                            <input type="text" mdbInput [mdbValidate] class="form-control form-control-lg bg-grey"
+                                                            <input type="text" mdbInput [mdbValidate]
+                                                                class="form-control form-control-lg bg-grey"
                                                                 id="contract{{i}}" name="contract{{i}}"
-                                                                [(ngModel)]="item.execute.contract" required #contractCtl="ngModel"
-                                                                pattern="^terra1[a-z0-9]{38}$" />
+                                                                [(ngModel)]="item.execute.contract" required
+                                                                #contractCtl="ngModel" pattern="^terra1[a-z0-9]{38}$" />
                                                             <label for="contract{{i}}" mdbLabel class="form-label">
                                                                 Contract address {{i + 1}}
                                                             </label>
-                                                            <mdb-error
-                                                                class="pt-2"
+                                                            <mdb-error class="pt-2"
                                                                 *ngIf="(form.submitted || contractCtl.touched) && contractCtl.invalid">
                                                                 Contract address is invalid
                                                             </mdb-error>
@@ -78,15 +82,15 @@
                                                     </div>
                                                     <div class="col-10 mb-3">
                                                         <mdb-form-control>
-                                                            <textarea type="text" mdbInput [mdbValidate] class="form-control bg-grey"
-                                                                id="msg{{i}}" name="msg{{i}}" rows="5" [(ngModel)]="item.execute.msg"
+                                                            <textarea type="text" mdbInput [mdbValidate]
+                                                                class="form-control bg-grey" id="msg{{i}}"
+                                                                name="msg{{i}}" rows="5" [(ngModel)]="item.execute.msg"
                                                                 #msgCtl="ngModel" json (blur)="formatJson(i)"
                                                                 required></textarea>
                                                             <label for="msg{{i}}" mdbLabel class="form-label">
                                                                 Execution message {{i + 1}}
                                                             </label>
-                                                            <mdb-error
-                                                                class="pt-2"
+                                                            <mdb-error class="pt-2"
                                                                 *ngIf="(form.submitted || msgCtl.touched) && msgCtl.invalid">
                                                                 Must be valid json object
                                                             </mdb-error>
@@ -98,38 +102,45 @@
                                     </div>
                                     <div class="col-12">
                                         <div mdbDropdown class="btn-group" #dropdown>
-                                            <button type="button" class="btn btn-outline fw-normal bg-grey" (click)="pushMsg('')">
+                                            <button type="button" class="btn btn-outline fw-normal bg-grey"
+                                                (click)="pushMsg('')">
                                                 Add execution message
                                             </button>
-                                            <button type="button" class="btn btn-outline dropdown-toggle dropdown-toggle-split bg-grey"
+                                            <button type="button"
+                                                class="btn btn-outline dropdown-toggle dropdown-toggle-split bg-grey"
                                                 mdbDropdownToggle aria-expanded="false">
                                                 <span class="text-end filter">
-                                                    <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
+                                                    <img src="../../../assets/chevron-down.svg" class="ms-3" width="12"
+                                                        height="12">
                                                 </span>
                                             </button>
                                             <ul mdbDropdownMenu class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" (click)="pushMsg('govConfig')">Modify goverance parameters</a></li>
-                                                <li><a class="dropdown-item" (click)="pushMsg('govVault')">Add/update vault</a></li>
-                                                <li><a class="dropdown-item" (click)="pushMsg('poolAdd')">Add/update pool</a></li>
+                                                <li><a class="dropdown-item" (click)="pushMsg('govConfig')">Modify
+                                                        goverance parameters</a></li>
+                                                <li><a class="dropdown-item" (click)="pushMsg('govVault')">Add/update
+                                                        vault</a></li>
+                                                <li><a class="dropdown-item" (click)="pushMsg('poolAdd')">Add/update
+                                                        pool</a></li>
                                             </ul>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="row">
                                             <div class="col-6">
-                                                <label for="amount" mdbLabel class="form-label small">Deposit <i
-                                                        class="fas fa-info-circle info-icon"
-                                                        mdbTooltip="If poll pass, you will get refund. If not, amount will be distributed to stakers."></i></label>
+                                                <label for="amount" mdbLabel class="form-label small">Deposit</label>
                                             </div>
                                             <div class="col-6 text-end small text-muted fw-bold">
                                                 Balance: {{ maxAmount | number }} SPEC
                                             </div>
                                         </div>
-                                        <input type="number" class="form-control form-control-lg bg-grey" placeholder="0.00" name="amount" id="amount"
-                                            [min]="0.000001" [max]="maxAmount" [step]="0.000001" readonly
-                                            [(ngModel)]="amount" />
+                                        <input type="number" class="form-control form-control-lg bg-grey"
+                                            placeholder="0.00" name="amount" id="amount" [min]="0.000001"
+                                            [max]="maxAmount" [step]="0.000001" readonly [(ngModel)]="amount" />
                                         <div class="text-danger small pt-2" *ngIf="amount > maxAmount">
                                             You do not have enough SPEC
+                                        </div>
+                                        <div class="text-warning small pt-2" *ngIf="executeMsgs.length">
+                                            <i class="fas fa-exclamation-triangle warn-icon"></i> Poll contains execution message(s). If poll not pass, some amount will be distributed to stakers.
                                         </div>
                                     </div>
                                 </div>
