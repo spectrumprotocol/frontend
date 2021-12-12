@@ -9,11 +9,11 @@
   }
 }
 
-.gov-pool-container {
-  .card-body {
-    padding: 1em 1em;
-  }
-}
+// .gov-pool-container {
+//   .card-body {
+//     padding: 1em 1em;
+//   }
+// }
 
 span.is-invalid {
   border: 1px solid $text-error;
@@ -47,4 +47,8 @@ span.is-invalid {
   &:focus, .is-invalid:hover {
       box-shadow: none;
   }
+}
+
+.lock-icon {
+  padding-right: 10px;
 }

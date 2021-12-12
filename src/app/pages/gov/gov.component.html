@@ -116,7 +116,7 @@
     </div>
 
     <div class="row gy-4 pt-3">
-      <div *ngFor="let detail of poolDetails; trackBy: trackPoolDetails" class="col-12 col-md-6">
+      <div *ngFor="let detail of poolDetails; trackBy: trackPoolDetails" class="col-12">
         <app-gov-pool [detail]="detail" [walletBalance]="info.userSpecAmount || '0'"
           (transactionComplete)="fetchPoolDetails()">
         </app-gov-pool>

@@ -2,9 +2,53 @@
   <span *ngIf="+detail.userBalance > 0" class="position-absolute">
     <div class="badge-staked">Staked</div>
   </span>
-  <div class="card-body" style="cursor: pointer;" (click)="toggleExpanded()" aria-controls="belowSection"
+  <div class="card-body pt-15" style="cursor: pointer;" (click)="toggleExpanded()" aria-controls="belowSection"
     aria-expanded="false">
-    <div class="d-flex align-items-center gap-2 pb-3 mb-3">
+    <div class="d-none d-lg-block d-xl-block d-xxl-block">
+      <div class="row asset-card-info">
+        <div class="col-12 col-md-3" style="padding: 12px;">
+          <div class="flex-grow-1 float-start ps-2">
+            <img class="assetIcon img-fluid" src="/assets/logo2.png" width="32" height="32"/>
+            <span class="fs-6 fw-bold ps-1">
+              {{ detail.days === 0 ? 'No Lock' : detail.days + '-Day Locked' }}
+            </span>
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          <div class="row">
+            <div class="col-12 col-sm-4 col-lg-3 col-md-4 mt-1">
+              <div class="f-12 sub-topic">{{ detail.apr | percent }} APR</div>
+              <div class="fs-6 fw-bold"> Daily {{ detail.apr / 365 | percent }}
+                <i class="fas fa-info-circle info-icon" mdbTooltip="SPEC staking return from vault fee"></i></div>
+            </div>
+            <div class="col-12 col-sm-3 col-lg-3 col-md-3 mt-1">
+              <div class="f-12 sub-topic">
+                Total Staked</div>
+              <div class="f-14">
+                <span class="fs-6 fw-bold">
+                  <app-digit [value]="+detail.balance"></app-digit> SPEC</span>
+              </div>
+            </div>
+            <div class="col-12 col-sm-3 col-lg-4 col-md-3 mt-1">
+              <div class="f-12 sub-topic">
+                Your Staked</div>
+              <div class="f-14">
+                <span class="fs-6 fw-bold">
+                  <app-digit [value]="+detail.userBalance"></app-digit> SPEC </span>
+              </div>
+            </div>
+            <div class="col-12 col-sm-2 col-lg-2 col-md-2 mt-1 text-end">
+              <!-- *ngIf="+detail.userBalance >0 && detail.unlockAt"  -->
+              <div class="f-12"> <img  src="../../../../assets/Vector.svg" alt="" class="lock-icon assetIcon img-fluid pt-2">
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-block d-lg-none d-xl-none d-xxl-none">
+      <div class="d-flex align-items-center gap-2 pb-3 mb-3">
       <div class="flex-grow-1">
         <img class="spec-logo" src="/assets/logo2.png"/>
         <span class="h6">
@@ -19,7 +63,7 @@
         </div>
       </div>
     </div>
-
+  
     <div class="d-flex gap-2">
       <div class="flex-grow-1 d-flex flex-column gap-2">
         <div>
@@ -49,9 +93,8 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="card-body pt-0" #belowSection="mdbCollapse" mdbCollapse>
+   </div>
+  <div class="card-body pool-mobile" #belowSection="mdbCollapse" mdbCollapse>
     <div class="p-3 bg-dark rounded">
       <mdb-tabs [justified]="true" (activeTabChange)="onActiveTabChange()">
         <mdb-tab title="Deposit">
@@ -155,6 +198,10 @@
               {{ isWithdrawLocked ? 'Locked until ' + (detail.unlockAt | date:'medium') : 'Withdraw' }}
             </button>
           </div>
+        </mdb-tab>
+
+        <mdb-tab title="Reward">
+          <!-- TODO -->
         </mdb-tab>
       </mdb-tabs>
     </div>
