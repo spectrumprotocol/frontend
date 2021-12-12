@@ -26,13 +26,15 @@
         padding: 10px 20px !important;
         margin: 5px !important;
         width: 120px;
+        width: inherit;
+        text-align: center;
     }
 }
 
 .nav-item .active {
     border-radius: 6px;
-    background-color: $btn-bg;
-    border-color: rgba(255, 255, 255, 0.5);
+    background-color: #ffffff17;
+    border-color: transparent;
 }
 
 .navbar-collapse {

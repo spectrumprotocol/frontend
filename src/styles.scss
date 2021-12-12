@@ -833,19 +833,17 @@ i.fa-sort-down {
 // mobile screen style
 
 @include media-breakpoint-between(xs, md) {
-  .btn-group {
-    button, a {
-      margin: 5px;
-      padding: 5px;
-    }
-  }
-
   .table-reward {
     .col-12 {
       padding-bottom: 10px;
     }
+    .btn-group {
+      button, a {
+        margin: 5px;
+        padding: 5px;
+      }
+    }
   }
-
   .col-mb {
     width: 100%;
     flex: auto;
@@ -872,7 +870,6 @@ i.fa-sort-down {
   .dropdown {
     button {
       box-shadow: none;
-      height: 38px !important;
     }
   }
   .logo-mobile {
@@ -881,9 +878,7 @@ i.fa-sort-down {
   }
 
   .footer-container {
-    .logo-mobile {
-      padding-bottom: 5px;
-    }
+    padding-top: 5px;
   }
 }
 
