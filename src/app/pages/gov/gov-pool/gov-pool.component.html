@@ -1,246 +1,197 @@
-<div [ngClass]="{'border border-primary' : +detail.userBalance > 0}" class="card hover-shadow gov-pool-container">
+<div class="card hover-shadow gov-pool-container">
   <span *ngIf="+detail.userBalance > 0" class="position-absolute">
     <div class="badge-staked">Staked</div>
   </span>
   <div class="card-body pt-15" style="cursor: pointer;" (click)="toggleExpanded()" aria-controls="belowSection"
     aria-expanded="false">
-    <div class="d-none d-lg-block d-xl-block d-xxl-block">
-      <div class="row asset-card-info">
-        <div class="col-12 col-md-3" style="padding: 12px;">
-          <div class="flex-grow-1 float-start ps-2">
-            <img class="assetIcon img-fluid" src="/assets/logo2.png" width="32" height="32"/>
-            <span class="fs-6 fw-bold ps-1">
-              {{ detail.days === 0 ? 'No Lock' : detail.days + '-Day Locked' }}
-            </span>
-          </div>
+    <div class="row asset-card-info">
+      <div class="col-12 col-md-3" style="padding: 12px;">
+        <div class="flex-grow-1 float-start ps-2">
+          <img class="assetIcon img-fluid" src="/assets/logo2.png" width="32" height="32" />
+          <span class="fs-6 fw-bold ps-1">
+            {{ detail.days === 0 ? 'No Lock' : detail.days + '-Day Locked' }}
+          </span>
         </div>
-        <div class="col-12 col-md-9">
-          <div class="row">
-            <div class="col-12 col-sm-2 col-lg-2 col-md-2 mt-1">
-              <div class="f-12 sub-topic">{{ detail.apr | percent }} APR</div>
-              <div class="fs-6 fw-bold"> Daily {{ detail.apr / 365 | percent }}
-                <i class="fas fa-info-circle info-icon" mdbTooltip="SPEC staking return from vault fee"></i></div>
+      </div>
+      <div class="col-12 col-md-9">
+        <div class="row">
+          <div class="col-6 mt-1">
+            <div class="f-12 sub-topic">
+              Total Staked</div>
+            <div class="f-14">
+              <span class="fs-6 fw-bold">
+                <app-digit [value]="+detail.balance"></app-digit>
+              </span> <span class="cur-title">SPEC</span>
             </div>
-            <div class="col-12 col-sm-3 col-lg-3 col-md-3 mt-1">
+          </div>
+          <div class="col-6 mt-1">
+            <div class="f-12 sub-topic">APR</div>
+            <div class="fs-6 fw-bold"> {{ detail.apr | percent }}
+              <i class="fas fa-info-circle info-icon" mdbTooltip="SPEC staking return from vault fee"></i>
+            </div>
+          </div>
+          <div class="col-6 mt-1">
+            <div class="ur-staked">
               <div class="f-12 sub-topic">
-                Total Staked</div>
-              <div class="f-14">
-                <span class="fs-6 fw-bold">
-                  <app-digit [value]="+detail.balance"></app-digit> SPEC</span>
+                Your Staked</div>
+              <div class="f-14" *ngIf="+detail.userBalance">
+                <span class="fs-6 text-primary">
+                  <app-digit [value]="+detail.userBalance"></app-digit>
+                  <span *ngIf="!+detail.userBalance">-</span>
+                </span> <span class="cur-title">SPEC</span>
+              </div>
+              <div class="f-14" *ngIf="!+detail.userBalance"><span>-</span></div>
+              <div *ngIf="+detail.userBalance > 0 && detail.unlockAt && isWithdrawLocked">
+                <small class="text-primary">
+                  <i class="fas fa-lock"></i>
+                  Unlock {{ detail.unlockAt | timeago }}
+                </small>
               </div>
             </div>
-            <div class="col-12 col-sm-4 col-lg-4 col-md-4 mt-1">
-              <div class="lock-icon">
-                <img src="../../../../assets/Vector.svg" *ngIf="+detail.userBalance >0 && detail.unlockAt" alt="" class="assetIcon img-fluid pt-2">
-              </div>
-              <div class="ur-staked">
-                <div class="f-12 sub-topic">
-                  Your Staked</div>
-                <div class="f-14">
-                  <span class="fs-6 fw-bold">
-                    <app-digit [value]="+detail.userBalance"></app-digit> SPEC </span>
-                </div>
-              </div>
+          </div>
+          <div class="col-6 mt-1">
+            <div class="f-12 sub-topic">
+              Your Profit</div>
+            <div class="f-14" *ngIf="+detail.userBalance">
+              <span class="fs-6 text-primary">
+                <app-digit [value]="+detail.userProfit"></app-digit>
+              </span> <span class="cur-title">UST</span>
             </div>
-            <div class="col-12 col-sm-2 col-lg-2 col-md-2 mt-1 text-end">
-              <div class="f-12 sub-topic">
-                Your Reward</div>
-              <div class="f-14">
-                <span class="fs-6 fw-bold">
-                  1 Pui</span>
-              </div>
-            </div>
-            <!-- <div class="col-12 col-sm-1 col-lg-1 col-md-1 mt-1 text-end">
+            <div class="f-14" *ngIf="!+detail.userBalance"><span>-</span></div>
+          </div>
+          <!-- <div class="col-12 col-sm-1 col-lg-1 col-md-1 mt-1 text-end">
               <div class="f-12"> <img *ngIf="+detail.userBalance >0 && detail.unlockAt" src="../../../../assets/Vector.svg" alt="" class="lock-icon assetIcon img-fluid pt-2">
             </div>
           </div> -->
         </div>
-        </div>
       </div>
     </div>
-
-    <div class="d-block d-lg-none d-xl-none d-xxl-none">
-      <div class="d-flex align-items-center gap-2 pb-3 mb-3">
-      <div class="flex-grow-1">
-        <img class="spec-logo" src="/assets/logo2.png"/>
-        <span class="h6">
-          {{ detail.days === 0 ? 'No Lock' : detail.days + '-Day Locked' }}
-        </span>
-      </div>
-      <div class="text-end">
-        <div class="text-primary f-22 lh-1 fw-bold">{{ detail.apr | percent }} APR</div>
-        <div class="text fw-bold f-14 lh-md">
-          Daily {{ detail.apr / 365 | percent }}
-          <i class="fas fa-info-circle info-icon" mdbTooltip="SPEC staking return from vault fee"></i>
-        </div>
-      </div>
-    </div>
-  
-    <div class="d-flex gap-2">
-      <div class="flex-grow-1 d-flex flex-column gap-2">
-        <div>
-          <div>
-            <p class="sub-topic">Total Staked</p>
-          </div>
-        </div>
-      </div>
-      <div class="text-end">
-        <app-digit [value]="+detail.balance"></app-digit> SPEC
-      </div>
-    </div>
-    <div class="d-flex gap-2">
-      <div class="flex-grow-1 d-flex flex-column gap-2">
-        <div>
-          <div>
-            <p class="sub-topic">Your Reward</p>
-          </div>
-        </div>
-      </div>
-      <div class="text-end">
-        1 Pui
-      </div>
-    </div>
-    <hr class="dropdown-divider" />
-    <div class="row pt-2 m-0">
-      <div class="card card-md">
-        <div class="card-body">
-          <img *ngIf="+detail.userBalance >0 && detail.unlockAt"  src="../../../../assets/Vector.svg" alt="" class="lock-icon">
-          <p class="card-text text-center">
-            <span class="sub-topic">Your Staked</span>
-            <small *ngIf="+detail.userBalance >0 && detail.unlockAt" class="text-primary">
-              Unlock{{!isWithdrawLocked ? "ed" : ""}} {{ detail.unlockAt | timeago }}
-            </small>
-          </p>
-          <h3 class="card-title text-center">
-            <app-digit [value]="+detail.userBalance"></app-digit> SPEC
-          </h3>
-        </div>
-      </div>
-    </div>
-   </div>
-</div>
-
-<div class="card-body pool-mobile" #belowSection="mdbCollapse" mdbCollapse>
-  <div class="p-3 bg-dark rounded">
-    <mdb-tabs [justified]="true" (activeTabChange)="onActiveTabChange()">
-      <mdb-tab title="Deposit">
-        <div class="d-grid gap-3">
-          <div>
-            <div class="text-end small margin-18 mb-1 fw-bold">
-              <span class="sub-topic">Balance: </span>
-              <span class="text-white">{{ walletBalance | number }} SPEC</span>
-            </div>
-            <div class="input-group">
-              <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{'is-invalid': depositAmountModel.invalid }">SPEC</span>
-              <input type="number" class="form-control fix-border" [class.is-invalid]="depositAmountModel.invalid"
-                placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+walletBalance"
-                [(ngModel)]="depositAmount" #depositAmountModel="ngModel" (change)="calculateDepositUnlock()">
-              <button class="btn btn-max last"
-                (click)="depositAmount = +walletBalance; calculateDepositUnlock()">Max</button>
-              <div *ngIf="depositAmountModel.errors?.max; then exceededBalanceError"></div>
-              <div *ngIf="depositAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
-            </div>
-          </div>
-          <div *ngIf="detail.days > 0" class="d-flex flex-wrap small text-muted">
-            <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
-            <div>{{ estimatedDepositUnlock ? (estimatedDepositUnlock | date:'medium') : '-' }}</div>
-          </div>
-          <button type="button" class="btn btn-lg btn-primary" (click)="submitDeposit()"
-            [disabled]="depositAmount <= 0 || depositAmountModel.invalid">
-            Deposit
-          </button>
-        </div>
-      </mdb-tab>
-
-      <mdb-tab [disabled]="!detail.moveOptions.length" title="Move">
-        <div class="d-grid gap-3">
-          <div *ngIf="detail.moveOptions.length > 1">
-            <div class="small">Lock Duration (Days)</div>
-            <div class="btn-group w-100">
-              <button *ngFor="let option of detail.moveOptions" type="button" class="btn btn-lg"
-                [class.btn-secondary]="moveDays === option.days"
-                [class.btn-outline-secondary]="moveDays !== option.days"
-                (click)="moveDays = option.days; calculateMoveUnlock()">
-                {{ option.days }}
-              </button>
-            </div>
-          </div>
-          <div>
-            <div class="text-end small margin-18 mb-1 fw-bold">
-              <span class="sub-topic">Balance: </span>
-              <span class="text-white">{{ detail.userBalance | number }} SPEC</span>
-            </div>
-            <div class="input-group">
-              <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{ 'is-invalid' : moveAmountModel.invalid }">SPEC</span>
-              <input type="number" class="form-control fix-border" [class.is-invalid]="moveAmountModel.invalid"
-                placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userBalance"
-                [(ngModel)]="moveAmount" #moveAmountModel="ngModel" (change)="calculateMoveUnlock()">
-              <button class="btn btn-max last"
-                (click)="moveAmount = +detail.userBalance; calculateMoveUnlock()">Max</button>
-              <div *ngIf="moveAmountModel.errors?.max; then exceededBalanceError"></div>
-              <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
-            </div>
-          </div>
-          <div *ngIf="detail.moveOptions.length === 1" class="d-flex flex-wrap small text-muted">
-            <div class="flex-grow-1">Lock Duration:&nbsp;</div>
-            <div>{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
-          </div>
-          <div class="d-flex flex-wrap small text-muted">
-            <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
-            <div>{{ estimatedMoveUnlock ? (estimatedMoveUnlock | date:'medium') : '-' }}</div>
-          </div>
-          <button type="button" class="btn btn-lg btn-primary" (click)="submitMove()"
-            [disabled]="moveAmount <= 0 || moveAmountModel.invalid">
-            Move
-          </button>
-        </div>
-      </mdb-tab>
-
-      <mdb-tab title="Withdraw">
-        <div class="d-grid gap-3">
-          <div>
-            <div class="text-end small margin-18 mb-1 fw-bold">
-              <span class="sub-topic">Balance: </span>
-              <span class="text-white">{{ detail.userAvailableBalance | number }} SPEC</span>
-              <span *ngIf="detail.userBalance !== detail.userAvailableBalance">
-                (Locked: {{+detail.userBalance - +detail.userAvailableBalance | number}} SPEC from voting)
-              </span>
-            </div>
-            <div class="input-group">
-              <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{'is-invalid': withdrawAmountModel.invalid }">SPEC</span>
-              <input type="number" class="form-control fix-border" [class.is-invalid]="withdrawAmountModel.invalid"
-                placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
-                [(ngModel)]="withdrawAmount" #withdrawAmountModel="ngModel" [disabled]="isWithdrawLocked">
-              <button class="btn btn-max last" (click)="withdrawAmount = +detail.userAvailableBalance"
-                [disabled]="isWithdrawLocked">
-                Max
-              </button>
-              <div *ngIf="withdrawAmountModel.errors?.max; then exceededBalanceError"></div>
-              <div *ngIf="withdrawAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
-            </div>
-          </div>
-          <button type="button" class="btn btn-lg btn-primary" (click)="submitWithdraw()"
-            [disabled]="isWithdrawLocked || withdrawAmount <= 0 || withdrawAmountModel.invalid">
-            {{ isWithdrawLocked ? 'Locked until ' + (detail.unlockAt | date:'medium') : 'Withdraw' }}
-          </button>
-        </div>
-      </mdb-tab>
-
-      <mdb-tab title="Reward">
-        <!-- TODO -->
-      </mdb-tab>
-    </mdb-tabs>
   </div>
-</div>
 
-<ng-template #exceededBalanceError>
-  <div class="invalid-feedback">
-    Amount must not be greater than the balance
-  </div>
-</ng-template>
+  <div class="card-body pool-mobile" #belowSection="mdbCollapse" mdbCollapse>
+    <div class="p-3 bg-dark rounded">
+      <mdb-tabs [justified]="true" (activeTabChange)="onActiveTabChange()">
+        <mdb-tab title="Deposit">
+          <div class="d-grid gap-3">
+            <div>
+              <div class="text-end small margin-18 mb-1 fw-bold">
+                <span class="sub-topic">Balance: </span>
+                <span class="text-white">{{ walletBalance | number }} SPEC</span>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"
+                  [ngClass]="{'is-invalid': depositAmountModel.invalid }">SPEC</span>
+                <input type="number" class="form-control fix-border" [class.is-invalid]="depositAmountModel.invalid"
+                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+walletBalance"
+                  [(ngModel)]="depositAmount" #depositAmountModel="ngModel" (change)="calculateDepositUnlock()">
+                <button class="btn btn-max last"
+                  (click)="depositAmount = +walletBalance; calculateDepositUnlock()">Max</button>
+                <div *ngIf="depositAmountModel.errors?.max; then exceededBalanceError"></div>
+                <div *ngIf="depositAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
+              </div>
+            </div>
+            <div *ngIf="detail.days > 0" class="d-flex flex-wrap small text-muted">
+              <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
+              <div>{{ estimatedDepositUnlock ? (estimatedDepositUnlock | date:'medium') : '-' }}</div>
+            </div>
+            <button type="button" class="btn btn-lg btn-primary" (click)="submitDeposit()"
+              [disabled]="depositAmount <= 0 || depositAmountModel.invalid">
+              Deposit
+            </button>
+          </div>
+        </mdb-tab>
 
-<ng-template #maxDecimalPlacesError>
-  <div class="invalid-feedback">
-    Amount must be within 6 decimal points
+        <mdb-tab [disabled]="!detail.moveOptions.length" title="Move">
+          <div class="d-grid gap-3">
+            <div *ngIf="detail.moveOptions.length > 1">
+              <div class="small">Lock Duration (Days)</div>
+              <div class="btn-group w-100">
+                <button *ngFor="let option of detail.moveOptions" type="button" class="btn btn-lg"
+                  [class.btn-secondary]="moveDays === option.days"
+                  [class.btn-outline-secondary]="moveDays !== option.days"
+                  (click)="moveDays = option.days; calculateMoveUnlock()">
+                  {{ option.days }}
+                </button>
+              </div>
+            </div>
+            <div>
+              <div class="text-end small margin-18 mb-1 fw-bold">
+                <span class="sub-topic">Balance: </span>
+                <span class="text-white">{{ detail.userBalance | number }} SPEC</span>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"
+                  [ngClass]="{ 'is-invalid' : moveAmountModel.invalid }">SPEC</span>
+                <input type="number" class="form-control fix-border" [class.is-invalid]="moveAmountModel.invalid"
+                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userBalance"
+                  [(ngModel)]="moveAmount" #moveAmountModel="ngModel" (change)="calculateMoveUnlock()">
+                <button class="btn btn-max last"
+                  (click)="moveAmount = +detail.userBalance; calculateMoveUnlock()">Max</button>
+                <div *ngIf="moveAmountModel.errors?.max; then exceededBalanceError"></div>
+                <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
+              </div>
+            </div>
+            <div *ngIf="detail.moveOptions.length === 1" class="d-flex flex-wrap small text-muted">
+              <div class="flex-grow-1">Lock Duration:&nbsp;</div>
+              <div>{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
+            </div>
+            <div class="d-flex flex-wrap small text-muted">
+              <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
+              <div>{{ estimatedMoveUnlock ? (estimatedMoveUnlock | date:'medium') : '-' }}</div>
+            </div>
+            <button type="button" class="btn btn-lg btn-primary" (click)="submitMove()"
+              [disabled]="moveAmount <= 0 || moveAmountModel.invalid">
+              Move
+            </button>
+          </div>
+        </mdb-tab>
+
+        <mdb-tab title="Withdraw">
+          <div class="d-grid gap-3">
+            <div>
+              <div class="text-end small margin-18 mb-1 fw-bold">
+                <span class="sub-topic">Balance: </span>
+                <span class="text-white">{{ detail.userAvailableBalance | number }} SPEC</span>
+                <span *ngIf="detail.userBalance !== detail.userAvailableBalance">
+                  (Locked: {{+detail.userBalance - +detail.userAvailableBalance | number}} SPEC from voting)
+                </span>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"
+                  [ngClass]="{'is-invalid': withdrawAmountModel.invalid }">SPEC</span>
+                <input type="number" class="form-control fix-border" [class.is-invalid]="withdrawAmountModel.invalid"
+                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
+                  [(ngModel)]="withdrawAmount" #withdrawAmountModel="ngModel" [disabled]="isWithdrawLocked">
+                <button class="btn btn-max last" (click)="withdrawAmount = +detail.userAvailableBalance"
+                  [disabled]="isWithdrawLocked">
+                  Max
+                </button>
+                <div *ngIf="withdrawAmountModel.errors?.max; then exceededBalanceError"></div>
+                <div *ngIf="withdrawAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-lg btn-primary" (click)="submitWithdraw()"
+              [disabled]="isWithdrawLocked || withdrawAmount <= 0 || withdrawAmountModel.invalid">
+              {{ isWithdrawLocked ? 'Locked until ' + (detail.unlockAt | date:'medium') : 'Withdraw' }}
+            </button>
+          </div>
+        </mdb-tab>
+
+        <mdb-tab title="Claim profit">
+          <!-- TODO -->
+        </mdb-tab>
+      </mdb-tabs>
+    </div>
   </div>
-</ng-template>
+
+  <ng-template #exceededBalanceError>
+    <div class="invalid-feedback">
+      Amount must not be greater than the balance
+    </div>
+  </ng-template>
+
+  <ng-template #maxDecimalPlacesError>
+    <div class="invalid-feedback">
+      Amount must be within 6 decimal points
+    </div>
+  </ng-template>

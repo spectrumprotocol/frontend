@@ -19,6 +19,7 @@ export interface GovPoolDetail {
   balance: string;
   apr: number;
   userBalance: string;
+  userProfit: string;
   userAvailableBalance: string;
   unlockAt: Date | null;
   moveOptions: { days: number; userBalance: string; unlockAt: Date | null }[];

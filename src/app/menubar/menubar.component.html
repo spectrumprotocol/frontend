@@ -21,7 +21,7 @@
     <!--- right links -->
     <div mdbDropdown class="dropdown" *ngIf="terrajs.address" #dropdown>
       <button class="btn btn-dark dropdown-toggle btn-sm" type="button" mdbDropdownToggle>
-        <i class="fas fa-wallet"></i> <span class="text-muted d-none d-md-inline">&nbsp;{{walletText}}
+        <i class="fas fa-wallet"></i>&nbsp;<span class="text-muted d-none d-md-inline">{{walletText}}
           <span *ngIf="terrajs.network.name !== 'mainnet'" class="text-danger"> ({{terrajs.network.name}})</span>
           |</span>
         {{info.userUstAmount | number : '1.0-2'}} UST
