@@ -16,12 +16,12 @@
         </div>
         <div class="col-12 col-md-9">
           <div class="row">
-            <div class="col-12 col-sm-4 col-lg-3 col-md-4 mt-1">
+            <div class="col-12 col-sm-3 col-lg-3 col-md-3 mt-1">
               <div class="f-12 sub-topic">{{ detail.apr | percent }} APR</div>
               <div class="fs-6 fw-bold"> Daily {{ detail.apr / 365 | percent }}
                 <i class="fas fa-info-circle info-icon" mdbTooltip="SPEC staking return from vault fee"></i></div>
             </div>
-            <div class="col-12 col-sm-3 col-lg-3 col-md-3 mt-1">
+            <div class="col-12 col-sm-4 col-lg-4 col-md-4 mt-1">
               <div class="f-12 sub-topic">
                 Total Staked</div>
               <div class="f-14">
@@ -29,7 +29,7 @@
                   <app-digit [value]="+detail.balance"></app-digit> SPEC</span>
               </div>
             </div>
-            <div class="col-12 col-sm-3 col-lg-4 col-md-3 mt-1">
+            <div class="col-12 col-sm-4 col-lg-4 col-md-4 mt-1">
               <div class="f-12 sub-topic">
                 Your Staked</div>
               <div class="f-14">
@@ -37,9 +37,9 @@
                   <app-digit [value]="+detail.userBalance"></app-digit> SPEC </span>
               </div>
             </div>
-            <div class="col-12 col-sm-2 col-lg-2 col-md-2 mt-1 text-end">
-              <!-- *ngIf="+detail.userBalance >0 && detail.unlockAt"  -->
-              <div class="f-12"> <img  src="../../../../assets/Vector.svg" alt="" class="lock-icon assetIcon img-fluid pt-2">
+            <div class="col-12 col-sm-1 col-lg-1 col-md-1 mt-1 text-end">
+              <!-- -->
+              <div class="f-12"> <img *ngIf="+detail.userBalance >0 && detail.unlockAt" src="../../../../assets/Vector.svg" alt="" class="lock-icon assetIcon img-fluid pt-2">
             </div>
           </div>
         </div>
