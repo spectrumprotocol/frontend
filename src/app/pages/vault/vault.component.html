@@ -15,7 +15,7 @@
     <div class="row g-1 pt-3">
       <div class="col-12 col-md-6">
         <div class="card card-grey box-left">
-          <div class="card-body ps-3">
+          <div class="card-body ps-3 pe-3">
             <p class="card-text sub-topic">
               Total value locked
             </p>
@@ -55,12 +55,12 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-lg-6">
+      <div class="col-12 col-lg-6" *ngIf="terrajs.isConnected">
         <div class="card card-grey box-left">
           <div class="card-body ps-3">
             <div class="d-flex align-items-center">
-              <div class="flex-shrink-0 me-3">
-                <span *ngIf="+info.myTvl" class="fas fa-chevron-up animate-up text-success"></span>
+              <div class="flex-shrink-0 me-3" *ngIf="+info.myTvl">
+                <span class="fas fa-chevron-up animate-up text-success"></span>
               </div>
               <div class="flex-grow-1">
                 <div class="card-text sub-topic">
@@ -89,20 +89,20 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-lg-6">
+      <div class="col-12 col-lg-6" *ngIf="terrajs.isConnected">
         <!--   -->
-        <app-unstake-all *ngIf="terrajs.isConnected"></app-unstake-all>
+        <app-unstake-all></app-unstake-all>
       </div>
 
 
    <!--  TODO:: waiting for announcement flag -->
-      <div class="col-12">
+      <!-- <div class="col-12">
         <div class="terra-container mt-2 mb-2">
           nLuna-Psi and nEth-Psi Nexus Vaults are now live on Spectrum Protocol!
           <br>
           Auto-compound and auto-stake your LPs and earn 
         </div>
-      </div> 
+      </div>  -->
 
       <div class="col-12 col-md-5 ">
         <div class="card box-left">

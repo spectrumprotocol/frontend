@@ -656,7 +656,7 @@ i.fa-sort-down {
   padding: 2px 10px;
   background: $primary;
   position: relative;
-  border-top-left-radius: 0.5rem;
+  border-top-left-radius: 0.3rem;
   font-size: 11px;
 }
 
@@ -880,4 +880,8 @@ i.fa-sort-down {
     padding: 0;
     margin-top: 10px;
   }
+}
+
+.mdb-backdrop {
+  backdrop-filter: blur(4px);
 }
