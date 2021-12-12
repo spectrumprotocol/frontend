@@ -306,9 +306,7 @@ input[type="number"] {
 .hover-shadow:hover,
 .card.hover-shadow:hover {
   border: 1px solid $primary;
-  background-color: #303947;
-  -webkit-transform: translate(0px, -5px);
-  -ms-transform: translate(0px, -5px);
+  background-color: #303947 !important;
   transform: translate(0px, -5px);
   mix-blend-mode: normal;
 }
