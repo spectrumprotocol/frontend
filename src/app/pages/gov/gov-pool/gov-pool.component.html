@@ -94,117 +94,118 @@
       </div>
     </div>
    </div>
-  <div class="card-body pool-mobile" #belowSection="mdbCollapse" mdbCollapse>
-    <div class="p-3 bg-dark rounded">
-      <mdb-tabs [justified]="true" (activeTabChange)="onActiveTabChange()">
-        <mdb-tab title="Deposit">
-          <div class="d-grid gap-3">
-            <div>
-              <div class="text-end small margin-18 mb-1 fw-bold">
-                <span class="sub-topic">Balance: </span>
-                <span class="text-white">{{ walletBalance | number }} SPEC</span>
-              </div>
-              <div class="input-group">
-                <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{'is-invalid': depositAmountModel.invalid }">SPEC</span>
-                <input type="number" class="form-control fix-border" [class.is-invalid]="depositAmountModel.invalid"
-                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+walletBalance"
-                  [(ngModel)]="depositAmount" #depositAmountModel="ngModel" (change)="calculateDepositUnlock()">
-                <button class="btn btn-max last"
-                  (click)="depositAmount = +walletBalance; calculateDepositUnlock()">Max</button>
-                <div *ngIf="depositAmountModel.errors?.max; then exceededBalanceError"></div>
-                <div *ngIf="depositAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
-              </div>
-            </div>
-            <div *ngIf="detail.days > 0" class="d-flex flex-wrap small text-muted">
-              <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
-              <div>{{ estimatedDepositUnlock ? (estimatedDepositUnlock | date:'medium') : '-' }}</div>
-            </div>
-            <button type="button" class="btn btn-lg btn-primary" (click)="submitDeposit()"
-              [disabled]="depositAmount <= 0 || depositAmountModel.invalid">
-              Deposit
-            </button>
-          </div>
-        </mdb-tab>
+</div>
 
-        <mdb-tab [disabled]="!detail.moveOptions.length" title="Move">
-          <div class="d-grid gap-3">
-            <div *ngIf="detail.moveOptions.length > 1">
-              <div class="small">Lock Duration (Days)</div>
-              <div class="btn-group w-100">
-                <button *ngFor="let option of detail.moveOptions" type="button" class="btn btn-lg"
-                  [class.btn-secondary]="moveDays === option.days"
-                  [class.btn-outline-secondary]="moveDays !== option.days"
-                  (click)="moveDays = option.days; calculateMoveUnlock()">
-                  {{ option.days }}
-                </button>
-              </div>
+<div class="card-body pool-mobile" #belowSection="mdbCollapse" mdbCollapse>
+  <div class="p-3 bg-dark rounded">
+    <mdb-tabs [justified]="true" (activeTabChange)="onActiveTabChange()">
+      <mdb-tab title="Deposit">
+        <div class="d-grid gap-3">
+          <div>
+            <div class="text-end small margin-18 mb-1 fw-bold">
+              <span class="sub-topic">Balance: </span>
+              <span class="text-white">{{ walletBalance | number }} SPEC</span>
             </div>
-            <div>
-              <div class="text-end small margin-18 mb-1 fw-bold">
-                <span class="sub-topic">Balance: </span>
-                <span class="text-white">{{ detail.userBalance | number }} SPEC</span>
-              </div>
-              <div class="input-group">
-                <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{ 'is-invalid' : moveAmountModel.invalid }">SPEC</span>
-                <input type="number" class="form-control fix-border" [class.is-invalid]="moveAmountModel.invalid"
-                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userBalance"
-                  [(ngModel)]="moveAmount" #moveAmountModel="ngModel" (change)="calculateMoveUnlock()">
-                <button class="btn btn-max last"
-                  (click)="moveAmount = +detail.userBalance; calculateMoveUnlock()">Max</button>
-                <div *ngIf="moveAmountModel.errors?.max; then exceededBalanceError"></div>
-                <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
-              </div>
+            <div class="input-group">
+              <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{'is-invalid': depositAmountModel.invalid }">SPEC</span>
+              <input type="number" class="form-control fix-border" [class.is-invalid]="depositAmountModel.invalid"
+                placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+walletBalance"
+                [(ngModel)]="depositAmount" #depositAmountModel="ngModel" (change)="calculateDepositUnlock()">
+              <button class="btn btn-max last"
+                (click)="depositAmount = +walletBalance; calculateDepositUnlock()">Max</button>
+              <div *ngIf="depositAmountModel.errors?.max; then exceededBalanceError"></div>
+              <div *ngIf="depositAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
             </div>
-            <div *ngIf="detail.moveOptions.length === 1" class="d-flex flex-wrap small text-muted">
-              <div class="flex-grow-1">Lock Duration:&nbsp;</div>
-              <div>{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
-            </div>
-            <div class="d-flex flex-wrap small text-muted">
-              <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
-              <div>{{ estimatedMoveUnlock ? (estimatedMoveUnlock | date:'medium') : '-' }}</div>
-            </div>
-            <button type="button" class="btn btn-lg btn-primary" (click)="submitMove()"
-              [disabled]="moveAmount <= 0 || moveAmountModel.invalid">
-              Move
-            </button>
           </div>
-        </mdb-tab>
-
-        <mdb-tab title="Withdraw">
-          <div class="d-grid gap-3">
-            <div>
-              <div class="text-end small margin-18 mb-1 fw-bold">
-                <span class="sub-topic">Balance: </span>
-                <span class="text-white">{{ detail.userAvailableBalance | number }} SPEC</span>
-                <span *ngIf="detail.userBalance !== detail.userAvailableBalance">
-                  (Locked: {{+detail.userBalance - +detail.userAvailableBalance | number}} SPEC from voting)
-                </span>
-              </div>
-              <div class="input-group">
-                <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{'is-invalid': withdrawAmountModel.invalid }">SPEC</span>
-                <input type="number" class="form-control fix-border" [class.is-invalid]="withdrawAmountModel.invalid"
-                  placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
-                  [(ngModel)]="withdrawAmount" #withdrawAmountModel="ngModel" [disabled]="isWithdrawLocked">
-                <button class="btn btn-max last" (click)="withdrawAmount = +detail.userAvailableBalance"
-                  [disabled]="isWithdrawLocked">
-                  Max
-                </button>
-                <div *ngIf="withdrawAmountModel.errors?.max; then exceededBalanceError"></div>
-                <div *ngIf="withdrawAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
-              </div>
-            </div>
-            <button type="button" class="btn btn-lg btn-primary" (click)="submitWithdraw()"
-              [disabled]="isWithdrawLocked || withdrawAmount <= 0 || withdrawAmountModel.invalid">
-              {{ isWithdrawLocked ? 'Locked until ' + (detail.unlockAt | date:'medium') : 'Withdraw' }}
-            </button>
+          <div *ngIf="detail.days > 0" class="d-flex flex-wrap small text-muted">
+            <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
+            <div>{{ estimatedDepositUnlock ? (estimatedDepositUnlock | date:'medium') : '-' }}</div>
           </div>
-        </mdb-tab>
+          <button type="button" class="btn btn-lg btn-primary" (click)="submitDeposit()"
+            [disabled]="depositAmount <= 0 || depositAmountModel.invalid">
+            Deposit
+          </button>
+        </div>
+      </mdb-tab>
 
-        <mdb-tab title="Reward">
-          <!-- TODO -->
-        </mdb-tab>
-      </mdb-tabs>
-    </div>
+      <mdb-tab [disabled]="!detail.moveOptions.length" title="Move">
+        <div class="d-grid gap-3">
+          <div *ngIf="detail.moveOptions.length > 1">
+            <div class="small">Lock Duration (Days)</div>
+            <div class="btn-group w-100">
+              <button *ngFor="let option of detail.moveOptions" type="button" class="btn btn-lg"
+                [class.btn-secondary]="moveDays === option.days"
+                [class.btn-outline-secondary]="moveDays !== option.days"
+                (click)="moveDays = option.days; calculateMoveUnlock()">
+                {{ option.days }}
+              </button>
+            </div>
+          </div>
+          <div>
+            <div class="text-end small margin-18 mb-1 fw-bold">
+              <span class="sub-topic">Balance: </span>
+              <span class="text-white">{{ detail.userBalance | number }} SPEC</span>
+            </div>
+            <div class="input-group">
+              <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{ 'is-invalid' : moveAmountModel.invalid }">SPEC</span>
+              <input type="number" class="form-control fix-border" [class.is-invalid]="moveAmountModel.invalid"
+                placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userBalance"
+                [(ngModel)]="moveAmount" #moveAmountModel="ngModel" (change)="calculateMoveUnlock()">
+              <button class="btn btn-max last"
+                (click)="moveAmount = +detail.userBalance; calculateMoveUnlock()">Max</button>
+              <div *ngIf="moveAmountModel.errors?.max; then exceededBalanceError"></div>
+              <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
+            </div>
+          </div>
+          <div *ngIf="detail.moveOptions.length === 1" class="d-flex flex-wrap small text-muted">
+            <div class="flex-grow-1">Lock Duration:&nbsp;</div>
+            <div>{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
+          </div>
+          <div class="d-flex flex-wrap small text-muted">
+            <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
+            <div>{{ estimatedMoveUnlock ? (estimatedMoveUnlock | date:'medium') : '-' }}</div>
+          </div>
+          <button type="button" class="btn btn-lg btn-primary" (click)="submitMove()"
+            [disabled]="moveAmount <= 0 || moveAmountModel.invalid">
+            Move
+          </button>
+        </div>
+      </mdb-tab>
+
+      <mdb-tab title="Withdraw">
+        <div class="d-grid gap-3">
+          <div>
+            <div class="text-end small margin-18 mb-1 fw-bold">
+              <span class="sub-topic">Balance: </span>
+              <span class="text-white">{{ detail.userAvailableBalance | number }} SPEC</span>
+              <span *ngIf="detail.userBalance !== detail.userAvailableBalance">
+                (Locked: {{+detail.userBalance - +detail.userAvailableBalance | number}} SPEC from voting)
+              </span>
+            </div>
+            <div class="input-group">
+              <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600" [ngClass]="{'is-invalid': withdrawAmountModel.invalid }">SPEC</span>
+              <input type="number" class="form-control fix-border" [class.is-invalid]="withdrawAmountModel.invalid"
+                placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
+                [(ngModel)]="withdrawAmount" #withdrawAmountModel="ngModel" [disabled]="isWithdrawLocked">
+              <button class="btn btn-max last" (click)="withdrawAmount = +detail.userAvailableBalance"
+                [disabled]="isWithdrawLocked">
+                Max
+              </button>
+              <div *ngIf="withdrawAmountModel.errors?.max; then exceededBalanceError"></div>
+              <div *ngIf="withdrawAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-lg btn-primary" (click)="submitWithdraw()"
+            [disabled]="isWithdrawLocked || withdrawAmount <= 0 || withdrawAmountModel.invalid">
+            {{ isWithdrawLocked ? 'Locked until ' + (detail.unlockAt | date:'medium') : 'Withdraw' }}
+          </button>
+        </div>
+      </mdb-tab>
+
+      <mdb-tab title="Reward">
+        <!-- TODO -->
+      </mdb-tab>
+    </mdb-tabs>
   </div>
 </div>
 
