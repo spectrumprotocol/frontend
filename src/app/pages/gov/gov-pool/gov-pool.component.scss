@@ -50,5 +50,12 @@ span.is-invalid {
 }
 
 .lock-icon {
-  padding-right: 10px;
+  position: absolute;
+  img {
+    padding-top: 7px;
+  }
+}
+
+.ur-staked {
+  padding-left: 30px;
 }
