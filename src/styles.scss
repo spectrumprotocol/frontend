@@ -49,6 +49,9 @@ body {
   :disabled {
     box-shadow: none;
   }
+  &:focus,&:hover {
+    box-shadow: none;
+  }
 }
 
 .btn-sm {
@@ -863,6 +866,23 @@ i.fa-sort-down {
     margin-top: -4px;
     .tab-pane {
       padding: 10px;
+    }
+  }
+
+  .dropdown {
+    button {
+      box-shadow: none;
+      height: 38px !important;
+    }
+  }
+  .logo-mobile {
+    text-align: right;
+    display: block !important;
+  }
+
+  .footer-container {
+    .logo-mobile {
+      padding-bottom: 5px;
     }
   }
 }

@@ -130,7 +130,7 @@ export class GovComponent implements OnInit, OnDestroy {
           userProfit,
           unlockAt,
           days: pool.days,
-          apr: apr, // + apr * +anchorRatePerYear / 2,
+          apr: apr + apr * +anchorRatePerYear / 2,
           balance: div(pool.total_balance, CONFIG.UNIT),
           userAvailableBalance: '0', // populate after this mapping
           moveOptions: [], // populate after this mapping
