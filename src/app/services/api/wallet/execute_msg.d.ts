@@ -15,9 +15,6 @@ export type ExecuteMsg =
       };
     }
   | {
-      receive: Cw20ReceiveMsg;
-    }
-  | {
       stake: {
         amount: Uint128;
         days?: number | null;
@@ -26,7 +23,7 @@ export type ExecuteMsg =
     }
   | {
       unstake: {
-        amount: Uint128;
+        amount?: Uint128 | null;
         days?: number | null;
         [k: string]: unknown;
       };
@@ -48,16 +45,53 @@ export type ExecuteMsg =
   | {
       upsert_share: {
         address: string;
+        disable_withdraw?: boolean | null;
         lock_amount?: Uint128 | null;
         lock_end?: number | null;
         lock_start?: number | null;
-        weight: number;
         [k: string]: unknown;
       };
     }
   | {
       withdraw: {
-        amount?: Uint128 | null;
+        aust_amount?: Uint128 | null;
+        spec_amount?: Uint128 | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      gov_claim: {
+        aust_amount?: Uint128 | null;
+        days?: number | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      burn: {
+        spec_amount?: Uint128 | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      aust_redeem: {
+        aust_amount?: Uint128 | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      provide_liquidity: {
+        ust_amount?: Uint128 | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      bond: {
+        lp_amount?: Uint128 | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      specfarm_claim: {
         [k: string]: unknown;
       };
     };
@@ -76,19 +110,3 @@ export type ExecuteMsg =
  */
 export type Uint128 = string;
 export type VoteOption = "yes" | "no";
-/**
- * Binary is a wrapper around Vec<u8> to add base64 de/serialization with serde. It also adds some helper methods to help encode inline.
- *
- * This is only needed as serde-json-{core,wasm} has a horrible encoding for Vec<u8>
- */
-export type Binary = string;
-
-/**
- * Cw20ReceiveMsg should be de/serialized under `Receive()` variant in a ExecuteMsg
- */
-export interface Cw20ReceiveMsg {
-  amount: Uint128;
-  msg: Binary;
-  sender: string;
-  [k: string]: unknown;
-}

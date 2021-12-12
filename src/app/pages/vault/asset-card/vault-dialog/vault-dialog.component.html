@@ -628,7 +628,6 @@
             <div class="row mt-3">
               <div class="col">
                 SPEC reward
-                <small class="text-primary">APR: {{ info.stat?.govApr | percent }}</small>
               </div>
               <div class="col text-end">
                 {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}

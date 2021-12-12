@@ -19,7 +19,7 @@ import { TerraSwapService } from '../../../../services/api/terraswap.service';
 import { Denom } from '../../../../consts/denom';
 import { StakerService } from '../../../../services/api/staker.service';
 import { ExecuteMsg as StakerExecuteMsg } from '../../../../services/api/staker/execute_msg';
-import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
+import { MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit/modal';
 
 const DEPOSIT_FEE = '0.001';
 
@@ -117,7 +117,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   async refreshData() {
-    if (this.info.rewardInfos[this.vault.assetToken]){
+    if (this.info.rewardInfos[this.vault.assetToken]) {
       this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.assetToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.assetToken]?.bond_amount * 100);
     }
     if (this.vault.poolInfo.forceDepositType) {
@@ -496,17 +496,15 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         .times(ustAsset.amount).div(poolResponse.total_share).integerValue();
       const tokenAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
         .times(tokenAsset.amount).div(poolResponse.total_share).integerValue().toString();
-      const simulate = await this.terraSwap.query(this.vault.pairInfo.contract_addr, {
-        simulation: {
-          offer_asset: {
-            info: tokenAsset.info,
-            amount: tokenAmt,
-          }
-        }
-      });
-      this.withdrawTokenPrice = floor18Decimal(div(tokenAmt, simulate.return_amount));
-      this.withdrawUST = ustAmt.plus(simulate.return_amount).toString();
-      this.withdrawMinUST = ustAmt.plus(times(simulate.return_amount, 1 - +this.SLIPPAGE)).toString();
+      const tokenPool2 = new BigNumber(tokenAsset.amount).minus(tokenAmt);
+      const ustPool2 = new BigNumber(ustAsset.amount).minus(ustAmt);
+      const returnAmt = ustPool2.minus(tokenPool2.times(ustPool2).div(tokenAsset.amount))
+        .times(1 - +CONFIG.TERRASWAP_COMMISSION)
+        .integerValue()
+        .toString();
+      this.withdrawTokenPrice = floor18Decimal(div(tokenAmt, returnAmt));
+      this.withdrawUST = ustAmt.plus(returnAmt).toString();
+      this.withdrawMinUST = ustAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
     } else {
       const poolResponse = this.info.poolResponses[this.vault.assetToken];
       const [tokenA, tokenB] = poolResponse.assets[0].info.token['contract_addr'] === this.vault.assetToken
@@ -516,17 +514,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         .times(tokenA.amount).div(poolResponse.total_share).integerValue();
       const tokenBAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
         .times(tokenB.amount).div(poolResponse.total_share).integerValue().toString();
-      const simulate = await this.terraSwap.query(this.vault.pairInfo.contract_addr, {
-        simulation: {
-          offer_asset: {
-            info: tokenB.info,
-            amount: tokenBAmt,
-          }
-        }
-      });
-      this.withdrawBaseTokenPrice = floor18Decimal(div(tokenBAmt, simulate.return_amount));
-      const withdrawA = tokenAAmt.plus(simulate.return_amount);
-      const withdrawMinA = tokenAAmt.plus(times(simulate.return_amount, 1 - +this.SLIPPAGE));
+
+      const tokenAPool2 = new BigNumber(tokenA.amount).minus(tokenAAmt);
+      const tokenBPool2 = new BigNumber(tokenB.amount).minus(tokenBAmt);
+      const returnAmt = tokenAPool2.minus(tokenAPool2.times(tokenBPool2).div(tokenB.amount))
+        .times(1 - +CONFIG.TERRASWAP_COMMISSION)
+        .integerValue()
+        .toString();
+
+      this.withdrawBaseTokenPrice = floor18Decimal(div(tokenBAmt, returnAmt));
+      const withdrawA = tokenAAmt.plus(returnAmt);
+      const withdrawMinA = tokenAAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE));
 
       const simulate2 = await this.terraSwap.query(this.info.pairInfos[tokenA.info.token['contract_addr']].contract_addr, {
         simulation: {

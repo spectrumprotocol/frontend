@@ -13,6 +13,8 @@
 export type Decimal = string;
 
 export interface ConfigInfo {
+  anchor_market: string;
+  aust_token: string;
   base_denom: string;
   community_fee: Decimal;
   controller: string;
@@ -22,10 +24,10 @@ export interface ConfigInfo {
   orion_staking: string;
   orion_token: string;
   owner: string;
+  pair_contract: string;
   platform: string;
   platform_fee: Decimal;
   spectrum_gov: string;
   spectrum_token: string;
-  terraswap_factory: string;
   [k: string]: unknown;
 }

@@ -37,6 +37,8 @@ export interface RewardInfoResponseItem {
   auto_bond_share: Uint128;
   auto_spec_share_index: Decimal;
   bond_amount: Uint128;
+  deposit_amount?: Uint128 | null;
+  deposit_time?: number | null;
   farm_share: Uint128;
   farm_share_index: Decimal;
   pending_farm_reward: Uint128;

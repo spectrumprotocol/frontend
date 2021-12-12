@@ -20,6 +20,12 @@
  */
 export type Uint128 = string;
 export type VoteOption = "yes" | "no";
+/**
+ * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
+ *
+ * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
+ */
+export type Decimal = string;
 
 export interface BalanceResponse {
   balance: Uint128;
@@ -34,8 +40,10 @@ export interface VoterInfo {
   [k: string]: unknown;
 }
 export interface BalancePoolInfo {
+  aust_index?: Decimal & string;
   balance: Uint128;
   days: number;
+  pending_aust?: Uint128 & string;
   share: Uint128;
   unlock: number;
   [k: string]: unknown;

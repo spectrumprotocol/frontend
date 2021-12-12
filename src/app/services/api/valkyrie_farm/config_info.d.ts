@@ -13,17 +13,19 @@
 export type Decimal = string;
 
 export interface ConfigInfo {
+  anchor_market: string;
+  aust_token: string;
   base_denom: string;
   community_fee: Decimal;
   controller: string;
   controller_fee: Decimal;
   deposit_fee: Decimal;
   owner: string;
+  pair_contract: string;
   platform: string;
   platform_fee: Decimal;
   spectrum_gov: string;
   spectrum_token: string;
-  terraswap_factory: string;
   valkyrie_gov: string;
   valkyrie_staking: string;
   valkyrie_token: string;

@@ -277,7 +277,7 @@ export class InfoService {
         for (const key of Object.keys(this.stat.pairs)) {
           if (!stat.pairs[key]) {
             stat.pairs[key] = this.stat.pairs[key];
-      }
+          }
         }
       }
     });
@@ -292,14 +292,16 @@ export class InfoService {
       .reduce((a, b) => a + b, 0);
     const height = await this.terrajs.getHeight();
     const specPerHeight = config.mint_end > height ? config.mint_per_block : '0';
-    const ustPerYear = +specPerHeight * HEIGHT_PER_YEAR * +this.specPrice * (1 - +config.warchest_ratio);
+    const ustPerYear = +specPerHeight * HEIGHT_PER_YEAR * +this.specPrice
+      * (1 - +config.burnvault_ratio)
+      * (1 - +config.warchest_ratio);
     for (const pair of Object.values(stat.pairs)) {
       pair.specApr = ustPerYear * pair.multiplier / totalWeight / +pair.tvl;
       pair.dpr = (pair.poolApr + pair.specApr) / 365;
       stat.vaultFee += pair.vaultFee;
       stat.tvl = plus(stat.tvl, pair.tvl);
     }
-    stat.govApr = stat.vaultFee / stat.govPoolCount / +stat.govTvl;
+    stat.govApr = 0; // stat.vaultFee / stat.govPoolCount / +stat.govTvl;
     this.stat = stat;
     localStorage.setItem('stat', JSON.stringify(stat));
   }

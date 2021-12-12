@@ -7,6 +7,13 @@
 
 export type ExecuteMsg =
   | {
+      harvest: {
+        aust_amount?: Uint128 | null;
+        days?: number | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
       mint: {
         [k: string]: unknown;
       };
@@ -42,6 +49,8 @@ export type ExecuteMsg =
     }
   | {
       update_config: {
+        burnvault_address?: string | null;
+        burnvault_ratio?: Decimal | null;
         effective_delay?: number | null;
         expiration_period?: number | null;
         owner?: string | null;

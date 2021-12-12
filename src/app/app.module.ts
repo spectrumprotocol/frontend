@@ -151,7 +151,7 @@ registerLocaleData(locale, 'en');
     MdbModalService,
     {
       provide: APP_INITIALIZER,
-      useFactory: (terrajs: TerrajsService) => () => setTimeout(() => terrajs.connect(true), 1000),
+      useFactory: (terrajs: TerrajsService) => () => setTimeout(() => terrajs.connect(true), 1500),
       deps: [TerrajsService],
       multi: true
     },
