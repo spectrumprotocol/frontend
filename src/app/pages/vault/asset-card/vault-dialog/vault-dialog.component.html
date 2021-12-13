@@ -16,7 +16,7 @@
   </div>
    <div class="modal-body">
     <div class="row g-1">
-      <div class="col-12 col-lg-6">
+      <div class="col-12 col-lg-5">
         <div class="card box-left">
           <div class="card-body">
             <p class="card-text sub-topic">
@@ -28,7 +28,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-lg-3">
+      <div class="col-12 col-lg-4">
         <div class="card box-left">
           <div class="card-body">
             <p class="card-text sub-topic">
@@ -62,38 +62,24 @@
         <div class="card box-left">
           <div class="card-body">
             <p class="card-text sub-topic">
-              LP Deposited
+              LP Balance
             </p>
             <h3 class="card-title text-primary">
-              {{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
+              {{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6}}
               <span *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10" class="small text-white">
                 &nbsp;(${{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | lpBalance:
                 info.poolResponses : vault.assetToken | unit: 6: '1.0-2' }})</span>
                 <i *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10"
                   [mdbTooltip]="info.rewardInfos[vault.assetToken] | rewardInfo" class="fas fa-info-circle text-white info-icon margin-left-auto loat-end md-icon mg-10"></i>
             </h3>
-          </div>
-        </div>
-      </div>
-      <div class="col col-mb">
-        <div class="card box-left">
-          <div class="card-body">
-            <p class="card-text sub-topic">
-              SPEC reward
-            </p>
-            <h3 class="card-title text-primary">
-              {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
-              <span class="small text-white">
-                &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | balance:
-                info.poolResponses[terrajs.settings.specToken] |
-                unit: 6 : '1.0-2' }})
-              </span>
-            </h3>
+            <h6 class="card-subtitle text-success" *ngIf="info.rewardInfos[vault.assetToken]?.deposit_amount">
+              {{ info.rewardInfos[vault.assetToken] | lpEarning }}
+            </h6>
           </div>
         </div>
       </div>
       <div class="col col-mb" *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake">
-        <div class="card box-left">
+        <div class="card box-left h-100">
           <div class="card-body">
             <p class="card-text sub-topic">
               Staked {{ vault.poolInfo.token_symbol }}
@@ -109,8 +95,25 @@
           </div>
         </div>
       </div>
+      <div class="col col-mb">
+        <div class="card box-left h-100">
+          <div class="card-body">
+            <p class="card-text sub-topic">
+              SPEC reward
+            </p>
+            <h3 class="card-title text-primary">
+              {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
+              <span class="small text-white">
+                &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | balance:
+                info.poolResponses[terrajs.settings.specToken] |
+                unit: 6 : '1.0-2' }})
+              </span>
+            </h3>
+          </div>
+        </div>
+      </div>
       <div class="col col-mb" *ngIf="false">
-        <div class="card box-left">
+        <div class="card box-left h-100">
           <div class="card-body">
             <p class="card-text sub-topic">
               Staked ASTRO
