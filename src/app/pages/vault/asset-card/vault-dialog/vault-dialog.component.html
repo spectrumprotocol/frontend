@@ -2,10 +2,8 @@
    <div class="modal-header pb-0">
     <div class="col-11 d-flex justify-content-center">
         <div class="p-2 p-l-0 bulk-name-container">
-          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
-          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start token-denom">
-<!--          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon-list-sm float-start">-->
-<!--          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle assetIcon ust-outline float-start">-->
+          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start token-denom">
+          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start me-1">
           <div class="name-detail">
             <h6 class="m-0"> {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</h6>
             <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>

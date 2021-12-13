@@ -10,8 +10,8 @@
       class="row asset-card-info">
       <div class="col-12 col-md-3 text-center no-padding">
         <div class="p-2 bulk-name-container">
-          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon mt-2 float-start">
-          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon mt-2 float-start token-denom">
+          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start token-denom">
+          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon-sm float-start">
           <div class="name-detail">
             <h6 class="m-0"> {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</h6>
             <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
@@ -67,8 +67,8 @@
     class="row asset-card-info grid-container pt-3">
     <div class="col-12 d-flex justify-content-center no-padding">
       <div class="pt-2 p-l-0 bulk-name-container">
-        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
-        <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start token-denom">
+        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start token-denom">
+        <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon-sm float-start">
         <div class="name-detail">
           <h6 class="m-0">{{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</h6>
           <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
