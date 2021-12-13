@@ -84,7 +84,10 @@
             <h3 class="card-title text-primary">
               {{info.rewardInfos[vault.assetToken]?.pending_spec_reward || 0 | unit }}
               <span class="small text-white">
-                &nbsp;  (${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | unit: 6 : '1.0-2' }})</span>
+                &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_spec_reward || '0' | balance:
+                info.poolResponses[terrajs.settings.specToken] |
+                unit: 6 : '1.0-2' }})
+              </span>
             </h3>
           </div>
         </div>
@@ -98,7 +101,10 @@
             <h3 class="card-title text-primary">
               {{info.rewardInfos[vault.assetToken]?.pending_farm_reward || 0 | unit : vault.decimals }}
                     <span class="small text-white">
-                    &nbsp;  (${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | unit: vault.decimals : '1.0-2' }})</span>
+                  &nbsp;(${{ info.rewardInfos[vault.assetToken]?.pending_farm_reward || '0' | balance:
+                      info.poolResponses[vault.poolInfo.farmTokenContract] |
+                      unit: vault.decimals : '1.0-2' }})
+                    </span>
             </h3>
           </div>
         </div>
