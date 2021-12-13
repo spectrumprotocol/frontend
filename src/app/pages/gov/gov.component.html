@@ -101,7 +101,7 @@
       <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...
     </div>
 
-    <div class="row gy-4 pt-3">
+    <div class="row gy-3 pt-3">
       <div *ngFor="let detail of poolDetails; trackBy: trackPoolDetails" class="col-12">
         <app-gov-pool [detail]="detail" [walletBalance]="info.userSpecAmount || '0'"
           (transactionComplete)="fetchPoolDetails()">

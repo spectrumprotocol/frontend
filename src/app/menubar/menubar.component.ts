@@ -9,6 +9,8 @@ import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
 import { WasmService } from '../services/api/wasm.service';
 import { WalletService } from '../services/api/wallet.service';
 import { GovService } from '../services/api/gov.service';
+import { ValkyrieFarmService } from '../services/api/valkyrie-farm.service';
+import { NlunaPsiFarmService } from '../services/api/nluna-psi-farm.service';
 
 @Component({
   selector: 'app-menubar',
@@ -28,6 +30,8 @@ export class MenubarComponent implements OnInit, OnDestroy {
     private wasm: WasmService,
     private wallet: WalletService,
     private gov: GovService,
+    private valkyrie: ValkyrieFarmService,
+    private nlunaPsi: NlunaPsiFarmService,
   ) { }
 
   private processes: Subscription;
@@ -125,5 +129,18 @@ export class MenubarComponent implements OnInit, OnDestroy {
     //   }
     // });
 
+    // await this.wasm.migrate(this.terrajs.settings.nEthPsiFarm, 26963, {
+    //   anchor_market: this.terrajs.settings.anchorMarket,
+    //   aust_token: this.terrajs.settings.austToken,
+    //   terraswap_factory: this.terrajs.settings.terraSwapFactory,
+    // });
+    // await this.wasm.migrate(this.terrajs.settings.nLunaPsiFarm, 26963, {
+    //   anchor_market: this.terrajs.settings.anchorMarket,
+    //   aust_token: this.terrajs.settings.austToken,
+    //   terraswap_factory: this.terrajs.settings.terraSwapFactory,
+    // });
+
+    // await this.wasm.execute(this.terrajs.settings.nLunaPsiFarm, { compound: {}});
+    // await this.wasm.execute(this.terrajs.settings.nEthPsiFarm, { compound: {}});
   }
 }

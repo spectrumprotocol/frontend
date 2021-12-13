@@ -30,7 +30,6 @@ export class UnstakeAllComponent {
 
     const modal = await import('../manage-rewards/manage-rewards.component');
     this.modalService.open(modal.ManageRewardsComponent, {
-      ignoreBackdropClick: true,
       modalClass: 'modal-manage-rewards',
     });
   }
