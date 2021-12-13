@@ -15,13 +15,6 @@
 }
 
 .assetIcon {
-  width: 44px;
-  height: 44px;
-  padding: 2px;
-  margin-right: -14px;
-}
-
-.assetIcon-sm {
   width: 33px;
   height: 33px;
   padding: 2px;
@@ -29,7 +22,8 @@
 
 .token-denom{
   position: inherit;
-  margin-top: -10px;
+  //z-index: -1;
+  margin-left: -10px;
 }
 
 .loading-asset-card {
