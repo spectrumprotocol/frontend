@@ -1,11 +1,11 @@
-<div class="card asset-card hover-shadow">
+<div class="card asset-card hover-shadow" [ngClass]="{'min-asset-card': isGrid}">
   <span class="position-absolute" *ngIf="+info.rewardInfos[vault.assetToken]?.bond_amount >= 10">
     <div class="badge-disabled text-white">Deposited</div>
   </span>
   <span class="position-absolute grid-badge mb-1" *ngIf="info.DISABLED_VAULTS.includes(vault.symbol)">
       <div class="badge-deposit-disabled">Deposit Disabled</div>
   </span>
-  <div class="card-body pt-15" [ngClass]="{'min-asset-card': isGrid}">
+  <div class="card-body pt-15">
     <div *ngIf="!isGrid" (click)="openModal()"
       class="row asset-card-info">
       <div class="col-12 col-md-3 text-center no-padding">
