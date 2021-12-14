@@ -120,13 +120,15 @@ export class GovComponent implements OnInit, OnDestroy {
       .map((pool) => {
         const balanceInfo = this.myBalance?.pools.find(p => p.days === pool.days);
         const userBalance = div(balanceInfo?.balance ?? 0, CONFIG.UNIT);
-        const userProfit = times(div(balanceInfo?.pending_aust ?? 0, CONFIG.UNIT), state.exchange_rate);
+        const userAUst = div(balanceInfo?.pending_aust ?? 0, CONFIG.UNIT);
+        const userProfit = times(userAUst, state.exchange_rate);
         const unlockAt = balanceInfo?.unlock ? new Date(balanceInfo.unlock * 1000) : null;
         const poolTvl = +pool.total_balance * +this.info.specPrice;
         const apr = vaultFeeByPools[pool.days] / poolTvl;
 
         return {
           userBalance,
+          userAUst,
           userProfit,
           unlockAt,
           days: pool.days,

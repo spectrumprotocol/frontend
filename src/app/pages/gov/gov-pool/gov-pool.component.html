@@ -59,10 +59,10 @@
             </div>
             <div class="f-14" *ngIf="!+detail.userBalance"><span>-</span></div>
           </div>
-            </div>
         </div>
       </div>
     </div>
+  </div>
 
   <div class="card-body pool-mobile" #belowSection="mdbCollapse" mdbCollapse>
     <div class="p-3 bg-dark rounded">
@@ -174,7 +174,30 @@
         </mdb-tab>
 
         <mdb-tab title="Claim profit">
-          <!-- TODO -->
+          <div class="p-3">
+            <div class="small mt-6">
+            </div>
+            <div class="row mt-3">
+              <div class="col">
+                aUST
+              </div>
+              <div class="col text-end">
+                {{ detail.userAUst | number }}
+                <small class="text-muted">
+                  (${{ detail.userProfit | number }})
+                </small>
+              </div>
+            </div>
+            <div class="row gx-2 mt-2">
+              <div class="d-grid col-6">
+                <button (click)="doClaimReward(true)" [disabled]="!+detail.userAUst" class="btn btn-primary" type="submit">Claim as UST</button>
+              </div>
+              <div class="d-grid col-6">
+                <button (click)="doClaimReward(false)" [disabled]="!+detail.userAUst" class="btn btn-secondary" type="submit">Claim as
+                  aUST</button>
+              </div>
+            </div>
+          </div>
         </mdb-tab>
       </mdb-tabs>
     </div>
