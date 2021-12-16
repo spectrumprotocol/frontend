@@ -1,6 +1,6 @@
 <div class="modal-header pb-0">
   <div class="col-11 d-flex justify-content-center">
-    <div class="p-2 p-l-0 bulk-name-container">
+    <div class="p-2 p-l-0 bulk-name-container" *ngIf="vault.poolInfo.farmType === 'LP'">
       <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
       <img [src]="vault.poolInfo.pairSymbol | url:'icon'"
         class="img-fluid rounded-circle assetIcon float-start token-denom">
@@ -8,6 +8,13 @@
       <!--          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle assetIcon ust-outline float-start">-->
       <div class="name-detail">
         <h6 class="m-0"> {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</h6>
+        <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
+      </div>
+    </div>
+    <div class="p-2 p-l-0 bulk-name-container" *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+      <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
+      <div class="name-detail">
+        <h6 class="m-0">{{vault.poolInfo.pairSymbol}}</h6>
         <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
       </div>
     </div>
@@ -133,7 +140,8 @@
       <mdb-tabs [fill]="true">
         <mdb-tab title="Deposit" *ngIf="!info.DISABLED_VAULTS.includes(vault.symbol)">
           <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
-            <div *ngIf="depositMode === 'tokentoken'" class="mt-3">
+            <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
+              <div *ngIf="depositMode === 'tokentoken'" class="mt-3">
               <div class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
@@ -270,7 +278,7 @@
               </div>
 
             </div>
-            <div *ngIf="depositMode === 'lp'" class="mt-3">
+              <div *ngIf="depositMode === 'lp'" class="mt-3">
               <div class="small">
                 Already have LP token? Deposit here, or
                 <a href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
@@ -315,7 +323,7 @@
                 </div>
               </div>
             </div>
-            <div *ngIf="depositMode === 'ust'" class="mt-3">
+              <div *ngIf="depositMode === 'ust'" class="mt-3">
               <div class="small">
                 Use UST to buy {{ vault.symbol }}<span *ngIf="vault.poolInfo.pairSymbol !== 'UST'">, and {{
                   vault.poolInfo.pairSymbol }}</span> to create {{ vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP.
@@ -377,6 +385,80 @@
                 </div>
               </div>
             </div>
+            </ng-container>
+            <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+                <div class="card card-green">
+                  <div class="card-body">
+                    <div class="small p-2">
+                      <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.symbol }}?
+                      <a [href]="vault.symbol | url:'deposit_pylon_gateway'" target="_blank">Deposit via Pylon Gateway</a>
+                      or <a [href]="vault.symbol | url:'trade'" target="_blank">Buy</a>
+                      {{ vault.symbol }} to farm
+                      with
+                    </div>
+                  </div>
+                </div>
+                <div class="text-end small mt-3 mb-1 text-muted fw-bold-600">
+                  <span class="sub-topic">Balance: </span>
+                  <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.assetToken]"
+                        class="spinner-grow spinner-small mb-1" role="status" aria-hidden="true">
+                    <span class="visually-hidden">Loading...</span>
+                  </span>
+                  <span class="text-white">{{ info.tokenBalances[vault.assetToken] | unit }} {{ vault.symbol }}</span>
+                </div>
+                <div class="input-group">
+                  <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
+                    <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle me-1" width="24" height="24">{{ vault.symbol }}</span>
+                  <input #depositUSTAmtUSTCtl="ngModel" (input)="depositUSTChanged(false, $event)"
+                         [(ngModel)]="depositUSTAmtUST"
+                         [class.is-invalid]="(formDeposit.submitted || depositUSTAmtUSTCtl.touched) && depositUSTAmtUSTCtl.invalid"
+                         [max]="+info.userUstAmount" [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
+                         class="form-control fix-border" name="depositUSTAmtUST" required type="number" />
+                  <button (click)="setMaxDepositUST()" class="btn btn-max last" type="button">
+                    Max
+                  </button>
+                </div>
+
+                <div *ngIf="depositUSTAmtUST" class="mt-3 pool-info">
+                  <div class="row">
+                    <div class="col">Expected {{vault.poolInfo.pairSymbol === 'UST' ? vault.symbol :
+                      vault.poolInfo.pairSymbol}} Price</div>
+                    <div class="col text-end">{{tokenPrice | number:'0.0-6' }} UST</div>
+                  </div>
+                  <div class="row" *ngIf="vault.poolInfo.pairSymbol !== 'UST'">
+                    <div class="col">Expected {{vault.symbol}} Price</div>
+                    <div class="col text-end">{{basedTokenPrice | number:'0.0-6' }}
+                      {{vault.poolInfo.pairSymbol}}</div>
+                  </div>
+                  <div class="row">
+                    <div class="col">Gross LP</div>
+                    <div *ngIf="+grossLpUST > 0" class="col text-end">{{grossLpUST | number }} LP</div>
+                    <div *ngIf="!(+grossLpUST > 0)" class="col text-end">
+                      <div class="spinner-grow spinner-small" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="+depositFeeUST" class="row">
+                    <div class="col">Deposit Fee (&lt;0.1%)</div>
+                    <div *ngIf="+depositFeeUST > 0" class="col text-end">{{depositFeeUST | number }} LP</div>
+                    <div *ngIf="!(+depositFeeUST > 0)" class="col text-end">
+                      <div class="spinner-grow spinner-small" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="+depositFeeUST" class="row">
+                    <div class="col">Net LP</div>
+                    <div *ngIf="+netLpUST > 0" class="col text-end">{{netLpUST | number }} LP</div>
+                    <div *ngIf="!(+netLpUST > 0)" class="col text-end">
+                      <div class="spinner-grow spinner-small" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </ng-container>
             <!-- TODO -->
             <div *ngIf="!vault.poolInfo.forceDepositType" class="auto-container mt-3">
               <span class="btn-group w-100">
@@ -516,7 +598,6 @@
               </div>
             </div>
           </form>
-
         </mdb-tab>
         <mdb-tab title="Reallocate"
           *ngIf="!vault.poolInfo.forceDepositType && !info.DISABLED_VAULTS.includes(vault.symbol)">
@@ -696,7 +777,25 @@
 
 
   <ng-template #depositModeSection>
-    <div mdbDropdown class="dropdown" #dropdownDepositMode>
+    <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+      <ng-container *ngIf="depositMode === 'tokentoken'">
+        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }}
+      </ng-container>
+<!--      <div class="input-group">-->
+<!--                      <span class="input-group-text f-12 igt-fixwidth fw-bold-600"><img [src]="'UST' | url:'icon'"-->
+<!--                                                                                        class="img-fluid rounded-circle me-1" width="24" height="24">UST</span>-->
+<!--        <input #depositAmountUSTTokenUSTCtl="ngModel" [(ngModel)]="depositUSTAmountTokenUST"-->
+<!--               [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" readonly-->
+<!--               [max]="+info.userUstAmount - this.bufferUST" [min]="0.000001" [step]="0.000001"-->
+<!--               aria-describedby="USTLabel" class="form-control fix-border" name="depositUSTAmountTokenUST"-->
+<!--               required type="number" />-->
+<!--        <div class="invalid-feedback text-end" *ngIf="depositAmountUSTTokenUSTCtl.errors?.max">UST is not-->
+<!--          enough for-->
+<!--          this transaction</div>-->
+<!--      </div>-->
+    </ng-container>
+    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
+      <div mdbDropdown class="dropdown" #dropdownDepositMode>
       <button mdbDropdownToggle class="btn dropdown-toggle btn-drop" type="button">
         <ng-container *ngIf="depositMode === 'tokentoken'"><img [src]="vault.symbol | url:'icon'"
             class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }}</ng-container>
@@ -725,6 +824,7 @@
             <img [src]="'UST' | url:'icon'" width="25" height="25" class="deposit-ust">UST</a></li>
       </ul>
     </div>
+    </ng-container>
   </ng-template>
 
   <ng-template #withdrawModeSection>

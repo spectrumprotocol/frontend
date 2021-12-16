@@ -6,6 +6,7 @@ import { PoolItem } from '../api/pylon_liquid_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo
@@ -21,12 +22,12 @@ import {BPsiDpFarmService} from '../api/bpsidp-farm.service';
 @Injectable()
 export class BPsiDPFarmInfoService implements FarmInfoService {
   farm = 'Pylon Liquid Pool';
-  tokenSymbol = 'bPsiDP';
+  tokenSymbol = 'Psi';
   autoCompound = true;
   autoStake = true;
   farmColor = '#00cfda';
-  pairSymbol = 'Psi';
-  farmType: 'PYLON_LIQUID' = 'PYLON_LIQUID';
+  pairSymbol = 'bPsiDP-24m';
+  farmType: FARM_TYPE_ENUM = 'PYLON_LIQUID';
 
   constructor(
     private bPsiDpFarmService: BPsiDpFarmService,

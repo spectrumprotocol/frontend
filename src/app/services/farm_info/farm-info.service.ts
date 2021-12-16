@@ -10,6 +10,7 @@ import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem | PylonLiquidPoolItem;
+export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID';
 export type PoolInfo = PoolItem & {
   farm: string;
   token_symbol: string;
@@ -17,6 +18,7 @@ export type PoolInfo = PoolItem & {
   farmContract: string;
   pairSymbol: string;
   auditWarning?: boolean;
+  farmType: FARM_TYPE_ENUM;
 };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
@@ -57,7 +59,7 @@ export interface FarmInfoService {
   // color for chart
   readonly farmColor: string;
 
-  readonly farmType?: 'LP' | 'PYLON_LIQUID';
+  readonly farmType?: FARM_TYPE_ENUM;
 
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>>;

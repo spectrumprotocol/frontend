@@ -40,6 +40,7 @@ export class UrlPipe implements PipeTransform {
           case 'ORNb': return `https://orion.money/img/ico-tabs-06.svg`;
           case 'KUJI': return `https://assets.kujira.app/kuji.png`;
           case 'Kujira': return `https://assets.kujira.app/kuji.png`;
+          case 'bPsiDP-24m': return 'https://assets.pylon.rocks/logo/bPsiDP.png';
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -60,6 +61,7 @@ export class UrlPipe implements PipeTransform {
           case 'ORION': return `https://terra.orion.money/`;
           case 'ORNb': return `https://terra.orion.money/`;
           case 'KUJI': return `https://blue.kujira.app/`;
+          case 'bPsiDP-24m': return 'https://app.terraswap.io/#Swap';
           default: return 'https://terra.mirror.finance/trade#buy';
         }
       case 'mint':
@@ -67,6 +69,11 @@ export class UrlPipe implements PipeTransform {
           return 'https://terra.mirror.finance/mint#open';
         } else if (symbol.startsWith('n')) {
           return `https://terra.nexusprotocol.app/vaults`;
+        }
+        return undefined;
+      case 'deposit_pylon_gateway':
+        switch (symbol) {
+          case 'bPsiDP-24m': return 'https://gateway.pylon.money/tokens/psi';
         }
         return undefined;
     }
