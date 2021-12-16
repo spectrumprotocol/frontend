@@ -409,6 +409,7 @@
                 <div class="input-group">
                   <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
                     <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle me-1" width="24" height="24">{{ vault.symbol }}</span>
+<!--                  TODO to be continue-->
                   <input #depositUSTAmtUSTCtl="ngModel" (input)="depositUSTChanged(false, $event)"
                          [(ngModel)]="depositUSTAmtUST"
                          [class.is-invalid]="(formDeposit.submitted || depositUSTAmtUSTCtl.touched) && depositUSTAmtUSTCtl.invalid"
