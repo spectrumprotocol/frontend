@@ -269,10 +269,14 @@
               </div>
 
             </div>
-            <div *ngIf="depositMode === 'lp'" class="mt-3">
-              <div class="small">
-                Already have LP token? Deposit here, or
-                <a href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
+            <div class="mt-3" *ngIf="depositMode === 'lp'">
+              <div class="card card-green">
+                <div class="card-body">
+                  <div class="small p-2">
+                    <i class="fas fa-info-circle info-icon"></i>  Already have LP token? Deposit here, or <a
+                      href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
+                  </div>
+                </div>
               </div>
               <div class="text-end small mt-3 mb-1 fw-bold-600">
                 <span class="sub-topic">Balance: </span>
