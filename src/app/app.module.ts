@@ -76,6 +76,7 @@ import {MdbValidationModule} from 'mdb-angular-ui-kit/validation';
 import {ModalService} from './services/modal.service';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import { LpEarningPipe } from './pipes/lp-earning.pipe';
+import {BPsiDPFarmInfoService} from './services/farm_info/bPsiDP.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -159,6 +160,7 @@ registerLocaleData(locale, 'en');
     },
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: KujiraFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },

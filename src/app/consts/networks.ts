@@ -49,6 +49,10 @@ export interface ISettings {
   kujiraStaking: string;
   kujiraToken: string;
   kujiraFarm: string;
+  govProxyNexus: string;
+  bPsiDPFarm: string;
+  bPsiDPGatewayPool: string;
+  bPsiDPToken: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -113,6 +117,10 @@ export const networks: Record<string, ISettings> = {
     kujiraStaking: 'terra1cf9q9lq7tdfju95sdw78y9e34a6qrq3rrc6dre',
     kujiraToken: 'terra1xfsdgcemqwxp4hhnyk4rle6wr22sseq7j07dnn', // kujiraLP: 'terra1cmqv3sjew8kcm3j907x2026e4n0ejl2jackxlx'
     kujiraFarm: 'terra15x4hysms59x5eek6esg3f2jycalpypdcl6sy7j',
+    govProxyNexus: 'terra1l8vacm08pztq3ra3v9jaarun0ute78cy0t7rpl',
+    bPsiDPFarm: 'terra16pvd0caje2qmy79zryunawvdfh4e020xe468zs',
+    bPsiDPGatewayPool: 'terra1fmnedmd3732gwyyj47r5p03055mygce98dpte2', // what is terra12k0p3qvfhy6j5e3ef8kzusy29lzwykk5d95kk5
+    bPsiDPToken: 'terra1zsaswh926ey8qa5x4vj93kzzlfnef0pstuca0y', // Pylon Psi-bPsiDP-24m Pair terra167gwjhv4mrs0fqj0q5tejyl6cz6qc2cl95z530
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -176,6 +184,10 @@ export const networks: Record<string, ISettings> = {
     kujiraStaking: 'terra16gd9lq7urpy8txfqd224lqfxwxs4fwr742yptu',
     kujiraToken: 'terra1azu2frwn9a4l6gl5r39d0cuccs4h7xlu9gkmtd', // kujiraLP: 'terra18wn5m5rd4yd82kp9s07gwx9x0vn00wdj8dezv8'
     kujiraFarm: 'terra16ppenx9paca846mj39axlqhtxgz8n9az5pantj',
+    govProxyNexus: '',
+    bPsiDPFarm: '',
+    bPsiDPGatewayPool: '',
+    bPsiDPToken: '',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
