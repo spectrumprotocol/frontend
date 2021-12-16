@@ -25,34 +25,32 @@
             </div>
           </div>
           <div class="col-6 mt-1">
-            <div class="f-12 sub-topic">APR</div>
+            <div class="f-12 sub-topic">APR <i class="fas fa-info-circle info-icon super" mdbTooltip="SPEC staking return from vault fee"></i></div>
             <div class="fs-6 fw-bold"> {{ detail.apr | percent }}
-              <i class="fas fa-info-circle info-icon" mdbTooltip="SPEC staking return from vault fee"></i>
             </div>
           </div>
           <div class="col-6 mt-1">
             <div class="ur-staked">
               <div class="f-12 sub-topic">
-                Your Staked</div>
-              <div class="f-14" *ngIf="+detail.userBalance">
+                Your Staked <span *ngIf="+detail.userBalance > 0 && detail.unlockAt && isWithdrawLocked">
+                  <small class="text-primary">
+                    <i class="fas fa-lock"></i>
+                    Unlock {{ detail.unlockAt | timeago }}
+                  </small>
+                </span></div>
+              <div class="f-14 fw-bold" *ngIf="+detail.userBalance">
                 <span class="fs-6 text-primary">
                   <app-digit [value]="+detail.userBalance"></app-digit>
                   <span *ngIf="!+detail.userBalance">-</span>
                 </span> <span class="cur-title"> SPEC</span>
               </div>
               <div class="f-14" *ngIf="!+detail.userBalance"><span>-</span></div>
-              <div *ngIf="+detail.userBalance > 0 && detail.unlockAt && isWithdrawLocked">
-                <small class="text-primary">
-                  <i class="fas fa-lock"></i>
-                  Unlock {{ detail.unlockAt | timeago }}
-                </small>
-              </div>
             </div>
           </div>
           <div class="col-6 mt-1">
             <div class="f-12 sub-topic">
               Your Profit</div>
-            <div class="f-14" *ngIf="+detail.userBalance">
+            <div class="f-14 fw-bold" *ngIf="+detail.userBalance">
               <span class="fs-6 text-primary">
                 <app-digit [value]="+detail.userProfit"></app-digit>
               </span> <span class="cur-title"> UST</span>
@@ -67,7 +65,7 @@
   <div class="card-body pool-mobile" #belowSection="mdbCollapse" mdbCollapse>
     <div class="row tab-container g-0">
     <!-- <div class="p-3 bg-dark rounded"> -->
-      <mdb-tabs [fill]="true" (activeTabChange)="onActiveTabChange()">
+      <mdb-tabs [justified]="true" (activeTabChange)="onActiveTabChange()">
         <mdb-tab title="Deposit">
           <div class="d-grid gap-3 p-3">
             <div>

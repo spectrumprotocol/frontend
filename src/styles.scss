@@ -302,7 +302,7 @@ input[type="number"] {
 }
 
 .hover-shadow {
-  border: 0 none $primary;
+  border: 1px solid transparent;
 }
 
 .hover-shadow:hover {
@@ -553,6 +553,9 @@ input[type="number"] {
     &:hover {
       background-color: transparent;
     }
+    &.disabled {
+      color: $gray-400 !important;
+    }
   }
 
   .nav-link.active {
@@ -583,6 +586,7 @@ input[type="number"] {
 .tab-container {
   .nav {
     margin-bottom: 0 !important;
+    align-items: flex-end;
   }
 
   .tab-content {
@@ -608,6 +612,7 @@ input[type="number"] {
     padding: 15px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+    height: 100%;
   }
 
   .nav-link.active {
@@ -934,4 +939,8 @@ i.fa-sort-down {
 
 .border-6 {
   border-radius: 6px;
+}
+
+.asset-card-info {
+  padding: 0.5rem;
 }
