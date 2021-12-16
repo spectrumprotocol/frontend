@@ -1,6 +1,6 @@
-@import 'src/scss/variables';
-@import '~mdb-angular-ui-kit/assets/scss/free/variables';
-@import 'src/scss/dark';
+@import "src/scss/variables";
+@import "~mdb-angular-ui-kit/assets/scss/free/variables";
+@import "src/scss/dark";
 
 .poll-card {
     background-color: $second-bg;
@@ -20,7 +20,7 @@
 
 .indicator {
     height: 4px;
-    border-color: #A4A5A8 !important;
+    border-color: #a4a5a8 !important;
     margin-top: 20px;
 }
 
@@ -30,16 +30,15 @@
     height: 10px;
 }
 
-.threshold-above-vote-bar{
-  margin-left: -2.5em;
-  width: fit-content;
-  position: absolute;
-  top: 5px;
+.threshold-above-vote-bar {
+    margin-left: -2.5em;
+    width: fit-content;
+    position: absolute;
+    top: 5px;
 }
 
-.quorum-above-vote-bar{
-  width: fit-content;
-  position: absolute;
-  top: 5px;
+.quorum-above-vote-bar {
+    width: fit-content;
+    position: absolute;
+    top: 5px;
 }
-

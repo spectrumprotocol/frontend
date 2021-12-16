@@ -4,11 +4,12 @@
     border-radius: 6px;
     margin: 15px 5px 15px 5px;
     background-color: $btn-bg;
-    button[type=submit] {
+    button[type="submit"] {
         height: 48px;
     }
     .needs-validation {
-        button, input {
+        button,
+        input {
             font-size: 16px;
             font-weight: bold;
         }
@@ -25,7 +26,7 @@
 
     span.is-invalid {
         border: 1px solid $text-error;
-      }
+    }
 
     .fix-border {
         text-align: right;
@@ -36,24 +37,25 @@
         &:focus {
             box-shadow: none;
         }
-      }
+    }
 
-      .fix-border::placeholder {
+    .fix-border::placeholder {
         color: $white;
-      }
-      
-      .fix-border.is-invalid {
+    }
+
+    .fix-border.is-invalid {
         border: 1px solid $text-error;
         z-index: 5;
-      }
-      
-      .fw-bold-600 {
+    }
+
+    .fw-bold-600 {
         font-weight: 600;
-      }
-      
+    }
+
     .is-invalid {
         // border: 1px solid $text-error;
-        &:focus, .is-invalid:hover {
+        &:focus,
+        .is-invalid:hover {
             box-shadow: none;
         }
     }

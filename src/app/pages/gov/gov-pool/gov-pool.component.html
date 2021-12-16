@@ -21,7 +21,7 @@
             <div class="f-14">
               <span class="fs-6 fw-bold">
                 <app-digit [value]="+detail.balance"></app-digit>
-              </span> <span class="cur-title">SPEC</span>
+              </span> <span class="cur-title"> SPEC</span>
             </div>
           </div>
           <div class="col-6 mt-1">
@@ -38,7 +38,7 @@
                 <span class="fs-6 text-primary">
                   <app-digit [value]="+detail.userBalance"></app-digit>
                   <span *ngIf="!+detail.userBalance">-</span>
-                </span> <span class="cur-title">SPEC</span>
+                </span> <span class="cur-title"> SPEC</span>
               </div>
               <div class="f-14" *ngIf="!+detail.userBalance"><span>-</span></div>
               <div *ngIf="+detail.userBalance > 0 && detail.unlockAt && isWithdrawLocked">
@@ -55,7 +55,7 @@
             <div class="f-14" *ngIf="+detail.userBalance">
               <span class="fs-6 text-primary">
                 <app-digit [value]="+detail.userProfit"></app-digit>
-              </span> <span class="cur-title">UST</span>
+              </span> <span class="cur-title"> UST</span>
             </div>
             <div class="f-14" *ngIf="!+detail.userBalance"><span>-</span></div>
           </div>
@@ -66,7 +66,7 @@
 
   <div class="card-body pool-mobile" #belowSection="mdbCollapse" mdbCollapse>
     <div class="p-3 bg-dark rounded">
-      <mdb-tabs [justified]="true" (activeTabChange)="onActiveTabChange()">
+      <mdb-tabs [fill]="true" (activeTabChange)="onActiveTabChange()">
         <mdb-tab title="Deposit">
           <div class="d-grid gap-3">
             <div>
@@ -75,8 +75,8 @@
                 <span class="text-white">{{ walletBalance | number }} SPEC</span>
               </div>
               <div class="input-group">
-                <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"
-                  [ngClass]="{'is-invalid': depositAmountModel.invalid }">SPEC</span>
+                <span class="input-group-text f-12 igt-fixwidth fw-bold-600"
+                  [ngClass]="{'is-invalid': depositAmountModel.invalid }"><img width="24" height="24" class="me-2" src="/assets/SPEC.png"> SPEC</span>
                 <input type="number" class="form-control fix-border" [class.is-invalid]="depositAmountModel.invalid"
                   placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+walletBalance"
                   [(ngModel)]="depositAmount" #depositAmountModel="ngModel" (change)="calculateDepositUnlock()">
@@ -116,8 +116,8 @@
                 <span class="text-white">{{ detail.userBalance | number }} SPEC</span>
               </div>
               <div class="input-group">
-                <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"
-                  [ngClass]="{ 'is-invalid' : moveAmountModel.invalid }">SPEC</span>
+                <span class="input-group-text f-12 igt-fixwidth fw-bold-600"
+                  [ngClass]="{ 'is-invalid' : moveAmountModel.invalid }"><img width="24" height="24" class="me-2" src="/assets/SPEC.png"> SPEC</span>
                 <input type="number" class="form-control fix-border" [class.is-invalid]="moveAmountModel.invalid"
                   placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userBalance"
                   [(ngModel)]="moveAmount" #moveAmountModel="ngModel" (change)="calculateMoveUnlock()">
@@ -153,8 +153,8 @@
                 </span>
               </div>
               <div class="input-group">
-                <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"
-                  [ngClass]="{'is-invalid': withdrawAmountModel.invalid }">SPEC</span>
+                <span class="input-group-text f-12 igt-fixwidth fw-bold-600"
+                  [ngClass]="{'is-invalid': withdrawAmountModel.invalid }"><img width="24" height="24" class="me-2" src="/assets/SPEC.png"> SPEC</span>
                 <input type="number" class="form-control fix-border" [class.is-invalid]="withdrawAmountModel.invalid"
                   placeholder="0.000000" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [max]="+detail.userAvailableBalance"
                   [(ngModel)]="withdrawAmount" #withdrawAmountModel="ngModel" [disabled]="isWithdrawLocked">

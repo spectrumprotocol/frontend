@@ -37,7 +37,7 @@ export class GovComponent implements OnInit, OnDestroy {
   constructor(
     private gov: GovService,
     public info: InfoService,
-    private terrajs: TerrajsService,
+    public terrajs: TerrajsService,
     private anchorMarket: AnchorMarketService,
     private httpClient: HttpClient,
     protected $gaService: GoogleAnalyticsService

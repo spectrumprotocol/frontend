@@ -7,7 +7,7 @@
                 </a>
             </div>
             <div class="col-9 col-md-11">
-                 <h4>Poll details</h4>
+                <h4 class="lh-base">Poll details</h4>
             </div>
         </div>
         <div class="row pt-3">
@@ -45,7 +45,7 @@
         </div>
         <div class="row pt-3" *ngIf="canVote">
             <div class="card spec-form">
-                <div class="card-header">
+                <div class="card-header mt-1 fw-bold">
                     Vote
                 </div>
                 <div class="card-body vote-container">
@@ -89,7 +89,7 @@
         </div>
         <div class="row pt-3" *ngIf="yourVote">
             <div class="card spec-form">
-                <div class="card-header">
+                <div class="card-header mt-1 fw-bold">
                     Voted
                 </div>
                 <div class="card-body">
@@ -104,7 +104,7 @@
         </div>
         <div class="row pt-3" *ngIf="canEnd">
             <div class="card spec-form">
-                <div class="card-header">
+                <div class="card-header mt-1 fw-bold">
                     End Poll
                 </div>
                 <div class="card-body">
@@ -118,7 +118,7 @@
         </div>
         <div class="row pt-3" *ngIf="canExecute">
             <div class="card spec-form">
-                <div class="card-header">
+                <div class="card-header mt-1 fw-bold">
                     Execute Poll
                 </div>
                 <div class="card-body">

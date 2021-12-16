@@ -1,4 +1,4 @@
-<a class="card poll-card hover-shadow" [class.link]="link" [class.done]="poll.status !== 'in_progress'"
+<a class="card poll-card" [class.hover-shadow]="link" [class.link]="link" [class.done]="poll.status !== 'in_progress'"
     [routerLink]="link && '/' + link + '/poll/' + poll.id" tabindex="-1">
     <span class="position-absolute">
         <div class="badge-staked badge-progress" *ngIf="poll.status === 'in_progress'">In progress</div>

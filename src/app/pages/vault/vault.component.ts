@@ -107,7 +107,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.updateShouldBeGrid();
-    if (this.shouldBeGrid || (!localStorage.getItem('isGrid') || localStorage.getItem('isGrid') === 'true')) {
+    if (this.shouldBeGrid || localStorage.getItem('isGrid') !== 'false') {
       this.isGrid = true;
     } else {
       this.isGrid = false;
@@ -116,7 +116,7 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   updateShouldBeGrid() {
     this.innerWidth = window.innerWidth;
-    if (+this.innerWidth <= 991) {
+    if (+this.innerWidth <= 575) {
       this.shouldBeGrid = true;
     } else {
       this.shouldBeGrid = false;

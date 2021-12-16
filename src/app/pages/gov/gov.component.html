@@ -21,11 +21,11 @@
               </p>
               <h3 class="card-title">
                 <app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit>
-                  <span class="cur-title"> SPEC (<app-digit
+                <span class="cur-title"> SPEC (<app-digit
                     [value]="info.circulation ? +info.stat?.govStaked * 100 / +info.circulation : 0"></app-digit>%)
-                    <i class="fas fa-info-circle info-icon"
+                  <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-10"
                     mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
-                  </span>
+                </span>
               </h3>
             </div>
           </div>
@@ -37,10 +37,10 @@
                 Circulation Supply
               </p>
               <h3 class="card-title">
-                <app-digit [value]="+info.circulation / UNIT"></app-digit> 
+                <app-digit [value]="+info.circulation / UNIT"></app-digit>
                 <span class="cur-title"> SPEC
-                  <i class="fas fa-info-circle info-icon"
-                  mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
+                  <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-10"
+                    mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
                 </span>
               </h3>
             </div>
@@ -50,10 +50,11 @@
           <div class="card card-grey box-left">
             <div class="card-body ps-3">
               <p class="card-text sub-topic">
-                Market Capitalization
+                Market Cap
               </p>
               <h3 class="card-title">
-                <app-digit *ngIf="info.marketCap" [value]="info.marketCap"></app-digit>&nbsp;<span class="cur-title" *ngIf="info.marketCap">UST</span>
+                <app-digit *ngIf="info.marketCap" [value]="info.marketCap"></app-digit>&nbsp;<span class="cur-title"
+                  *ngIf="info.marketCap"> UST</span>
               </h3>
             </div>
           </div>
@@ -61,28 +62,27 @@
       </div>
     </div>
 
-    <h4>Your Staking Pools<i class="fas fa-info-circle info-icon"
+    <h4>Staking Pools <i class="fas fa-info-circle info-icon super fs-6"
         mdbTooltip="Stake SPEC to earn revenue from vault fee"></i>
     </h4>
-    
+
     <div class="row g-1 pt-3">
       <div class="col-12 col-md-6">
-        <div class="card card-grey box-left">
+        <div class="card card-grey box-left h-100">
           <div class="card-body ps-3">
             <p class="card-text sub-topic">
               Staked in Gov
             </p>
             <h3 class="card-title">
-                <app-digit [value]="+myBalance?.balance / UNIT"></app-digit>
-                <span class="cur-title">SPEC</span>
+              <app-digit [value]="+myBalance?.balance / UNIT"></app-digit>
+              <span class="cur-title"> SPEC</span>
             </h3>
-            <p class="h-7" *ngIf="!myBalance?.balance"></p>
             <p *ngIf="myBalance?.balance" class="small text-primary mb-0">{{stakedInGovAPR | percent}} APR</p>
           </div>
         </div>
       </div>
       <div class="col-12 col-md-6">
-        <div class="card card-grey box-left">
+        <div class="card card-grey box-left h-100">
           <div class="card-body ps-3">
             <p class="card-text sub-topic">
               Stakable
@@ -91,7 +91,6 @@
               <app-digit [value]="+info.userSpecAmount || 0"></app-digit>
               <span class="cur-title"> SPEC</span>
             </h3>
-            <p class="h-7"></p>
           </div>
         </div>
       </div>
@@ -111,7 +110,7 @@
 
     <div class="row pt-5">
       <div class="col-4">
-        <h5>Polls <i class="fas fa-info-circle info-icon"
+        <h5>Polls <i class="fas fa-info-circle info-icon super"
             mdbTooltip="Staked SPEC can be used as voting power in polls that are currently in progress"></i>
         </h5>
       </div>
@@ -132,8 +131,7 @@
         </app-poll-item>
       </div>
       <div class="d-grid gap-2 col-4 mx-auto">
-        <button type="button" class="btn btn-secondary border-1" *ngIf="hasMore"
-          (click)="pollMore()">More</button>
+        <button type="button" class="btn btn-secondary border-1" *ngIf="hasMore" (click)="pollMore()">More</button>
       </div>
     </div>
   </div>

@@ -1,17 +1,18 @@
 <div class="modal-header">
-  <h5 class="modal-title margin-auto">Manage Rewards <i class="fas fa-info-circle info-icon"
-    mdbTooltip="Manage your staked rewards in vaults such as move rewards to respective Gov under your address"></i></h5>
+  <h5 class="modal-title margin-auto">Manage Rewards <i class="fas fa-info-circle info-icon super"
+      mdbTooltip="Manage your staked rewards in vaults such as move rewards to respective Gov under your address"></i>
+  </h5>
   <a href="#" class="text-white" (click)="modalRef.close(); false">
     <i class="fas fa-times fa-lg"></i>
   </a>
 </div>
 <div class="modal-body">
   <div class="card-grey p-3 rounded mb-3">
-    <div class="d-sm-block d-md-block d-lg-none">
+    <div class="d-block d-md-none">
       <div class="row">
         <div class="col-12 text-center">
-          <div class="f-12 sub-topic">Avg. APR <i class="fas fa-info-circle info-icon"
-            mdbTooltip="Average APR from Gov staking"></i></div>
+          <div class="f-12 sub-topic">Avg. APR <i class="fas fa-info-circle info-icon super"
+              mdbTooltip="Average APR from Gov staking"></i></div>
           <div class="h6 mt-2 mb-0">{{ info.portfolio?.avg_tokens_apr | percent }}</div>
         </div>
         <div class="col-12 text-center mt-2">
@@ -19,18 +20,19 @@
           <div class="h6 mb-0 mt-2 text-primary">{{ info.portfolio?.total_reward_ust | number: '1.0-2' }} UST</div>
         </div>
         <div class="col-12 text-center mt-2">
-            <button class="btn btn-primary ms-2" type="button" aria-expanded="false" (click)="unstakeAll()"
-            title="Unstake all rewards in vaults and withdraw to your wallet" [disabled]="!info.portfolio?.total_reward_ust">
-        Claim all rewards
-        </button>
+          <button class="btn btn-primary ms-2" type="button" aria-expanded="false" (click)="unstakeAll()"
+            title="Unstake all rewards in vaults and withdraw to your wallet"
+            [disabled]="!info.portfolio?.total_reward_ust">
+            Claim all rewards
+          </button>
         </div>
       </div>
     </div>
-    <div class="d-none d-lg-block">
+    <div class="d-none d-md-block">
       <div class="row">
         <div class="col-6 col-md-6">
-          <div class="f-12 sub-topic">Avg. APR <i class="fas fa-info-circle info-icon"
-            mdbTooltip="Average APR from Gov staking"></i></div>
+          <div class="f-12 sub-topic">Avg. APR <i class="fas fa-info-circle info-icon super"
+              mdbTooltip="Average APR from Gov staking"></i></div>
           <div class="h6 mt-2 mb-0">{{ info.portfolio?.avg_tokens_apr | percent }}</div>
         </div>
         <div class="col text-sm-end">
@@ -38,49 +40,53 @@
           <div class="h6 mb-0 mt-2 text-primary">{{ info.portfolio?.total_reward_ust | number: '1.0-2' }} UST</div>
         </div>
         <div class="col-auto">
-            <button class="btn btn-primary ms-2" type="button" aria-expanded="false" (click)="unstakeAll()"
-            title="Unstake all rewards in vaults and withdraw to your wallet" [disabled]="!info.portfolio?.total_reward_ust">
+          <button class="btn btn-primary ms-2" type="button" aria-expanded="false" (click)="unstakeAll()"
+            title="Unstake all rewards in vaults and withdraw to your wallet"
+            [disabled]="!info.portfolio?.total_reward_ust">
             Claim all rewards
-        </button>
+          </button>
         </div>
       </div>
     </div>
   </div>
-<div class="container table-reward">
-  <ng-container *ngFor="let token of info.portfolio?.tokens | keyvalue; let i = index; trackBy: trackTokensMap">
-    <div *ngIf="token.value.pending_reward_token > 0" class="row switch-grey mb-3 p-3">
-      <div class="col-12 col-lg-2 text-center">
-        <img [src]="token.key | url:'icon'" height="32" class="rounded-circle"> {{ token.key }}
-      </div>
-      <div class="col-12 col-lg-2 text-center">
-        {{ token.value.apr | percent }}
-      </div>
-      <div class="col-12 col-lg-2 text-primary text-center">
-        {{ token.value.pending_reward_token | number }}
-        <div class="text-white">(${{ token.value.pending_reward_ust | number: '1.0-2' }})</div>
-      </div>
-      <div class="col-12 col-lg-6">
-        <section class="row btn-group pe-2">
-          <ng-container *ngIf="token.key !== 'SPEC'">
-            <div class="col-12 col-lg-6">
-              <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.key).autoStake" class="btn btn-secondary f-12 w-100" (click)="moveToGov(token.key)">Move to Gov</button>
-            </div>
-          </ng-container>
-          <ng-container *ngIf="token.key === 'SPEC'">
-            <ng-container *ngFor="let day of availablePoolDays">
-              <div class="col-sm-12 col-lg-6" *ngIf="day === 0">
-                <button class="btn btn-secondary f-12 w-100" *ngIf="day === 0" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
-              </div>
-              <div class="col-sm-12 col-lg-6" *ngIf="day !== 0" >
-                <button class="btn btn-secondary f-12 w-100" *ngIf="day !== 0" (click)="moveToGov(token.key, day)">Move to {{day}}-Day Locked Gov</button>
+  <div class="container table-reward">
+    <ng-container *ngFor="let token of info.portfolio?.tokens | keyvalue; let i = index; trackBy: trackTokensMap">
+      <div *ngIf="token.value.pending_reward_token > 0" class="row switch-grey mb-3 p-3">
+        <div class="col-12 col-md-2 text-center">
+          <img [src]="token.key | url:'icon'" height="32" class="rounded-circle"> {{ token.key }}
+        </div>
+        <div class="col-12 col-md-2 text-center">
+          {{ token.value.apr | percent }}
+        </div>
+        <div class="col-12 col-md-2 text-primary text-center">
+          {{ token.value.pending_reward_token | number }}
+          <div class="text-white">(${{ token.value.pending_reward_ust | number: '1.0-2' }})</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <section class="row btn-group pe-2">
+            <ng-container *ngIf="token.key !== 'SPEC'">
+              <div class="col-12 col-md-6">
+                <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.key).autoStake"
+                  class="btn btn-secondary f-12 w-100" (click)="moveToGov(token.key)">Move to Gov</button>
               </div>
             </ng-container>
-          </ng-container>
-        </section>
+            <ng-container *ngIf="token.key === 'SPEC'">
+              <ng-container *ngFor="let day of availablePoolDays">
+                <div class="col-sm-12 col-md-6" *ngIf="day === 0">
+                  <button class="btn btn-secondary f-12 w-100" *ngIf="day === 0" (click)="moveToGov(token.key)">Move to
+                    No Lock Gov</button>
+                </div>
+                <div class="col-sm-12 col-md-6" *ngIf="day !== 0">
+                  <button class="btn btn-secondary f-12 w-100" *ngIf="day !== 0"
+                    (click)="moveToGov(token.key, day)">Move to {{day}}-Day Locked Gov</button>
+                </div>
+              </ng-container>
+            </ng-container>
+          </section>
+        </div>
       </div>
-    </div>
-  </ng-container>
-  <!-- TODO:: Keep until code approve 
+    </ng-container>
+    <!-- TODO:: Keep until code approve 
     <div class="col-12">
     <div class="table-responsive">
       <table class="table table-reward">
@@ -137,4 +143,4 @@
       </div>
     </div>
   </div> -->
-</div>
+  </div>
