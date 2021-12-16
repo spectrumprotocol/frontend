@@ -6,11 +6,6 @@ import { TruncatePipe } from '../pipes/truncate.pipe';
 import { InfoService } from '../services/info.service';
 import { Subscription, switchMap, tap } from 'rxjs';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
-import { WasmService } from '../services/api/wasm.service';
-import { WalletService } from '../services/api/wallet.service';
-import { GovService } from '../services/api/gov.service';
-import { ValkyrieFarmService } from '../services/api/valkyrie-farm.service';
-import { NlunaPsiFarmService } from '../services/api/nluna-psi-farm.service';
 
 @Component({
   selector: 'app-menubar',
@@ -27,11 +22,6 @@ export class MenubarComponent implements OnInit, OnDestroy {
     private clipboard: Clipboard,
     private modelService: ModalService,
     private truncate: TruncatePipe,
-    private wasm: WasmService,
-    private wallet: WalletService,
-    private gov: GovService,
-    private valkyrie: ValkyrieFarmService,
-    private nlunaPsi: NlunaPsiFarmService,
   ) { }
 
   private processes: Subscription;

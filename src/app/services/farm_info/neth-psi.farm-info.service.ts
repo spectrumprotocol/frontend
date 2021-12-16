@@ -11,11 +11,11 @@ import {
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import {div, times} from '../../libs/math';
+import { times } from '../../libs/math';
 import { RewardInfoResponseItem } from '../api/nexus_nassets_psi_farm/reward_info_response';
-import {NethPsiFarmService} from '../api/neth-psi-farm.service';
-import {NethPsiStakingService} from '../api/neth-psi-staking.service';
-import {BalancePipe} from '../../pipes/balance.pipe';
+import { NethPsiFarmService } from '../api/neth-psi-farm.service';
+import { NethPsiStakingService } from '../api/neth-psi-staking.service';
+import { BalancePipe } from '../../pipes/balance.pipe';
 import { VaultsResponse } from '../api/gov/vaults_response';
 
 @Injectable()
@@ -54,15 +54,14 @@ export class NethPsiFarmInfoService implements FarmInfoService {
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
-    const unixTimeSecond = Math.floor(Date.now() / 1000);
-    const rewardInfoTask = this.nethPsiStakingService.query({ staker_info: { time_seconds: +unixTimeSecond, staker: this.terrajs.settings.nEthPsiFarm } });
-    const farmConfigTask = this.nethPsiFarmService.query({ config: {} });
-
-    // action
-    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nEthPsiFarm)?.weight || 0;
-    const nexusLPStat = await this.getnEthPsiLPStat(poolResponses[this.terrajs.settings.nEthToken], unixTimeSecond);
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    const nexusLPStatTask = apollo.query<any>({
+      query: gql`{
+        getLiquidityPoolApr {
+          psiNEthLpArp
+        }
+      }`
+    }).toPromise();
     const nexusGovStatTask = apollo.query<any>({
       query: gql`{
         getGovStakingAprRecords(limit: 1, offset: 0) {
@@ -71,6 +70,15 @@ export class NethPsiFarmInfoService implements FarmInfoService {
         }
       }`
     }).toPromise();
+
+    const unixTimeSecond = Math.floor(Date.now() / 1000);
+    const rewardInfoTask = this.nethPsiStakingService.query({ staker_info: { time_seconds: +unixTimeSecond, staker: this.terrajs.settings.nEthPsiFarm } });
+    const farmConfigTask = this.nethPsiFarmService.query({ config: {} });
+
+    // action
+    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
+    const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nEthPsiFarm)?.weight || 0;
+    const nexusLPStat = await nexusLPStatTask;
     const nexusGovStat = await nexusGovStatTask;
     const pairs: Record<string, PairStat> = {};
 
@@ -90,7 +98,7 @@ export class NethPsiFarmInfoService implements FarmInfoService {
       .div(p.total_share)
       .toString();
 
-    const poolApr = +(nexusLPStat.apr || 0);
+    const poolApr = +(nexusLPStat.data.getLiquidityPoolApr.psiNEthLpArp || 0) / 100;
     pairs[this.terrajs.settings.nEthToken] = createPairStat(poolApr, this.terrajs.settings.nEthToken);
     const pair = pairs[this.terrajs.settings.nEthToken];
     pair.tvl = nEthPsiTvl;
@@ -134,27 +142,5 @@ export class NethPsiFarmInfoService implements FarmInfoService {
         }
       }
     );
-  }
-
-  async getnEthPsiLPStat(nEthPsiPoolResponse: PoolResponse, unixTimeSecond) {
-    const configTask = this.nethPsiStakingService.query({ config: {} });
-    const stateTask = this.nethPsiStakingService.query({ state: { time_seconds: +unixTimeSecond } });
-    const [config, state] = await Promise.all([configTask, stateTask]);
-    const poolnEthAmount = nEthPsiPoolResponse.assets[0]?.info?.token['contract_addr'] === this.terrajs.settings.nEthToken ? nEthPsiPoolResponse.assets[0].amount : nEthPsiPoolResponse.assets[1].amount;
-    const poolPsiAmount = nEthPsiPoolResponse.assets[0]?.info?.token['contract_addr'] === this.terrajs.settings.nexusToken ? nEthPsiPoolResponse.assets[0].amount : nEthPsiPoolResponse.assets[1].amount;
-    const nEthPerPsiPrice = div(poolnEthAmount, poolPsiAmount);
-    const current_distribution_schedule = config.distribution_schedule.find(obj => unixTimeSecond >= +obj.start_time && unixTimeSecond <= +obj.end_time);
-    if (!current_distribution_schedule) {
-      return {
-        apr: 0
-      };
-    }
-    const totalMint = +current_distribution_schedule.amount;
-    const c = new BigNumber(poolnEthAmount).multipliedBy(2).div(nEthPsiPoolResponse.total_share);
-    const s = new BigNumber(state.total_bond_amount).multipliedBy(c);
-    const apr = new BigNumber(totalMint).multipliedBy(nEthPerPsiPrice).div(s);
-    return {
-      apr,
-    };
   }
 }

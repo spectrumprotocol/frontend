@@ -11,11 +11,11 @@ import {
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import {div, times} from '../../libs/math';
+import { div, times } from '../../libs/math';
 import { RewardInfoResponseItem } from '../api/nexus_nassets_psi_farm/reward_info_response';
-import {NlunaPsiFarmService} from '../api/nluna-psi-farm.service';
-import {NlunaPsiStakingService} from '../api/nluna-psi-staking.service';
-import {BalancePipe} from '../../pipes/balance.pipe';
+import { NlunaPsiFarmService } from '../api/nluna-psi-farm.service';
+import { NlunaPsiStakingService } from '../api/nluna-psi-staking.service';
+import { BalancePipe } from '../../pipes/balance.pipe';
 import { VaultsResponse } from '../api/gov/vaults_response';
 
 @Injectable()
@@ -54,15 +54,14 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
-    const unixTimeSecond = Math.floor(Date.now() / 1000);
-    const rewardInfoTask = this.nlunaPsiStakingService.query({ staker_info: { time_seconds: +unixTimeSecond, staker: this.terrajs.settings.nLunaPsiFarm } });
-    const farmConfigTask = this.nlunaPsiFarmService.query({ config: {} });
-
-    // action
-    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nLunaPsiFarm)?.weight || 0;
-    const nexusLPStat = await this.getnLunaPsiLPStat(poolResponses[this.terrajs.settings.nLunaToken], unixTimeSecond);
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    const nexusLPStatTask = apollo.query<any>({
+      query: gql`{
+        getLiquidityPoolApr {
+          psiNLunaLpArp
+        }
+      }`
+    }).toPromise();
     const nexusGovStatTask = apollo.query<any>({
       query: gql`{
         getGovStakingAprRecords(limit: 1, offset: 0) {
@@ -71,6 +70,15 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
         }
       }`
     }).toPromise();
+
+    const unixTimeSecond = Math.floor(Date.now() / 1000);
+    const rewardInfoTask = this.nlunaPsiStakingService.query({ staker_info: { time_seconds: +unixTimeSecond, staker: this.terrajs.settings.nLunaPsiFarm } });
+    const farmConfigTask = this.nlunaPsiFarmService.query({ config: {} });
+
+    // action
+    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
+    const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nLunaPsiFarm)?.weight || 0;
+    const nexusLPStat = await nexusLPStatTask;
     const nexusGovStat = await nexusGovStatTask;
     const pairs: Record<string, PairStat> = {};
 
@@ -90,7 +98,7 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
       .div(p.total_share)
       .toString();
 
-    const poolApr = +(nexusLPStat.apr || 0);
+    const poolApr = +(nexusLPStat.data.getLiquidityPoolApr.psiNLunaLpArp || 0) / 100;
     pairs[this.terrajs.settings.nLunaToken] = createPairStat(poolApr, this.terrajs.settings.nLunaToken);
     const pair = pairs[this.terrajs.settings.nLunaToken];
     pair.tvl = nLunaPsiTvl;
