@@ -8,11 +8,6 @@
         height: 48px;
     }
     .needs-validation {
-        button,
-        input {
-            font-size: 16px;
-            font-weight: bold;
-        }
         .slip-page {
             button {
                 height: 39px;
@@ -29,7 +24,6 @@
     }
 
     .fix-border {
-        text-align: right;
         border-radius: 0px;
         color: #fff;
         border: 1px solid $gray-970;
@@ -53,7 +47,6 @@
     }
 
     .is-invalid {
-        // border: 1px solid $text-error;
         &:focus,
         .is-invalid:hover {
             box-shadow: none;

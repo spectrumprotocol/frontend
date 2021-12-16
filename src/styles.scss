@@ -177,7 +177,6 @@ h3.card-title {
 
 .slippageInput {
   width: 60px;
-  text-align: right;
   border: 1px solid $spectrum;
   &:focus {
     border: 1px solid $spectrum;
@@ -433,6 +432,14 @@ input[type="number"] {
 
 .p-10 {
   padding: 10px;
+}
+
+.pt-15 {
+  padding: 15px;
+}
+
+.m-15 {
+  margin: 15px;
 }
 
 .your-tvl-percentage {
