@@ -84,6 +84,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     hideLimitLabels: true,
   };
   bufferUST = 3.5;
+  depositFeeDPToken: string;
+  netDPToken: string;
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
     public terrajs: TerrajsService,
@@ -602,7 +604,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         }
       );
       await this.terrajs.post([unbond, withdrawLp]);
-    } else if (this.withdrawMode === 'lp') {
+    } else if (this.withdrawMode === 'lp' || this.withdrawMode === 'dptoken') {
       await this.terrajs.post([unbond]);
     } else if (this.withdrawMode === 'ust') {
       let msg: object;

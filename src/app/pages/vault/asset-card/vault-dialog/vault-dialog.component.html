@@ -426,39 +426,20 @@
                   </button>
                 </div>
 
-                <div *ngIf="depositUSTAmtUST" class="mt-3 pool-info">
-                  <div class="row">
-                    <div class="col">Expected {{vault.poolInfo.pairSymbol === 'UST' ? vault.symbol :
-                      vault.poolInfo.pairSymbol}} Price</div>
-                    <div class="col text-end">{{tokenPrice | number:'0.0-6' }} UST</div>
-                  </div>
-                  <div class="row" *ngIf="vault.poolInfo.pairSymbol !== 'UST'">
-                    <div class="col">Expected {{vault.symbol}} Price</div>
-                    <div class="col text-end">{{basedTokenPrice | number:'0.0-6' }}
-                      {{vault.poolInfo.pairSymbol}}</div>
-                  </div>
-                  <div class="row">
-                    <div class="col">Gross LP</div>
-                    <div *ngIf="+grossLpUST > 0" class="col text-end">{{grossLpUST | number }} LP</div>
-                    <div *ngIf="!(+grossLpUST > 0)" class="col text-end">
-                      <div class="spinner-grow spinner-small" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div *ngIf="+depositFeeUST" class="row">
+                <div *ngIf="depositDPTokenAmtDPToken" class="mt-3 pool-info">
+                  <div *ngIf="+depositFeeDPToken" class="row">
                     <div class="col">Deposit Fee (&lt;0.1%)</div>
-                    <div *ngIf="+depositFeeUST > 0" class="col text-end">{{depositFeeUST | number }} LP</div>
-                    <div *ngIf="!(+depositFeeUST > 0)" class="col text-end">
+                    <div *ngIf="+depositFeeDPToken > 0" class="col text-end">{{depositFeeDPToken | number }} LP</div>
+                    <div *ngIf="!(+depositFeeDPToken > 0)" class="col text-end">
                       <div class="spinner-grow spinner-small" role="status">
                         <span class="visually-hidden">Loading...</span>
                       </div>
                     </div>
                   </div>
-                  <div *ngIf="+depositFeeUST" class="row">
-                    <div class="col">Net LP</div>
-                    <div *ngIf="+netLpUST > 0" class="col text-end">{{netLpUST | number }} LP</div>
-                    <div *ngIf="!(+netLpUST > 0)" class="col text-end">
+                  <div *ngIf="+depositFeeDPToken" class="row">
+                    <div class="col">Net DP Token</div>
+                    <div *ngIf="+netDPToken > 0" class="col text-end">{{netDPToken | number }} {{vault.symbol}}</div>
+                    <div *ngIf="!(+netDPToken > 0)" class="col text-end">
                       <div class="spinner-grow spinner-small" role="status">
                         <span class="visually-hidden">Loading...</span>
                       </div>
@@ -466,7 +447,6 @@
                   </div>
                 </div>
             </ng-container>
-            <!-- TODO -->
             <div *ngIf="!vault.poolInfo.forceDepositType" class="auto-container mt-3">
               <span class="btn-group w-100">
                 <button (click)="depositType = 'stake'"
@@ -695,8 +675,15 @@
           <form #formWithdraw="ngForm" class="needs-validation p-3" novalidate>
             <div class="text-end small mt-3 mb-1 fw-bold">
               <span class="sub-topic">Deposited: </span>
-              <span class="text-white">{{ info.rewardInfos[vault.assetToken]?.bond_amount || 0 | unit }} {{
-                vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP</span>
+              <span class="text-white">
+                {{ info.rewardInfos[vault.assetToken]?.bond_amount || 0 | unit }}
+                <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
+                  {{vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP
+                </ng-container>
+                <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+                  {{vault.symbol }}
+                </ng-container>
+              </span>
             </div>
             <div class="input-group">
               <ng-container *ngTemplateOutlet="withdrawModeSection"></ng-container>
@@ -726,6 +713,8 @@
                     }}</span>
                   <span *ngIf="withdrawMode === 'lp'">{{ withdrawAmt | number }}
                     {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</span>
+                  <span *ngIf="withdrawMode === 'dptoken'">{{ withdrawAmt | number }}
+                    {{vault.symbol}}</span>
                 </div>
               </div>
               <div *ngIf="withdrawMode === 'ust'">
@@ -840,7 +829,13 @@
   </ng-template>
 
   <ng-template #withdrawModeSection>
-    <div mdbDropdown class="dropdown" #dropdownWithdrawMode>
+    <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+      <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
+        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle me-1" width="24" height="24">{{ vault.symbol }}
+      </span>
+    </ng-container>
+    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
+      <div mdbDropdown class="dropdown" #dropdownWithdrawMode>
         <button mdbDropdownToggle class="btn dropdown-toggle btn-drop" type="button">
           <ng-container *ngIf="withdrawMode === 'tokentoken'">
             <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }} + {{
@@ -872,4 +867,5 @@
           </li>
         </ul>
       </div>
+    </ng-container>
   </ng-template>
