@@ -401,7 +401,7 @@
                       <a [href]="vault.symbol | url:'deposit_pylon_gateway'" target="_blank">Deposit via Pylon Gateway</a>
                       or <a [href]="vault.symbol | url:'trade'" target="_blank">Buy</a>
                       {{ vault.symbol }} to farm
-                      with. <br>Vault will compound by selling earned {{vault.poolInfo.token_symbol}} to {{vault.symbol}}. <br> After vesting period ended, 1 {{vault.symbol}} can be redeemed for 1 UST at Pylon Gateway.
+                      with.
                     </div>
                   </div>
                 </div>
@@ -595,6 +595,20 @@
                   </div>
                 </div>
               </div>
+
+              <div class="card card-blue mt-3 mb-3" *ngIf="depositMode === 'dptoken'">
+                <div class="card-body">
+                  <div class="card-text small mb-1">
+                    <div class="bulk-name-container">
+                      <i class="fas fa-question-circle"></i>
+                      <div class="name-detail">
+                        Vault will compound by selling earned {{vault.poolInfo.token_symbol}} to {{vault.symbol}}. After vesting period ended, 1 {{vault.symbol}} can be redeemed for 1 UST at Pylon Gateway.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
 
               <button (click)="doDeposit()" [disabled]="formDeposit.invalid" class="btn btn-primary"
                 type="submit">Deposit</button>

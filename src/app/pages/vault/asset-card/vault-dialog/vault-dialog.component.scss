@@ -70,6 +70,18 @@
     }
 }
 
+.card-blue {
+  background-color: $card-blue-bg;
+  border: solid 1px $card-blue-border;
+  .card-body {
+    padding: 0.5em 0.5em;
+    .bulk-name-container {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
 .assetIcon {
     width: 33px;
     height: 33px;
