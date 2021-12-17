@@ -168,7 +168,7 @@
                     <span class="text-white">{{ info.tokenBalances[vault.assetToken] | unit }} {{ vault.symbol }}</span>
                   </div>
                   <div class="input-group">
-                    <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
+                    <ng-container *ngTemplateOutlet="depositLPModeSection"></ng-container>
                     <input #depositTokenAAmtTokenTokenCtl="ngModel"
                       (input)="depositTokenATokenTokenChanged(false, $event)" [(ngModel)]="depositTokenAAmtTokenToken"
                       [class.is-invalid]="(formDeposit.submitted || depositTokenAAmtTokenTokenCtl.touched) && depositTokenAAmtTokenTokenCtl.invalid"
@@ -294,7 +294,7 @@
                 </span>
               </div>
               <div class="input-group">
-                <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
+                <ng-container *ngTemplateOutlet="depositLPModeSection"></ng-container>
                 <input #depositLPAmtLPCtl="ngModel" (input)="depositLPChanged(false, $event)"
                   [(ngModel)]="depositLPAmtLP"
                   [class.is-invalid]="(formDeposit.submitted || depositLPAmtLPCtl.touched) && depositLPAmtLPCtl.invalid"
@@ -341,7 +341,7 @@
                 <span class="text-white">{{ info.userUstAmount | number }} UST</span>
               </div>
               <div class="input-group">
-                <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
+                <ng-container *ngTemplateOutlet="depositLPModeSection"></ng-container>
                 <input #depositUSTAmtUSTCtl="ngModel" (input)="depositUSTChanged(false, $event)"
                   [(ngModel)]="depositUSTAmtUST"
                   [class.is-invalid]="(formDeposit.submitted || depositUSTAmtUSTCtl.touched) && depositUSTAmtUSTCtl.invalid"
@@ -401,7 +401,7 @@
                       <a [href]="vault.symbol | url:'deposit_pylon_gateway'" target="_blank">Deposit via Pylon Gateway</a>
                       or <a [href]="vault.symbol | url:'trade'" target="_blank">Buy</a>
                       {{ vault.symbol }} to farm
-                      with
+                      with. <br>Vault will compound by selling earned {{vault.poolInfo.token_symbol}} to {{vault.symbol}}. <br> After vesting period ended, 1 {{vault.symbol}} can be redeemed for 1 UST at Pylon Gateway.
                     </div>
                   </div>
                 </div>
@@ -416,7 +416,6 @@
                 <div class="input-group">
                   <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
                     <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle me-1" width="24" height="24">{{ vault.symbol }}</span>
-<!--                  TODO to be continue-->
                   <input #depositDPTokenAmtDPTokenCtl="ngModel" (input)="depositDPTokenChanged(false, $event)"
                          [(ngModel)]="depositDPTokenAmtDPToken"
                          [class.is-invalid]="(formDeposit.submitted || depositDPTokenAmtDPTokenCtl.touched) && depositDPTokenAmtDPTokenCtl.invalid"
@@ -794,14 +793,8 @@
     <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">{{vault.poolInfo.pairSymbol}} </ng-container>
   </ng-template>
 
-  <ng-template #depositModeSection>
-    <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
-      <ng-container *ngIf="depositMode === 'tokentoken'">
-        <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }}
-      </ng-container>
-    </ng-container>
-    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
-      <div mdbDropdown class="dropdown" #dropdownDepositMode>
+  <ng-template #depositLPModeSection>
+    <div mdbDropdown class="dropdown" #dropdownDepositMode>
       <button mdbDropdownToggle class="btn dropdown-toggle btn-drop" type="button">
         <ng-container *ngIf="depositMode === 'tokentoken'"><img [src]="vault.symbol | url:'icon'"
             class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }}</ng-container>
@@ -830,41 +823,39 @@
             <img [src]="'UST' | url:'icon'" width="25" height="25" class="deposit-ust">UST</a></li>
       </ul>
     </div>
-    </ng-container>
   </ng-template>
 
   <ng-template #withdrawModeSection>
     <div mdbDropdown class="dropdown" #dropdownWithdrawMode>
-      <button mdbDropdownToggle class="btn dropdown-toggle btn-drop" type="button">
-        <ng-container *ngIf="withdrawMode === 'tokentoken'"><img [src]="vault.symbol | url:'icon'"
-            class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }} + {{
-          vault.poolInfo.pairSymbol }}
-        </ng-container>
-        <ng-container *ngIf="withdrawMode === 'lp'">
-          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
-          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
-          {{ vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP
-        </ng-container>
-        <ng-container *ngIf="withdrawMode === 'ust'"><img [src]="'UST' | url:'icon'"
-            class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">UST</ng-container>
-      </button>
-      <ul mdbDropdownMenu class="dropdown-menu">
-        <li><a class="dropdown-item" (click)="withdrawMode = 'tokentoken'; dropdownWithdrawMode.hide()"
-            [class.active]="withdrawMode === 'tokentoken'">
+        <button mdbDropdownToggle class="btn dropdown-toggle btn-drop" type="button">
+          <ng-container *ngIf="withdrawMode === 'tokentoken'">
+            <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }} + {{
+            vault.poolInfo.pairSymbol }}
+          </ng-container>
+          <ng-container *ngIf="withdrawMode === 'lp'">
+            <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
+            <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
+            {{ vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP
+          </ng-container>
+          <ng-container *ngIf="withdrawMode === 'ust'">
+            <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">UST</ng-container>
+        </button>
+        <ul mdbDropdownMenu class="dropdown-menu">
+          <li><a class="dropdown-item" (click)="withdrawMode = 'tokentoken'; dropdownWithdrawMode.hide()"
+                 [class.active]="withdrawMode === 'tokentoken'">
             <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
             <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
             {{vault.symbol}} + {{vault.poolInfo.pairSymbol}}</a></li>
-        <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdownWithdrawMode.hide()"
-            [class.active]="withdrawMode === 'lp'">
+          <li><a class="dropdown-item" (click)="withdrawMode = 'lp'; dropdownWithdrawMode.hide()"
+                 [class.active]="withdrawMode === 'lp'">
             <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
             <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
             {{vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</a></li>
-        <li *ngIf="vault.poolInfo.farm !== 'Spectrum'"><a class="dropdown-item"
-            (click)="withdrawMode = 'ust'; dropdownWithdrawMode.hide()" [class.active]="withdrawMode === 'ust'">
+          <li *ngIf="vault.poolInfo.farm !== 'Spectrum'"><a class="dropdown-item"
+                                                            (click)="withdrawMode = 'ust'; dropdownWithdrawMode.hide()" [class.active]="withdrawMode === 'ust'">
             <img [src]="'UST' | url:'icon'" width="25" height="25" class="deposit-ust">
             UST</a>
-        </li>
-      </ul>
-    </div>
-
+          </li>
+        </ul>
+      </div>
   </ng-template>
