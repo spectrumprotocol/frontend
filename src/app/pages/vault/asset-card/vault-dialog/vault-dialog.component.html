@@ -417,12 +417,12 @@
                   <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
                     <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle me-1" width="24" height="24">{{ vault.symbol }}</span>
 <!--                  TODO to be continue-->
-                  <input #depositUSTAmtUSTCtl="ngModel" (input)="depositUSTChanged(false, $event)"
-                         [(ngModel)]="depositUSTAmtUST"
-                         [class.is-invalid]="(formDeposit.submitted || depositUSTAmtUSTCtl.touched) && depositUSTAmtUSTCtl.invalid"
-                         [max]="+info.userUstAmount" [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
-                         class="form-control fix-border" name="depositUSTAmtUST" required type="number" />
-                  <button (click)="setMaxDepositUST()" class="btn btn-max last" type="button">
+                  <input #depositDPTokenAmtDPTokenCtl="ngModel" (input)="depositDPTokenChanged(false, $event)"
+                         [(ngModel)]="depositDPTokenAmtDPToken"
+                         [class.is-invalid]="(formDeposit.submitted || depositDPTokenAmtDPTokenCtl.touched) && depositDPTokenAmtDPTokenCtl.invalid"
+                         [max]="+info.tokenBalances[vault.assetToken]" [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
+                         class="form-control fix-border" name="depositDPTokenAmtDPToken" required type="number" />
+                  <button (click)="setMaxDepositDPToken()" class="btn btn-max last" type="button">
                     Max
                   </button>
                 </div>

@@ -22,6 +22,7 @@ import { ExecuteMsg as StakerExecuteMsg } from '../../../../services/api/staker/
 import { MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit/modal';
 
 const DEPOSIT_FEE = '0.001';
+export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'dptoken';
 
 @Component({
   selector: 'app-vault-dialog',
@@ -43,11 +44,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositLPAmtLP: number;
   depositUSTAmtUST: number;
   depositTokenBAmtTokenToken: number;
+  depositDPTokenAmtDPToken: number;
   tokenAToBeStatic = true;
 
   depositType: 'compound' | 'stake' | 'mixed';
-  depositMode: 'tokentoken' | 'lp' | 'ust' = 'tokentoken';
-  withdrawMode: 'tokentoken' | 'lp' | 'ust' = 'tokentoken';
+  depositMode: DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken';
+  withdrawMode: DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken';
 
   withdrawAmt: number;
   withdrawUST: string;
@@ -92,12 +94,15 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private staker: StakerService,
     private terraSwap: TerraSwapService,
     private modalService: MdbModalService) {
+
   }
 
   ngOnInit() {
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
       if (this.terrajs.isConnected) {
         if (this.vault.poolInfo.farmType === 'LP'){
+          this.depositMode = 'tokentoken';
+          this.withdrawMode = 'tokentoken';
           const tasks: Promise<any>[] = [];
           if (this.vault.poolInfo.pairSymbol !== 'UST') {
             tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.farmTokenContract));
@@ -113,6 +118,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             this.withdrawAmtChanged();
           }
         } else if (this.vault.poolInfo.farmType === 'PYLON_LIQUID'){
+          this.depositMode = 'dptoken';
+          this.withdrawMode = 'dptoken';
           const tasks: Promise<any>[] = [];
           tasks.push(this.info.refreshTokenBalance(this.vault.assetToken));
           await Promise.all(tasks);
@@ -787,5 +794,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.tokenAToBeStatic = false;
     this.depositTokenBAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.farmTokenContract] / +this.info.tokenInfos[this.vault.poolInfo.farmTokenContract].unit;
     this.depositTokenBTokenTokenChanged(true);
+  }
+
+  depositDPTokenChanged(b: boolean, $event: Event) {
+
+  }
+
+  setMaxDepositDPToken() {
+    this.depositDPTokenAmtDPToken = +this.info.tokenBalances?.[this.vault.poolInfo.farmTokenContract] / +this.info.tokenInfos[this.vault.poolInfo.farmTokenContract].unit;
   }
 }
