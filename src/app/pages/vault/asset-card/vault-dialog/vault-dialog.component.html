@@ -24,8 +24,8 @@
 </div>
 <div class="modal-body">
   <div class="row g-1">
-    <div class="col-12 col-lg-5">
-      <div class="card box-left">
+    <div class="col-12 col-md-5">
+      <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
             TVL
@@ -36,8 +36,8 @@
         </div>
       </div>
     </div>
-    <div class="col-12 col-lg-4">
-      <div class="card box-left">
+    <div class="col-12 col-md-4">
+      <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
             APY <i class="fas fa-info-circle info-icon super"
@@ -45,18 +45,17 @@
           </p>
           <h3 class="card-title">
             <span *ngIf="vault.apy > vault.pairStat?.poolApr">
-              <span class="sub-topic text-decoration-line-through">
+              <span class="sub-topic text-decoration-line-through text-primary">
                 <span class="sub-topic">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
-              </span>&nbsp;
+              </span>
             </span>
-            <span class="fs-6 fw-bold">
-              {{vault.apy | percent}}</span>
+            <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
           </h3>
         </div>
       </div>
     </div>
-    <div class="col-12 col-lg-3">
-      <div class="card box-left">
+    <div class="col-12 col-md-3">
+      <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
             Daily Rate <i class="fas fa-info-circle info-icon super" mdbTooltip="Estimated rate of return per day"></i>
@@ -137,7 +136,7 @@
       </div>
     </div>
     <div class="row tab-container g-0">
-      <mdb-tabs [fill]="true">
+      <mdb-tabs [justified]="true">
         <mdb-tab title="Deposit" *ngIf="!info.DISABLED_VAULTS.includes(vault.symbol)">
           <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
             <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
@@ -278,10 +277,14 @@
               </div>
 
             </div>
-              <div *ngIf="depositMode === 'lp'" class="mt-3">
-              <div class="small">
-                Already have LP token? Deposit here, or
-                <a href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
+            <div class="mt-3" *ngIf="depositMode === 'lp'">
+              <div class="card card-green">
+                <div class="card-body">
+                  <div class="small p-2">
+                    <i class="fas fa-info-circle info-icon"></i>  Already have LP token? Deposit here, or <a
+                      href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
+                  </div>
+                </div>
               </div>
               <div class="text-end small mt-3 mb-1 fw-bold-600">
                 <span class="sub-topic">Balance: </span>

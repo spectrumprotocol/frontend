@@ -129,8 +129,9 @@
                                             <div class="col-6">
                                                 <label for="amount" mdbLabel class="form-label small">Deposit</label>
                                             </div>
-                                            <div class="col-6 text-end small text-muted fw-bold">
-                                                Balance: {{ maxAmount | number }} SPEC
+                                            <div class="col-6 text-end fw-bold small">
+                                                <span class="sub-topic">Balance: </span>
+                                                <span class="text-white">{{ maxAmount | number }} SPEC</span>
                                             </div>
                                         </div>
                                         <input type="number" class="form-control form-control-lg bg-grey"
@@ -144,7 +145,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-grid gap-2">
+                                <div class="d-grid gap-2 mb-3">
                                     <button type="submit" class="btn btn-primary" (click)="submit()">Submit</button>
                                 </div>
                             </form>

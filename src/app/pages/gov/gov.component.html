@@ -13,7 +13,7 @@
     </div>
     <div class="mb-5">
       <div class="row g-1 pt-3">
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-md-6">
           <div class="card card-grey box-left">
             <div class="card-body ps-3">
               <p class="card-text sub-topic">
@@ -30,7 +30,7 @@
             </div>
           </div>
         </div>
-        <div class="col-12 col-lg-3">
+        <div class="col-12 col-md-3">
           <div class="card card-grey box-left">
             <div class="card-body ps-3">
               <p class="card-text sub-topic">
@@ -46,7 +46,7 @@
             </div>
           </div>
         </div>
-        <div class="col-12 col-lg-3">
+        <div class="col-12 col-md-3">
           <div class="card card-grey box-left">
             <div class="card-body ps-3">
               <p class="card-text sub-topic">
@@ -126,7 +126,7 @@
       </div>
     </div>
     <div class="row pt-3 g-4" *ngIf="config && info.stat?.govStaked">
-      <div class="col-12 col-lg-6" *ngFor="let poll of polls">
+      <div class="col-12 col-sm-6" *ngFor="let poll of polls">
         <app-poll-item [poll]="poll" [config]="config" [staked]="+info.stat.govStaked" link="gov">
         </app-poll-item>
       </div>
