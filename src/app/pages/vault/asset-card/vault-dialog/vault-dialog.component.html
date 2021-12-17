@@ -613,7 +613,7 @@
             <div class="card card-green">
               <div class="card-body">
                 <div class="small p-2">
-                  <i class="fas fa-info-circle info-icon"></i> 
+                  <i class="fas fa-info-circle info-icon"></i>
                   Reallocate auto-stake and auto-compound ratio of deposited
                   <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">{{ vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</ng-container>
                   <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">{{vault.poolInfo.pairSymbol}}</ng-container>
@@ -639,35 +639,35 @@
               </div>
             </div>
             <div class="row">
-              <div class="col">Current auto-stake LP</div>
+              <div class="col">Current auto-stake <ng-container *ngTemplateOutlet="reallocateUnitDisplay"></ng-container></div>
               <div class="col text-end">
-                {{+info.rewardInfos[vault.assetToken]?.stake_bond_amount || '0' | unit: 6 : '1.0-6'}} LP
+                {{+info.rewardInfos[vault.assetToken]?.stake_bond_amount || '0' | unit: 6 : '1.0-6'}} <ng-container *ngTemplateOutlet="reallocateUnitDisplay"></ng-container>
                 <span class="small">({{+info.rewardInfos[vault.assetToken]?.stake_bond_amount /
                   +info.rewardInfos[vault.assetToken]?.bond_amount || 0 | percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="row mb-2">
-              <div class="col">Current auto-compound LP</div>
+              <div class="col">Current auto-compound <ng-container *ngTemplateOutlet="reallocateUnitDisplay"></ng-container></div>
               <div class="col text-end">
-                {{+info.rewardInfos[vault.assetToken]?.auto_bond_amount || '0' | unit: 6 : '1.0-6'}} LP
+                {{+info.rewardInfos[vault.assetToken]?.auto_bond_amount || '0' | unit: 6 : '1.0-6'}} <ng-container *ngTemplateOutlet="reallocateUnitDisplay"></ng-container>
                 <span class="small">({{+info.rewardInfos[vault.assetToken]?.auto_bond_amount /
                   +info.rewardInfos[vault.assetToken]?.bond_amount || 0 | percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="row">
-              <div class="col">New auto-stake LP</div>
+              <div class="col">New auto-stake <ng-container *ngTemplateOutlet="reallocateUnitDisplay"></ng-container></div>
               <div class="col text-end">
                 {{+info.rewardInfos[vault.assetToken]?.bond_amount * (100 - auto_compound_percent_reallocate) / 100 || 0
-                | floor | unit: 6 : '1.0-6'}} LP
+                | floor | unit: 6 : '1.0-6'}} <ng-container *ngTemplateOutlet="reallocateUnitDisplay"></ng-container>
                 <span class="small">({{ (100 - auto_compound_percent_reallocate) / 100 || 0 |
                   percent:'0.2-2'}})</span>
               </div>
             </div>
             <div class="row">
-              <div class="col">New auto-compound LP</div>
+              <div class="col">New auto-compound <ng-container *ngTemplateOutlet="reallocateUnitDisplay"></ng-container></div>
               <div class="col text-end">
                 {{+info.rewardInfos[vault.assetToken]?.bond_amount * auto_compound_percent_reallocate / 100 || 0 | floor
-                | unit: 6 : '1.0-6'}} LP
+                | unit: 6 : '1.0-6'}} <ng-container *ngTemplateOutlet="reallocateUnitDisplay"></ng-container>
                 <span class="small">({{auto_compound_percent_reallocate / 100 || 0 |
                   percent:'0.2-2'}})</span>
               </div>
@@ -789,24 +789,16 @@
     </div>
   </div>
 
+  <ng-template #reallocateUnitDisplay>
+    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">LP </ng-container>
+    <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">{{vault.poolInfo.pairSymbol}} </ng-container>
+  </ng-template>
 
   <ng-template #depositModeSection>
     <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
       <ng-container *ngIf="depositMode === 'tokentoken'">
         <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" width="24" height="24">{{ vault.symbol }}
       </ng-container>
-<!--      <div class="input-group">-->
-<!--                      <span class="input-group-text f-12 igt-fixwidth fw-bold-600"><img [src]="'UST' | url:'icon'"-->
-<!--                                                                                        class="img-fluid rounded-circle me-1" width="24" height="24">UST</span>-->
-<!--        <input #depositAmountUSTTokenUSTCtl="ngModel" [(ngModel)]="depositUSTAmountTokenUST"-->
-<!--               [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" readonly-->
-<!--               [max]="+info.userUstAmount - this.bufferUST" [min]="0.000001" [step]="0.000001"-->
-<!--               aria-describedby="USTLabel" class="form-control fix-border" name="depositUSTAmountTokenUST"-->
-<!--               required type="number" />-->
-<!--        <div class="invalid-feedback text-end" *ngIf="depositAmountUSTTokenUSTCtl.errors?.max">UST is not-->
-<!--          enough for-->
-<!--          this transaction</div>-->
-<!--      </div>-->
     </ng-container>
     <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
       <div mdbDropdown class="dropdown" #dropdownDepositMode>
