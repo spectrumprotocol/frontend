@@ -464,6 +464,22 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
         await this.terrajs.post(msgs);
       }
+    } else if (this.depositMode === 'dptoken'){
+      const dpTokenAmount = times(this.depositDPTokenAmtDPToken, CONFIG.UNIT);
+      const farmContract = this.vault.poolInfo.farmContract;
+      const msg = {
+        send: {
+          amount: dpTokenAmount,
+          contract: farmContract,
+          msg: toBase64({
+            bond: {
+              asset_token: this.vault.assetToken,
+              compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
+            }
+          })
+        }
+      };
+      await this.tokenService.handle(this.vault.assetToken, msg);
     }
 
     this.depositTokenAAmtTokenToken = undefined;
