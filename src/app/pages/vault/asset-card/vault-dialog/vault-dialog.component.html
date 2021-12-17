@@ -330,7 +330,7 @@
               <div class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
-                    Use UST to buy {{ vault.symbol }}<span *ngIf="vault.poolInfo.pairSymbol !== 'UST'">, and {{
+                    <i class="fas fa-info-circle info-icon"></i> Use UST to buy {{ vault.symbol }}<span *ngIf="vault.poolInfo.pairSymbol !== 'UST'">, and {{
                     vault.poolInfo.pairSymbol }}</span> to create {{ vault.symbol }}-{{vault.poolInfo.pairSymbol}} LP.
                     This option has the same price exposure and risk of impermanent loss as other deposit options.
                   </div>
@@ -620,11 +620,6 @@
                 </div>
               </div>
             </div>
-<!--            <div class="mb-3">-->
-<!--              Reallocate auto-stake and auto-compound ratio of deposited -->
-<!--                <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">{{ vault.symbol}}-{{vault.poolInfo.pairSymbol}} LP</ng-container>-->
-<!--                <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">{{vault.poolInfo.pairSymbol}}</ng-container>-->
-<!--            </div>-->
             <div class="d-flex flex-row justify-content-between">
               <div class="slider-compound-stake flex-grow-1 custom-slider">
                 <ngx-slider [(value)]="auto_compound_percent_reallocate" [options]="ngx_slider_option"></ngx-slider>
