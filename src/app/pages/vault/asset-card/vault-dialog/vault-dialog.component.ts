@@ -97,19 +97,25 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
       if (this.terrajs.isConnected) {
-        const tasks: Promise<any>[] = [];
-        if (this.vault.poolInfo.pairSymbol !== 'UST') {
-          tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.farmTokenContract));
-        }
-        tasks.push(this.info.refreshPoolResponse(this.vault.assetToken));
-        await Promise.all(tasks);
-        if (this.depositTokenAAmtTokenToken && this.tokenAToBeStatic) {
-          this.depositTokenATokenTokenChanged(true);
-        } else if (this.depositTokenBAmtTokenToken && !this.tokenAToBeStatic) {
-          this.depositTokenBTokenTokenChanged(true);
-        }
-        if (this.withdrawAmt) {
-          this.withdrawAmtChanged();
+        if (this.vault.poolInfo.farmType === 'LP'){
+          const tasks: Promise<any>[] = [];
+          if (this.vault.poolInfo.pairSymbol !== 'UST') {
+            tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.farmTokenContract));
+          }
+          tasks.push(this.info.refreshPoolResponse(this.vault.assetToken));
+          await Promise.all(tasks);
+          if (this.depositTokenAAmtTokenToken && this.tokenAToBeStatic) {
+            this.depositTokenATokenTokenChanged(true);
+          } else if (this.depositTokenBAmtTokenToken && !this.tokenAToBeStatic) {
+            this.depositTokenBTokenTokenChanged(true);
+          }
+          if (this.withdrawAmt) {
+            this.withdrawAmtChanged();
+          }
+        } else if (this.vault.poolInfo.farmType === 'PYLON_LIQUID'){
+          const tasks: Promise<any>[] = [];
+          tasks.push(this.info.refreshTokenBalance(this.vault.assetToken));
+          await Promise.all(tasks);
         }
       }
     });
