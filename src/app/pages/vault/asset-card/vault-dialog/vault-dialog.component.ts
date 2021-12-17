@@ -48,8 +48,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   tokenAToBeStatic = true;
 
   depositType: 'compound' | 'stake' | 'mixed';
-  depositMode: DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken';
-  withdrawMode: DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken';
+  depositMode: DEPOSIT_WITHDRAW_MODE_ENUM;
+  withdrawMode: DEPOSIT_WITHDRAW_MODE_ENUM;
 
   withdrawAmt: number;
   withdrawUST: string;
@@ -94,15 +94,19 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private staker: StakerService,
     private terraSwap: TerraSwapService,
     private modalService: MdbModalService) {
-
   }
 
   ngOnInit() {
+    if (this.vault.poolInfo.farmType === 'LP'){
+      this.depositMode = 'tokentoken';
+      this.withdrawMode = 'tokentoken';
+    } else if (this.vault.poolInfo.farmType === 'PYLON_LIQUID'){
+      this.depositMode = 'dptoken';
+      this.withdrawMode = 'dptoken';
+    }
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
       if (this.terrajs.isConnected) {
         if (this.vault.poolInfo.farmType === 'LP'){
-          this.depositMode = 'tokentoken';
-          this.withdrawMode = 'tokentoken';
           const tasks: Promise<any>[] = [];
           if (this.vault.poolInfo.pairSymbol !== 'UST') {
             tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.farmTokenContract));
@@ -118,8 +122,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             this.withdrawAmtChanged();
           }
         } else if (this.vault.poolInfo.farmType === 'PYLON_LIQUID'){
-          this.depositMode = 'dptoken';
-          this.withdrawMode = 'dptoken';
           const tasks: Promise<any>[] = [];
           tasks.push(this.info.refreshTokenBalance(this.vault.assetToken));
           await Promise.all(tasks);
