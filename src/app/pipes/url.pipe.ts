@@ -41,6 +41,7 @@ export class UrlPipe implements PipeTransform {
           case 'KUJI': return `https://assets.kujira.app/kuji.png`;
           case 'Kujira': return `https://assets.kujira.app/kuji.png`;
           case 'bPsiDP-24m': return 'https://assets.pylon.rocks/logo/bPsiDP.png';
+          case 'Pylon Liquid Pool': return 'https://assets.pylon.rocks/logo/MINE.png';
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
