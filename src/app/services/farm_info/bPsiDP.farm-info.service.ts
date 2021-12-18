@@ -15,7 +15,6 @@ import {BPsiDpFarmService} from '../api/bpsidp-farm.service';
 import {WasmService} from '../api/wasm.service';
 import {VaultsResponse} from '../api/gov/vaults_response';
 import {div} from '../../libs/math';
-import {Denom} from '../../consts/denom';
 import {TerraSwapService} from '../api/terraswap.service';
 
 @Injectable()
