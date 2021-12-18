@@ -70,7 +70,8 @@
       <div class="card box-left">
         <div class="card-body">
           <p class="card-text sub-topic">
-            LP Balance
+            <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">LP Balance</ng-container>
+            <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">Balance</ng-container>
           </p>
           <h3 class="card-title text-primary">
             {{ info.rewardInfos[vault.assetToken]?.bond_amount || '0' | unit: 6}}
