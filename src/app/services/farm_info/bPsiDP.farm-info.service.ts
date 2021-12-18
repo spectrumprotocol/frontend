@@ -16,6 +16,7 @@ import {WasmService} from '../api/wasm.service';
 import {VaultsResponse} from '../api/gov/vaults_response';
 import {div} from '../../libs/math';
 import {TerraSwapService} from '../api/terraswap.service';
+import {Apollo, gql} from 'apollo-angular';
 
 @Injectable()
 export class BPsiDPFarmInfoService implements FarmInfoService {
@@ -31,7 +32,8 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     private bPsiDpFarmService: BPsiDpFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService,
-    private terraSwap: TerraSwapService
+    private terraSwap: TerraSwapService,
+    private apollo: Apollo,
   ) { }
 
   get farmContract() {
@@ -39,7 +41,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   }
 
   get farmTokenContract() {
-    return this.terrajs.settings.bPsiDPToken;
+    return this.terrajs.settings.nexusToken;
   }
 
   get farmGovContract() {
@@ -54,6 +56,15 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
     const farmConfigTask = this.bPsiDpFarmService.query({ config: {} });
     const balanceOfTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { balance_of: { owner: this.terrajs.settings.bPsiDPFarm} });
+    const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    const nexusGovStatTask = apollo.query<any>({
+      query: gql`{
+        getGovStakingAprRecords(limit: 1, offset: 0) {
+          date
+          govStakingApr
+        }
+      }`
+    }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
@@ -61,7 +72,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     const bPsiDPStat = await this.getBPsiDPStat();
     const pairs: Record<string, PairStat> = {};
 
-    const farmConfig = await farmConfigTask;
+    const [farmConfig, nexusGovStat] = await Promise.all([farmConfigTask, nexusGovStatTask]);
     const communityFeeRate = +farmConfig.community_fee;
     const specbPsiDPTvl = (await balanceOfTask)?.amount || '0';
 
@@ -79,7 +90,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: 0,
+        farmApr: nexusGovStat.data.getGovStakingAprRecords[0].govStakingApr / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
