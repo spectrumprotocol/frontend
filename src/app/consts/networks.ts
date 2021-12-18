@@ -117,8 +117,8 @@ export const networks: Record<string, ISettings> = {
     kujiraStaking: 'terra1cf9q9lq7tdfju95sdw78y9e34a6qrq3rrc6dre',
     kujiraToken: 'terra1xfsdgcemqwxp4hhnyk4rle6wr22sseq7j07dnn', // kujiraLP: 'terra1cmqv3sjew8kcm3j907x2026e4n0ejl2jackxlx'
     kujiraFarm: 'terra15x4hysms59x5eek6esg3f2jycalpypdcl6sy7j',
-    govProxyNexus: 'terra1l8vacm08pztq3ra3v9jaarun0ute78cy0t7rpl',
-    bPsiDPFarm: 'terra16pvd0caje2qmy79zryunawvdfh4e020xe468zs',
+    govProxyNexus: 'terra1gxgd5hp846d8txjf46ljzqhwlnmw7qmq7tfm99',
+    bPsiDPFarm: 'terra1kr82wxlvg773vjay95epyckna9g4vppjyfxgd0',
     bPsiDPGatewayPool: 'terra1fmnedmd3732gwyyj47r5p03055mygce98dpte2', // what is terra12k0p3qvfhy6j5e3ef8kzusy29lzwykk5d95kk5
     bPsiDPToken: 'terra1zsaswh926ey8qa5x4vj93kzzlfnef0pstuca0y', // Pylon Psi-bPsiDP-24m Pair terra167gwjhv4mrs0fqj0q5tejyl6cz6qc2cl95z530
     lcd: 'https://lcd.terra.dev',
