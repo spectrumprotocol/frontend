@@ -202,7 +202,7 @@ export class InfoService {
   async ensurePairInfos() {
     await this.ensurePoolInfoLoaded();
     const tasks = Object.keys(this.poolInfos)
-      .filter(key => !this.pairInfos[key] && this.poolInfos[key].farmType === 'LP')
+      .filter(key => !this.pairInfos[key])
       .map(async key => {
         const tokenA = { token: { contract_addr: key } };
         const tokenB = this.poolInfos[key].pairSymbol === 'UST'
@@ -354,11 +354,9 @@ export class InfoService {
     const poolResponses: Record<string, PoolResponse> = {};
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
-      if (this.poolInfos[key].farmType === 'LP'){
         const pairInfo = this.pairInfos[key];
         poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
           .then(it => poolResponses[key] = it));
-      }
     }
     await Promise.all(poolTasks);
     this.poolResponses = poolResponses;
