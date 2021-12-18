@@ -152,7 +152,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositTokenATokenTokenChanged(true);
   }
 
-  setMaxWithdrawLP() {
+  setMaxWithdrawAmount() {
     const rewardInfo = this.info.rewardInfos?.[this.vault.assetToken];
     if (rewardInfo) {
       this.withdrawAmt = +rewardInfo.bond_amount / CONFIG.UNIT;
