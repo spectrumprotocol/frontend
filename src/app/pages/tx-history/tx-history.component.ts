@@ -46,10 +46,10 @@ const txHistoryFactory = {
     tokenBSymbol: string,
     amount: number,
     compoundRate: number,
-    farmType?: FARM_TYPE_ENUM,
     provide?:
       | { baseTokenAmount: number; denomTokenAmount: number; }
       | { provideAmount: number; returnAmount: number; price: string, returnAmountB?: number, priceB?: string },
+    farmType?: FARM_TYPE_ENUM,
   ) => {
     const isSpec = tokenASymbol === 'SPEC';
 
@@ -93,20 +93,24 @@ const txHistoryFactory = {
 
     return { desc, action: 'Farm' as const };
   },
-  withdrawFarm: (farm: string, baseTokenSymbol: string, denomTokenSymbol: string, lpAmount: number, isWithdrawToUST: boolean, demand?: { tokenAAmount: number, tokenBAmount?: number }) => {
+  withdrawFarm: (farm: string, baseTokenSymbol: string, denomTokenSymbol: string, amount: number, isWithdrawToUST: boolean, demand?: { tokenAAmount: number, tokenBAmount?: number }, farmType?: FARM_TYPE_ENUM) => {
     let desc = 'Withdrawn';
-
-    const lp = `${lpAmount} ${baseTokenSymbol}-${denomTokenSymbol} LP`;
-
+    let amountDesc = '';
+    if (farmType === 'PYLON_LIQUID'){
+      amountDesc = `${amount} ${baseTokenSymbol}`;
+    } else {
+      // farmType = LP OR null
+      amountDesc = `${amount} ${baseTokenSymbol}-${denomTokenSymbol} LP`;
+    }
     if (!demand) {
-      desc += ` ${lp}`;
+      desc += ` ${amountDesc}`;
     } else if (!isWithdrawToUST) {
       const { tokenAAmount, tokenBAmount } = demand;
       desc += tokenBAmount ? ` ${tokenBAmount} ${baseTokenSymbol},` : '';
-      desc += ` ${tokenAAmount} ${denomTokenSymbol} (${lp})`;
+      desc += ` ${tokenAAmount} ${denomTokenSymbol} (${amountDesc})`;
     } else {
       const { tokenAAmount } = demand;
-      desc += ` ${tokenAAmount} UST (${lp})`;
+      desc += ` ${tokenAAmount} UST (${amountDesc})`;
     }
 
     desc += ` from ${farm} farm`;
@@ -355,13 +359,8 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const amount = +sendExecuteMsg.amount / CONFIG.UNIT || 0;
       const compoundRate = +bondMsg.compound_rate;
       const baseTokenSymbol = this.info.tokenInfos[bondMsg.asset_token]?.symbol;
-      if (farmInfo.farmType === 'PYLON_LIQUID'){
-        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, null, amount, compoundRate, 'PYLON_LIQUID');
-      } else {
-        // farmType is null or LP
-        const denomTokenSymbol = farmInfo?.pairSymbol;
-        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, compoundRate);
-      }
+      const denomTokenSymbol = farmInfo?.pairSymbol;
+      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, compoundRate, null, farmInfo.farmType);
     }
 
     // Bond with Token(s)
@@ -393,7 +392,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         }
       }
 
-      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, 'LP', { baseTokenAmount, denomTokenAmount });
+      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { baseTokenAmount, denomTokenAmount }, 'LP');
     }
 
     // Bond with UST
@@ -421,11 +420,11 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         const denomTokenOfferAmount = denomTokenOfferAmountKeyIndex.key === 'offer_amount' ? +denomTokenOfferAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
         const denomReturnAmountDenom = denomTokenReturnAmountKeyIndex.key === 'return_amount' ? +denomTokenReturnAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
         const priceDenom = roundSixDecimal(denomTokenOfferAmount / denomReturnAmountDenom);
-        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, 'LP', { provideAmount, returnAmount, price, returnAmountB: denomReturnAmountDenom, priceB: priceDenom });
+        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { provideAmount, returnAmount, price, returnAmountB: denomReturnAmountDenom, priceB: priceDenom }, 'LP');
       } else {
         baseTokenSymbol = this.info.tokenInfos[zapToBondMsg.pair_asset.token.contract_addr]?.symbol;
         denomTokenSymbol = 'UST';
-        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, 'LP', { provideAmount, returnAmount, price });
+        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { provideAmount, returnAmount, price }, 'LP');
       }
     }
 
@@ -433,13 +432,13 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     if (lastMsg.execute_msg['unbond'] && this.info.farmInfos.find(o => o.farmContract === lastMsg.contract)) {
       const unbondMsg = lastMsg.execute_msg['unbond'];
 
-      const lpAmount = +unbondMsg.amount / CONFIG.UNIT;
+      const amount = +unbondMsg.amount / CONFIG.UNIT;
       const baseTokenSymbol = this.info.tokenInfos[unbondMsg.asset_token]?.symbol;
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === lastMsg.contract);
       const farm = farmInfo?.farm;
       const denomTokenSymbol = farmInfo?.pairSymbol;
 
-      return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, false);
+      return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, false, null, farmInfo.farmType);
     }
 
     // Unbond as token+UST & Unbond as UST
