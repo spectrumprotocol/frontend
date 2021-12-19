@@ -15,11 +15,11 @@ export type Decimal = string;
 export interface ConfigInfo {
   anchor_market: string;
   aust_token: string;
+  bdp_token: string;
   community_fee: Decimal;
   controller: string;
   controller_fee: Decimal;
   deposit_fee: Decimal;
-  dp_token: string;
   gateway_pool: string;
   gov_proxy?: string | null;
   owner: string;

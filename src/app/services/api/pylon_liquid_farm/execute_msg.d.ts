@@ -29,7 +29,7 @@ export type ExecuteMsg =
     }
   | {
       register_asset: {
-        dp_token: string;
+        bdp_token: string;
         weight: number;
         [k: string]: unknown;
       };
