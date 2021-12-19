@@ -91,46 +91,5 @@ export class MenubarComponent implements OnInit, OnDestroy {
     this.clipboard.copy(this.terrajs.address);
     this.modelService.notify('address copied');
     this.dropdown.hide();
-
-    // this.wasm.migrate(this.terrajs.settings.wallet, 26715, {
-    //   aust_token: this.terrajs.settings.austToken,
-    //   anchor_market: this.terrajs.settings.anchorMarket,
-    //   terraswap_factory: this.terrajs.settings.terraSwapFactory,
-    //   spectrum_farm: this.terrajs.settings.specFarm,
-    // });
-
-    // burnvault = terra1l3g2yv5cqwdtrxeun4a76jkq45gwwm682usvs4
-    // controller = terra197ghuma43wdw7nydpmszxdje3naswnls4x7xq9
-
-    // this.wasm.instantiate(26715, {
-    //   owner: this.terrajs.address,
-    //   spectrum_token: this.terrajs.settings.specToken,
-    //   spectrum_gov: this.terrajs.settings.gov,
-    //   aust_token: this.terrajs.settings.austToken,
-    //   anchor_market: this.terrajs.settings.anchorMarket,
-    //   terraswap_factory: this.terrajs.settings.terraSwapFactory,
-    //   spectrum_farm: this.terrajs.settings.specFarm,
-    // });
-
-    // this.wallet.handle('terra1l3g2yv5cqwdtrxeun4a76jkq45gwwm682usvs4', {
-    //   upsert_share: {
-    //     address: 'terra197ghuma43wdw7nydpmszxdje3naswnls4x7xq9',
-    //     disable_withdraw: true,
-    //   }
-    // });
-
-    // await this.wasm.migrate(this.terrajs.settings.nEthPsiFarm, 26963, {
-    //   anchor_market: this.terrajs.settings.anchorMarket,
-    //   aust_token: this.terrajs.settings.austToken,
-    //   terraswap_factory: this.terrajs.settings.terraSwapFactory,
-    // });
-    // await this.wasm.migrate(this.terrajs.settings.nLunaPsiFarm, 26963, {
-    //   anchor_market: this.terrajs.settings.anchorMarket,
-    //   aust_token: this.terrajs.settings.austToken,
-    //   terraswap_factory: this.terrajs.settings.terraSwapFactory,
-    // });
-
-    // await this.wasm.execute(this.terrajs.settings.nLunaPsiFarm, { compound: {}});
-    // await this.wasm.execute(this.terrajs.settings.nEthPsiFarm, { compound: {}});
   }
 }
