@@ -20,7 +20,7 @@
   <div class="row card-body card-grey m-0 border-6 ps-3">
     <div class="col-4 p-0 total">
         <div class="card-text sub-topic">
-          Total rewards
+          Total Rewards
         </div>
           <h3 class="card-title text-primary">
             <app-digit [value]="info.portfolio?.total_reward_ust"></app-digit> <span class="cur-title text-white"> UST</span>
@@ -31,7 +31,7 @@
           <span class="btn-group">
             <button class="btn btn-sm btn-outline-light ms-2" type="button" aria-expanded="false" (click)="manageRewards()" [disabled]="disableManageRewards()"
             title="Unstake all SPEC, MIR, ANC, and MINE rewards in vaults and withdraw to your wallet">
-            Manage rewards
+            Manage Rewards
             </button>
             <a routerLink="/tx-history" routerLinkActive="active"><button type="button" class="btn btn-sm btn-outline-light ms-2 p-2"
               title="Show transaction history"><img width="27" height="27" class="icon-history" src="../../../assets/Icon_History.svg"></button></a>

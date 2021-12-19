@@ -32,7 +32,7 @@
           <div class="col-6 mt-1">
             <div class="ur-staked">
               <div class="f-12 sub-topic">
-                Your Staked <span *ngIf="+detail.userBalance > 0 && detail.unlockAt && isWithdrawLocked">
+                My Staked <span *ngIf="+detail.userBalance > 0 && detail.unlockAt && isWithdrawLocked">
                   <small class="text-primary">
                     <i class="fas fa-lock"></i>
                     Unlock {{ detail.unlockAt | timeago }}
@@ -49,7 +49,7 @@
           </div>
           <div class="col-6 mt-1">
             <div class="f-12 sub-topic">
-              Your Profit</div>
+              My Profit</div>
             <div class="f-14 fw-bold" *ngIf="+detail.userBalance">
               <span class="fs-6 text-primary">
                 <app-digit [value]="+detail.userProfit"></app-digit>
