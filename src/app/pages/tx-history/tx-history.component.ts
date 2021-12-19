@@ -312,11 +312,19 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         let poolName: string;
 
         if (assetToken) {
-          poolName = `${assetToken}-${farmInfo.pairSymbol} pool`;
+          if (farmInfo.farmType === 'PYLON_LIQUID'){
+            poolName = `${farmInfo.pairSymbol} pool`;
+          } else{
+            poolName = `${assetToken}-${farmInfo.pairSymbol} pool`;
+          }
         } else if (farmInfo.tokenSymbol === 'MIR') {
           poolName = 'all pools';
         } else {
-          poolName = `${farmInfo.baseSymbol || farmInfo.tokenSymbol}-${farmInfo.pairSymbol} pool`;
+          if (farmInfo.farmType === 'PYLON_LIQUID'){
+            poolName = `${farmInfo.pairSymbol} pool`;
+          } else {
+            poolName = `${farmInfo.baseSymbol || farmInfo.tokenSymbol}-${farmInfo.pairSymbol} pool`;
+          }
         }
 
         if (farmInfo.tokenSymbol !== 'SPEC') {
@@ -493,10 +501,15 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const amountToAutoPercentage = this.percentPipe.transform(div(rawAmountToAuto, totalLP));
       const amountToStakePercentage = this.percentPipe.transform(div(rawAmountToStake, totalLP));
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === lastMsg.contract);
-
+      let assetDesc = '';
+      if (farmInfo.farmType === 'PYLON_LIQUID'){
+        assetDesc = `${tokenSymbol}`;
+      } else {
+        assetDesc = `${tokenSymbol}-${farmInfo.pairSymbol} LP`;
+      }
       return {
         action: 'Farm',
-        desc: `Reallocated deposited ${tokenSymbol}-${farmInfo.pairSymbol} LP to auto-compound ${amountToAutoPercentage}, auto-stake ${amountToStakePercentage} (${amountToAuto} LP, ${amountToStake} LP) `,
+        desc: `Reallocated deposited ${assetDesc} to auto-compound ${amountToAutoPercentage}, auto-stake ${amountToStakePercentage} (${amountToAuto} LP, ${amountToStake} LP) `,
       };
     }
 
