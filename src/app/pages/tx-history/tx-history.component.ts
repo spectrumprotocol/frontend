@@ -9,6 +9,7 @@ import { PercentPipe } from '@angular/common';
 import { Event, MsgExecuteContract } from '@terra-money/terra.js';
 import { Denom } from '../../consts/denom';
 import { fromBase64 } from 'src/app/libs/base64';
+import {FARM_TYPE_ENUM} from '../../services/farm_info/farm-info.service';
 
 interface TxHistory {
   desc: string;
@@ -43,8 +44,9 @@ const txHistoryFactory = {
     farm: string,
     tokenASymbol: string,
     tokenBSymbol: string,
-    lpAmount: number,
+    amount: number,
     compoundRate: number,
+    farmType?: FARM_TYPE_ENUM,
     provide?:
       | { baseTokenAmount: number; denomTokenAmount: number; }
       | { provideAmount: number; returnAmount: number; price: string, returnAmountB?: number, priceB?: string },
@@ -54,11 +56,15 @@ const txHistoryFactory = {
     let desc = 'Deposited';
 
     if (!provide) {
-      desc += ` ${lpAmount} ${tokenASymbol}-${tokenBSymbol} LP`;
+      if (farmType === 'PYLON_LIQUID'){
+        desc += ` ${amount} ${tokenASymbol}`;
+      } else {
+        desc += ` ${amount} ${tokenASymbol}-${tokenBSymbol} LP`;
+      }
     } else if ('price' in provide) {
       const { provideAmount, returnAmount, price, returnAmountB, priceB } = provide;
 
-      let lpDesc = `${lpAmount} ${tokenASymbol}-${tokenBSymbol} LP`;
+      let lpDesc = `${amount} ${tokenASymbol}-${tokenBSymbol} LP`;
       lpDesc += !isSpec ? ' (before deposit fee)' : '';
 
       if ('returnAmountB' in provide) {
@@ -69,7 +75,7 @@ const txHistoryFactory = {
     } else {
       const { baseTokenAmount, denomTokenAmount } = provide;
 
-      let lpDesc = `${lpAmount} LP`;
+      let lpDesc = `${amount} LP`;
       lpDesc += !isSpec ? ' before deposit fee' : '';
 
       desc += ` ${baseTokenAmount} ${tokenASymbol} + ${denomTokenAmount} ${tokenBSymbol} (${lpDesc})`;
@@ -124,7 +130,7 @@ const ensureBase64toObject = (executeMsg: any): object => {
   const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
   try {
     if (typeof executeMsg === 'string' && base64regex.test(executeMsg)) {
-      return JSON.parse(fromBase64(executeMsg));
+      return fromBase64(executeMsg);
     } else if (typeof executeMsg === 'object') {
       return executeMsg;
     } else {
@@ -344,15 +350,18 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     // Bond with LP
     if (sendExecuteMsg?.msg['bond'] && this.info.farmInfos.find(o => o.farmContract === sendExecuteMsg?.contract)) {
       const bondMsg = sendExecuteMsg.msg['bond'];
-
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === sendExecuteMsg.contract);
       const farm = farmInfo?.farm;
-      const lpAmount = +sendExecuteMsg.amount / CONFIG.UNIT || 0;
-      const baseTokenSymbol = this.info.tokenInfos[bondMsg.asset_token]?.symbol;
-      const denomTokenSymbol = farmInfo?.pairSymbol;
+      const amount = +sendExecuteMsg.amount / CONFIG.UNIT || 0;
       const compoundRate = +bondMsg.compound_rate;
-
-      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate);
+      const baseTokenSymbol = this.info.tokenInfos[bondMsg.asset_token]?.symbol;
+      if (farmInfo.farmType === 'PYLON_LIQUID'){
+        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, null, amount, compoundRate, 'PYLON_LIQUID');
+      } else {
+        // farmType is null or LP
+        const denomTokenSymbol = farmInfo?.pairSymbol;
+        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, compoundRate);
+      }
     }
 
     // Bond with Token(s)
@@ -384,7 +393,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         }
       }
 
-      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { baseTokenAmount, denomTokenAmount });
+      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, 'LP', { baseTokenAmount, denomTokenAmount });
     }
 
     // Bond with UST
@@ -412,11 +421,11 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         const denomTokenOfferAmount = denomTokenOfferAmountKeyIndex.key === 'offer_amount' ? +denomTokenOfferAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
         const denomReturnAmountDenom = denomTokenReturnAmountKeyIndex.key === 'return_amount' ? +denomTokenReturnAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
         const priceDenom = roundSixDecimal(denomTokenOfferAmount / denomReturnAmountDenom);
-        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { provideAmount, returnAmount, price, returnAmountB: denomReturnAmountDenom, priceB: priceDenom });
+        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, 'LP', { provideAmount, returnAmount, price, returnAmountB: denomReturnAmountDenom, priceB: priceDenom });
       } else {
         baseTokenSymbol = this.info.tokenInfos[zapToBondMsg.pair_asset.token.contract_addr]?.symbol;
         denomTokenSymbol = 'UST';
-        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { provideAmount, returnAmount, price });
+        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, 'LP', { provideAmount, returnAmount, price });
       }
     }
 
