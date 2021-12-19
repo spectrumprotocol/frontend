@@ -186,11 +186,11 @@ export const networks: Record<string, ISettings> = {
     kujiraStaking: 'terra16gd9lq7urpy8txfqd224lqfxwxs4fwr742yptu',
     kujiraToken: 'terra1azu2frwn9a4l6gl5r39d0cuccs4h7xlu9gkmtd', // kujiraLP: 'terra18wn5m5rd4yd82kp9s07gwx9x0vn00wdj8dezv8'
     kujiraFarm: 'terra16ppenx9paca846mj39axlqhtxgz8n9az5pantj',
-    govProxyNexus: '',
-    bPsiDPFarm: '',
-    bPsiDPGatewayPool: '',
-    bPsiDPToken: '',
-    nexusPool: '',
+    govProxyNexus: 'terra1rm449u8x98al6n4xlml0mxx3vy390xn7a9e5q4',
+    bPsiDPFarm: 'terra1h909lafatcmxeqzgw030xudx965j7ulud5fwmm',
+    bPsiDPGatewayPool: 'terra1w733k9ss5yglaluv7ueq3tlgfgq574nzhvq4v5', // TestPsi terra1ul5hkaxsapr3sr80f6ypygr9jgnfw5m7rfsfhy
+    bPsiDPToken: 'terra1ex8ss7xhwcf8x6n47dn656hf8t0cw97myjr35a',
+    nexusPool: 'terra1ee9h9c9fv2smm8wkq0aw78tut3w3x62ckj6nz8',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
