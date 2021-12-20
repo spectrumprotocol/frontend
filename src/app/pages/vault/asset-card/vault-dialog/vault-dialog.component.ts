@@ -816,8 +816,22 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositTokenBTokenTokenChanged(true);
   }
 
-  depositbDPTokenChanged(b: boolean, $event: Event) {
-    // TODO add deposit fee calculation
+  depositbDPTokenChanged(forced: boolean, event?: any) {
+    if (!forced && !event) {
+      // input from from HTML has event, input from ngModel changes does not have event, trick to prevent bounce
+      return;
+    }
+    if (!this.depositbDPTokenAmtbDPToken) {
+      this.depositbDPTokenAmtbDPToken = undefined;
+      this.depositFeeDPToken = undefined;
+      this.netDPToken = undefined;
+    }
+
+    const grossLp = new BigNumber(this.depositbDPTokenAmtbDPToken);
+    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositbDPTokenAmtbDPToken, CONFIG.UNIT) ?? '0', this.info.poolResponses, this.vault.assetToken));
+    const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+    this.netDPToken = grossLp.minus(depositFee).toString();
+    this.depositFeeDPToken = depositFee.toString();
   }
 
   setMaxDepositbDPToken() {
