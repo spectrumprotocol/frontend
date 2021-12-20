@@ -22,7 +22,7 @@ import { ExecuteMsg as StakerExecuteMsg } from '../../../../services/api/staker/
 import { MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit/modal';
 
 const DEPOSIT_FEE = '0.001';
-export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'dptoken';
+export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdptoken' | 'ust<->bdptoken';
 
 @Component({
   selector: 'app-vault-dialog',
@@ -103,8 +103,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.depositMode = 'tokentoken';
       this.withdrawMode = 'tokentoken';
     } else if (this.vault.poolInfo.farmType === 'PYLON_LIQUID'){
-      this.depositMode = 'dptoken';
-      this.withdrawMode = 'dptoken';
+      this.depositMode = 'bdptoken';
+      this.withdrawMode = 'bdptoken';
     }
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
       if (this.terrajs.isConnected) {
@@ -466,7 +466,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
         await this.terrajs.post(msgs);
       }
-    } else if (this.depositMode === 'dptoken'){
+    } else if (this.depositMode === 'bdptoken'){
       const dpTokenAmount = times(this.depositbDPTokenAmtbDPToken, CONFIG.UNIT);
       const farmContract = this.vault.poolInfo.farmContract;
       const msg = {
@@ -604,7 +604,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         }
       );
       await this.terrajs.post([unbond, withdrawLp]);
-    } else if (this.withdrawMode === 'lp' || this.withdrawMode === 'dptoken') {
+    } else if (this.withdrawMode === 'lp' || this.withdrawMode === 'bdptoken') {
       await this.terrajs.post([unbond]);
     } else if (this.withdrawMode === 'ust') {
       let msg: object;
@@ -806,7 +806,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     await this.terrajs.post(msgs);
   }
 
-  changeDepositMode(mode: 'tokentoken' | 'lp' | 'ust') {
+  changeDepositMode(mode: DEPOSIT_WITHDRAW_MODE_ENUM) {
     setTimeout(() => this.depositMode = mode, 0);
   }
 
@@ -817,7 +817,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   depositbDPTokenChanged(b: boolean, $event: Event) {
-
+    // TODO add deposit fee calculation
   }
 
   setMaxDepositbDPToken() {
