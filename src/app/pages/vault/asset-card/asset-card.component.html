@@ -18,7 +18,7 @@
           </div>
         </div>
         <div class="p-2 bulk-name-container" *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
-          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon mt-2 float-start">
+          <img [src]="vault.poolInfo.pairSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon mt-2 float-start single-assetIcon-for-listview">
           <div class="name-detail">
             <h6 class="m-0">{{vault.poolInfo.pairSymbol}}</h6>
             <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
