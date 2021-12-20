@@ -417,17 +417,17 @@
                 <div class="input-group">
                   <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
                     <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle me-1" width="24" height="24">{{ vault.symbol }}</span>
-                  <input #depositDPTokenAmtDPTokenCtl="ngModel" (input)="depositDPTokenChanged(false, $event)"
-                         [(ngModel)]="depositDPTokenAmtDPToken"
-                         [class.is-invalid]="(formDeposit.submitted || depositDPTokenAmtDPTokenCtl.touched) && depositDPTokenAmtDPTokenCtl.invalid"
+                  <input #depositbDPTokenAmtbDPTokenCtl="ngModel" (input)="depositbDPTokenChanged(false, $event)"
+                         [(ngModel)]="depositbDPTokenAmtbDPToken"
+                         [class.is-invalid]="(formDeposit.submitted || depositbDPTokenAmtbDPTokenCtl.touched) && depositbDPTokenAmtbDPTokenCtl.invalid"
                          [max]="+info.tokenBalances[vault.assetToken]" [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
-                         class="form-control fix-border" name="depositDPTokenAmtDPToken" required type="number" />
-                  <button (click)="setMaxDepositDPToken()" class="btn btn-max last" type="button">
+                         class="form-control fix-border" name="depositbDPTokenAmtbDPToken" required type="number" />
+                  <button (click)="setMaxDepositbDPToken()" class="btn btn-max last" type="button">
                     Max
                   </button>
                 </div>
 
-                <div *ngIf="depositDPTokenAmtDPToken" class="mt-3 pool-info">
+                <div *ngIf="depositbDPTokenAmtbDPToken" class="mt-3 pool-info">
                   <div *ngIf="+depositFeeDPToken" class="row">
                     <div class="col">Deposit Fee (&lt;0.1%)</div>
                     <div *ngIf="+depositFeeDPToken > 0" class="col text-end">{{depositFeeDPToken | number }} LP</div>

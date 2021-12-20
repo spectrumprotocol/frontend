@@ -44,7 +44,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositLPAmtLP: number;
   depositUSTAmtUST: number;
   depositTokenBAmtTokenToken: number;
-  depositDPTokenAmtDPToken: number;
+  depositbDPTokenAmtbDPToken: number;
   tokenAToBeStatic = true;
 
   depositType: 'compound' | 'stake' | 'mixed';
@@ -467,7 +467,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         await this.terrajs.post(msgs);
       }
     } else if (this.depositMode === 'dptoken'){
-      const dpTokenAmount = times(this.depositDPTokenAmtDPToken, CONFIG.UNIT);
+      const dpTokenAmount = times(this.depositbDPTokenAmtbDPToken, CONFIG.UNIT);
       const farmContract = this.vault.poolInfo.farmContract;
       const msg = {
         send: {
@@ -816,11 +816,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositTokenBTokenTokenChanged(true);
   }
 
-  depositDPTokenChanged(b: boolean, $event: Event) {
+  depositbDPTokenChanged(b: boolean, $event: Event) {
 
   }
 
-  setMaxDepositDPToken() {
-    this.depositDPTokenAmtDPToken = +this.info.tokenBalances?.[this.vault.poolInfo.farmTokenContract] / +this.info.tokenInfos[this.vault.poolInfo.farmTokenContract].unit;
+  setMaxDepositbDPToken() {
+    this.depositbDPTokenAmtbDPToken = +this.info.tokenBalances?.[this.vault.assetToken] / +this.info.tokenInfos[this.vault.assetToken].unit;
   }
 }
