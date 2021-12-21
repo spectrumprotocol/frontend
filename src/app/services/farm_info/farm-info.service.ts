@@ -19,6 +19,7 @@ export type PoolInfo = PoolItem & {
   pairSymbol: string;
   auditWarning?: boolean;
   farmType: FARM_TYPE_ENUM;
+  score: number;
 };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
@@ -60,6 +61,7 @@ export interface FarmInfoService {
   readonly farmColor: string;
 
   readonly farmType?: FARM_TYPE_ENUM;
+  readonly highlight?: boolean;
 
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>>;

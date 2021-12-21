@@ -3,11 +3,14 @@
     <div class="row">
       <div class="col-12 col-md-8">
         <h4>Autofarm Vaults</h4>
-        <span class="sub-topic">Provide liquidity here. Spectrum will collect rewards for you. Plus, you will earn SPEC tokens.</span>
+        <span class="sub-topic">Provide liquidity here. Spectrum will collect rewards for you. Plus, you will earn SPEC
+          tokens.</span>
       </div>
       <div class="col-12 col-md-4 pt-2 d-flex justify-content-end align-items-end">
         <div class="d-inline-block f-12">
-          Audited by <a href="https://github.com/HalbornSecurity/PublicReports/blob/master/CosmWasm%20Smart%20Contract%20Audits/Spectrum_Protocol_CosmWasm_Smart_Contract_Security_Audit_Halborn_Report_v1_1.pdf" target="_blank">
+          Audited by <a
+            href="https://github.com/HalbornSecurity/PublicReports/blob/master/CosmWasm%20Smart%20Contract%20Audits/Spectrum_Protocol_CosmWasm_Smart_Contract_Security_Audit_Halborn_Report_v1_1.pdf"
+            target="_blank">
             <img src="assets/halborn_logo.svg" alt="Halborn" class="platform-logo-halborn"></a>
         </div>
       </div>
@@ -50,7 +53,8 @@
               Market Cap
             </p>
             <h3 class="card-title">
-              <app-digit *ngIf="info.marketCap" [value]="info.marketCap"></app-digit>&nbsp;<span class="cur-title" *ngIf="info.marketCap">UST</span>
+              <app-digit *ngIf="info.marketCap" [value]="info.marketCap"></app-digit>&nbsp;<span class="cur-title"
+                *ngIf="info.marketCap">UST</span>
             </h3>
           </div>
         </div>
@@ -65,14 +69,13 @@
               <div class="flex-grow-1">
                 <div class="card-text sub-topic">
                   My Total Value <i class="fas fa-info-circle info-icon super"
-                  mdbTooltip="Your provided liquidity, staked rewards, and staked SPEC"></i>
-              </div>
-              <h3 class="card-title text-primary">
-                <app-digit
-                  [value]="info.myTvl"></app-digit> <span class="cur-title text-white"> UST</span>
+                    mdbTooltip="Your provided liquidity, staked rewards, and staked SPEC"></i>
+                </div>
+                <h3 class="card-title text-primary">
+                  <app-digit [value]="info.myTvl"></app-digit> <span class="cur-title text-white"> UST</span>
                   <a role="button" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
-                  (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon_PieChart.svg"></a>
-              </h3>
+                    (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon_PieChart.svg"></a>
+                </h3>
               </div>
             </div>
             <!-- <div class="card-text sub-topic">
@@ -94,15 +97,13 @@
         <app-unstake-all></app-unstake-all>
       </div>
 
-
-   <!--  TODO:: waiting for announcement flag -->
-      <!-- <div class="col-12">
+      <div class="col-12">
         <div class="terra-container mt-2 mb-2">
-          nLuna-Psi and nEth-Psi Nexus Vaults are now live on Spectrum Protocol!
-          <br>
-          Auto-compound and auto-stake your LPs and earn 
+          bPsiDP-24m Vault is now live on Spectrum Protocol! (<a target="_blank" class="text-execute"
+            href="https://spectrum-protocol.medium.com/liquid-pylon-vault-when-lossless-investment-meets-auto-compound-4c682d3e6c54">learn
+            more</a>)
         </div>
-      </div>  -->
+      </div>
 
       <div class="col-12 col-md-5 ">
         <div class="card box-left">
@@ -119,26 +120,26 @@
                 </div>
               </div>
               <div>
-                  <span class="align-sub sub-topic text-dropdown">Deposited only</span>
-                  <label class="switch">
-                    <input type="checkbox" id="showDepositedPoolOnly"
-                    [(ngModel)]="showDepositedPoolOnly" (change)="refresh();memoize('deposit')">
-                    <span class="slider"></span>
-                  </label>
+                <span class="align-sub sub-topic text-dropdown">Deposited only</span>
+                <label class="switch">
+                  <input type="checkbox" id="showDepositedPoolOnly" [(ngModel)]="showDepositedPoolOnly"
+                    (change)="refresh();memoize('deposit')">
+                  <span class="slider"></span>
+                </label>
               </div>
-          </div>
+            </div>
           </div>
           <div class="card-body card-grey d-block d-sm-none border-6">
             <div class="d-flex justify-content-end">
               <div>
-                  <span class="align-sub">Deposited only</span>
-                  <label class="switch">
-                    <input type="checkbox" id="showDepositedPoolOnlyMobile"
-                    [(ngModel)]="showDepositedPoolOnly" (change)="refresh();memoize('deposit')">
-                    <span class="slider"></span>
-                  </label>
+                <span class="align-sub">Deposited only</span>
+                <label class="switch">
+                  <input type="checkbox" id="showDepositedPoolOnlyMobile" [(ngModel)]="showDepositedPoolOnly"
+                    (change)="refresh();memoize('deposit')">
+                  <span class="slider"></span>
+                </label>
               </div>
-          </div>
+            </div>
           </div>
         </div>
       </div>
@@ -148,8 +149,8 @@
             <div class="d-flex">
               <div class="form-group has-search">
                 <span class="fa fa-search form-control-feedback mg-3"></span>
-                <input type="text" class="form-control placeholder-white" placeholder="Search vaults" aria-label="Search"
-                aria-describedby="search-addon" [(ngModel)]="search" (ngModelChange)="refresh()" >
+                <input type="text" class="form-control placeholder-white" placeholder="Search vaults"
+                  aria-label="Search" aria-describedby="search-addon" [(ngModel)]="search" (ngModelChange)="refresh()">
               </div>
             </div>
           </div>
@@ -159,12 +160,15 @@
         <div class="card box-left">
           <div class="card-body card-grey p-0 border-6 school-options-dropdown text-center">
             <div class="d-flex">
-              <div mdbDropdown class="dropdown w-100 btn-group" 
-              [class.active-border]="activeFarm !== 'All'" #dropdownFarmFilter>
-                <button mdbDropdownToggle class="btn p-0"  type="button" aria-expanded="false">
-                  <img *ngIf="activeFarm !== 'All'" class="mobile-icon" [src]="activeFarm | url:'icon'" width="24" height="24">
-                  <img *ngIf="activeFarm === 'All'"  class="mobile-icon" src="../../../assets/Icon_Farms.svg" width="24" height="24">
-                  <span class="text-dropdown d-none d-md-inline ps-2 sub-topic">{{activeFarm}} {{ activeFarm === "All" ? "Farms" : ""}}</span>
+              <div mdbDropdown class="dropdown w-100 btn-group" [class.active-border]="activeFarm !== 'All'"
+                #dropdownFarmFilter>
+                <button mdbDropdownToggle class="btn p-0" type="button" aria-expanded="false">
+                  <img *ngIf="activeFarm !== 'All'" class="mobile-icon" [src]="activeFarm | url:'icon'" width="24"
+                    height="24">
+                  <img *ngIf="activeFarm === 'All'" class="mobile-icon" src="../../../assets/Icon_Farms.svg" width="24"
+                    height="24">
+                  <span class="text-dropdown d-none d-md-inline ps-2 sub-topic">{{activeFarm}} {{ activeFarm === "All" ?
+                    "Farms" : ""}}</span>
                   <span class="text-end filter">
                     <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
                   </span>
@@ -175,9 +179,9 @@
                       (click)="activeFarm = 'All'; refresh()">All</a>
                   </li>
                   <li *ngFor="let farmInfo of farmInfoDropdownList">
-                    <a  class="dropdown-item"
-                      [class.active]="activeFarm === farmInfo.farm"
-                      (click)="activeFarm = farmInfo.farm; refresh()"> <img [src]="farmInfo.farm | url:'icon'" class="farm-logo"> {{farmInfo.farm}}</a>
+                    <a class="dropdown-item" [class.active]="activeFarm === farmInfo.farm"
+                      (click)="activeFarm = farmInfo.farm; refresh()"> <img [src]="farmInfo.farm | url:'icon'"
+                        class="farm-logo"> {{farmInfo.farm}}</a>
                   </li>
                 </ul>
               </div>
@@ -188,7 +192,8 @@
       <div class="col-2 col-sm-2 col-md-2">
         <div class="card box-left">
           <div class="card-body p-0 border-6 school-options-dropdown text-center">
-            <div mdbDropdown class="dropdown w-100 btn-group" [class.active-border]="sortBy !== 'multiplier'" #dropdownSortBy>
+            <div mdbDropdown class="dropdown w-100 btn-group" [class.active-border]="sortBy !== 'multiplier'"
+              #dropdownSortBy>
               <button mdbDropdownToggle class="btn p-0" type="button" aria-expanded="false">
                 <img class="mobile-icon" src="../../../assets/Icon_SortBy.svg" width="24" height="24">
                 <span class="text-dropdown d-none d-sm-none d-md-inline sub-topic">Sort by</span>
@@ -210,8 +215,7 @@
                     (click)="sortBy = 'dpr'; refresh()">DPR%</a>
                 </li>
                 <li>
-                  <a class="dropdown-item" [class.active]="sortBy === 'tvl'"
-                    (click)="sortBy = 'tvl'; refresh()">TVL</a>
+                  <a class="dropdown-item" [class.active]="sortBy === 'tvl'" (click)="sortBy = 'tvl'; refresh()">TVL</a>
                 </li>
               </ul>
             </div>
@@ -220,7 +224,7 @@
       </div>
     </div>
 
-   <!--  TODO:: waiting for announcement flag -->
+    <!--  TODO:: waiting for announcement flag -->
     <!-- <div class="row pt-4">
       <div class="col-12">
         <div class="terra-container m-2">
@@ -246,7 +250,7 @@
     <div class="row pt-2 g-3">
       <ng-container *ngFor="let vault of vaults; trackBy: vaultId">
         <div [ngClass]="{'col-lg-4': isGrid, 'col-sm-6': isGrid, 'col-12': !isGrid  }">
-<!--          [useShortNumber]="!shouldBeGrid"-->
+          <!--          [useShortNumber]="!shouldBeGrid"-->
           <app-asset-card [vault]="vault" [isGrid]="isGrid"></app-asset-card>
         </div>
       </ng-container>

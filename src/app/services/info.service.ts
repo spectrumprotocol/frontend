@@ -190,6 +190,7 @@ export class InfoService {
             pairSymbol: farmInfo.pairSymbol,
             auditWarning: farmInfo.auditWarning,
             farmType: farmInfo.farmType ?? 'LP',
+            score: (farmInfo.highlight ? 1000000 : 0) + (pool.weight || 0),
           });
       }
     });
@@ -505,6 +506,7 @@ export class InfoService {
       const stakeApy = farmApy + specApy;
       const apy = Math.max(compoundApy, stakeApy);
 
+      const poolInfo = this.poolInfos[key];
       const vault: Vault = {
         symbol: this.tokenInfos[key]?.symbol,
         decimals: this.tokenInfos[key]?.decimals,
@@ -512,13 +514,22 @@ export class InfoService {
         assetToken: key,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
-        poolInfo: this.poolInfos[key],
+        poolInfo,
         pairInfo: this.pairInfos[key],
         specApy,
         farmApy,
         compoundApy,
         stakeApy,
         apy,
+        name: poolInfo.farmType === 'PYLON_LIQUID'
+          ? this.tokenInfos[key]?.symbol
+          : `${this.tokenInfos[key]?.symbol}-${poolInfo.pairSymbol} LP`,
+        unitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
+          ? this.tokenInfos[key]?.symbol
+          : `${this.tokenInfos[key]?.symbol}-${poolInfo.pairSymbol} LP`,
+        shortUnitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
+          ? this.tokenInfos[key]?.symbol
+          : 'LP',
       };
       this.allVaults.push(vault);
     }

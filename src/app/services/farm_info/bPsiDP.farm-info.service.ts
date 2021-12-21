@@ -20,13 +20,14 @@ import {Apollo, gql} from 'apollo-angular';
 
 @Injectable()
 export class BPsiDPFarmInfoService implements FarmInfoService {
-  farm = 'Pylon Liquid Pool';
+  farm = 'Pylon';
   tokenSymbol = 'Psi';
   autoCompound = true;
   autoStake = true;
   farmColor = '#00cfda';
   pairSymbol = 'bPsiDP-24m';
   farmType: FARM_TYPE_ENUM = 'PYLON_LIQUID';
+  highlight = true;
 
   constructor(
     private bPsiDpFarmService: BPsiDpFarmService,
@@ -118,7 +119,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
 
 
     const rewardRate = Number(div(configInfo.distribution_config.reward_rate, 1000000)).toFixed(15);
-    const totalDeposit = div(+rewardInfo.total_deposit, 1000000)
+    const totalDeposit = div(+rewardInfo.total_deposit, 1000000);
     const apr = 365 * (+rewardRate * +psiPrice * 86400 / +totalDeposit);
     return {
       apr,

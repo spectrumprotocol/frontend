@@ -9,7 +9,7 @@ import { PercentPipe } from '@angular/common';
 import { Event, MsgExecuteContract } from '@terra-money/terra.js';
 import { Denom } from '../../consts/denom';
 import { fromBase64 } from 'src/app/libs/base64';
-import {FARM_TYPE_ENUM} from '../../services/farm_info/farm-info.service';
+import { FARM_TYPE_ENUM } from '../../services/farm_info/farm-info.service';
 
 interface TxHistory {
   desc: string;
@@ -56,7 +56,7 @@ const txHistoryFactory = {
     let desc = 'Deposited';
 
     if (!provide) {
-      if (farmType === 'PYLON_LIQUID'){
+      if (farmType === 'PYLON_LIQUID') {
         desc += ` ${amount} ${tokenASymbol}`;
       } else {
         desc += ` ${amount} ${tokenASymbol}-${tokenBSymbol} LP`;
@@ -96,7 +96,7 @@ const txHistoryFactory = {
   withdrawFarm: (farm: string, baseTokenSymbol: string, denomTokenSymbol: string, amount: number, isWithdrawToUST: boolean, demand?: { tokenAAmount: number, tokenBAmount?: number }, farmType?: FARM_TYPE_ENUM) => {
     let desc = 'Withdrawn';
     let amountDesc = '';
-    if (farmType === 'PYLON_LIQUID'){
+    if (farmType === 'PYLON_LIQUID') {
       amountDesc = `${amount} ${baseTokenSymbol}`;
     } else {
       // farmType = LP OR null
@@ -312,15 +312,15 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         let poolName: string;
 
         if (assetToken) {
-          if (farmInfo.farmType === 'PYLON_LIQUID'){
+          if (farmInfo.farmType === 'PYLON_LIQUID') {
             poolName = `${farmInfo.pairSymbol} pool`;
-          } else{
+          } else {
             poolName = `${assetToken}-${farmInfo.pairSymbol} pool`;
           }
         } else if (farmInfo.tokenSymbol === 'MIR') {
           poolName = 'all pools';
         } else {
-          if (farmInfo.farmType === 'PYLON_LIQUID'){
+          if (farmInfo.farmType === 'PYLON_LIQUID') {
             poolName = `${farmInfo.pairSymbol} pool`;
           } else {
             poolName = `${farmInfo.baseSymbol || farmInfo.tokenSymbol}-${farmInfo.pairSymbol} pool`;
@@ -502,7 +502,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const amountToStakePercentage = this.percentPipe.transform(div(rawAmountToStake, totalLP));
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === lastMsg.contract);
       let assetDesc = '';
-      if (farmInfo.farmType === 'PYLON_LIQUID'){
+      if (farmInfo.farmType === 'PYLON_LIQUID') {
         assetDesc = `${tokenSymbol}`;
       } else {
         assetDesc = `${tokenSymbol}-${farmInfo.pairSymbol} LP`;

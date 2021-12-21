@@ -15,7 +15,6 @@ import {toBase64} from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { HttpClient } from '@angular/common/http';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class AnchorFarmInfoService implements FarmInfoService {
