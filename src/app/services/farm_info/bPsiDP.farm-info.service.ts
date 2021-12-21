@@ -20,7 +20,7 @@ import {Apollo, gql} from 'apollo-angular';
 
 @Injectable()
 export class BPsiDPFarmInfoService implements FarmInfoService {
-  farm = 'Pylon Liquid Pool';
+  farm = 'Pylon';
   tokenSymbol = 'Psi';
   autoCompound = true;
   autoStake = true;
