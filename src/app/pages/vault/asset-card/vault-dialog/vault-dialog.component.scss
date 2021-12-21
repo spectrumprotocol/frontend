@@ -44,6 +44,10 @@
     }
 }
 
+.warning-text{
+  color: $text-error !important;
+}
+
 .card-green {
     background-color: $gray-950 !important;
     border: 0;
