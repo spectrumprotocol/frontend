@@ -293,7 +293,7 @@ export class InfoService {
     const height = await this.terrajs.getHeight();
     const specPerHeight = config.mint_end > height ? config.mint_per_block : '0';
     const ustPerYear = +specPerHeight * HEIGHT_PER_YEAR * +this.specPrice
-      * (1 - +config.burnvault_ratio)
+      * (1 - (+config.burnvault_ratio || 0))
       * (1 - +config.warchest_ratio);
     for (const pair of Object.values(stat.pairs)) {
       pair.specApr = ustPerYear * pair.multiplier / totalWeight / +pair.tvl;

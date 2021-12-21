@@ -77,7 +77,7 @@
               <app-digit [value]="+myBalance?.balance / UNIT"></app-digit>
               <span class="cur-title"> SPEC</span>
             </h3>
-            <p *ngIf="myBalance?.balance" class="small text-primary mb-0">{{stakedInGovAPR | percent}} APR</p>
+            <p *ngIf="+myBalance?.balance" class="small text-primary mb-0">{{stakedInGovAPR | percent}} APR</p>
           </div>
         </div>
       </div>
