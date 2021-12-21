@@ -21,6 +21,7 @@ import { StakerService } from '../../../../services/api/staker.service';
 import { ExecuteMsg as StakerExecuteMsg } from '../../../../services/api/staker/execute_msg';
 import { MdbModalRef, MdbModalService } from 'mdb-angular-ui-kit/modal';
 import {TerraSwapRouterService} from '../../../../services/api/terraswap-router.service';
+import {ExecuteMsg} from '../../../../services/api/terraswap_router/execute_msg';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdptoken' | 'ust<->bdptoken';
@@ -78,6 +79,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositFeebDPToken: string;
   netbDPToken: string;
   grossbDPUST: string;
+  expectedReceivebDPToken: string;
 
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
@@ -493,6 +495,61 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       };
       await this.tokenService.handle(this.vault.assetToken, msg);
     }
+    else if (this.depositMode === 'ust<->bdptoken'){
+      const ustAmount = new BigNumber(this.depositUSTAmtbDPToken).times(CONFIG.UNIT).toString();
+      const coin = new Coin(Denom.USD, ustAmount);
+      const msgs = [
+        new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.terraSwapRouter, {
+            execute_swap_operations: {
+              minimum_receive: this.expectedReceivebDPToken,
+              offer_amount: ustAmount,
+              operations: [
+                {
+                  terra_swap: {
+                    offer_asset_info: {
+                      native_token: {
+                        denom: Denom.USD
+                      }
+                    },
+                    ask_asset_info: {
+                      token: {
+                        contract_addr: this.vault.poolInfo.farmTokenContract
+                      }
+                    }
+                  }
+                },
+                {
+                  terra_swap: {
+                    offer_asset_info: {
+                      token: {
+                        contract_addr: this.vault.poolInfo.farmTokenContract
+                      }
+                    },
+                    ask_asset_info: {
+                      token: {
+                        contract_addr: this.vault.assetToken
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+        } as ExecuteMsg, new Coins([coin])),
+        new MsgExecuteContract(this.terrajs.address, this.vault.assetToken, {
+          send: {
+            amount: this.expectedReceivebDPToken,
+            contract: this.vault.poolInfo.farmContract,
+            msg: toBase64({
+              bond: {
+                asset_token: this.vault.assetToken,
+                compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
+              }
+            })
+          }
+        })
+      ];
+      await this.terrajs.post(msgs);
+    }
 
     this.depositTokenAAmtTokenToken = undefined;
     this.depositUSTAmountTokenUST = undefined;
@@ -508,6 +565,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.grossLpUST = undefined;
     this.depositFeeUST = undefined;
     this.netLpUST = undefined;
+
+    this.depositbDPTokenAmtbDPToken = undefined;
+    this.depositFeebDPToken = undefined;
+    this.grossbDPUST = undefined;
+    this.netbDPToken = undefined;
+    this.depositUSTAmtbDPToken = undefined;
+
 
     this.depositType = undefined;
   }
@@ -902,6 +966,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
     });
     console.log(simulateSwapOperationRes);
+    this.expectedReceivebDPToken = simulateSwapOperationRes.amount.toString();
     this.tokenPrice = this.toUIPrice(div(depositTVL, simulateSwapOperationRes.amount), 6, this.vault.decimals);
     this.grossbDPUST = div(simulateSwapOperationRes.amount, this.info.tokenInfos[this.vault.assetToken].unit);
     console.log(this.tokenPrice);

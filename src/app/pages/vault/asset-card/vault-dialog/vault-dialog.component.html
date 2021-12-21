@@ -469,6 +469,7 @@
               </div>
 
               <div *ngIf="depositUSTAmtbDPToken" class="mt-3 pool-info">
+<!--                TODO check why ngStyle not working-->
                 <div class="row" [ngStyle]="{ 'warning-text' : +this.tokenPrice * 1.01 >= 1}">
                   <div class="col">Expected {{vault.poolInfo.pairSymbol}} Price</div>
                   <div class="col text-end">{{tokenPrice | number:'0.0-6' }} UST</div>
