@@ -17,7 +17,7 @@
         <div class="card card-grey box-left">
           <div class="card-body ps-3 pe-3">
             <p class="card-text sub-topic">
-              Total value locked
+              Total Value Locked
             </p>
             <h3 class="card-title">
               <app-digit [value]="+info.stat?.tvl / UNIT"></app-digit> <span class="cur-title"> UST</span>
@@ -31,13 +31,13 @@
         <div class="card card-grey box-left">
           <div class="card-body ps-3">
             <p class="card-text sub-topic">
-              SPEC price
+              SPEC Price
             </p>
             <h3 class="card-title">
               <app-digit [value]="+info.specPrice"></app-digit> <span class="cur-title"> UST</span>
               <a class="margin-left-auto text-light small"
                 href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" target="_blank">
-                <img class="float-end mg-18" src="../../../assets/Icon _Chart.svg">
+                <img class="float-end mg-18" src="../../../assets/Icon_Chart.svg">
               </a>
             </h3>
           </div>
@@ -47,7 +47,7 @@
         <div class="card card-grey box-left">
           <div class="card-body ps-3">
             <p class="card-text sub-topic">
-              Market cap
+              Market Cap
             </p>
             <h3 class="card-title">
               <app-digit *ngIf="info.marketCap" [value]="info.marketCap"></app-digit>&nbsp;<span class="cur-title" *ngIf="info.marketCap">UST</span>
@@ -64,14 +64,14 @@
               </div>
               <div class="flex-grow-1">
                 <div class="card-text sub-topic">
-                  My total value <i class="fas fa-info-circle info-icon super"
+                  My Total Value <i class="fas fa-info-circle info-icon super"
                   mdbTooltip="Your provided liquidity, staked rewards, and staked SPEC"></i>
               </div>
               <h3 class="card-title text-primary">
                 <app-digit
                   [value]="info.myTvl"></app-digit> <span class="cur-title text-white"> UST</span>
                   <a role="button" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
-                  (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon _ PieChart.svg"></a>
+                  (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon_PieChart.svg"></a>
               </h3>
               </div>
             </div>
@@ -84,7 +84,7 @@
               <app-digit
                 [value]="info.myTvl"></app-digit> <span class="cur-title"> UST</span>
                 <a role="button" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
-                (click)="openYourTVL()"><img class="float-end " src="../../../assets/Icon _ PieChart.svg"></a>
+                (click)="openYourTVL()"><img class="float-end " src="../../../assets/Icon_PieChart.svg"></a>
             </h3> -->
           </div>
         </div>
@@ -163,8 +163,8 @@
               [class.active-border]="activeFarm !== 'All'" #dropdownFarmFilter>
                 <button mdbDropdownToggle class="btn p-0"  type="button" aria-expanded="false">
                   <img *ngIf="activeFarm !== 'All'" class="mobile-icon" [src]="activeFarm | url:'icon'" width="24" height="24">
-                  <img *ngIf="activeFarm === 'All'"  class="mobile-icon" src="../../../assets/Icon _ Farms.svg" width="24" height="24">
-                  <span class="text-dropdown d-none d-md-inline ps-2 sub-topic">{{activeFarm}} {{ activeFarm === "All" ? "farms" : ""}}</span>
+                  <img *ngIf="activeFarm === 'All'"  class="mobile-icon" src="../../../assets/Icon_Farms.svg" width="24" height="24">
+                  <span class="text-dropdown d-none d-md-inline ps-2 sub-topic">{{activeFarm}} {{ activeFarm === "All" ? "Farms" : ""}}</span>
                   <span class="text-end filter">
                     <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
                   </span>
@@ -190,7 +190,7 @@
           <div class="card-body p-0 border-6 school-options-dropdown text-center">
             <div mdbDropdown class="dropdown w-100 btn-group" [class.active-border]="sortBy !== 'multiplier'" #dropdownSortBy>
               <button mdbDropdownToggle class="btn p-0" type="button" aria-expanded="false">
-                <img class="mobile-icon" src="../../../assets/Icon _ SortBy.svg" width="24" height="24">
+                <img class="mobile-icon" src="../../../assets/Icon_SortBy.svg" width="24" height="24">
                 <span class="text-dropdown d-none d-sm-none d-md-inline sub-topic">Sort by</span>
                 <span class="text-end filter">
                   <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">

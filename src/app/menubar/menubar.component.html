@@ -22,8 +22,7 @@
     <div mdbDropdown class="dropdown" *ngIf="terrajs.address" #dropdown>
       <button class="btn btn-dark dropdown-toggle btn-sm" type="button" mdbDropdownToggle>
         <i class="fas fa-wallet"></i>&nbsp;<span class="text-muted d-none d-md-inline">{{walletText}}
-          <span *ngIf="terrajs.network.name !== 'mainnet'" class="text-danger"> ({{terrajs.network.name}})</span>
-          |</span>
+          <span *ngIf="terrajs.network.name !== 'mainnet'" class="text-danger"> ({{terrajs.network.name}})</span>&nbsp;|&nbsp;</span>
         {{info.userUstAmount | number : '1.0-2'}} UST
       </button>
       <ul mdbDropdownMenu class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
