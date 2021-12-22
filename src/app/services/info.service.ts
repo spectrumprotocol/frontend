@@ -266,7 +266,7 @@ export class InfoService {
     const vaults = await vaultsTask;
     const tasks = this.farmInfos.map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
-        .filter(it => it[1].farm === farmInfo.farm));
+        .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults);
         Object.assign(stat.pairs, pairStats);
