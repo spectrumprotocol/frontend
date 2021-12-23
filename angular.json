@@ -25,7 +25,6 @@
           "skipTests": true
         },
         "@schematics/angular:module": {
-          "skipTests": true
         },
         "@schematics/angular:pipe": {
           "skipTests": true
@@ -74,7 +73,8 @@
               "bignumber.js",
               "react",
               "react/jsx-runtime",
-              "zen-observable"
+              "zen-observable",
+              "@walletconnect/environment"
             ]
           },
           "configurations": {
@@ -105,6 +105,28 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "optimization": false,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "extractCss": true,
+              "namedChunks": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
             }
           }
         },
@@ -116,8 +138,12 @@
           "configurations": {
             "production": {
               "browserTarget": "spectrum-frontend:build:production"
+            },
+            "development": {
+              "browserTarget": "spectrum-frontend:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",

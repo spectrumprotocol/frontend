@@ -38,6 +38,7 @@ export type ExecuteMsg =
   | {
       withdraw: {
         asset_token?: string | null;
+        farm_amount?: Uint128 | null;
         spec_amount?: Uint128 | null;
         [k: string]: unknown;
       };
@@ -50,6 +51,19 @@ export type ExecuteMsg =
     }
   | {
       compound: {
+        [k: string]: unknown;
+      };
+    }
+  | {
+      update_bond: {
+        amount_to_auto: Uint128;
+        amount_to_stake: Uint128;
+        asset_token: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      send_fee: {
         [k: string]: unknown;
       };
     };

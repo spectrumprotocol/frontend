@@ -1,13 +1,39 @@
+
+.icon-footer {
+  width: 24px;
+  display: inline-block;
+  background-size: 100% 100%;
+  height: 24px;
+}
+
+.icon-medium {
+  background: url("/assets/icon-medium.svg") no-repeat;
+}
+
+.icon-twitter {
+  background: url("/assets/icon-twitter.svg") no-repeat;
+}
+
+.icon-telegram-ann {
+  background: url("/assets/icon-telegram.svg") no-repeat;
+}
+
+.icon-telegram-group {
+  background: url("/assets/icon-telegram.svg") no-repeat;
+}
+
+.icon-github {
+  background: url("/assets/icon-github.svg") no-repeat;
+}
+
+.icon-gitbook {
+  background: url("/assets/icon-gitbook.svg") no-repeat;
+}
+
 .icon-coingecko {
-    width: 21px;
-    display: inline-block;
-    background: url("/assets/coingecko.svg") no-repeat;
-    background-size: 100% 100%;
+    background: url("/assets/icon-coingecko.svg") no-repeat;
 }
 
 .icon-coinmarketcap {
-  width: 21px;
-  display: inline-block;
-  background: url("/assets/coinmarketcap.svg") no-repeat;
-  background-size: 100% 100%;
+  background: url("/assets/icon-coinmarketcap.svg") no-repeat;
 }

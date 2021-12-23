@@ -1,13 +1,14 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TerrajsService } from '../../services/terrajs.service';
 import { InfoService } from '../../services/info.service';
 import { debounce } from 'utils-decorators';
-import {FarmInfoService, PairStat, PoolInfo} from '../../services/farm_info/farm-info.service';
+import { FarmInfoService, PairStat, PoolInfo } from '../../services/farm_info/farm-info.service';
 import { CONFIG } from '../../consts/config';
-import { MdbDropdownDirective, MdbModalService } from 'mdb-angular-ui-kit';
 import { PairInfo } from '../../services/api/terraswap_factory/pair_info';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { MdbModalService } from 'mdb-angular-ui-kit/modal';
+import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
 
 export interface Vault {
   symbol: string;
@@ -34,7 +35,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   private connected: Subscription;
   private heightChanged: Subscription;
   private lastSortBy: string;
-
+  public innerWidth: any;
   loading = true;
   vaults: Vault[] = [];
   search: string;
@@ -44,7 +45,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   UNIT = CONFIG.UNIT;
   myTvl = 0;
   height: number;
+  isGrid: boolean;
   farmInfoDropdownList: FarmInfoService[];
+  shouldBeGrid: boolean;
 
   @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
   @ViewChild('dropdownSortBy') dropdownSortBy: MdbDropdownDirective;
@@ -54,7 +57,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     public terrajs: TerrajsService,
     private modalService: MdbModalService,
     protected $gaService: GoogleAnalyticsService,
-  ) { }
+  ) {
+    this.onResize(null);
+  }
 
   async ngOnInit() {
     this.farmInfoDropdownList = [...new Map(this.info.farmInfos.map(farmInfo => [farmInfo.farm, farmInfo])).values()];
@@ -87,6 +92,35 @@ export class VaultComponent implements OnInit, OnDestroy {
         await this.info.updateMyTvl();
       }
     });
+  }
+
+  setIsGrid(isGrid: boolean) {
+    if (isGrid) {
+      this.isGrid = true;
+      localStorage.setItem('isGrid', 'true');
+    } else {
+      this.isGrid = false;
+      localStorage.setItem('isGrid', 'false');
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.updateShouldBeGrid();
+    if (this.shouldBeGrid || localStorage.getItem('isGrid') !== 'false') {
+      this.isGrid = true;
+    } else {
+      this.isGrid = false;
+    }
+  }
+
+  updateShouldBeGrid() {
+    this.innerWidth = window.innerWidth;
+    if (+this.innerWidth <= 575) {
+      this.shouldBeGrid = true;
+    } else {
+      this.shouldBeGrid = false;
+    }
   }
 
   ngOnDestroy() {

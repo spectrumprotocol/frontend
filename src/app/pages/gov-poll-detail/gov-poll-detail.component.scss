@@ -1,0 +1,24 @@
+
+   @import "../../../scss/variables";
+
+   
+.vote-container {
+    background-color: $dark;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+
+    .fix-border-grey {
+        height: 48px;
+        background-color: $gray-950;
+        border: 0;
+        &:focus {
+            box-shadow: none;
+        }
+    }
+
+    .fix-border-grey::placeholder {
+        color: $white;
+    }
+
+}

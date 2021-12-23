@@ -5,7 +5,7 @@ import { ModalService } from '../services/modal.service';
 import { TruncatePipe } from '../pipes/truncate.pipe';
 import { InfoService } from '../services/info.service';
 import { Subscription, switchMap, tap } from 'rxjs';
-import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
+import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
 
 @Component({
   selector: 'app-menubar',
@@ -13,6 +13,8 @@ import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
   styleUrls: ['./menubar.component.scss']
 })
 export class MenubarComponent implements OnInit, OnDestroy {
+
+  @ViewChild('dropdown') dropdown: MdbDropdownDirective;
 
   constructor(
     public terrajs: TerrajsService,
@@ -23,7 +25,6 @@ export class MenubarComponent implements OnInit, OnDestroy {
   ) { }
 
   private processes: Subscription;
-  @ViewChild('dropdown') dropdown: MdbDropdownDirective;
 
   walletText = 'Connect Wallet';
 
@@ -73,7 +74,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
   }
 
   private getWalletText() {
-    return `${this.truncate.transform(this.terrajs.address)} (${this.terrajs.network.name})`;
+    return this.truncate.transform(this.terrajs.address);
   }
 
   async connect() {

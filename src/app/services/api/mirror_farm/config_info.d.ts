@@ -13,6 +13,8 @@
 export type Decimal = string;
 
 export interface ConfigInfo {
+  anchor_market: string;
+  aust_token: string;
   base_denom: string;
   community_fee: Decimal;
   controller: string;

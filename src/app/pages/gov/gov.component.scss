@@ -1,4 +1,30 @@
+@import '../../../scss/variables';
+
 .filter {
     display: inline-block;
     width: 120px;
+    background-color: $main-bg;
+    height: 48px;
+    border: none;
+    outline: none;
+    font-size: 12px;
+    background-image: url('../../../assets/chevron-down.svg');
+    background-repeat: no-repeat;
+    background-position-x: 90%;
+    background-position-y: 19px;
+    background-size: 12px 12px;
+}
+
+.h-7 {
+    height: 7px;
+}
+
+.card {
+    position: relative;
+}
+
+.btn-group {
+    .btn {
+        border-radius: 6px;
+    }
 }

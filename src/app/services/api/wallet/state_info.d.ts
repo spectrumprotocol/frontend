@@ -19,23 +19,8 @@
  * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
  */
 export type Uint128 = string;
-/**
- * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
- *
- * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
- */
-export type Decimal = string;
 
 export interface StateInfo {
-  pools: StatePoolInfo[];
-  previous_share: Uint128;
-  share_index: Decimal;
-  total_weight: number;
-  [k: string]: unknown;
-}
-export interface StatePoolInfo {
-  days: number;
-  previous_share: Uint128;
-  share_index: Decimal;
+  total_burn?: Uint128 & string;
   [k: string]: unknown;
 }

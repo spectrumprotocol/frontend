@@ -37,7 +37,7 @@ export class PollItemComponent implements OnChanges {
   no_balance = 0;
   date: Date;
   dateLabel: string;
-
+  quorumPositioning: number;
   constructor(
     private terrajs: TerrajsService
   ) { }
@@ -49,6 +49,7 @@ export class PollItemComponent implements OnChanges {
     if (poll && staked && config) {
       this.calcPoll(poll, staked, config);
     }
+    this.quorumPositioning = Number(config.quorum) / 2 * 100;
   }
 
   private calcPoll(poll: PollInfo, staked: number, config: ConfigInfo) {

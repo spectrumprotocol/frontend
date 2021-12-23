@@ -1,0 +1,160 @@
+@import "../asset-card.component.scss";
+
+.border-6 {
+    border-radius: 6px;
+}
+
+.margin-18 {
+    margin-top: 18px;
+}
+
+.btn-close {
+    color: white;
+}
+
+.tab-container {
+    border-radius: 6px;
+    padding-top: 10px;
+    span.is-invalid {
+        border: 1px solid $text-error;
+    }
+
+    .fix-border {
+        border-radius: 0px;
+        color: #fff;
+        border: 1px solid $gray-970;
+        background-color: $gray-960;
+        &:focus {
+            box-shadow: none;
+        }
+    }
+
+    .fix-border::placeholder {
+        color: $white;
+    }
+
+    .fix-border.is-invalid {
+        border: 1px solid $text-error;
+        // margin: 1px;
+        z-index: 5;
+    }
+
+    .fw-bold-600 {
+        font-weight: 600;
+    }
+}
+
+.card-green {
+    background-color: $gray-950 !important;
+    border: 0;
+    text-align: center;
+    .card-body {
+        padding: 1rem 0.5rem;
+        a {
+            text-decoration: underline;
+            color: white;
+            font-weight: 700;
+        }
+    }
+}
+
+.card-red {
+    background-color: $card-red-bg;
+    border: solid 1px $card-red-border;
+    .card-body {
+        padding: 0.5em 0.5em;
+        .bulk-name-container {
+            display: flex;
+            align-items: center;
+        }
+    }
+}
+
+.assetIcon {
+    width: 33px;
+    height: 33px;
+    padding: 2px;
+}
+
+.token-denom {
+    position: inherit;
+    //z-index: -1;
+    margin-left: -10px;
+}
+
+.auto-container {
+    .btn-group {
+        height: 50px;
+    }
+    .btn-auto {
+        border: solid 1px $primary;
+        background-color: $btn-bg;
+        font-weight: bold;
+        z-index: 1;
+    }
+    .btn-outline-auto {
+        color: white;
+        border: 0;
+        background-color: $gray-950;
+        font-weight: bold;
+        &:hover {
+            z-index: 0;
+        }
+    }
+}
+
+.auto-compound {
+    padding: 15px;
+    border-radius: 6px;
+    background-color: $gray-950;
+    width: max-content;
+}
+
+.dropdown {
+    .btn-drop {
+        background-color: $gray-960;
+        border: 1px solid $gray-970;
+        height: 48px;
+        font-weight: bold;
+        font-size: 12px;
+        box-shadow: none;
+        &:focus {
+            box-shadow: none;
+        }
+    }
+    .is-invalid {
+        border: 1px solid $text-error;
+        &:focus,
+        .is-invalid:hover {
+            box-shadow: none;
+        }
+    }
+
+    .dropdown-toggle {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+        padding: 10px;
+    }
+}
+
+.deposit-icon {
+    width: 24px;
+    height: 24px;
+    position: inherit;
+}
+
+.deposit-icon-ust {
+    width: 24px;
+    height: 24px;
+    margin-left: -10px;
+}
+
+.deposit-ust {
+    margin: -5px 7px 0 8px;
+}
+
+.image-6 {
+    opacity: 0.23;
+    padding-top: 10px;
+    opacity: 0.23;
+}

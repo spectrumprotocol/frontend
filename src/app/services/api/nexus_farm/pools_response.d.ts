@@ -35,7 +35,6 @@ export interface PoolItem {
   auto_spec_share_index: Decimal;
   farm_share: Uint128;
   farm_share_index: Decimal;
-  reinvest_allowance: Uint128;
   stake_spec_share_index: Decimal;
   staking_token: string;
   state_spec_share_index: Decimal;

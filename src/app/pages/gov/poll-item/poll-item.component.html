@@ -1,58 +1,55 @@
-<a class="card poll-card hover-shadow" [class.link]="link" [class.done]="poll.status !== 'in_progress'"
+<a class="card poll-card" [class.hover-shadow]="link" [class.link]="link" [class.done]="poll.status !== 'in_progress'"
     [routerLink]="link && '/' + link + '/poll/' + poll.id" tabindex="-1">
+    <span class="position-absolute">
+        <div class="badge-staked badge-progress" *ngIf="poll.status === 'in_progress'">In progress</div>
+        <div class="badge-staked badge-executed" *ngIf="poll.status === 'executed'">Executed</div>
+        <div class="badge-staked badge-passed" *ngIf="poll.status === 'passed'">Passed</div>
+        <div class="badge-staked badge-rejected" *ngIf="poll.status === 'rejected'">Rejected</div>
+        <div class="badge-staked badge-expired" *ngIf="poll.status === 'expired'">Expired</div>
+    </span>
     <div class="card-body">
         <div class="row">
             <div class="col-8">
-                <div class="card-text text-primary" *ngIf="poll.status === 'in_progress'">
-                    <i class="fas fa-play"></i> In Progress
-                </div>
-                <div class="card-text text-success" *ngIf="poll.status === 'passed'">
-                    <i class="fas fa-check"></i> Passed
-                </div>
-                <div class="card-text text-danger" *ngIf="poll.status === 'rejected'">
-                    <i class="fas fa-times"></i> Rejected
-                </div>
-                <div class="card-text text-default" *ngIf="poll.status === 'executed'">
-                    <i class="fas fa-award"></i> Executed
-                </div>
-                <div class="card-text text-muted" *ngIf="poll.status === 'expired'">
-                    <i class="fas fa-clock"></i> Expired
-                </div>
             </div>
-            <div class="col-4 text-end small text-muted">
+            <div class="col-4 text-end f-12 sub-topic">
                 ID: {{poll.id}}
             </div>
         </div>
-        <h5 class="card-title mt-1">{{poll.title}}</h5>
-        <div class="px-2 py-4">
-            <div *ngIf="votes_ratio < +config.quorum">
-                <div class="text-center text-muted small" [style.width]="+config.quorum * 2 | percent">
-                    <small>Quorum {{ +config.quorum | percent }}</small>
-                </div>
-                <div class="indicator border-end border-light" [style.width]="+config.quorum | percent"></div>
-            </div>
-            <div *ngIf="votes_ratio >= +config.quorum">
-                <div class="text-center text-muted small"
-                    [style.width]="votes_ratio * +config.threshold * 2 | percent">
-                    <small>Threshold {{ +config.threshold | percent }}</small>
-                </div>
-                <div class="indicator border-end border-light" [style.width]="votes_ratio * +config.threshold | percent">
-                </div>
-            </div>
-            <div class="progress">
-                <div class="progress-bar bg-success" role="progressbar" [style.width]="yes_ratio | percent"></div>
-                <div class="progress-bar bg-danger" role="progressbar" [style.width]="no_ratio | percent"></div>
-            </div>
-            <div class="row">
-                <div class="col-4 small"><small>Voted: {{ votes_ratio | percent }}<span *ngIf="!link"> ({{ votes_balance | shortNum }} {{unit || 'votes'}})</span></small></div>
-                <div class="col-8 small text-end">
-                    <small class="text-success">Yes: {{ yes_ratio | percent }}<span *ngIf="!link"> ({{ yes_balance | shortNum }} {{unit || 'votes'}})</span></small>&nbsp;
-                    <small class="text-danger">No: {{ no_ratio | percent }}<span *ngIf="!link"> ({{ no_balance | shortNum }} {{unit || 'votes'}})</span></small>
+        <h6 class="card-title mt-1 fw-bold">{{poll.title}}</h6>
+        <div class="card card-sm mt-3 mb-2">
+            <div class="card-body">
+                <div class="px-2">
+                    <div *ngIf="votes_ratio < +config.quorum">
+                        <div class="text-center sub-topic small mb-2 quorum-above-vote-bar"
+                        [ngStyle]="{ 'left': quorumPositioning <= 50 ? quorumPositioning + '%' : 'auto', 'right': quorumPositioning > 50 ? 100 - quorumPositioning + '%' : 'auto' }">
+                            <small>Quorum {{ +config.quorum | percent }}</small>
+                        </div>
+                        <div class="indicator border-end border-light" [style.width]="+config.quorum | percent"></div>
+                    </div>
+                    <div *ngIf="votes_ratio >= +config.quorum">
+                        <div class="text-center sub-topic small mb-2 threshold-above-vote-bar"
+                            [style.padding-left]="+votes_ratio * 0.5 | percent">
+                            <small>Threshold {{ +config.threshold | percent }}</small>
+                        </div>
+                        <div class="indicator border-end border-light" [style.width]="votes_ratio * +config.threshold | percent">
+                        </div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" [style.width]="yes_ratio | percent"></div>
+                        <div class="progress-bar bg-danger" role="progressbar" [style.width]="no_ratio | percent"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 small sub-topic"><small>Voted: {{ votes_ratio | percent }}<span *ngIf="!link"> ({{ votes_balance | shortNum }} {{unit || 'votes'}})</span></small></div>
+                        <div class="col-8 small text-end">
+                            <small class="text-success">Yes: {{ yes_ratio | percent }}<span *ngIf="!link"> ({{ yes_balance | shortNum }} {{unit || 'votes'}})</span></small>&nbsp;
+                            <small class="text-danger">No: {{ no_ratio | percent }}<span *ngIf="!link"> ({{ no_balance | shortNum }} {{unit || 'votes'}})</span></small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="card-footer">
-        <small><strong>{{dateLabel}}:</strong> {{ date | date:'medium' }} <i class="fas fa-clock"></i> {{ date | timeago }}</small>
+        <span class="f-12 sub-topic"><span [class.text-execute]="dateLabel === 'Executed'" [class.sub-topic]="dateLabel !== 'Executed'">{{dateLabel}}:</span> {{ date | date:'medium' }} <i class="fas fa-clock"></i> {{ date | timeago }}</span>
     </div>
 </a>

@@ -4,20 +4,20 @@ import { TokenService } from './api/token.service';
 import { BankService } from './api/bank.service';
 import { TerraSwapService } from './api/terraswap.service';
 import { PoolResponse } from './api/terraswap_pair/pool_response';
-import { div, plus, times } from '../libs/math';
+import { div, minus, plus, times } from '../libs/math';
 import { CONFIG } from '../consts/config';
 import { TerraSwapFactoryService } from './api/terraswap-factory.service';
 import { GovService } from './api/gov.service';
 import { FarmInfoService, FARM_INFO_SERVICE, PairStat, PoolInfo, RewardInfoResponseItem } from './farm_info/farm-info.service';
 import { fromEntries } from '../libs/core';
 import { PairInfo } from './api/terraswap_factory/pair_info';
-import { SpecFarmService } from './api/spec-farm.service';
 import { BalancePipe } from '../pipes/balance.pipe';
 import { LpBalancePipe } from '../pipes/lp-balance.pipe';
 import { Vault } from '../pages/vault/vault.component';
 import { HttpClient } from '@angular/common/http';
 import { memoize } from 'utils-decorators';
 import { Denom } from '../consts/denom';
+import { WalletService } from './api/wallet.service';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -70,7 +70,8 @@ export class InfoService {
     private token: TokenService,
     private balancePipe: BalancePipe,
     private lpBalancePipe: LpBalancePipe,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private wallet: WalletService,
   ) {
     try {
       const poolJson = localStorage.getItem('poolInfos');
@@ -113,6 +114,8 @@ export class InfoService {
   tokenInfos: Record<string, TokenInfo> = {};
 
   stat: Stat;
+  circulation: string;
+  marketCap: number;
 
   rewardInfos: Record<string, RewardInfoResponseItem & { farm: string, farmContract: string }> = {};
   tokenBalances: Record<string, string> = {};
@@ -125,6 +128,8 @@ export class InfoService {
   allVaults: Vault[] = [];
 
   portfolio: Portfolio;
+
+  DISABLED_VAULTS: Array<string> = ['mAMC', 'mGME', 'VKR'];
 
   async refreshBalance(opt: { spec?: boolean; ust?: boolean; lp?: boolean }) {
     if (!this.terrajs.isConnected) {
@@ -261,7 +266,7 @@ export class InfoService {
     const vaults = await vaultsTask;
     const tasks = this.farmInfos.map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
-        .filter(it => it[1].farm === farmInfo.farm));
+        .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults);
         Object.assign(stat.pairs, pairStats);
@@ -272,7 +277,7 @@ export class InfoService {
         for (const key of Object.keys(this.stat.pairs)) {
           if (!stat.pairs[key]) {
             stat.pairs[key] = this.stat.pairs[key];
-      }
+          }
         }
       }
     });
@@ -287,14 +292,16 @@ export class InfoService {
       .reduce((a, b) => a + b, 0);
     const height = await this.terrajs.getHeight();
     const specPerHeight = config.mint_end > height ? config.mint_per_block : '0';
-    const ustPerYear = +specPerHeight * HEIGHT_PER_YEAR * +this.specPrice * (1 - +config.warchest_ratio);
+    const ustPerYear = +specPerHeight * HEIGHT_PER_YEAR * +this.specPrice
+      * (1 - (+config.burnvault_ratio || 0))
+      * (1 - +config.warchest_ratio);
     for (const pair of Object.values(stat.pairs)) {
       pair.specApr = ustPerYear * pair.multiplier / totalWeight / +pair.tvl;
       pair.dpr = (pair.poolApr + pair.specApr) / 365;
       stat.vaultFee += pair.vaultFee;
       stat.tvl = plus(stat.tvl, pair.tvl);
     }
-    stat.govApr = stat.vaultFee / stat.govPoolCount / +stat.govTvl;
+    stat.govApr = 0; // stat.vaultFee / stat.govPoolCount / +stat.govTvl;
     this.stat = stat;
     localStorage.setItem('stat', JSON.stringify(stat));
   }
@@ -353,6 +360,21 @@ export class InfoService {
     await Promise.all(poolTasks);
     this.poolResponses = poolResponses;
     localStorage.setItem('poolResponses', JSON.stringify(poolResponses));
+  }
+
+  async refreshCirculation() {
+    const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
+    const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
+    const taskResult = await Promise.all([task1, task2]);
+    this.circulation = minus(minus(taskResult[0].total_supply, taskResult[1].staked_amount), taskResult[1].unstaked_amount);
+  }
+
+  async refreshMarketCap() {
+    await Promise.all([
+      this.refreshCirculation(),
+      this.refreshPool(),
+    ]);
+    this.marketCap = +this.circulation / CONFIG.UNIT * +this.specPrice;
   }
 
   async ensureCw20tokensWhitelist() {
@@ -414,10 +436,8 @@ export class InfoService {
     this.myTvl = tvl;
 
     const pendingTokenRewards = [...portfolio.tokens.values()].filter(value => value.pending_reward_token > 0);
-    portfolio.avg_tokens_apr = pendingTokenRewards.every(pr => pr.apr)
-      ? pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token * pr.apr, 0) /
-      pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token, 0)
-      : undefined;
+    portfolio.avg_tokens_apr = pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token * (pr.apr || 0), 0) /
+      pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token, 0);
 
     this.portfolio = portfolio;
   }
@@ -444,6 +464,8 @@ export class InfoService {
       this.stat = data.stat;
       this.pairInfos = data.pairInfos;
       this.poolInfos = data.poolInfos;
+      this.circulation = data.circulation;
+      this.marketCap = data.marketCap;
       localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
       localStorage.setItem('stat', JSON.stringify(this.stat));
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));

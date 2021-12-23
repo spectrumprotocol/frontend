@@ -17,6 +17,7 @@ export class UrlPipe implements PipeTransform {
           return `${MIRROR_ICON_URL}/${symbol.slice(1)}.png`;
         }
         switch (symbol) {
+          case 'UST': return '/assets/UST.png';
           case 'Spectrum': return '/assets/SPEC.png';
           case 'SPEC': return '/assets/SPEC.png';
           case 'Anchor': return 'https://whitelist.anchorprotocol.com/logo/ANC.png';
@@ -37,6 +38,8 @@ export class UrlPipe implements PipeTransform {
           case 'Orion': return `https://orion.money/img/ico-tabs-06.svg`;
           case 'ORION': return `https://orion.money/img/ico-tabs-06.svg`;
           case 'ORNb': return `https://orion.money/img/ico-tabs-06.svg`;
+          case 'KUJI': return `https://assets.kujira.app/kuji.png`;
+          case 'Kujira': return `https://assets.kujira.app/kuji.png`;
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -56,6 +59,7 @@ export class UrlPipe implements PipeTransform {
           case 'nETH': return `https://terra.nexusprotocol.app/`;
           case 'ORION': return `https://terra.orion.money/`;
           case 'ORNb': return `https://terra.orion.money/`;
+          case 'KUJI': return `https://blue.kujira.app/`;
           default: return 'https://terra.mirror.finance/trade#buy';
         }
       case 'mint':

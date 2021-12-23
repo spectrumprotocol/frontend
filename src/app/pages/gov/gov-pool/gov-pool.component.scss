@@ -1,22 +1,57 @@
+@import "../../../../scss/variables";
 @import '~mdb-angular-ui-kit/assets/scss/bootstrap/functions';
 @import '~mdb-angular-ui-kit/assets/scss/bootstrap/variables';
 @import '~mdb-angular-ui-kit/assets/scss/bootstrap/mixins';
 
-@include media-breakpoint-down(lg) {
-  :host ::ng-deep .nav-tabs {
-    flex-direction: column;
+// @include media-breakpoint-down(lg) {
+//   :host ::ng-deep .nav-tabs {
+//     flex-direction: column;
+//   }
+// }
+
+// .gov-pool-container {
+//   .card-body {
+//     padding: 1em 1em;
+//   }
+// }
+
+span.is-invalid {
+  border: 1px solid $text-error;
+}
+
+.fix-border {
+  border-radius: 0px;
+  color: #fff;
+  border: 1px solid $gray-970;
+  background-color: $gray-960;
+  &:focus {
+      box-shadow: none;
   }
 }
 
-.logo {
-  height: 32px;
+.fix-border::placeholder {
+  color: $white;
 }
 
-.badge-staked {
-  top: 0;
-  right: 0;
-  border-top-right-radius: 0.2rem;
-  border-top-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0.25rem;
+.fix-border.is-invalid {
+  border: 1px solid $text-error;
+  margin: 1px;
+}
+
+.fw-bold-600 {
+  font-weight: 600;
+}
+
+.is-invalid {
+  border: 1px solid $text-error;
+  &:focus, .is-invalid:hover {
+      box-shadow: none;
+  }
+}
+
+.lock-icon {
+  position: absolute;
+  img {
+    padding-top: 7px;
+  }
 }

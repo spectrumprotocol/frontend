@@ -1,0 +1,21 @@
+@import "../../../../scss/variables";
+
+.card-body {
+    padding: 1rem 0 1rem 0;
+}
+
+.p-05 {
+    padding: 1rem;
+}
+
+.farm-info-container {
+    background-color: $btn-bg;
+    margin: 9px 0 0 0;
+    padding: 5px;
+    border-radius: 6px;
+}
+
+.ptb-10 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { WalletInfo } from '@terra-money/wallet-provider';
-import { MdbModalRef } from 'mdb-angular-ui-kit';
+import {MdbModalRef} from 'mdb-angular-ui-kit/modal';
 
 @Component({
   selector: 'app-wallet-options',

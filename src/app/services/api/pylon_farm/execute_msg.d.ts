@@ -61,6 +61,11 @@ export type ExecuteMsg =
         asset_token: string;
         [k: string]: unknown;
       };
+    }
+  | {
+      send_fee: {
+        [k: string]: unknown;
+      };
     };
 /**
  * A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.

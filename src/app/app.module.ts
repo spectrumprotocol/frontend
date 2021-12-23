@@ -11,7 +11,6 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { ModalComponent } from './services/modal/modal.component';
 import { NotifyComponent } from './services/notify/notify.component';
 import { LoaderComponent } from './services/loader/loader.component';
-import { MdbModule } from 'mdb-angular-ui-kit';
 import { GovComponent } from './pages/gov/gov.component';
 import { PollItemComponent } from './pages/gov/poll-item/poll-item.component';
 import { TerrajsService } from './services/terrajs.service';
@@ -33,6 +32,7 @@ import { TxPostComponent } from './services/tx-post/tx-post.component';
 import locale from '@angular/common/locales/en';
 import { TradeComponent } from './pages/trade/trade.component';
 import { AssetCardComponent } from './pages/vault/asset-card/asset-card.component';
+import { VaultDialogComponent } from './pages/vault/asset-card/vault-dialog/vault-dialog.component';
 import { GraphQLModule } from './graphql.module';
 import { UrlPipe } from './pipes/url.pipe';
 import { UnitPipe } from './pipes/unit.pipe';
@@ -66,6 +66,16 @@ import {OrionFarmInfoService} from './services/farm_info/orion.farm-info.service
 import { ManageRewardsComponent } from './pages/vault/manage-rewards/manage-rewards.component';
 import {NlunaPsiFarmInfoService} from './services/farm_info/nluna-psi.farm-info.service';
 import {NethPsiFarmInfoService} from './services/farm_info/neth-psi.farm-info.service';
+import {KujiraFarmInfoService} from './services/farm_info/kujira.farm-info.service';
+import {MdbTooltipModule} from 'mdb-angular-ui-kit/tooltip';
+import {MdbDropdownModule} from 'mdb-angular-ui-kit/dropdown';
+import {MdbTabsModule} from 'mdb-angular-ui-kit/tabs';
+import {MdbCollapseModule} from 'mdb-angular-ui-kit/collapse';
+import {MdbFormsModule} from 'mdb-angular-ui-kit/forms';
+import {MdbValidationModule} from 'mdb-angular-ui-kit/validation';
+import {ModalService} from './services/modal.service';
+import {MdbModalService} from 'mdb-angular-ui-kit/modal';
+import { LpEarningPipe } from './pipes/lp-earning.pipe';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -114,6 +124,8 @@ registerLocaleData(locale, 'en');
     GovPoolComponent,
     FloorPipe,
     ManageRewardsComponent,
+    VaultDialogComponent,
+    LpEarningPipe,
   ],
   imports: [
     AppRoutingModule,
@@ -122,7 +134,6 @@ registerLocaleData(locale, 'en');
     ClipboardModule,
     FormsModule,
     HttpClientModule,
-    MdbModule,
     ReactiveFormsModule,
     PrettyJsonModule,
     GraphQLModule,
@@ -130,17 +141,25 @@ registerLocaleData(locale, 'en');
     NgxGoogleAnalyticsRouterModule,
     NgxChartsModule,
     NgxSliderModule,
+    MdbTooltipModule,
+    MdbDropdownModule,
+    MdbTabsModule,
+    MdbCollapseModule,
+    MdbFormsModule,
+    MdbValidationModule,
   ],
   providers: [
     // { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true},
+    MdbModalService,
     {
       provide: APP_INITIALIZER,
-      useFactory: (terrajs: TerrajsService) => () => setTimeout(() => terrajs.connect(true), 1000),
+      useFactory: (terrajs: TerrajsService) => () => setTimeout(() => terrajs.connect(true), 1500),
       deps: [TerrajsService],
       multi: true
     },
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
+    // { provide: FARM_INFO_SERVICE, useClass: KujiraFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },

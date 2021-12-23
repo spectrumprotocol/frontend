@@ -11,8 +11,6 @@ import {
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { div } from '../../libs/math';
-import { Denom } from '../../consts/denom';
 import { NexusFarmService } from '../api/nexus-farm.service';
 import { RewardInfoResponseItem } from '../api/nexus_farm/reward_info_response';
 import { NexusStakingService } from '../api/nexus-staking.service';
@@ -52,15 +50,14 @@ export class NexusFarmInfoService implements FarmInfoService {
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
-    const unixTimeSecond = Math.floor(Date.now() / 1000);
-    const rewardInfoTask = this.nexusStaking.query({ staker_info: { time_seconds: +unixTimeSecond, staker: this.terrajs.settings.nexusFarm } });
-    const farmConfigTask = this.nexusFarm.query({ config: {} });
-
-    // action
-    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nexusFarm)?.weight || 0;
-    const nexusLPStat = await this.getNexusLPStat(poolResponses[this.terrajs.settings.nexusToken], unixTimeSecond);
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    const nexusLPStatTask = apollo.query<any>({
+      query: gql`{
+        getLiquidityPoolApr {
+          psiUstLpApr
+        }
+      }`
+    }).toPromise();
     const nexusGovStatTask = apollo.query<any>({
       query: gql`{
         getGovStakingAprRecords(limit: 1, offset: 0) {
@@ -69,6 +66,15 @@ export class NexusFarmInfoService implements FarmInfoService {
         }
       }`
     }).toPromise();
+
+    const unixTimeSecond = Math.floor(Date.now() / 1000);
+    const rewardInfoTask = this.nexusStaking.query({ staker_info: { time_seconds: +unixTimeSecond, staker: this.terrajs.settings.nexusFarm } });
+    const farmConfigTask = this.nexusFarm.query({ config: {} });
+
+    // action
+    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
+    const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nexusFarm)?.weight || 0;
+    const nexusLPStat = await nexusLPStatTask;
     const nexusGovStat = await nexusGovStatTask;
     const pairs: Record<string, PairStat> = {};
 
@@ -86,7 +92,7 @@ export class NexusFarmInfoService implements FarmInfoService {
       .div(p.total_share)
       .toString();
 
-    const poolApr = +(nexusLPStat.apr || 0);
+    const poolApr = +(nexusLPStat.data.getLiquidityPoolApr.psiUstLpApr || 0) / 100;
     pairs[this.terrajs.settings.nexusToken] = createPairStat(poolApr, this.terrajs.settings.nexusToken);
     const pair = pairs[this.terrajs.settings.nexusToken];
     pair.tvl = specPsiTvl;
@@ -131,27 +137,4 @@ export class NexusFarmInfoService implements FarmInfoService {
       }
     );
   }
-
-  async getNexusLPStat(psiPoolResponse: PoolResponse, unixTimeSecond) {
-    const configTask = this.nexusStaking.query({ config: {} });
-    const stateTask = this.nexusStaking.query({ state: { time_seconds: +unixTimeSecond } });
-    const [config, state] = await Promise.all([configTask, stateTask]);
-    const psiPoolUSTAmount = psiPoolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? psiPoolResponse.assets[1].amount : psiPoolResponse.assets[0].amount;
-    const psiPoolPSIAmount = psiPoolResponse.assets[1]?.info?.token ? psiPoolResponse.assets[1].amount : psiPoolResponse.assets[0].amount;
-    const psiPrice = div(psiPoolUSTAmount, psiPoolPSIAmount);
-    const current_distribution_schedule = config.distribution_schedule.find(obj => unixTimeSecond >= +obj.start_time && unixTimeSecond <= +obj.end_time);
-    if (!current_distribution_schedule) {
-      return {
-        apr: 0
-      };
-    }
-    const totalMint = +current_distribution_schedule.amount;
-    const c = new BigNumber(psiPoolUSTAmount).multipliedBy(2).div(psiPoolResponse.total_share);
-    const s = new BigNumber(state.total_bond_amount).multipliedBy(c);
-    const apr = new BigNumber(totalMint).multipliedBy(psiPrice).div(s);
-    return {
-      apr,
-    };
-  }
-
 }

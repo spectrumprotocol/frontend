@@ -51,6 +51,7 @@ export type ExecuteMsg =
     }
   | {
       compound: {
+        threshold_compound_gov: Uint128;
         [k: string]: unknown;
       };
     }
@@ -59,6 +60,11 @@ export type ExecuteMsg =
         amount_to_auto: Uint128;
         amount_to_stake: Uint128;
         asset_token: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      send_fee: {
         [k: string]: unknown;
       };
     };

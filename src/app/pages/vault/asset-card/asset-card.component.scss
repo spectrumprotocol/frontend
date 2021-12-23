@@ -1,26 +1,33 @@
 @import "src/scss/variables";
-.mAssetIcon {
-  width: 50px;
-  height: 50px;
-  z-index: 1;
+
+.no-padding{
+  padding-left: unset;
+  padding-right: unset;
 }
 
-.ust-outline {
-  border: 1px solid;
-  margin-left: -10px;
+.bulk-name-container {
+  position: relative;
+  .name-detail {
+    float: left;
+    padding-left: 10px;
+    text-align: left;
+  }
+}
+
+.assetIcon {
+  width: 33px;
+  height: 33px;
+  padding: 2px;
 }
 
 .token-denom{
+  position: inherit;
+  //z-index: -1;
   margin-left: -10px;
 }
 
 .loading-asset-card {
   background-color: rgba(79, 79, 79, 0.8);
-}
-
-.asset-card {
-  min-height: 200px;
-  padding: 5px;
 }
 
 .asset-card-info {
@@ -44,22 +51,23 @@
   color: rgb(4, 180, 48);
 }
 
-.badge-deposited {
-  top: 0;
-  left: 0;
-  border-top-left-radius: 0.2rem;
-  border-top-right-radius: 0;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0.25rem;
-}
-
 .badge-disabled {
   top: 0;
   right: 0;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0.2rem;
-  border-bottom-left-radius: 0.25rem;
-  border-bottom-right-radius: 0;
+  border-top-left-radius: 0.25rem;
+  background: $primary;
+  width: fit-content;
+  padding: 2px 10px;
+}
+
+.badge-deposit-disabled {
+  height: fit-content;
+  width: fit-content;
+  padding: 2px 10px;
+  background: $text-error;
+  position: relative;
+  border-top-right-radius: 0.3rem;
+  font-size: 11px;
 }
 
 @-webkit-keyframes mover {
@@ -81,7 +89,6 @@
 
 .fee-remark {
   position: relative;
-  transform: translate(15px, 15px);
 }
 
 .spinner-small {
@@ -93,14 +100,14 @@
   .custom-slider .ngx-slider{
     .ngx-slider-bar {
       background: $white;
-      height: 2px;
+      height: 10px;
     }
     .ngx-slider-pointer {
-      width: 14px;
-      height: 14px;
+      width: 32px;
+      height: 32px;
       top: auto;
-      bottom: -3px;
-      background-color: $spectrum;
+      bottom: -16px;
+      background-color: $primary;
       &:focus{
         outline-style: none !important;
         outline-width: 0 !important;
@@ -133,10 +140,7 @@
 }
 
 .slider-compound-stake{
-
   margin-top: -1.2em;
-  padding-left: 1em;
-  padding-right: 1em;
 }
 
 .btn-first {
@@ -145,6 +149,26 @@
   margin-right: 0px;
 }
 
-.input-group-text-denom{
-  border-width: 1px !important;
+.grid-badge {
+  right: 0;
+}
+
+.height-53 {
+  min-height: 53;
+}
+
+.dot-line {
+    height: 1px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed hsla(0, 0%, 100%, 0.1);
+    background-color: transparent;
+}
+
+@media screen and (max-width: 1199px) {
+  .grid-container {
+    .name-detail {
+      padding-top: 5px;
+    }
+  }
 }

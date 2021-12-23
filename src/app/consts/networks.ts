@@ -3,6 +3,8 @@ export interface ISettings {
   specPool: string;
   specLpToken: string;
   gov: string;
+  austToken: string;
+  anchorMarket: string;
   platform: string;
   warchest: string;
   wallet: string;
@@ -44,6 +46,9 @@ export interface ISettings {
   orionStaking: string;
   orionToken: string;
   orionFarm: string;
+  kujiraStaking: string;
+  kujiraToken: string;
+  kujiraFarm: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -62,6 +67,8 @@ export const networks: Record<string, ISettings> = {
     specPool: 'terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20',
     specLpToken: 'terra1y9kxxm97vu4ex3uy0rgdr5h2vt7aze5sqx7jyl',
     gov: 'terra1dpe4fmcz2jqk6t50plw0gqa2q3he2tj6wex5cl',
+    austToken: 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu',
+    anchorMarket: 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s',
     platform: 'terra1vvu80qnl0yn94stkc9sy2f5xcqcscu2fercgzq',
     warchest: 'terra14v8aeq4289fk7z08jvaw3qu3hers6whrdkqffp',
     wallet: 'terra1dretwqx84u229rjfgkp0j6avc3fusp000ejrz9',
@@ -103,6 +110,9 @@ export const networks: Record<string, ISettings> = {
     orionStaking: 'terra1q8q6y03452e44pztw8kr8zcdkjtxuz8vq9t8uq',
     orionToken: 'terra1mddcdx0ujx89f38gu7zspk2r2ffdl5enyz2u03', // orionLP terra14ffp0waxcck733a9jfd58d86h9rac2chf5xhev
     orionFarm: 'terra106en784zr4kpe6phlaj8c8t3aeqgn3xsugaelx',
+    kujiraStaking: 'terra1cf9q9lq7tdfju95sdw78y9e34a6qrq3rrc6dre',
+    kujiraToken: 'terra1xfsdgcemqwxp4hhnyk4rle6wr22sseq7j07dnn', // kujiraLP: 'terra1cmqv3sjew8kcm3j907x2026e4n0ejl2jackxlx'
+    kujiraFarm: 'terra15x4hysms59x5eek6esg3f2jycalpypdcl6sy7j',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -120,6 +130,8 @@ export const networks: Record<string, ISettings> = {
     specPool: 'terra15cjce08zcmempedxwtce2y44y2ayup8gww3txr',
     specLpToken: 'terra1ntt4mdhr9lukayenntgltqppw4yy6hts7wr67d',
     gov: 'terra1x3l2tkkwzzr0qsnrpy3lf2cm005zxv7pun26x4',
+    austToken: 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl',
+    anchorMarket: 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal',
     platform: 'terra10h22vx3kp8wxdkuhypmwnjr4wrurcup5pk9uq9',
     warchest: 'terra1ulpamdq7lsg5hu0hzvl4skxt0ahtxs0enyu96e',
     wallet: 'terra1u4kg5h8zrwvtr30h2hwhnj64ekml4uar65plvm',
@@ -161,6 +173,9 @@ export const networks: Record<string, ISettings> = {
     orionStaking: 'terra1jz22ws2yhlm6zycz7eluqptjn2t74fw4g82v8j',
     orionToken: 'terra13qdskca8xavmed88htplse0z396tesgh63tn9r', // orionLP terra1qvmf8jf3a7h6lgglw29f8nvcckn7t8z0hqgma5
     orionFarm: 'terra1mset93yy46n8lwy59gadcmekxspnf3zldzsc0x',
+    kujiraStaking: 'terra16gd9lq7urpy8txfqd224lqfxwxs4fwr742yptu',
+    kujiraToken: 'terra1azu2frwn9a4l6gl5r39d0cuccs4h7xlu9gkmtd', // kujiraLP: 'terra18wn5m5rd4yd82kp9s07gwx9x0vn00wdj8dezv8'
+    kujiraFarm: 'terra16ppenx9paca846mj39axlqhtxgz8n9az5pantj',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',

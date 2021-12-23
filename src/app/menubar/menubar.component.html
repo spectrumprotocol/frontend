@@ -1,26 +1,29 @@
 <nav class="navbar navbar-expand-md navbar-dark navbar-bg">
-  <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/"><img src="/assets/logo.png" class="logo" /> Spectrum Protocol</a>
+  <div class="container">
+    <a class="navbar-brand" routerLink="/"><img src="/assets/spec_logo.svg" class="logo" /></a>
     <!-- Left links -->
-    <ul class="navbar-nav me-auto d-none d-md-flex">
+    <ul class="navbar-nav d-none d-md-flex">
+      <!--        <li class="nav-item">-->
+      <!--          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>-->
+      <!--        </li>-->
       <li class="nav-item">
-        <a class="nav-link" routerLink="/vaults" routerLinkActive="active">Vaults</a>
+        <a class="nav-link text-center" routerLink="/vaults" routerLinkActive="active">Vaults</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/trade" routerLinkActive="active">Trade SPEC</a>
+        <a class="nav-link text-center" routerLink="/trade" routerLinkActive="active">Trade SPEC</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/gov" routerLinkActive="active">Governance</a>
+        <a class="nav-link text-center" routerLink="/gov" routerLinkActive="active">Gov</a>
       </li>
     </ul>
     <!-- Left links -->
 
     <!--- right links -->
     <div mdbDropdown class="dropdown" *ngIf="terrajs.address" #dropdown>
-      <button class="btn btn-outline-primary dropdown-toggle" type="button" mdbDropdownToggle>
-        <i class="fas fa-wallet"></i> <span class="text-muted d-none d-md-inline"> {{walletText}} |</span> {{
-        info.userUstAmount |
-        number : '1.0-2'}} UST
+      <button class="btn btn-dark dropdown-toggle btn-sm" type="button" mdbDropdownToggle>
+        <i class="fas fa-wallet"></i>&nbsp;<span class="text-muted d-none d-md-inline">{{walletText}}
+          <span *ngIf="terrajs.network.name !== 'mainnet'" class="text-danger"> ({{terrajs.network.name}})</span>&nbsp;|&nbsp;</span>
+        {{info.userUstAmount | number : '1.0-2'}} UST
       </button>
       <ul mdbDropdownMenu class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
         <li>
@@ -37,31 +40,45 @@
         <li><a class="dropdown-item"
             href="https://{{terrajs.settings.finder}}/{{terrajs.settings.chainID}}/account/{{terrajs.address}}"
             target="_blank" (click)="dropdown.hide()">View on Terra Finder</a></li>
-        <li>
-          <hr class="dropdown-divider" />
+        <li class="dropdown-item">
+          <div class="solid-line"></div>
         </li>
         <li><button class="dropdown-item" type="button" (click)="disconnect()">Disconnect</button></li>
       </ul>
     </div>
-    <button type="button" class="btn btn-outline-primary" *ngIf="!terrajs.address" (click)="connect()"><i
-        class="fas fa-wallet"></i> <span class="text-muted">
+    <button type="button" class="btn btn-dark btn-sm" *ngIf="!terrajs.address" (click)="connect()"><i
+        class="fas fa-wallet"></i>&nbsp;<span class="text-muted">
         {{walletText}} </span></button>
+
+
+        <button
+        class="navbar-toggler d-md-none bg-gray"
+        type="button"
+        data-mdb-toggle="collapse"
+        data-mdb-target="#navbarToggleMobileMenu"
+        aria-controls="navbarToggleMobileMenu"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+        (click)="mobileMenu.toggle()"
+      >
+      <i class="fas fa-bars"></i>
+    </button>
     <!--- right links -->
   </div>
 </nav>
 
-<nav class="navbar navbar-expand fixed-bottom navbar-dark navbar-sm-bg d-md-none">
+<div mdbCollapse #mobileMenu="mdbCollapse" class="collapse navbar-collapse" id="navbarToggleMobileMenu">
   <div class="container-fluid justify-content-center">
     <ul class="navbar-nav">
       <li class="nav-item ms-1 me-1">
-        <a class="nav-link" routerLink="/vaults" routerLinkActive="active">Vaults</a>
+        <a class="nav-link" routerLink="/vaults" routerLinkActive="active" (click)="mobileMenu.hide()">Vaults</a>
       </li>
       <li class="nav-item ms-1 me-1">
-        <a class="nav-link" routerLink="/trade" routerLinkActive="active">Trade SPEC</a>
+        <a class="nav-link" routerLink="/trade" routerLinkActive="active" (click)="mobileMenu.hide()">Trade SPEC</a>
       </li>
       <li class="nav-item ms-1 me-1">
-        <a class="nav-link" routerLink="/gov" routerLinkActive="active">Governance</a>
+        <a class="nav-link" routerLink="/gov" routerLinkActive="active" (click)="mobileMenu.hide()">Governance</a>
       </li>
     </ul>
   </div>
-</nav>
+</div>

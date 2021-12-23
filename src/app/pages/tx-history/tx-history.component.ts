@@ -8,6 +8,7 @@ import { div, plus, roundSixDecimal } from '../../libs/math';
 import { PercentPipe } from '@angular/common';
 import { Event, MsgExecuteContract } from '@terra-money/terra.js';
 import { Denom } from '../../consts/denom';
+import { fromBase64 } from 'src/app/libs/base64';
 
 interface TxHistory {
   desc: string;
@@ -123,7 +124,7 @@ const ensureBase64toObject = (executeMsg: any): object => {
   const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
   try {
     if (typeof executeMsg === 'string' && base64regex.test(executeMsg)) {
-      return JSON.parse(atob(executeMsg));
+      return JSON.parse(fromBase64(executeMsg));
     } else if (typeof executeMsg === 'object') {
       return executeMsg;
     } else {
@@ -257,13 +258,13 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     }
 
     const [secondLastMsg, lastMsg] = msgs.length === 1 ? [undefined, msgs[0]] : msgs.slice(-2);
-    const lastSendMsg = lastMsg.execute_msg['send']?.msg ? ensureBase64toObject(lastMsg.execute_msg['send']?.msg) : undefined;
     const sendExecuteMsg = tryExtractExecuteMsgSend(lastMsg.execute_msg);
 
     const logs: Event[][] = txsItem?.logs?.map(log => log.events) ?? [];
     const [lastLogEvents] = logs.slice(-1);
     const fromContractEvent = lastLogEvents?.find(o => o.type === 'from_contract');
 
+    // Buy SPEC
     if (lastMsg.execute_msg['swap'] && lastMsg.contract === this.terrajs.settings.specPool) {
       const ustOffer = +lastMsg.coins[0].amount / CONFIG.UNIT;
       const returnAmount = +fromContractEvent.attributes.find(o => o.key === 'return_amount').value / CONFIG.UNIT;
@@ -272,38 +273,8 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       return txHistoryFactory.buySpec(returnAmount, ustOffer, 'UST', price);
     }
 
-    if (sendExecuteMsg?.msg['execute_swap_operations']?.operations[1]?.terra_swap?.ask_asset_info?.token?.contract_addr === this.terrajs.settings.specToken) {
-      const executeSwapOperationsMsg = sendExecuteMsg?.msg['execute_swap_operations'];
-
-      const offerAmount = +executeSwapOperationsMsg?.offer_amount / CONFIG.UNIT || 0;
-      const rawReturnAmount = +fromContractEvent?.attributes.slice().reverse().find(o => o.key === 'return_amount')?.value;
-      const returnAmount = rawReturnAmount / CONFIG.UNIT || 0;
-      const price = roundSixDecimal(offerAmount / returnAmount);
-
-      let offerToken: any;
-      const offerAssetInfoTokenContract = executeSwapOperationsMsg?.operations[0]?.terra_swap?.offer_asset_info?.token?.contract_addr;
-      if (offerAssetInfoTokenContract) {
-        await this.info.ensureCw20tokensWhitelist();
-        offerToken = this.info.cw20tokensWhitelist[this.terrajs?.network?.name ?? 'mainnet'][offerAssetInfoTokenContract]?.symbol
-          ?? offerAssetInfoTokenContract;
-      }
-
-      return txHistoryFactory.buySpec(returnAmount, offerAmount, offerToken, price);
-    }
-
-    if (lastMsg.execute_msg['execute_swap_operations']?.operations[1].terra_swap?.ask_asset_info?.token?.contract_addr === this.terrajs.settings.specToken) {
-      const executeSwapOperationsMsg = lastMsg.execute_msg['execute_swap_operations'];
-
-      const offerDenom = executeSwapOperationsMsg?.operations[0]?.native_swap?.offer_denom;
-      const offerAmount = +executeSwapOperationsMsg.offer_amount / CONFIG.UNIT || 0;
-      const rawReturnAmount = +fromContractEvent?.attributes.slice().reverse().find(o => o.key === 'return_amount')?.value;
-      const returnAmount = rawReturnAmount / CONFIG.UNIT || 0;
-      const price = roundSixDecimal(offerAmount / returnAmount);
-
-      return txHistoryFactory.buySpec(returnAmount, offerAmount, offerDenom, price);
-    }
-
-    if (lastSendMsg && lastSendMsg['swap'] && lastMsg.contract === this.terrajs.settings.specToken) {
+    // Sell SPEC
+    if (sendExecuteMsg?.msg['swap'] && lastMsg.contract === this.terrajs.settings.specToken) {
       const offerAmount = +fromContractEvent?.attributes.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT || 0;
       const returnAmount = +fromContractEvent?.attributes.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT || 0;
       const price = roundSixDecimal(returnAmount / offerAmount);
@@ -311,25 +282,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       return txHistoryFactory.sellSpec(offerAmount, returnAmount, 'UST', price);
     }
 
-    if (sendExecuteMsg?.msg['execute_swap_operations'] && lastMsg.contract === this.terrajs.settings.specToken) {
-      const rawReturnAmount = +fromContractEvent?.attributes.slice().reverse().find(o => o.key === 'return_amount')?.value;
-      const offerAmount = +fromContractEvent?.attributes.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT || 0;
-      const rawAskAsset = fromContractEvent?.attributes.slice().reverse().find(o => o.key === 'ask_asset')?.value;
-
-      await this.info.ensureCw20tokensWhitelist();
-      let askAsset = this.info.cw20tokensWhitelist[this.terrajs?.network?.name ?? 'mainnet'][rawAskAsset]?.symbol ?? rawAskAsset;
-      let returnAmount = +rawReturnAmount / CONFIG.UNIT || 0;
-      if (!askAsset) {
-        const swapCoin = lastLogEvents?.find(o => o.type === 'swap')?.attributes.find(o => o.key === 'swap_coin')?.value;
-        askAsset = swapCoin?.match(alphabetRegExp)[0];
-        returnAmount = +swapCoin?.match(numberRegExp)[0] / CONFIG.UNIT || 0;
-      }
-
-      const price = roundSixDecimal(returnAmount / offerAmount);
-
-      return txHistoryFactory.sellSpec(offerAmount, returnAmount, askAsset, price);
-    }
-
+    // Claim rewards
     if (
       (lastMsg.execute_msg['withdraw'] && this.info.farmInfos.find(o => o.farmContract === lastMsg.contract)) ||
       (secondLastMsg?.execute_msg['withdraw'] && this.info.farmInfos.find(o => o.farmContract === secondLastMsg?.contract))
@@ -388,6 +341,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       return txHistory;
     }
 
+    // Bond with LP
     if (sendExecuteMsg?.msg['bond'] && this.info.farmInfos.find(o => o.farmContract === sendExecuteMsg?.contract)) {
       const bondMsg = sendExecuteMsg.msg['bond'];
 
@@ -401,6 +355,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate);
     }
 
+    // Bond with Token(s)
     if (lastMsg.execute_msg['bond'] && this.info.farmInfos.find(o => o.farmContract === lastMsg.execute_msg['bond'].contract)) {
       const bondMsg = lastMsg.execute_msg['bond'];
       const lpAmount = +fromContractEvent?.attributes.find(o => o.key === 'share')?.value / CONFIG.UNIT || 0;
@@ -432,6 +387,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { baseTokenAmount, denomTokenAmount });
     }
 
+    // Bond with UST
     if (lastMsg.execute_msg['zap_to_bond'] && lastMsg.contract === this.terrajs.settings.staker) {
       const zapToBondMsg = lastMsg.execute_msg['zap_to_bond'];
 
@@ -464,6 +420,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       }
     }
 
+    // Unbond as LP
     if (lastMsg.execute_msg['unbond'] && this.info.farmInfos.find(o => o.farmContract === lastMsg.contract)) {
       const unbondMsg = lastMsg.execute_msg['unbond'];
 
@@ -476,6 +433,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, false);
     }
 
+    // Unbond as token+UST & Unbond as UST
     if (
       (sendExecuteMsg?.msg['withdraw_liquidity'] || sendExecuteMsg?.msg['zap_to_unbond']) &&
       this.info.farmInfos.find(o => o.farmContract === secondLastMsg?.contract)
@@ -514,6 +472,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       }
     }
 
+    // Update Bond
     if (lastMsg.execute_msg['update_bond'] && this.info.farmInfos.find(o => o.farmContract === lastMsg.contract)) {
       const updateBondMsg = lastMsg.execute_msg['update_bond'];
 
@@ -533,6 +492,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       };
     }
 
+    // Stake to Gov
     if (sendExecuteMsg?.msg['stake_tokens'] && sendExecuteMsg?.contract === this.terrajs.settings.gov) {
       const stakeTokensMsg = sendExecuteMsg?.msg['stake_tokens'];
 
@@ -545,6 +505,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       };
     }
 
+    // Withdraw from Gov
     if (lastMsg.execute_msg['withdraw'] && lastMsg.contract === this.terrajs.settings.gov) {
       const withdrawMsg = lastMsg.execute_msg['withdraw'];
 
@@ -557,6 +518,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       };
     }
 
+    // Update Gov staking
     if (lastMsg.execute_msg['update_stake'] && lastMsg.contract === this.terrajs.settings.gov) {
       const updateStakeMsg = lastMsg.execute_msg['update_stake'];
 
@@ -570,6 +532,27 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       };
     }
 
+    // Harvest
+    if (msgs[0].execute_msg['harvest'] && msgs[0].contract === this.terrajs.settings.gov) {
+      const pool = getGovPoolName(msgs[0].execute_msg['harvest'].days);
+
+      if (sendExecuteMsg?.contract === this.terrajs.settings.anchorMarket) {
+        const uusd = fromContractEvent?.attributes.find(it => it.key === 'redeem_amount')?.value;
+        if (uusd) {
+          return {
+            action: 'Gov',
+            desc: `Claim ${+uusd / CONFIG.UNIT} UST from ${pool}`,
+          };
+        }
+      }
+
+      return {
+        action: 'Gov',
+        desc: `Claim ${+msgs[0].execute_msg['harvest'].aust_amount / CONFIG.UNIT} aUST from ${pool}`,
+      };
+    }
+
+    // Poll vote
     if (lastMsg.execute_msg['poll_vote'] && lastMsg.contract === this.terrajs.settings.gov) {
       const pollVoteMsg = lastMsg.execute_msg['poll_vote'];
 
@@ -579,6 +562,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       };
     }
 
+    // Poll execute
     if (lastMsg.execute_msg['poll_execute'] && lastMsg.contract === this.terrajs.settings.gov) {
       const pollExecuteMsg = lastMsg.execute_msg['poll_execute'];
 
@@ -588,6 +572,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       };
     }
 
+    // Poll create
     if (sendExecuteMsg?.msg['poll_start'] && sendExecuteMsg?.contract === this.terrajs.settings.gov) {
       const pollStartMsg = sendExecuteMsg?.msg['poll_start'];
 
@@ -597,6 +582,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       };
     }
 
+    // Poll end
     if (lastMsg.execute_msg['poll_end'] && lastMsg.contract === this.terrajs.settings.gov) {
       const pollEndMsg = lastMsg.execute_msg['poll_end'];
 

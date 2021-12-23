@@ -1,0 +1,14 @@
+@import "../../../scss/variables";
+
+.card-trade {
+    border-radius: 6px;
+    .spec-form {
+        background-color: $btn-bg;
+    }
+    .dropdown-toggle::after {
+        content: none;
+    }
+    .bg-grey {
+        background-color: $gray-950;
+    }
+}

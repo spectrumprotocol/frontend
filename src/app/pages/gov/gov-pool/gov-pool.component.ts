@@ -6,7 +6,9 @@ import { times } from '../../../libs/math';
 import { GovService } from '../../../services/api/gov.service';
 import { TokenService } from '../../../services/api/token.service';
 import { TerrajsService } from '../../../services/terrajs.service';
-import { MdbCollapseDirective } from 'mdb-angular-ui-kit';
+import { MdbCollapseDirective } from 'mdb-angular-ui-kit/collapse';
+import { WasmService } from 'src/app/services/api/wasm.service';
+import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
 
 export enum GovPoolTab {
   Deposit,
@@ -19,6 +21,8 @@ export interface GovPoolDetail {
   balance: string;
   apr: number;
   userBalance: string;
+  userAUst: string;
+  userProfit: string;
   userAvailableBalance: string;
   unlockAt: Date | null;
   moveOptions: { days: number; userBalance: string; unlockAt: Date | null }[];
@@ -45,10 +49,10 @@ export class GovPoolComponent implements OnChanges {
   isWithdrawLocked = false;
 
   constructor(
-    private terrajsService: TerrajsService,
-    private tokenService: TokenService,
-    private govService: GovService,
-    private gaService: GoogleAnalyticsService
+    private terrajs: TerrajsService,
+    private token: TokenService,
+    private gov: GovService,
+    private ga: GoogleAnalyticsService,
   ) { }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -62,12 +66,12 @@ export class GovPoolComponent implements OnChanges {
       return;
     }
 
-    this.gaService.event('CLICK_STAKE_SPEC_' + this.detail.days);
+    this.ga.event('CLICK_STAKE_SPEC_' + this.detail.days);
 
-    await this.tokenService.handle(this.terrajsService.settings.specToken, {
+    await this.token.handle(this.terrajs.settings.specToken, {
       send: {
         amount: times(this.depositAmount, CONFIG.UNIT),
-        contract: this.terrajsService.settings.gov,
+        contract: this.terrajs.settings.gov,
         msg: toBase64({ stake_tokens: { days: this.detail.days } }),
       },
     });
@@ -81,9 +85,9 @@ export class GovPoolComponent implements OnChanges {
       return;
     }
 
-    this.gaService.event('CLICK_UNSTAKE_SPEC_' + this.detail.days);
+    this.ga.event('CLICK_UNSTAKE_SPEC_' + this.detail.days);
 
-    await this.govService.withdraw(times(this.withdrawAmount, CONFIG.UNIT), this.detail.days);
+    await this.gov.withdraw(times(this.withdrawAmount, CONFIG.UNIT), this.detail.days);
 
     this.reset();
     this.transactionComplete.emit();
@@ -94,9 +98,9 @@ export class GovPoolComponent implements OnChanges {
       return;
     }
 
-    this.gaService.event(`CLICK_MOVE_LOCK_${this.moveDays}`);
+    this.ga.event(`CLICK_MOVE_LOCK_${this.moveDays}`);
 
-    await this.govService.updateStake(times(this.moveAmount, CONFIG.UNIT), this.detail.days, this.moveDays);
+    await this.gov.updateStake(times(this.moveAmount, CONFIG.UNIT), this.detail.days, this.moveDays);
 
     this.reset();
     this.transactionComplete.emit();
@@ -158,5 +162,39 @@ export class GovPoolComponent implements OnChanges {
     const newLock = (from.amount * fromLock + to.amount * toLock) / newAmount;
 
     return newLock ? new Date(now + newLock) : null;
+  }
+
+  async doClaimReward(ust: boolean) {
+    this.ga.event('CLICK_CLAIM_' + (ust ? 'UST' : 'AUST'));
+
+    const aust_amount = times(this.detail.userAUst, CONFIG.UNIT);
+    const messages: Msg[] = [];
+    messages.push(new MsgExecuteContract(
+      this.terrajs.address,
+      this.terrajs.settings.gov,
+      {
+        harvest: {
+          aust_amount: times(this.detail.userAUst, CONFIG.UNIT),
+          days: this.detail.days,
+        }
+      }));
+
+    if (ust) {
+      messages.push(new MsgExecuteContract(
+        this.terrajs.address,
+        this.terrajs.settings.austToken,
+        {
+          send: {
+            contract: this.terrajs.settings.anchorMarket,
+            amount: aust_amount,
+            msg: toBase64({redeem_stable: {}})
+          }
+        }
+      ));
+    }
+
+    await this.terrajs.post(messages);
+
+    this.transactionComplete.emit();
   }
 }

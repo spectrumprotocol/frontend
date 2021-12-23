@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MdbDropdownDirective } from 'mdb-angular-ui-kit';
 import { Subscription } from 'rxjs';
 import { fade } from '../../consts/animations';
 import { CONFIG } from '../../consts/config';
@@ -13,6 +12,7 @@ import { PollExecuteMsg } from '../../services/api/gov/polls_response';
 import { TokenService } from '../../services/api/token.service';
 import { TerrajsService } from '../../services/terrajs.service';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
 
 @Component({
   selector: 'app-gov-poll-new',
