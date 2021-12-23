@@ -30,5 +30,10 @@ export interface SimulateZapToBondResponse {
   belief_price: Decimal;
   belief_price_b?: Decimal | null;
   lp_amount: Uint128;
+  provide_a: Uint128;
+  provide_b: Uint128;
+  receive_a: Uint128;
+  swap_a?: Uint128 | null;
+  swap_ust: Uint128;
   [k: string]: unknown;
 }

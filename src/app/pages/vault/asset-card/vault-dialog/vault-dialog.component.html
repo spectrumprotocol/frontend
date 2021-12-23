@@ -40,8 +40,13 @@
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
-            APY <i class="fas fa-info-circle info-icon super"
-                   mdbTooltip="APY (Annual Percentage Yield) is the rate of return with compound interest in one year."></i>
+            <ng-container *ngIf="vault.poolInfo.farm === 'Spectrum'">
+              APR
+            </ng-container>
+            <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
+              APY <i class="fas fa-info-circle info-icon super"
+                     mdbTooltip="APY (Annual Percentage Yield) is the rate of return with compound interest in one year."></i>
+            </ng-container>
           </p>
           <h3 class="card-title">
             <span *ngIf="vault.apy > vault.pairStat?.poolApr">

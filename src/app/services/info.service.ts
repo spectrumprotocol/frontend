@@ -268,7 +268,7 @@ export class InfoService {
     const vaults = await vaultsTask;
     const tasks = this.farmInfos.map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
-        .filter(it => it[1].farm === farmInfo.farm));
+        .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults);
         Object.assign(stat.pairs, pairStats);
@@ -295,7 +295,7 @@ export class InfoService {
     const height = await this.terrajs.getHeight();
     const specPerHeight = config.mint_end > height ? config.mint_per_block : '0';
     const ustPerYear = +specPerHeight * HEIGHT_PER_YEAR * +this.specPrice
-      * (1 - +config.burnvault_ratio)
+      * (1 - (+config.burnvault_ratio || 0))
       * (1 - +config.warchest_ratio);
     for (const pair of Object.values(stat.pairs)) {
       pair.specApr = ustPerYear * pair.multiplier / totalWeight / +pair.tvl;
