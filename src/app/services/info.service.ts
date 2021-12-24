@@ -25,6 +25,7 @@ import {memoize} from 'utils-decorators';
 import {Denom} from '../consts/denom';
 import {WalletService} from './api/wallet.service';
 import {AstroportFactoryService} from './api/astroport-factory.service';
+import {AstroportService} from './api/astroport.service';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -73,6 +74,7 @@ export class InfoService {
     private gov: GovService,
     private terrajs: TerrajsService,
     private terraSwap: TerraSwapService,
+    private astroPort: AstroportService,
     private terraSwapFactory: TerraSwapFactoryService,
     private astroportFactory: AstroportFactoryService,
     private token: TokenService,
@@ -383,13 +385,28 @@ export class InfoService {
     this.tokenBalances[assetToken] = (await this.token.balance(assetToken)).balance;
   }
 
-  async refreshPoolResponse(assetToken: string) {
-    const pairInfo = this.pairInfos[assetToken];
+  async refreshPoolResponse(key: string) {
+    const pairInfo = this.pairInfos[key];
+    const dex = key.split('|')[0];
+    const base = key.split('|')[1];
+    const denom = key.split('|')[2];
     const tasks: Promise<any>[] = [];
-    tasks.push(this.token.balance(assetToken)
-      .then(it => this.tokenBalances[assetToken] = it.balance));
-    tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-      .then(it => this.poolResponses[assetToken] = it));
+    if (!CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === base)){
+      tasks.push(this.token.balance(base)
+        .then(it => this.tokenBalances[base] = it.balance));
+    }
+    if (!CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === denom)){
+      tasks.push(this.token.balance(denom)
+        .then(it => this.tokenBalances[denom] = it.balance));
+    }
+    if (dex === 'TERRASWAP'){
+      tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
+        .then(it => this.poolResponses[key] = it));
+    }
+    if (dex === 'ASTROPORT'){
+      tasks.push(this.astroPort.query(pairInfo.contract_addr, { pool: {} })
+        .then(it => this.poolResponses[key] = it));
+    }
     tasks.push(this.token.balance(pairInfo.liquidity_token)
       .then(it => this.lpTokenBalances[pairInfo.liquidity_token] = it.balance));
     await Promise.all(tasks);
