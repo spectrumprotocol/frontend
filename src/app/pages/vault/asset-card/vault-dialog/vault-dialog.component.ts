@@ -125,7 +125,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           if (this.vault.poolInfo.pairSymbol !== 'UST') {
             tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.rewardTokenContract));
           }
-          tasks.push(this.info.refreshPoolResponse(this.vault.baseToken));
+          tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.baseTokenContractOrNative));
           await Promise.all(tasks);
           if (this.depositTokenAAmtTokenToken && this.tokenAToBeStatic) {
             this.depositTokenATokenTokenChanged(true);
@@ -137,7 +137,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           }
         } else if (this.vault.poolInfo.farmType === 'PYLON_LIQUID'){
           const tasks: Promise<any>[] = [];
-          tasks.push(this.info.refreshTokenBalance(this.vault.baseToken));
+          tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.baseTokenContractOrNative));
           await Promise.all(tasks);
         }
       }
@@ -146,8 +146,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   async refreshData() {
-    if (this.info.rewardInfos[this.vault.baseToken]) {
-      this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.baseToken]?.auto_bond_amount / +this.info.rewardInfos[this.vault.baseToken]?.bond_amount * 100);
+    if (this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]) {
+      this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.auto_bond_amount / +this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.bond_amount * 100);
     }
     if (this.vault.poolInfo.forceDepositType) {
       this.depositType = this.vault.poolInfo.forceDepositType as any;
@@ -160,12 +160,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   setMaxDepositTokenATokenToken() {
     this.tokenAToBeStatic = true;
-    this.depositTokenAAmtTokenToken = +this.info.tokenBalances?.[this.vault.baseToken] / this.vault.unit;
+    this.depositTokenAAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.baseTokenContractOrNative] / this.vault.unit;
     this.depositTokenATokenTokenChanged(true);
   }
 
   setMaxWithdrawAmount() {
-    const rewardInfo = this.info.rewardInfos?.[this.vault.baseToken];
+    const rewardInfo = this.info.rewardInfos?.[this.vault.poolInfo.baseTokenContractOrNative];
     if (rewardInfo) {
       this.withdrawAmt = +rewardInfo.bond_amount / CONFIG.UNIT;
     }
@@ -211,7 +211,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   private async refreshDataTokenToken(inputFromA: boolean) {
-    const pool = this.info.poolResponses[this.vault.baseToken];
+    const pool = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
     if (this.vault.poolInfo.pairSymbol === 'UST' && inputFromA) {
       const [asset, ust] = this.findAssetBaseAndNativeToken();
       const amountToken = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.unit);
@@ -257,7 +257,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           amountBase.times(pool.total_share).div(assetBase.amount))
         : amountBase.times(amountDenom).sqrt();
       if (this.vault.pairStat) {
-        const depositTVL = new BigNumber(this.lpBalancePipe.transform(grossLp.toString(), this.info.poolResponses, this.vault.baseToken));
+        const depositTVL = new BigNumber(this.lpBalancePipe.transform(grossLp.toString(), this.info.poolResponses, this.vault.poolInfo.baseTokenContractOrNative));
         const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
         this.netLpTokenUST = grossLp.minus(depositFee).toString();
         this.depositFeeTokenUST = depositFee.toString();
@@ -268,14 +268,14 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   private findAssetBaseAndDenom() {
-    const pool = this.info.poolResponses[this.vault.baseToken];
+    const pool = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
     return pool.assets[0].info.token['contract_addr'] === this.vault.poolInfo.rewardTokenContract
       ? [pool.assets[1], pool.assets[0]]
       : [pool.assets[0], pool.assets[1]];
   }
 
   private findAssetBaseAndNativeToken() {
-    const pool = this.info.poolResponses[this.vault.baseToken];
+    const pool = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
     return pool.assets[0].info.native_token
       ? [pool.assets[1], pool.assets[0]]
       : [pool.assets[0], pool.assets[1]];
@@ -306,7 +306,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           amount: assetAmount,
           info: {
             token: {
-              contract_addr: this.vault.baseToken,
+              contract_addr: this.vault.poolInfo.baseTokenContractOrNative,
             }
           }
         };
@@ -318,12 +318,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             }
           }
         };
-        const pool = this.info.poolResponses[this.vault.baseToken];
+        const pool = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
         const assets = pool.assets[0].info.native_token ? [ust, asset] : [asset, ust];
         const msgs = [
           new MsgExecuteContract(
             this.terrajs.address,
-            this.vault.baseToken,
+            this.vault.poolInfo.baseTokenContractOrNative,
             {
               increase_allowance: {
                 amount: assetAmount,
@@ -353,7 +353,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           amount: assetBaseAmount,
           info: {
             token: {
-              contract_addr: this.vault.baseToken,
+              contract_addr: this.vault.poolInfo.baseTokenContractOrNative,
             }
           }
         };
@@ -369,7 +369,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         const msgs = [
           new MsgExecuteContract(
             this.terrajs.address,
-            this.vault.baseToken,
+            this.vault.poolInfo.baseTokenContractOrNative,
             {
               increase_allowance: {
                 amount: assetBaseAmount,
@@ -412,7 +412,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           contract: farmContract,
           msg: toBase64({
             bond: {
-              asset_token: this.vault.baseToken,
+              asset_token: this.vault.poolInfo.baseTokenContractOrNative,
               compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
             }
           })
@@ -437,7 +437,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             },
             pair_asset: {
               token: {
-                contract_addr: this.vault.baseToken
+                contract_addr: this.vault.poolInfo.baseTokenContractOrNative
               },
             },
             belief_price: this.toContractPrice(this.tokenPrice, 6, this.vault.decimals),
@@ -469,7 +469,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             compound_rate: auto_compound_ratio,
             pair_asset_b: {
               token: {
-                contract_addr: this.vault.baseToken // nasset
+                contract_addr: this.vault.poolInfo.baseTokenContractOrNative // nasset
               },
             },
             belief_price_b: this.basedTokenPrice
@@ -487,13 +487,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           contract: farmContract,
           msg: toBase64({
             bond: {
-              asset_token: this.vault.baseToken,
+              asset_token: this.vault.poolInfo.baseTokenContractOrNative,
               compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
             }
           })
         }
       };
-      await this.tokenService.handle(this.vault.baseToken, msg);
+      await this.tokenService.handle(this.vault.poolInfo.baseTokenContractOrNative, msg);
     }
     else if (this.depositMode === 'ust<->bdptoken'){
       const ustAmount = new BigNumber(this.depositUSTAmtbDPToken).times(CONFIG.UNIT).toString();
@@ -527,7 +527,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
                     },
                     ask_asset_info: {
                       token: {
-                        contract_addr: this.vault.baseToken
+                        contract_addr: this.vault.poolInfo.baseTokenContractOrNative
                       }
                     }
                   }
@@ -535,13 +535,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               ]
             }
         } as ExecuteMsg, new Coins([coin])),
-        new MsgExecuteContract(this.terrajs.address, this.vault.baseToken, {
+        new MsgExecuteContract(this.terrajs.address, this.vault.poolInfo.baseTokenContractOrNative, {
           send: {
             amount: this.expectedReceivebDPToken,
             contract: this.vault.poolInfo.farmContract,
             msg: toBase64({
               bond: {
-                asset_token: this.vault.baseToken,
+                asset_token: this.vault.poolInfo.baseTokenContractOrNative,
                 compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
               }
             })
@@ -595,7 +595,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
 
     if (this.vault.poolInfo.pairSymbol === 'UST') {
-      const poolResponse = this.info.poolResponses[this.vault.baseToken];
+      const poolResponse = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
       const [tokenAsset, ustAsset] = poolResponse.assets[0].info.native_token
         ? [poolResponse.assets[1], poolResponse.assets[0]]
         : [poolResponse.assets[0], poolResponse.assets[1]];
@@ -613,8 +613,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.withdrawUST = ustAmt.plus(returnAmt).toString();
       this.withdrawMinUST = ustAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
     } else {
-      const poolResponse = this.info.poolResponses[this.vault.baseToken];
-      const [tokenA, tokenB] = poolResponse.assets[0].info.token['contract_addr'] === this.vault.baseToken
+      const poolResponse = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
+      const [tokenA, tokenB] = poolResponse.assets[0].info.token['contract_addr'] === this.vault.poolInfo.baseTokenContractOrNative
         ? [poolResponse.assets[1], poolResponse.assets[0]]
         : [poolResponse.assets[0], poolResponse.assets[1]];
       const tokenAAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
@@ -787,7 +787,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.netLpLp = undefined;
     }
     const grossLp = new BigNumber(this.depositLPAmtLP);
-    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositLPAmtLP, CONFIG.UNIT) ?? '0', this.info.poolResponses, this.vault.baseToken));
+    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositLPAmtLP, CONFIG.UNIT) ?? '0', this.info.poolResponses, this.vault.poolInfo.baseTokenContractOrNative));
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
       grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
     this.netLpLp = grossLp.minus(depositFee).toString();
@@ -856,12 +856,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   private calcNewStakeOrCompoundAmount(mode: string) {
-    if (+this.info.rewardInfos[this.vault.baseToken]?.bond_amount < 10) {
+    if (+this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.bond_amount < 10) {
       return '0';
     } else if (mode === 'stake') {
-      return times(this.info.rewardInfos[this.vault.baseToken]?.bond_amount, (100 - this.auto_compound_percent_reallocate) / 100);
+      return times(this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.bond_amount, (100 - this.auto_compound_percent_reallocate) / 100);
     } else if (mode === 'compound') {
-      return times(this.info.rewardInfos[this.vault.baseToken]?.bond_amount, (this.auto_compound_percent_reallocate) / 100);
+      return times(this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.bond_amount, (this.auto_compound_percent_reallocate) / 100);
     }
   }
 
@@ -902,14 +902,14 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
 
     const grossLp = new BigNumber(this.depositbDPTokenAmtbDPToken);
-    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositbDPTokenAmtbDPToken, CONFIG.UNIT) ?? '0', this.info.poolResponses, this.vault.baseToken));
+    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositbDPTokenAmtbDPToken, CONFIG.UNIT) ?? '0', this.info.poolResponses, this.vault.poolInfo.baseTokenContractOrNative));
     const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
     this.netbDPToken = grossLp.minus(depositFee).toString();
     this.depositFeebDPToken = depositFee.toString();
   }
 
   setMaxDepositbDPToken() {
-    this.depositbDPTokenAmtbDPToken = +this.info.tokenBalances?.[this.vault.baseToken] / +this.info.tokenInfos[this.vault.baseToken].unit;
+    this.depositbDPTokenAmtbDPToken = +this.info.tokenBalances?.[this.vault.poolInfo.baseTokenContractOrNative] / +this.info.tokenInfos[this.vault.poolInfo.baseTokenContractOrNative].unit;
   }
 
   setMaxDepositUSTForBDP() {
@@ -957,7 +957,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               },
               ask_asset_info: {
                 token: {
-                  contract_addr: this.vault.baseToken
+                  contract_addr: this.vault.poolInfo.baseTokenContractOrNative
                 }
               }
             }
@@ -968,7 +968,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     console.log(simulateSwapOperationRes);
     this.expectedReceivebDPToken = simulateSwapOperationRes.amount.toString();
     this.tokenPrice = this.toUIPrice(div(depositTVL, simulateSwapOperationRes.amount), 6, this.vault.decimals);
-    this.grossbDPUST = div(simulateSwapOperationRes.amount, this.info.tokenInfos[this.vault.baseToken].unit);
+    this.grossbDPUST = div(simulateSwapOperationRes.amount, this.info.tokenInfos[this.vault.poolInfo.baseTokenContractOrNative].unit);
     console.log(this.tokenPrice);
     console.log(this.grossbDPUST);
   }

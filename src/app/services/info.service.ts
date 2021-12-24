@@ -373,7 +373,7 @@ export class InfoService {
     const tasks = this.farmInfos.map(async farmInfo => {
       const rewards = await farmInfo.queryRewards();
       for (const reward of rewards) {
-        rewardInfos[reward.asset_token] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+        rewardInfos[farmInfo.dex + '|' + reward.asset_token + '|' + farmInfo.getDenomTokenContractOrNative(reward.asset_token)] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
       }
     });
     await Promise.all(tasks);
@@ -467,12 +467,12 @@ export class InfoService {
 
     const specPoolResponse = this.poolResponses[this.terrajs.settings.specToken];
     for (const vault of this.allVaults) {
-      const rewardInfo = this.rewardInfos[vault.baseToken];
+      const rewardInfo = this.rewardInfos[vault.poolInfo.baseTokenContractOrNative];
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.baseToken) / CONFIG.UNIT || 0;
-      const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.baseToken].farmContract);
+      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.baseTokenContractOrNative) / CONFIG.UNIT || 0;
+      const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.poolInfo.baseTokenContractOrNative].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
       tvl += bond_amount;
@@ -580,8 +580,6 @@ export class InfoService {
         denomSymbol: CONFIG.NATIVE_TOKENS.includes(denomToken) ? denomToken : this.tokenInfos[denomToken]?.symbol,
         decimals: this.tokenInfos[key]?.decimals,
         unit: this.tokenInfos[key]?.unit,
-        baseToken,
-        denomToken,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
         poolInfo,

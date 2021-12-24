@@ -15,11 +15,11 @@ export class LpBalancePipe implements PipeTransform {
     private terrajs: TerrajsService
   ) { }
 
-  transform(lp: any, poolResponses: Record<string, PoolResponse>, asset_token: string): string {
-    if ((typeof lp !== 'string' && typeof lp !== 'number') || !poolResponses[asset_token]) {
+  transform(lp: any, poolResponses: Record<string, PoolResponse>, key: string): string {
+    if ((typeof lp !== 'string' && typeof lp !== 'number') || !poolResponses[key]) {
       return undefined;
     }
-    const poolResponse = poolResponses[asset_token];
+    const poolResponse = poolResponses[key];
     if (poolResponse.assets[0].info.native_token) {
       return new BigNumber(lp)
         .times(poolResponse.assets[0].amount)
@@ -34,13 +34,13 @@ export class LpBalancePipe implements PipeTransform {
         .toString();
     } else {
       const dpTokenList = [this.terrajs.settings.bPsiDPToken];
-      if (dpTokenList.includes(asset_token)){
+      if (dpTokenList.includes(key)){
         const token1Price = this.balancePipe.transform('1', poolResponses[poolResponse.assets[0].info.token['contract_addr']]);
         const token2Price = this.balancePipe.transform('1', poolResponses[poolResponse.assets[1].info.token['contract_addr']]);
         const foundTokenPrice = token1Price ?? token2Price;
-        const poolResponseDPTokenIndex = poolResponses[asset_token].assets.findIndex(asset => asset.info.token['contract_addr'] === asset_token);
+        const poolResponseDPTokenIndex = poolResponses[key].assets.findIndex(asset => asset.info.token['contract_addr'] === key);
         const poolResponseRewardTokenIndex = poolResponseDPTokenIndex === 0 ? 1 : 0;
-        const dpTokenPerRewardTokenPrice = div(poolResponses[asset_token].assets[poolResponseRewardTokenIndex].amount, poolResponses[asset_token].assets[poolResponseDPTokenIndex].amount);
+        const dpTokenPerRewardTokenPrice = div(poolResponses[key].assets[poolResponseRewardTokenIndex].amount, poolResponses[key].assets[poolResponseDPTokenIndex].amount);
         return new BigNumber(lp).times(dpTokenPerRewardTokenPrice).times(foundTokenPrice).toString();
       } else {
         const token1Price = this.balancePipe.transform('1', poolResponses[poolResponse.assets[0].info.token['contract_addr']]);
