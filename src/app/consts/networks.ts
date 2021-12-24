@@ -15,6 +15,7 @@ export interface ISettings {
   specFarm: string;
   terraSwapFactory: string;
   terraSwapRouter: string;
+  astroportFactory: string;
   staker: string;
   anchorGov: string;
   anchorStaking: string;
@@ -84,6 +85,7 @@ export const networks: Record<string, ISettings> = {
     specFarm: 'terra17hjvrkcwn3jk2qf69s5ldxx5rjccchu35assga',
     terraSwapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
     terraSwapRouter: 'terra19qx5xe6q9ll4w0890ux7lv2p4mf3csd4qvt3ex',
+    astroportFactory: '',
     staker: 'terra1fxwelge6mf5l6z0rjpylzcfq9w9tw2q7tewaf5',
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
     anchorStaking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
@@ -152,6 +154,7 @@ export const networks: Record<string, ISettings> = {
     specFarm: 'terra1cedx8gpvu7c4vzfadwmf3pewg2030fqgw4q3dl',
     terraSwapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
     terraSwapRouter: 'terra14z80rwpd0alzj4xdtgqdmcqt9wd9xj5ffd60wp',
+    astroportFactory: '',
     staker: 'terra15nwqmmmza9y643apneg0ddwt0ekk38qdevnnjt',
     anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
     anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',

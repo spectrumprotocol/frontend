@@ -1,23 +1,30 @@
-import { Inject, Injectable } from '@angular/core';
-import { BLOCK_TIME, TerrajsService } from './terrajs.service';
-import { TokenService } from './api/token.service';
-import { BankService } from './api/bank.service';
-import { TerraSwapService } from './api/terraswap.service';
-import { PoolResponse } from './api/terraswap_pair/pool_response';
-import { div, minus, plus, times } from '../libs/math';
-import { CONFIG } from '../consts/config';
-import { TerraSwapFactoryService } from './api/terraswap-factory.service';
-import { GovService } from './api/gov.service';
-import { FarmInfoService, FARM_INFO_SERVICE, PairStat, PoolInfo, RewardInfoResponseItem } from './farm_info/farm-info.service';
-import { fromEntries } from '../libs/core';
-import { PairInfo } from './api/terraswap_factory/pair_info';
-import { BalancePipe } from '../pipes/balance.pipe';
-import { LpBalancePipe } from '../pipes/lp-balance.pipe';
-import { Vault } from '../pages/vault/vault.component';
-import { HttpClient } from '@angular/common/http';
-import { memoize } from 'utils-decorators';
-import { Denom } from '../consts/denom';
-import { WalletService } from './api/wallet.service';
+import {Inject, Injectable} from '@angular/core';
+import {BLOCK_TIME, TerrajsService} from './terrajs.service';
+import {TokenService} from './api/token.service';
+import {BankService} from './api/bank.service';
+import {TerraSwapService} from './api/terraswap.service';
+import {PoolResponse} from './api/terraswap_pair/pool_response';
+import {div, minus, plus, times} from '../libs/math';
+import {CONFIG} from '../consts/config';
+import {TerraSwapFactoryService} from './api/terraswap-factory.service';
+import {GovService} from './api/gov.service';
+import {
+  FARM_INFO_SERVICE,
+  FarmInfoService,
+  PairStat,
+  PoolInfo,
+  RewardInfoResponseItem
+} from './farm_info/farm-info.service';
+import {fromEntries} from '../libs/core';
+import {PairInfo} from './api/terraswap_factory/pair_info';
+import {BalancePipe} from '../pipes/balance.pipe';
+import {LpBalancePipe} from '../pipes/lp-balance.pipe';
+import {Vault} from '../pages/vault/vault.component';
+import {HttpClient} from '@angular/common/http';
+import {memoize} from 'utils-decorators';
+import {Denom} from '../consts/denom';
+import {WalletService} from './api/wallet.service';
+import {AstroportFactoryService} from './api/astroport-factory.service';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -67,6 +74,7 @@ export class InfoService {
     private terrajs: TerrajsService,
     private terraSwap: TerraSwapService,
     private terraSwapFactory: TerraSwapFactoryService,
+    private astroportFactory: AstroportFactoryService,
     private token: TokenService,
     private balancePipe: BalancePipe,
     private lpBalancePipe: LpBalancePipe,
@@ -224,17 +232,22 @@ export class InfoService {
         const tokenB = CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === denomTokenContractOrNative) ?
           { native_token: { denom: denomTokenContractOrNative } } : { token: { contract_addr: denomTokenContractOrNative } };
         if (this.poolInfos[key].dex === 'TERRASWAP'){
-          const it = await this.terraSwapFactory.query({
+          this.pairInfos[key] = await this.terraSwapFactory.query({
             pair: {
               asset_infos: [
                 tokenA, tokenB
               ]
             }
           });
-          this.pairInfos[key] = it;
         }
         else if (this.poolInfos[key].dex === 'ASTROPORT'){
-          // TODO
+          this.pairInfos[key] = await this.astroportFactory.query({
+            pair: {
+              asset_infos: [
+                tokenA, tokenB
+              ]
+            }
+          });
         }
       });
     if (tasks.length) {
