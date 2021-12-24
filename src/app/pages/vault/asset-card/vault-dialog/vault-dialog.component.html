@@ -170,7 +170,7 @@
                           aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
                       <span class="visually-hidden">Loading...</span>
                     </span>
-                    <span class="text-white">{{ info.tokenBalances[vault.assetToken] | unit }} {{ vault.symbol }}</span>
+                    <span class="text-white">{{ info.tokenBalances[vault.assetToken] | unit : vault.decimals }} {{ vault.symbol }}</span>
                   </div>
                   <div class="input-group">
                     <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
