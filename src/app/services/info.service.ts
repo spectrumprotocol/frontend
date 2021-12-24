@@ -228,10 +228,10 @@ export class InfoService {
       .filter(key => !this.pairInfos[key])
       .map(async key => {
         const baseTokenContractOrNative = this.poolInfos[key].baseTokenContractOrNative;
-        const tokenA = CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === baseTokenContractOrNative) ?
+        const tokenA = CONFIG.NATIVE_TOKENS.includes(baseTokenContractOrNative) ?
           { native_token: { denom: baseTokenContractOrNative } } : { token: { contract_addr: baseTokenContractOrNative } };
         const denomTokenContractOrNative = this.poolInfos[key].denomTokenContractOrNative;
-        const tokenB = CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === denomTokenContractOrNative) ?
+        const tokenB = CONFIG.NATIVE_TOKENS.includes(denomTokenContractOrNative) ?
           { native_token: { denom: denomTokenContractOrNative } } : { token: { contract_addr: denomTokenContractOrNative } };
         if (this.poolInfos[key].dex === 'TERRASWAP'){
           this.pairInfos[key] = await this.terraSwapFactory.query({
@@ -273,13 +273,13 @@ export class InfoService {
       const baseTokenContractOrNative = this.poolInfos[key].baseTokenContractOrNative;
       const denomTokenContractOrNative = this.poolInfos[key].denomTokenContractOrNative;
       const rewardTokenContract = this.poolInfos[key].rewardTokenContract;
-      if (!CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === baseTokenContractOrNative)){
+      if (!CONFIG.NATIVE_TOKENS.includes(baseTokenContractOrNative)){
         cw20Tokens.add(baseTokenContractOrNative);
       }
-      if (!CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === denomTokenContractOrNative)){
+      if (!CONFIG.NATIVE_TOKENS.includes(denomTokenContractOrNative)){
         cw20Tokens.add(denomTokenContractOrNative);
       }
-      if (!CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === rewardTokenContract)){
+      if (!CONFIG.NATIVE_TOKENS.includes(rewardTokenContract)){
         cw20Tokens.add(rewardTokenContract);
       }
     });
@@ -391,11 +391,11 @@ export class InfoService {
     const base = key.split('|')[1];
     const denom = key.split('|')[2];
     const tasks: Promise<any>[] = [];
-    if (!CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === base)){
+    if (!CONFIG.NATIVE_TOKENS.includes(base)){
       tasks.push(this.token.balance(base)
         .then(it => this.tokenBalances[base] = it.balance));
     }
-    if (!CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === denom)){
+    if (!CONFIG.NATIVE_TOKENS.includes(denom)){
       tasks.push(this.token.balance(denom)
         .then(it => this.tokenBalances[denom] = it.balance));
     }
@@ -461,18 +461,18 @@ export class InfoService {
       farms: new Map(),
     };
     for (const farmInfo of this.farmInfos) {
-      portfolio.tokens.set(farmInfo.rewardSymbol, { pending_reward_token: 0, pending_reward_ust: 0 });
+      portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { pending_reward_token: 0, pending_reward_ust: 0 });
       portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
     }
 
     const specPoolResponse = this.poolResponses[this.terrajs.settings.specToken];
     for (const vault of this.allVaults) {
-      const rewardInfo = this.rewardInfos[vault.assetToken];
+      const rewardInfo = this.rewardInfos[vault.baseToken];
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.assetToken) / CONFIG.UNIT || 0;
-      const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.assetToken].farmContract);
+      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.baseToken) / CONFIG.UNIT || 0;
+      const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.baseToken].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
       tvl += bond_amount;
@@ -486,9 +486,10 @@ export class InfoService {
         const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardTokenContract];
         const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
         tvl += pending_farm_reward_ust;
-        portfolio.tokens.get(farmInfo.rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
-        portfolio.tokens.get(farmInfo.rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
-        portfolio.tokens.get(farmInfo.rewardSymbol).apr = this.stat?.pairs[farmInfo.rewardTokenContract]?.farmApr;
+        const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
+        portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
+        portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+        portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[farmInfo.rewardTokenContract]?.farmApr;
         portfolio.total_reward_ust += pending_farm_reward_ust;
       }
     }
@@ -569,13 +570,18 @@ export class InfoService {
       const farmApy = poolApr + poolApr * farmApr / 2;
       const stakeApy = farmApy + specApy;
       const apy = Math.max(compoundApy, stakeApy);
-
       const poolInfo = this.poolInfos[key];
+
+      const baseToken = this.poolInfos[key].baseTokenContractOrNative;
+      const denomToken = this.poolInfos[key].denomTokenContractOrNative;
+
       const vault: Vault = {
-        symbol: this.tokenInfos[key]?.symbol,
+        baseSymbol: CONFIG.NATIVE_TOKENS.includes(baseToken) ? baseToken : this.tokenInfos[baseToken]?.symbol,
+        denomSymbol: CONFIG.NATIVE_TOKENS.includes(denomToken) ? denomToken : this.tokenInfos[denomToken]?.symbol,
         decimals: this.tokenInfos[key]?.decimals,
         unit: this.tokenInfos[key]?.unit,
-        assetToken: key,
+        baseToken,
+        denomToken,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
         poolInfo,

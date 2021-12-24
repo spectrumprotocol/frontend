@@ -13,3 +13,9 @@ npx json2ts -i ../contracts/contracts/farms/spectrum_orion_farm/schema/ -o ./src
 npx json2ts -i ../contracts/contracts/farms/spectrum_nexus_farm/schema/ -o ./src/app/services/api/nexus_farm
 npx json2ts -i ../contracts/contracts/farms/spectrum_nexus_nasset_psi_farm/schema/ -o ./src/app/services/api/nexus_nassets_psi_farm
 npx json2ts -i ../contracts/contracts/farms/spectrum_pylon_liquid_farm/schema/ -o ./src/app/services/api/pylon_liquid_farm
+
+npx json2ts -i ../astroport/astroport/contracts/factory/schema/ -o ./src/app/services/api/astroport_factory
+npx json2ts -i ../astroport/astroport/contracts/pair/schema/ -o ./src/app/services/api/astroport_pair
+npx json2ts -i ../astroport/astroport/contracts/pair_stable/schema/ -o ./src/app/services/api/astroport_pair_stable
+npx json2ts -i ../astroport/astroport/contracts/router/schema/ -o ./src/app/services/api/astroport_router
+npx json2ts -i ../astroport/astroport/contracts/token/schema/ -o ./src/app/services/api/astroport_token

@@ -66,14 +66,12 @@ import {OrionFarmInfoService} from './services/farm_info/orion.farm-info.service
 import { ManageRewardsComponent } from './pages/vault/manage-rewards/manage-rewards.component';
 import {NlunaPsiFarmInfoService} from './services/farm_info/nluna-psi.farm-info.service';
 import {NethPsiFarmInfoService} from './services/farm_info/neth-psi.farm-info.service';
-import {KujiraFarmInfoService} from './services/farm_info/kujira.farm-info.service';
 import {MdbTooltipModule} from 'mdb-angular-ui-kit/tooltip';
 import {MdbDropdownModule} from 'mdb-angular-ui-kit/dropdown';
 import {MdbTabsModule} from 'mdb-angular-ui-kit/tabs';
 import {MdbCollapseModule} from 'mdb-angular-ui-kit/collapse';
 import {MdbFormsModule} from 'mdb-angular-ui-kit/forms';
 import {MdbValidationModule} from 'mdb-angular-ui-kit/validation';
-import {ModalService} from './services/modal.service';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import { LpEarningPipe } from './pipes/lp-earning.pipe';
 import {BPsiDPFarmInfoService} from './services/farm_info/bPsiDP.farm-info.service';
