@@ -3,6 +3,8 @@ import BigNumber from 'bignumber.js';
 import { SpecFarmService } from '../api/spec-farm.service';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -18,11 +20,16 @@ import {Denom} from '../../consts/denom';
 @Injectable()
 export class SpecFarmInfoService implements FarmInfoService {
   farm = 'Spectrum';
-  tokenSymbol = 'SPEC';
   autoCompound = false;
   autoStake = true;
   farmColor = '#fc5185';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'TERRASWAP';
+
+  getDenomTokenContractOrNative(baseToken?: string){
+    return Denom.USD;
+  }
 
   constructor(
     private specFarm: SpecFarmService,
@@ -33,7 +40,7 @@ export class SpecFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.specFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.specToken;
   }
 

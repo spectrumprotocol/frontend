@@ -3,6 +3,8 @@ import BigNumber from 'bignumber.js';
 import { TerraworldFarmService } from '../api/terraworld-farm.service';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -21,12 +23,16 @@ import { VaultsResponse } from '../api/gov/vaults_response';
 @Injectable()
 export class TerraworldFarmInfoService implements FarmInfoService {
   farm = 'Terraworld';
-  tokenSymbol = 'TWD';
   autoCompound = true;
   autoStake = true;
   auditWarning = true;
   farmColor = '#249fd4';
-  pairSymbol = 'UST';
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'TERRASWAP';
+
+  getDenomTokenContractOrNative(baseToken?: string){
+    return Denom.USD;
+  }
 
   constructor(
     private terraworldFarm: TerraworldFarmService,
@@ -38,7 +44,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.terraworldFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.terraworldToken;
   }
 

@@ -33,7 +33,7 @@ export class ManageRewardsComponent implements OnInit{
   }
 
   getGovFarmInfo(tokenSymbol: string){
-    return this.info.farmInfos.find(x => x.tokenSymbol === tokenSymbol);
+    return this.info.farmInfos.find(x => x.rewardSymbol === tokenSymbol);
   }
 
   async moveToGov(tokenSymbol: string, days?: number) {
@@ -46,7 +46,7 @@ export class ManageRewardsComponent implements OnInit{
 
     for (const rewardInfo of Object.values(this.info.rewardInfos)) {
       const farmInfo = this.info.farmInfos.find(x => x.farmContract === rewardInfo.farmContract);
-      if (farmInfo.tokenSymbol !== tokenSymbol && !isSpec) {
+      if (farmInfo.rewardSymbol !== tokenSymbol && !isSpec) {
         continue;
       }
 

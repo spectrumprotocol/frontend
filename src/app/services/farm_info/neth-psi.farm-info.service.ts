@@ -3,6 +3,8 @@ import { Apollo, gql } from 'apollo-angular';
 import BigNumber from 'bignumber.js';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -17,16 +19,21 @@ import { NethPsiFarmService } from '../api/neth-psi-farm.service';
 import { NethPsiStakingService } from '../api/neth-psi-staking.service';
 import { BalancePipe } from '../../pipes/balance.pipe';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class NethPsiFarmInfoService implements FarmInfoService {
   farm = 'Nexus';
-  tokenSymbol = 'Psi';
   autoCompound = true;
   autoStake = true;
   farmColor = '#F4B6C7';
-  pairSymbol = 'Psi';
-  baseSymbol = 'nEth';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'TERRASWAP';
+
+  getDenomTokenContractOrNative(baseToken?: string){
+    return this.terrajs.settings.nexusToken;
+  }
 
   constructor(
     private nethPsiFarmService: NethPsiFarmService,
@@ -40,7 +47,7 @@ export class NethPsiFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nEthPsiFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 

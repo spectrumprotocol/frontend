@@ -6,6 +6,7 @@ import { MirrorStakingService } from '../api/mirror-staking.service';
 import { RewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX, FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -21,11 +22,16 @@ import {Denom} from '../../consts/denom';
 export class MirrorFarmInfoService implements FarmInfoService {
 
   farm = 'Mirror';
-  tokenSymbol = 'MIR';
   autoCompound = true;
   autoStake = true;
   farmColor = '#232C45';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'TERRASWAP';
+
+  getDenomTokenContractOrNative(baseToken?: string){
+    return Denom.USD;
+  }
 
   constructor(
     private apollo: Apollo,
@@ -38,7 +44,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.mirrorFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.mirrorToken;
   }
 

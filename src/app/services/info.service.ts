@@ -185,21 +185,24 @@ export class InfoService {
       }
       const pools = await farmInfo.queryPoolItems();
       for (const pool of pools) {
-        poolInfos[pool.asset_token] = Object.assign(pool,
+        const key = farmInfo.dex ?? 'TERRASWAP' + '|' + pool.asset_token + '|' + farmInfo.getDenomTokenContractOrNative(pool.asset_token);
+        poolInfos[key] = Object.assign(pool,
           {
+            key,
             farm: farmInfo.farm,
-            token_symbol: farmInfo.tokenSymbol,
             farmContract: farmInfo.farmContract,
-            farmTokenContract: farmInfo.farmTokenContract,
+            baseTokenContractOrNative: pool.asset_token,
+            denomTokenContractOrNative: farmInfo.getDenomTokenContractOrNative(pool.asset_token),
+            rewardTokenContract: farmInfo.rewardTokenContract,
             auto_compound: farmInfo.autoCompound,
             auto_stake: farmInfo.autoStake,
             forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
               ? undefined
               : farmInfo.autoCompound ? 'compound' : 'stake',
-            pairSymbol: farmInfo.pairSymbol,
             auditWarning: farmInfo.auditWarning,
             farmType: farmInfo.farmType ?? 'LP',
             score: (farmInfo.highlight ? 1000000 : 0) + (pool.weight || 0),
+            dex: farmInfo.dex ?? 'TERRASWAP',
           });
       }
     });
@@ -214,18 +217,25 @@ export class InfoService {
     const tasks = Object.keys(this.poolInfos)
       .filter(key => !this.pairInfos[key])
       .map(async key => {
-        const tokenA = { token: { contract_addr: key } };
-        const tokenB = this.poolInfos[key].pairSymbol === 'UST'
-          ? { native_token: { denom: Denom.USD } }
-          : { token: { contract_addr: this.poolInfos[key].farmTokenContract } };
-        const it = await this.terraSwapFactory.query({
-          pair: {
-            asset_infos: [
-              tokenA, tokenB
-            ]
-          }
-        });
-        this.pairInfos[key] = it;
+        const baseTokenContractOrNative = this.poolInfos[key].baseTokenContractOrNative;
+        const tokenA = CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === baseTokenContractOrNative) ?
+          { native_token: { denom: baseTokenContractOrNative } } : { token: { contract_addr: baseTokenContractOrNative } };
+        const denomTokenContractOrNative = this.poolInfos[key].denomTokenContractOrNative;
+        const tokenB = CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === denomTokenContractOrNative) ?
+          { native_token: { denom: denomTokenContractOrNative } } : { token: { contract_addr: denomTokenContractOrNative } };
+        if (this.poolInfos[key].dex === 'TERRASWAP'){
+          const it = await this.terraSwapFactory.query({
+            pair: {
+              asset_infos: [
+                tokenA, tokenB
+              ]
+            }
+          });
+          this.pairInfos[key] = it;
+        }
+        else if (this.poolInfos[key].dex === 'ASTROPORT'){
+          // TODO
+        }
       });
     if (tasks.length) {
       await Promise.all(tasks);
@@ -243,11 +253,25 @@ export class InfoService {
 
   async ensureTokenInfos() {
     await this.ensurePoolInfoLoaded();
-    const tasks = Object.keys(this.poolInfos)
+    const cw20Tokens = new Set<string>();
+    Object.keys(this.poolInfos).forEach(key => {
+      const baseTokenContractOrNative = this.poolInfos[key].baseTokenContractOrNative;
+      const denomTokenContractOrNative = this.poolInfos[key].denomTokenContractOrNative;
+      const rewardTokenContract = this.poolInfos[key].rewardTokenContract;
+      if (!CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === baseTokenContractOrNative)){
+        cw20Tokens.add(baseTokenContractOrNative);
+      }
+      if (!CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === denomTokenContractOrNative)){
+        cw20Tokens.add(denomTokenContractOrNative);
+      }
+      if (!CONFIG.NATIVE_TOKENS.some(nativeToken => nativeToken === rewardTokenContract)){
+        cw20Tokens.add(rewardTokenContract);
+      }
+    });
+    const tasks = Array.from(cw20Tokens)
       .filter(key => !this.tokenInfos[key])
       .map(async key => {
         const it = await this.token.query(key, { token_info: {} });
-
         this.tokenInfos[key] = {
           name: it.name,
           symbol: this.cleanSymbol(it.symbol),
@@ -407,7 +431,7 @@ export class InfoService {
       farms: new Map(),
     };
     for (const farmInfo of this.farmInfos) {
-      portfolio.tokens.set(farmInfo.tokenSymbol, { pending_reward_token: 0, pending_reward_ust: 0 });
+      portfolio.tokens.set(farmInfo.rewardSymbol, { pending_reward_token: 0, pending_reward_ust: 0 });
       portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
     }
 
@@ -429,12 +453,12 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.farmTokenContract];
+        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardTokenContract];
         const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
         tvl += pending_farm_reward_ust;
-        portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_ust += pending_farm_reward_ust;
-        portfolio.tokens.get(farmInfo.tokenSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
-        portfolio.tokens.get(farmInfo.tokenSymbol).apr = this.stat?.pairs[farmInfo.farmTokenContract]?.farmApr;
+        portfolio.tokens.get(farmInfo.rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
+        portfolio.tokens.get(farmInfo.rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+        portfolio.tokens.get(farmInfo.rewardSymbol).apr = this.stat?.pairs[farmInfo.rewardTokenContract]?.farmApr;
         portfolio.total_reward_ust += pending_farm_reward_ust;
       }
     }

@@ -3,6 +3,7 @@ import { PoolItem } from '../api/pylon_liquid_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
   FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
@@ -17,17 +18,19 @@ import {VaultsResponse} from '../api/gov/vaults_response';
 import {div} from '../../libs/math';
 import {TerraSwapService} from '../api/terraswap.service';
 import {Apollo, gql} from 'apollo-angular';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class BPsiDPFarmInfoService implements FarmInfoService {
   farm = 'Pylon';
-  tokenSymbol = 'Psi';
   autoCompound = true;
   autoStake = true;
   farmColor = '#00cfda';
-  pairSymbol = 'bPsiDP-24m';
   farmType: FARM_TYPE_ENUM = 'PYLON_LIQUID';
   highlight = true;
+  auditWarning = false;
+  dex: DEX = 'TERRASWAP';
+
 
   constructor(
     private bPsiDpFarmService: BPsiDpFarmService,
@@ -41,7 +44,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.bPsiDPFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 

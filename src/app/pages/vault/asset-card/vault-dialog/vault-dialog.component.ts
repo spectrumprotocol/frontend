@@ -123,7 +123,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         if (this.vault.poolInfo.farmType === 'LP'){
           const tasks: Promise<any>[] = [];
           if (this.vault.poolInfo.pairSymbol !== 'UST') {
-            tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.farmTokenContract));
+            tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.rewardTokenContract));
           }
           tasks.push(this.info.refreshPoolResponse(this.vault.assetToken));
           await Promise.all(tasks);
@@ -269,7 +269,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   private findAssetBaseAndDenom() {
     const pool = this.info.poolResponses[this.vault.assetToken];
-    return pool.assets[0].info.token['contract_addr'] === this.vault.poolInfo.farmTokenContract
+    return pool.assets[0].info.token['contract_addr'] === this.vault.poolInfo.rewardTokenContract
       ? [pool.assets[1], pool.assets[0]]
       : [pool.assets[0], pool.assets[1]];
   }
@@ -361,7 +361,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           amount: assetDenomAmount,
           info: {
             token: {
-              contract_addr: this.vault.poolInfo.farmTokenContract,
+              contract_addr: this.vault.poolInfo.rewardTokenContract,
             }
           }
         };
@@ -379,7 +379,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           ),
           new MsgExecuteContract(
             this.terrajs.address,
-            this.vault.poolInfo.farmTokenContract,
+            this.vault.poolInfo.rewardTokenContract,
             {
               increase_allowance: {
                 amount: assetDenomAmount,
@@ -461,7 +461,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             },
             pair_asset: {
               token: {
-                contract_addr: this.vault.poolInfo.farmTokenContract // psi
+                contract_addr: this.vault.poolInfo.rewardTokenContract // psi
               },
             },
             belief_price: this.tokenPrice,
@@ -513,7 +513,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
                     },
                     ask_asset_info: {
                       token: {
-                        contract_addr: this.vault.poolInfo.farmTokenContract
+                        contract_addr: this.vault.poolInfo.rewardTokenContract
                       }
                     }
                   }
@@ -522,7 +522,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
                   terra_swap: {
                     offer_asset_info: {
                       token: {
-                        contract_addr: this.vault.poolInfo.farmTokenContract
+                        contract_addr: this.vault.poolInfo.rewardTokenContract
                       }
                     },
                     ask_asset_info: {
@@ -694,7 +694,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       } else {
         msg = {
           zap_to_unbond: {
-            sell_asset: { token: { contract_addr: this.vault.poolInfo.farmTokenContract } },
+            sell_asset: { token: { contract_addr: this.vault.poolInfo.rewardTokenContract } },
             sell_asset_b: { token: { contract_addr: this.vault.poolInfo.asset_token } },
             target_asset: { native_token: { denom: Denom.USD } },
             belief_price: this.withdrawTokenPrice,
@@ -886,7 +886,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   setMaxDepositTokenBTokenToken() {
     this.tokenAToBeStatic = false;
-    this.depositTokenBAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.farmTokenContract] / +this.info.tokenInfos[this.vault.poolInfo.farmTokenContract].unit;
+    this.depositTokenBAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.rewardTokenContract] / +this.info.tokenInfos[this.vault.poolInfo.rewardTokenContract].unit;
     this.depositTokenBTokenTokenChanged(true);
   }
 
@@ -943,7 +943,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               },
               ask_asset_info: {
                 token: {
-                  contract_addr: this.vault.poolInfo.farmTokenContract
+                  contract_addr: this.vault.poolInfo.rewardTokenContract
                 }
               }
             }
@@ -952,7 +952,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             terra_swap: {
               offer_asset_info: {
                 token: {
-                  contract_addr: this.vault.poolInfo.farmTokenContract
+                  contract_addr: this.vault.poolInfo.rewardTokenContract
                 }
               },
               ask_asset_info: {

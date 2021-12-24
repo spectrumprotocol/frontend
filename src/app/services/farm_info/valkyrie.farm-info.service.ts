@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo
@@ -14,15 +16,21 @@ import { ValkyrieStakingService } from '../api/valkyrie-staking.service';
 import { PoolItem } from '../api/valkyrie_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/valkyrie_farm/reward_info_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class ValkyrieFarmInfoService implements FarmInfoService {
   farm = 'Valkyrie';
-  tokenSymbol = 'VKR';
   autoCompound = true;
   autoStake = true;
   farmColor = '#ffe646';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'TERRASWAP';
+
+  getDenomTokenContractOrNative(baseToken?: string){
+    return Denom.USD;
+  }
 
   constructor(
     private terrajs: TerrajsService,
@@ -34,7 +42,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.valkyrieFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.valkyrieToken;
   }
 

@@ -6,6 +6,8 @@ import { PoolItem } from '../api/pylon_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo
@@ -16,15 +18,21 @@ import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
   farm = 'Pylon';
-  tokenSymbol = 'MINE';
   autoCompound = true;
   autoStake = true;
   farmColor = '#00cfda';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'TERRASWAP';
+
+  getDenomTokenContractOrNative(baseToken?: string){
+    return Denom.USD;
+  }
 
   constructor(
     private pylonFarm: PylonFarmService,
@@ -37,7 +45,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.pylonFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.pylonToken;
   }
 

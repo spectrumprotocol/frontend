@@ -11,15 +11,18 @@ import { VaultsResponse } from '../api/gov/vaults_response';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem | PylonLiquidPoolItem;
 export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID';
+export type DEX = 'TERRASWAP' | 'ASTROPORT';
 export type PoolInfo = PoolItem & {
+  key: string;
   farm: string;
-  token_symbol: string;
-  farmTokenContract: string;
+  baseTokenContractOrNative: string;
+  denomTokenContractOrNative?: string;
+  rewardTokenContract: string;
   farmContract: string;
-  pairSymbol: string;
   auditWarning?: boolean;
   farmType: FARM_TYPE_ENUM;
   score: number;
+  dex?: DEX;
 };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
@@ -40,14 +43,8 @@ export interface FarmInfoService {
   // name of farm
   readonly farm: string;
 
-  // based/pair/reward
-  readonly baseSymbol?: string; // use only when asset_token in unknown (if undefined will assume tokenSymbol)
-  readonly pairSymbol: string;
-  readonly tokenSymbol: string; // farm reward token
-
-  // farm/reward/gov contract
   readonly farmContract: string;
-  readonly farmTokenContract: string; // for now we assumed if pairSymbol != UST, farmTokenContract is also pairContract
+  readonly rewardTokenContract: string;
   readonly farmGovContract?: string;
 
   // auto-compound / auto-stake switch
@@ -62,6 +59,10 @@ export interface FarmInfoService {
 
   readonly farmType?: FARM_TYPE_ENUM;
   readonly highlight?: boolean;
+  readonly dex?: DEX;
+
+  // baseToken is get from querying poolInfo
+  getDenomTokenContractOrNative?(baseToken?: string): string;
 
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>>;

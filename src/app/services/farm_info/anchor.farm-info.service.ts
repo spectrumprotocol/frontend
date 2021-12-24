@@ -6,37 +6,46 @@ import { PoolItem } from '../api/anchor_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/anchor_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
+    DEX,
   FarmInfoService,
+  FARM_TYPE_ENUM,
   PairStat,
   PoolInfo
 } from './farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {toBase64} from '../../libs/base64';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { HttpClient } from '@angular/common/http';
-import { VaultsResponse } from '../api/gov/vaults_response';
+import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {HttpClient} from '@angular/common/http';
+import {VaultsResponse} from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
 
 @Injectable()
 export class AnchorFarmInfoService implements FarmInfoService {
   farm = 'Anchor';
-  tokenSymbol = 'ANC';
   autoCompound = true;
   autoStake = true;
   farmColor = '#3bac3b';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'TERRASWAP';
+
+  getDenomTokenContractOrNative(baseToken?: string): string{
+    return Denom.USD;
+  }
 
   constructor(
     private anchorFarm: AnchorFarmService,
     private terrajs: TerrajsService,
     private anchorStaking: AnchorStakingService,
     private httpClient: HttpClient,
-  ) { }
+  ) {
+  }
 
   get farmContract() {
     return this.terrajs.settings.anchorFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.anchorToken;
   }
 
