@@ -74,31 +74,40 @@ export class InfoService {
     private wallet: WalletService,
   ) {
     try {
-      const poolJson = localStorage.getItem('poolInfos');
-      if (poolJson) {
-        this.poolInfos = JSON.parse(poolJson);
+      const infoSchemaVersion = localStorage.getItem('infoSchemaVersion');
+      if (infoSchemaVersion && +infoSchemaVersion >= 2){
+        const poolJson = localStorage.getItem('poolInfos');
+        if (poolJson) {
+          this.poolInfos = JSON.parse(poolJson);
+        }
+        const pairJson = localStorage.getItem('pairInfos');
+        if (pairJson) {
+          this.pairInfos = JSON.parse(pairJson);
+        }
+        const statJson = localStorage.getItem('stat');
+        if (statJson) {
+          this.stat = JSON.parse(statJson);
+        }
+        const poolResponseJson = localStorage.getItem('poolResponses');
+        if (poolResponseJson) {
+          this.poolResponses = JSON.parse(poolResponseJson);
+        }
+        const rewardInfoJson = localStorage.getItem('rewardInfos');
+        if (rewardInfoJson) {
+          this.rewardInfos = JSON.parse(rewardInfoJson);
+        }
+        const tokenInfoJson = localStorage.getItem('tokenInfos');
+        if (tokenInfoJson) {
+          this.tokenInfos = JSON.parse(tokenInfoJson);
+        }
+      } else {
+        localStorage.removeItem('poolInfos');
+        localStorage.removeItem('pairInfos');
+        localStorage.removeItem('stat');
+        localStorage.removeItem('poolResponses');
+        localStorage.removeItem('rewardInfos');
+        localStorage.removeItem('tokenInfos');
       }
-      const pairJson = localStorage.getItem('pairInfos');
-      if (pairJson) {
-        this.pairInfos = JSON.parse(pairJson);
-      }
-      const statJson = localStorage.getItem('stat');
-      if (statJson) {
-        this.stat = JSON.parse(statJson);
-      }
-      const poolResponseJson = localStorage.getItem('poolResponses');
-      if (poolResponseJson) {
-        this.poolResponses = JSON.parse(poolResponseJson);
-      }
-      const rewardInfoJson = localStorage.getItem('rewardInfos');
-      if (rewardInfoJson) {
-        this.rewardInfos = JSON.parse(rewardInfoJson);
-      }
-      const tokenInfoJson = localStorage.getItem('tokenInfos');
-      if (tokenInfoJson) {
-        this.tokenInfos = JSON.parse(tokenInfoJson);
-      }
-
     } catch (e) { }
   }
   userUstAmount: string;
@@ -452,36 +461,37 @@ export class InfoService {
     }
 
     await Promise.all(tasks);
+    localStorage.setItem('infoSchemaVersion', '2');
     this.updateVaults();
     await this.updateMyTvl();
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
-    try {
-      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
-        throw (data);
-      }
-      Object.assign(this.tokenInfos, data.tokenInfos);
-      this.stat = data.stat;
-      this.pairInfos = data.pairInfos;
-      this.poolInfos = data.poolInfos;
-      this.circulation = data.circulation;
-      this.marketCap = data.marketCap;
-      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-      localStorage.setItem('stat', JSON.stringify(this.stat));
-      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-      if (skipPoolResponses) {
-        this.poolResponses = data.poolResponses;
-        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-      }
-    } catch (ex) {
-      // fallback if api die
-      console.error('Error in retrieveCachedStat: fallback local info service data init');
-      console.error(ex);
+    // try {
+    //   const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+    //   if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
+    //     throw (data);
+    //   }
+    //   Object.assign(this.tokenInfos, data.tokenInfos);
+    //   this.stat = data.stat;
+    //   this.pairInfos = data.pairInfos;
+    //   this.poolInfos = data.poolInfos;
+    //   this.circulation = data.circulation;
+    //   this.marketCap = data.marketCap;
+    //   localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+    //   localStorage.setItem('stat', JSON.stringify(this.stat));
+    //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+    //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+    //   if (skipPoolResponses) {
+    //     this.poolResponses = data.poolResponses;
+    //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+    //   }
+    // } catch (ex) {
+    //   // fallback if api die
+    //   console.error('Error in retrieveCachedStat: fallback local info service data init');
+    //   console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
-    }
+    // }
   }
 
   updateVaults() {
