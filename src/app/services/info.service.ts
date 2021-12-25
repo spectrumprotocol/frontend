@@ -196,7 +196,7 @@ export class InfoService {
       }
       const pools = await farmInfo.queryPoolItems();
       for (const pool of pools) {
-        const key = farmInfo.dex ?? 'TERRASWAP' + '|' + pool.asset_token + '|' + farmInfo.getDenomTokenContractOrNative(pool.asset_token);
+        const key = farmInfo.dex + '|' + pool.asset_token + '|' + farmInfo.getDenomTokenContractOrNative(pool.asset_token);
         poolInfos[key] = Object.assign(pool,
           {
             key,
@@ -254,7 +254,7 @@ export class InfoService {
         }
       });
     if (tasks.length) {
-      await Promise.all(tasks);
+      await Promise.all(tasks).catch(err => console.error('pairInfo query error: ', err));
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
     }
   }
@@ -274,13 +274,13 @@ export class InfoService {
       const baseTokenContractOrNative = this.poolInfos[key].baseTokenContractOrNative;
       const denomTokenContractOrNative = this.poolInfos[key].denomTokenContractOrNative;
       const rewardTokenContract = this.poolInfos[key].rewardTokenContract;
-      if (!CONFIG.NATIVE_TOKENS.includes(baseTokenContractOrNative)){
+      if (baseTokenContractOrNative && !CONFIG.NATIVE_TOKENS.includes(baseTokenContractOrNative)){
         cw20Tokens.add(baseTokenContractOrNative);
       }
-      if (!CONFIG.NATIVE_TOKENS.includes(denomTokenContractOrNative)){
+      if (denomTokenContractOrNative && !CONFIG.NATIVE_TOKENS.includes(denomTokenContractOrNative)){
         cw20Tokens.add(denomTokenContractOrNative);
       }
-      if (!CONFIG.NATIVE_TOKENS.includes(rewardTokenContract)){
+      if (rewardTokenContract && !CONFIG.NATIVE_TOKENS.includes(rewardTokenContract)){
         cw20Tokens.add(rewardTokenContract);
       }
     });
@@ -296,7 +296,7 @@ export class InfoService {
         };
       });
     if (tasks.length) {
-      await Promise.all(tasks);
+      await Promise.all(tasks).catch(err => console.error(`token query`, err));
       localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
     }
   }
@@ -419,9 +419,16 @@ export class InfoService {
     const poolResponses: Record<string, PoolResponse> = {};
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
+        console.log(key);
         const pairInfo = this.pairInfos[key];
-        poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-          .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses error: ', error)));
+        if (key.split('|')[0] === 'TERRASWAP'){
+          poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
+          .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses Terraswap error: ', error)));
+        }
+      else if (key.split('|')[0] === 'ASTROPORT'){
+        poolTasks.push(this.astroPort.query(pairInfo.contract_addr, { pool: {} })
+          .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses Astroport error: ', error)));
+      }
     }
     await Promise.all(poolTasks);
     this.poolResponses = poolResponses;

@@ -92,7 +92,8 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.terrajs.settings.nLunaToken];
+    const p = poolResponses[this.dex + '|' + this.terrajs.settings.nLunaToken + '|' + this.terrajs.settings.nexusToken];
+    console.log(p);
     const psiAsset = p.assets.find(a => a.info.token?.['contract_addr'] === this.terrajs.settings.nexusToken);
     if (!psiAsset) {
       return;

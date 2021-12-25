@@ -102,7 +102,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
     const tasks = rewardInfos.reward_infos.map(async it => {
-      const p = poolResponses[it.asset_token];
+      const p = poolResponses[this.dex + '|' + it.asset_token + '|' + Denom.USD];
       const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
       if (!uusd) {
         return;

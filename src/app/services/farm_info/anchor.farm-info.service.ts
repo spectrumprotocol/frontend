@@ -78,7 +78,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.terrajs.settings.anchorToken];
+    const p = poolResponses[this.dex + '|' + this.terrajs.settings.anchorToken + '|' + Denom.USD];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;

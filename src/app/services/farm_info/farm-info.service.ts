@@ -62,7 +62,7 @@ export interface FarmInfoService {
   readonly dex?: DEX;
 
   // baseToken is get from querying poolInfo
-  getDenomTokenContractOrNative?(baseToken?: string): string;
+  getDenomTokenContractOrNative(baseToken?: string): string;
 
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>>;

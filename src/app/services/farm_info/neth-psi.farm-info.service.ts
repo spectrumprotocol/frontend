@@ -92,7 +92,7 @@ export class NethPsiFarmInfoService implements FarmInfoService {
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.terrajs.settings.nEthToken];
+    const p = poolResponses[this.dex + '|' + this.terrajs.settings.nEthToken + '|' + this.terrajs.settings.nexusToken];
     const psiAsset = p.assets.find(a => a.info.token?.['contract_addr'] === this.terrajs.settings.nexusToken);
     if (!psiAsset) {
       return;
