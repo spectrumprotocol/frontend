@@ -574,12 +574,16 @@ export class InfoService {
 
       const baseToken = this.poolInfos[key].baseTokenContractOrNative;
       const denomToken = this.poolInfos[key].denomTokenContractOrNative;
+      const rewardToken = this.poolInfos[key].rewardTokenContract;
 
       const vault: Vault = {
         baseSymbol: CONFIG.NATIVE_TOKENS.includes(baseToken) ? baseToken : this.tokenInfos[baseToken]?.symbol,
         denomSymbol: CONFIG.NATIVE_TOKENS.includes(denomToken) ? denomToken : this.tokenInfos[denomToken]?.symbol,
-        decimals: this.tokenInfos[key]?.decimals,
-        unit: this.tokenInfos[key]?.unit,
+        rewardSymbol: this.tokenInfos[rewardToken]?.symbol,
+        baseDecimals: this.tokenInfos[baseToken]?.decimals,
+        baseUnit: this.tokenInfos[baseToken]?.unit,
+        denomDecimals: this.tokenInfos[denomToken]?.decimals,
+        denomUnit: this.tokenInfos[denomToken]?.unit,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
         poolInfo,

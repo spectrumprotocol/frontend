@@ -160,7 +160,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   setMaxDepositTokenATokenToken() {
     this.tokenAToBeStatic = true;
-    this.depositTokenAAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.baseTokenContractOrNative] / this.vault.unit;
+    this.depositTokenAAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.baseTokenContractOrNative] / this.vault.baseUnit;
     this.depositTokenATokenTokenChanged(true);
   }
 
@@ -214,7 +214,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     const pool = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
     if (this.vault.poolInfo.pairSymbol === 'UST' && inputFromA) {
       const [asset, ust] = this.findAssetBaseAndNativeToken();
-      const amountToken = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.unit);
+      const amountToken = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
       const amountUST = amountToken.times(ust.amount).div(asset.amount).integerValue();
 
       const grossLp = gt(pool.total_share, 0)
@@ -242,13 +242,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       let amountDenom: BigNumber;
       const denomUnit = this.info.tokenInfos[assetDenom.info.token['contract_addr']].unit;
       if (inputFromA) {
-        amountBase = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.unit);
+        amountBase = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
         amountDenom = amountBase.times(assetDenom.amount).div(assetBase.amount).integerValue();
         this.depositTokenBAmtTokenToken = amountDenom.div(denomUnit).toNumber();
       } else {
         amountDenom = new BigNumber(this.depositTokenBAmtTokenToken).times(denomUnit);
         amountBase = amountDenom.times(assetBase.amount).div(assetDenom.amount).integerValue();
-        this.depositTokenAAmtTokenToken = amountBase.div(this.vault.unit).toNumber();
+        this.depositTokenAAmtTokenToken = amountBase.div(this.vault.baseUnit).toNumber();
       }
 
       const grossLp = gt(pool.total_share, 0)
@@ -300,7 +300,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
     if (this.depositMode === 'tokentoken') {
       if (this.vault.poolInfo.pairSymbol === 'UST') {
-        const assetAmount = times(this.depositTokenAAmtTokenToken, this.vault.unit);
+        const assetAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
         const ustAmount = times(this.depositUSTAmountTokenUST, CONFIG.UNIT);
         const asset = {
           amount: assetAmount,
@@ -440,7 +440,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
                 contract_addr: this.vault.poolInfo.baseTokenContractOrNative
               },
             },
-            belief_price: this.toContractPrice(this.tokenPrice, 6, this.vault.decimals),
+            belief_price: this.toContractPrice(this.tokenPrice, 6, this.vault.baseDecimals),
             max_spread: CONFIG.SLIPPAGE_TOLERANCE,
             compound_rate: auto_compound_ratio,
           }
@@ -822,7 +822,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         }
       });
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
-      this.tokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.decimals);
+      this.tokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.baseDecimals);
     } else {
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
       const res = await this.staker.query({
@@ -838,7 +838,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
       const denomDecimals = this.info.tokenInfos[assetDenom.info.token['contract_addr']]?.decimals || 6;
       this.tokenPrice = this.toUIPrice(res.belief_price, 6, denomDecimals);
-      this.basedTokenPrice = this.toUIPrice(res.belief_price_b, denomDecimals, this.vault.decimals);
+      this.basedTokenPrice = this.toUIPrice(res.belief_price_b, denomDecimals, this.vault.baseDecimals);
     }
 
     const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
@@ -886,7 +886,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   setMaxDepositTokenBTokenToken() {
     this.tokenAToBeStatic = false;
-    this.depositTokenBAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.rewardTokenContract] / +this.info.tokenInfos[this.vault.poolInfo.rewardTokenContract].unit;
+    this.depositTokenBAmtTokenToken = +this.info.tokenBalances?.[this.vault.poolInfo.denomTokenContractOrNative] / +this.vault.denomUnit;
     this.depositTokenBTokenTokenChanged(true);
   }
 
@@ -902,14 +902,14 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
 
     const grossLp = new BigNumber(this.depositbDPTokenAmtbDPToken);
-    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositbDPTokenAmtbDPToken, CONFIG.UNIT) ?? '0', this.info.poolResponses, this.vault.poolInfo.baseTokenContractOrNative));
+    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositbDPTokenAmtbDPToken, CONFIG.UNIT) ?? '0', this.info.poolResponses, this.vault.poolInfo.key));
     const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(depositTVL.dividedBy(depositTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
     this.netbDPToken = grossLp.minus(depositFee).toString();
     this.depositFeebDPToken = depositFee.toString();
   }
 
   setMaxDepositbDPToken() {
-    this.depositbDPTokenAmtbDPToken = +this.info.tokenBalances?.[this.vault.poolInfo.baseTokenContractOrNative] / +this.info.tokenInfos[this.vault.poolInfo.baseTokenContractOrNative].unit;
+    this.depositbDPTokenAmtbDPToken = +this.info.tokenBalances?.[this.vault.poolInfo.baseTokenContractOrNative] / +this.vault.baseUnit;
   }
 
   setMaxDepositUSTForBDP() {
@@ -967,7 +967,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     });
     console.log(simulateSwapOperationRes);
     this.expectedReceivebDPToken = simulateSwapOperationRes.amount.toString();
-    this.tokenPrice = this.toUIPrice(div(depositTVL, simulateSwapOperationRes.amount), 6, this.vault.decimals);
+    this.tokenPrice = this.toUIPrice(div(depositTVL, simulateSwapOperationRes.amount), 6, this.vault.baseDecimals);
     this.grossbDPUST = div(simulateSwapOperationRes.amount, this.info.tokenInfos[this.vault.poolInfo.baseTokenContractOrNative].unit);
     console.log(this.tokenPrice);
     console.log(this.grossbDPUST);

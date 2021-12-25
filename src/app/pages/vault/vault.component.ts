@@ -13,8 +13,11 @@ import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
 export interface Vault {
   baseSymbol: string;
   denomSymbol: string;
-  decimals: number;
-  unit: number;
+  rewardSymbol: string;
+  baseDecimals: number;
+  baseUnit: number;
+  denomDecimals: number;
+  denomUnit: number;
   lpToken: string;
   pairInfo: PairInfo;
   poolInfo: PoolInfo;
