@@ -85,16 +85,17 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     const specbPsiDPTvl = (await balanceOfTask)?.amount || '0';
 
     const poolApr = +(bPsiDPStat.apr || 0);
-    pairs[this.terrajs.settings.bPsiDPToken] = createPairStat(poolApr, this.terrajs.settings.bPsiDPToken);
-    const pair = pairs[this.terrajs.settings.bPsiDPToken];
+    const key = this.dex + '|' + this.terrajs.settings.bPsiDPToken + '|' + this.getDenomTokenContractOrNative();
+    pairs[key] = createPairStat(poolApr, key);
+    const pair = pairs[key];
     pair.tvl = specbPsiDPTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,

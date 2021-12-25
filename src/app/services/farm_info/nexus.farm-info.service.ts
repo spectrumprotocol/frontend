@@ -89,7 +89,8 @@ export class NexusFarmInfoService implements FarmInfoService {
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.dex + '|' + this.terrajs.settings.nexusToken + '|' + Denom.USD];
+    const key = this.dex + '|' + this.terrajs.settings.nexusToken + '|' + Denom.USD;
+    const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;
@@ -101,16 +102,16 @@ export class NexusFarmInfoService implements FarmInfoService {
       .toString();
 
     const poolApr = +(nexusLPStat.data.getLiquidityPoolApr.psiUstLpApr || 0) / 100;
-    pairs[this.terrajs.settings.nexusToken] = createPairStat(poolApr, this.terrajs.settings.nexusToken);
-    const pair = pairs[this.terrajs.settings.nexusToken];
+    pairs[key] = createPairStat(poolApr, key);
+    const pair = pairs[key];
     pair.tvl = specPsiTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,

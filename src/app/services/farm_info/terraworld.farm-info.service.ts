@@ -65,15 +65,15 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.terraworldFarm)?.weight || 0;
-    const poolResponseKey = this.dex + '|' + this.terrajs.settings.terraworldToken + '|' + Denom.USD;
-    const terraworldLPStat = await this.getTerraworldLPStat(poolResponses[poolResponseKey]);
+    const key = this.dex + '|' + this.terrajs.settings.terraworldToken + '|' + Denom.USD;
+    const terraworldLPStat = await this.getTerraworldLPStat(poolResponses[key]);
     const terraworldGovStat = await this.getTerraworldGovStat();
     const pairs: Record<string, PairStat> = {};
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[poolResponseKey];
+    const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;
@@ -85,16 +85,16 @@ export class TerraworldFarmInfoService implements FarmInfoService {
       .toString();
 
     const poolApr = +(terraworldLPStat.apr || 0);
-    pairs[this.terrajs.settings.terraworldToken] = createPairStat(poolApr, this.terrajs.settings.terraworldToken);
-    const pair = pairs[this.terrajs.settings.terraworldToken];
+    pairs[key] = createPairStat(poolApr, key);
+    const pair = pairs[key];
     pair.tvl = specTwdTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,

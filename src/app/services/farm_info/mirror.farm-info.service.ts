@@ -95,19 +95,21 @@ export class MirrorFarmInfoService implements FarmInfoService {
     const pairs: Record<string, PairStat> = {};
     for (const asset of mirrorStat.data.assets) {
       const poolApr = +(asset.statistic.apr?.long || 0);
-      pairs[asset.token] = createPairStat(poolApr, asset.token);
+      const key = this.dex + '|' + asset.token + '|' + this.getDenomTokenContractOrNative();
+      pairs[key] = createPairStat(poolApr, key);
     }
 
     const rewardInfos = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
     const tasks = rewardInfos.reward_infos.map(async it => {
-      const p = poolResponses[this.dex + '|' + it.asset_token + '|' + Denom.USD];
+      const key = this.dex + '|' + it.asset_token + '|' + this.getDenomTokenContractOrNative();
+      const p = poolResponses[key];
       const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
       if (!uusd) {
         return;
       }
-      const pair = (pairs[it.asset_token] || (pairs[it.asset_token] = createPairStat(0, it.asset_token)));
+      const pair = (pairs[key] || (pairs[key] = createPairStat(0, key)));
       const value = new BigNumber(uusd.amount)
         .times(it.bond_amount)
         .times(2)
@@ -120,8 +122,8 @@ export class MirrorFarmInfoService implements FarmInfoService {
 
     return pairs;
 
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,

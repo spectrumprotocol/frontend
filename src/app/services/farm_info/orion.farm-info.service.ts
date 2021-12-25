@@ -58,17 +58,18 @@ export class OrionFarmInfoService implements FarmInfoService {
     const pairs: Record<string, PairStat> = {};
 
     const poolApr = +orionLPStat?.lp?.apr / 100 || 0;
-    pairs[this.terrajs.settings.orionToken] = createPairStat(poolApr, this.terrajs.settings.orionToken);
+    const key = this.dex + '|' + this.terrajs.settings.orionToken + '|' + Denom.USD;
+    pairs[key] = createPairStat(poolApr, key);
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.dex + '|' + this.terrajs.settings.orionToken + '|' + Denom.USD];
+    const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;
     }
-    const pair = pairs[this.terrajs.settings.orionToken];
+    const pair = pairs[key];
     const value = new BigNumber(uusd.amount)
       .times(rewardInfo.bond_amount)
       .times(2)
@@ -80,8 +81,8 @@ export class OrionFarmInfoService implements FarmInfoService {
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
