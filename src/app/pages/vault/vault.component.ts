@@ -27,6 +27,7 @@ export interface Vault {
   name: string;
   unitDisplay: string;
   shortUnitDisplay: string;
+  score: number;
 }
 
 @Component({
@@ -143,7 +144,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (this.lastSortBy !== this.sortBy) {
       switch (this.sortBy) {
         case 'multiplier':
-          vaults.sort((a, b) => (b.poolInfo?.score || 0) - (a.poolInfo?.score || 0));
+          vaults.sort((a, b) => b.score - a.score);
           break;
         case 'apy':
           vaults.sort((a, b) => b.apy - a.apy);

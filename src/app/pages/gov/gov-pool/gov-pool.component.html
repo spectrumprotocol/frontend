@@ -25,7 +25,7 @@
             </div>
           </div>
           <div class="col-6 mt-1">
-            <div class="f-12 sub-topic">APR <i class="fas fa-info-circle info-icon super" mdbTooltip="SPEC staking return from vault fee"></i></div>
+            <div class="f-12 sub-topic">APR <i class="fas fa-info-circle info-icon super" mdbTooltip="Return from deposited vault fee for 1 year"></i></div>
             <div class="fs-6 fw-bold"> {{ detail.apr | percent }}
             </div>
           </div>
@@ -179,7 +179,8 @@
             <div class="row mt-3">
               <div class="col">
                 aUST
-                <i class="fas fa-info-circle info-icon" mdbTooltip="aUST is UST deposited to Anchor Protocol with interest rate up to 20% APY. Claim as aUST if you prefer to deposit UST to Anchor under your address automatically."></i>
+                <i class="fas fa-info-circle info-icon super" mdbTooltip="aUST is UST deposited to Anchor Protocol with interest rate up to 20% APY. Claim as aUST if you prefer to deposit UST to Anchor under your address automatically."></i>
+                <small class="text-primary"> APR: {{ detail.austApr | percent }}</small>
               </div>
               <div class="col text-end mb-2">
                 {{ detail.userAUst | number }}

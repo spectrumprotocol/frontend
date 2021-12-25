@@ -19,7 +19,7 @@ export type PoolInfo = PoolItem & {
   pairSymbol: string;
   auditWarning?: boolean;
   farmType: FARM_TYPE_ENUM;
-  score: number;
+  highlight: boolean;
 };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
@@ -49,6 +49,7 @@ export interface FarmInfoService {
   readonly farmContract: string;
   readonly farmTokenContract: string; // for now we assumed if pairSymbol != UST, farmTokenContract is also pairContract
   readonly farmGovContract?: string;
+  readonly pylonLiquidInfo?: { dpPool: string; dpToken: string; bdpPool: string; bdpToken: string };
 
   // auto-compound / auto-stake switch
   readonly autoCompound: boolean;

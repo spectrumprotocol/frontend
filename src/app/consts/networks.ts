@@ -16,6 +16,7 @@ export interface ISettings {
   terraSwapFactory: string;
   terraSwapRouter: string;
   staker: string;
+  stakerSingleAsset: string;
   anchorGov: string;
   anchorStaking: string;
   anchorToken: string;
@@ -46,14 +47,11 @@ export interface ISettings {
   orionStaking: string;
   orionToken: string;
   orionFarm: string;
-  kujiraStaking: string;
-  kujiraToken: string;
-  kujiraFarm: string;
-  govProxyNexus: string;
   bPsiDPFarm: string;
   bPsiDPGatewayPool: string;
   bPsiDPToken: string;
-  nexusPool: string;
+  psiDPGatewayPool: string;
+  psiDPToken: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -85,6 +83,7 @@ export const networks: Record<string, ISettings> = {
     terraSwapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
     terraSwapRouter: 'terra19qx5xe6q9ll4w0890ux7lv2p4mf3csd4qvt3ex',
     staker: 'terra1fxwelge6mf5l6z0rjpylzcfq9w9tw2q7tewaf5',
+    stakerSingleAsset: 'terra12kzevdnqe4k82cg5f07dywgj4lvkshhhwh4gnc',
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
     anchorStaking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
     anchorToken: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
@@ -115,14 +114,11 @@ export const networks: Record<string, ISettings> = {
     orionStaking: 'terra1q8q6y03452e44pztw8kr8zcdkjtxuz8vq9t8uq',
     orionToken: 'terra1mddcdx0ujx89f38gu7zspk2r2ffdl5enyz2u03', // orionLP terra14ffp0waxcck733a9jfd58d86h9rac2chf5xhev
     orionFarm: 'terra106en784zr4kpe6phlaj8c8t3aeqgn3xsugaelx',
-    kujiraStaking: 'terra1cf9q9lq7tdfju95sdw78y9e34a6qrq3rrc6dre',
-    kujiraToken: 'terra1xfsdgcemqwxp4hhnyk4rle6wr22sseq7j07dnn', // kujiraLP: 'terra1cmqv3sjew8kcm3j907x2026e4n0ejl2jackxlx'
-    kujiraFarm: 'terra15x4hysms59x5eek6esg3f2jycalpypdcl6sy7j',
-    govProxyNexus: 'terra1gxgd5hp846d8txjf46ljzqhwlnmw7qmq7tfm99',
     bPsiDPFarm: 'terra1kr82wxlvg773vjay95epyckna9g4vppjyfxgd0',
     bPsiDPGatewayPool: 'terra1fmnedmd3732gwyyj47r5p03055mygce98dpte2', // what is terra12k0p3qvfhy6j5e3ef8kzusy29lzwykk5d95kk5
     bPsiDPToken: 'terra1zsaswh926ey8qa5x4vj93kzzlfnef0pstuca0y', // Pylon Psi-bPsiDP-24m Pair terra167gwjhv4mrs0fqj0q5tejyl6cz6qc2cl95z530
-    nexusPool: 'terra163pkeeuwxzr0yhndf8xd2jprm9hrtk59xf7nqf',
+    psiDPGatewayPool: 'terra1xu84jh7x2ugt3gkpv8d450hdwcyejtcwwkkzgv',
+    psiDPToken: 'terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -153,6 +149,7 @@ export const networks: Record<string, ISettings> = {
     terraSwapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
     terraSwapRouter: 'terra14z80rwpd0alzj4xdtgqdmcqt9wd9xj5ffd60wp',
     staker: 'terra15nwqmmmza9y643apneg0ddwt0ekk38qdevnnjt',
+    stakerSingleAsset: 'terra1xt7p5a5dezj4d5h4rhry6mr6khhfhgnszem08s',
     anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
     anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
     anchorToken: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
@@ -183,14 +180,11 @@ export const networks: Record<string, ISettings> = {
     orionStaking: 'terra1jz22ws2yhlm6zycz7eluqptjn2t74fw4g82v8j',
     orionToken: 'terra13qdskca8xavmed88htplse0z396tesgh63tn9r', // orionLP terra1qvmf8jf3a7h6lgglw29f8nvcckn7t8z0hqgma5
     orionFarm: 'terra1mset93yy46n8lwy59gadcmekxspnf3zldzsc0x',
-    kujiraStaking: 'terra16gd9lq7urpy8txfqd224lqfxwxs4fwr742yptu',
-    kujiraToken: 'terra1azu2frwn9a4l6gl5r39d0cuccs4h7xlu9gkmtd', // kujiraLP: 'terra18wn5m5rd4yd82kp9s07gwx9x0vn00wdj8dezv8'
-    kujiraFarm: 'terra16ppenx9paca846mj39axlqhtxgz8n9az5pantj',
-    govProxyNexus: 'terra1rm449u8x98al6n4xlml0mxx3vy390xn7a9e5q4',
     bPsiDPFarm: 'terra1h909lafatcmxeqzgw030xudx965j7ulud5fwmm',
     bPsiDPGatewayPool: 'terra1w733k9ss5yglaluv7ueq3tlgfgq574nzhvq4v5', // TestPsi terra1ul5hkaxsapr3sr80f6ypygr9jgnfw5m7rfsfhy
     bPsiDPToken: 'terra1ex8ss7xhwcf8x6n47dn656hf8t0cw97myjr35a',
-    nexusPool: 'terra1ee9h9c9fv2smm8wkq0aw78tut3w3x62ckj6nz8',
+    psiDPGatewayPool: 'terra1zd8q7wltywdd90x2skvexh06p6r8mwljfqx4eu',
+    psiDPToken: 'terra1c6vsshlv5gqtwq48darkunnpxu5ustcv96e0qk',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
