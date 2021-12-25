@@ -587,10 +587,11 @@ export class InfoService {
       const baseToken = this.poolInfos[key].baseTokenContractOrNative;
       const denomToken = this.poolInfos[key].denomTokenContractOrNative;
       const rewardToken = this.poolInfos[key].rewardTokenContract;
-
+      const baseSymbol = CONFIG.NATIVE_TOKENS.includes(baseToken) ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
+      const denomSymbol = CONFIG.NATIVE_TOKENS.includes(denomToken) ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const vault: Vault = {
-        baseSymbol: CONFIG.NATIVE_TOKENS.includes(baseToken) ? baseToken : this.tokenInfos[baseToken]?.symbol,
-        denomSymbol: CONFIG.NATIVE_TOKENS.includes(denomToken) ? denomToken : this.tokenInfos[denomToken]?.symbol,
+        baseSymbol,
+        denomSymbol,
         rewardSymbol: this.tokenInfos[rewardToken]?.symbol,
         baseDecimals: this.tokenInfos[baseToken]?.decimals,
         baseUnit: this.tokenInfos[baseToken]?.unit,
@@ -606,13 +607,13 @@ export class InfoService {
         stakeApy,
         apy,
         name: poolInfo.farmType === 'PYLON_LIQUID'
-          ? this.tokenInfos[key]?.symbol
-          : `${this.tokenInfos[key]?.symbol}-${poolInfo.pairSymbol} LP`,
+          ? baseSymbol
+          : `${baseSymbol}-${denomSymbol} LP`,
         unitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
-          ? this.tokenInfos[key]?.symbol
-          : `${this.tokenInfos[key]?.symbol}-${poolInfo.pairSymbol} LP`,
+          ? baseSymbol
+          : `${baseSymbol}-${denomSymbol} LP`,
         shortUnitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
-          ? this.tokenInfos[key]?.symbol
+          ? baseSymbol
           : 'LP',
       };
       this.allVaults.push(vault);
