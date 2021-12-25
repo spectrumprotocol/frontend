@@ -40,6 +40,7 @@ export interface Stat {
 export type PendingReward = {
   pending_reward_token: number;
   pending_reward_ust: number;
+  pending_reward_astro: number;
 };
 
 export type PortfolioItem = {
@@ -50,7 +51,7 @@ export type Portfolio = {
   total_reward_ust: number;
   gov: PendingReward;
   avg_tokens_apr?: number;
-  tokens: Map<string, PendingReward & { apr?: number }>;
+  tokens: Map<string, PendingReward & { rewardTokenContract: string, apr?: number } >;
   farms: Map<string, PortfolioItem>;
 };
 
@@ -456,23 +457,24 @@ export class InfoService {
     let tvl = 0;
     const portfolio: Portfolio = {
       total_reward_ust: 0,
-      gov: { pending_reward_token: 0, pending_reward_ust: 0 },
+      gov: { pending_reward_token: 0, pending_reward_ust: 0, pending_reward_astro: 0 },
       tokens: new Map(),
       farms: new Map(),
     };
     for (const farmInfo of this.farmInfos) {
-      portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { pending_reward_token: 0, pending_reward_ust: 0 });
+      portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { rewardTokenContract: farmInfo.rewardTokenContract, pending_reward_token: 0, pending_reward_ust: 0, pending_reward_astro: 0 });
       portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
     }
 
-    const specPoolResponse = this.poolResponses[this.terrajs.settings.specToken];
+    // TODO SPEC astroport pool response
+    const specPoolResponse = this.poolResponses['TERRASWAP' + '|' + this.terrajs.settings.specToken + '|' + Denom.USD];
     for (const vault of this.allVaults) {
-      const rewardInfo = this.rewardInfos[vault.poolInfo.baseTokenContractOrNative];
+      const rewardInfo = this.rewardInfos[vault.poolInfo.key];
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.baseTokenContractOrNative) / CONFIG.UNIT || 0;
-      const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.poolInfo.baseTokenContractOrNative].farmContract);
+      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.key) / CONFIG.UNIT || 0;
+      const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.poolInfo.key].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
       tvl += bond_amount;
@@ -483,7 +485,8 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardTokenContract];
+        //TODO add ASTRO and handle farm1 farm2
+        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.key];
         const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
         tvl += pending_farm_reward_ust;
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
@@ -516,7 +519,6 @@ export class InfoService {
     }
 
     await Promise.all(tasks);
-    localStorage.setItem('infoSchemaVersion', '2');
     this.updateVaults();
     await this.updateMyTvl();
   }
@@ -537,6 +539,7 @@ export class InfoService {
     //   localStorage.setItem('stat', JSON.stringify(this.stat));
     //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
     //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+    //   localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
     //   if (skipPoolResponses) {
     //     this.poolResponses = data.poolResponses;
     //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
@@ -546,6 +549,8 @@ export class InfoService {
     //   console.error('Error in retrieveCachedStat: fallback local info service data init');
     //   console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
+      localStorage.setItem('infoSchemaVersion', '2');
+
     // }
   }
 
