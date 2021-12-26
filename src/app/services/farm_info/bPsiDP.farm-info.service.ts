@@ -24,6 +24,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   autoCompound = true;
   autoStake = true;
   farmColor = '#00cfda';
+  baseSymbol = 'bPsiDP-24m';
   pairSymbol = 'bPsiDP-24m';
   farmType: FARM_TYPE_ENUM = 'PYLON_LIQUID';
   highlight = true;
