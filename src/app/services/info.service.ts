@@ -24,8 +24,8 @@ import {HttpClient} from '@angular/common/http';
 import {memoize} from 'utils-decorators';
 import {Denom} from '../consts/denom';
 import {WalletService} from './api/wallet.service';
-import {AstroportFactoryService} from './api/astroport-factory.service';
 import {AstroportService} from './api/astroport.service';
+import {AstroportFactoryService} from './api/astroport-factory.service';
 
 export interface Stat {
   pairs: Record<string, PairStat>;

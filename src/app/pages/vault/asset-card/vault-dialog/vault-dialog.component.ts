@@ -924,7 +924,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
     let grossLp: BigNumber;
     const depositTVL = new BigNumber(this.depositUSTAmtUST).times(CONFIG.UNIT);
-    if (this.vault.poolInfo.pairSymbol === 'UST') {
+    if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
       const [assetBase, assetNativeToken] = this.findAssetBaseAndNativeToken();
       const res = await this.staker.query({
         simulate_zap_to_bond: {

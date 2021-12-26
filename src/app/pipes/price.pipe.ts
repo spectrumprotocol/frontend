@@ -12,19 +12,20 @@ export class PricePipe implements PipeTransform {
     private info: InfoService,
   ) { }
 
-  transform(assetToken: string) {
-    const poolResponse = this.info.poolResponses[assetToken];
+  transform(key: string) {
+    const poolResponse = this.info.poolResponses[key];
     if (!poolResponse) {
       return undefined;
     }
-    if (poolResponse.assets[0].info.token?.['contract_addr'] === assetToken) {
+    const baseToken = key.split('|')[1];
+    if (poolResponse.assets[0].info.token?.['contract_addr'] === baseToken) {
       return this.toUIPrice(div(poolResponse.assets[1].amount, poolResponse.assets[0].amount),
         poolResponse.assets[1].info.native_token ? 6 : this.info.tokenInfos[poolResponse.assets[1].info.token['contract_addr']]?.decimals || 6,
-        this.info.tokenInfos[assetToken].decimals);
+        this.info.tokenInfos[baseToken].decimals);
     } else {
       return this.toUIPrice(div(poolResponse.assets[0].amount, poolResponse.assets[1].amount),
         poolResponse.assets[0].info.native_token ? 6 : this.info.tokenInfos[poolResponse.assets[0].info.token['contract_addr']]?.decimals || 6,
-        this.info.tokenInfos[assetToken].decimals);
+        this.info.tokenInfos[baseToken].decimals);
     }
   }
 
