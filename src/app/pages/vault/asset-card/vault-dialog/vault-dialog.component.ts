@@ -677,8 +677,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else {
       const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
       const [tokenA, tokenB] = poolResponse.assets[0].info.token['contract_addr'] === this.vault.poolInfo.baseTokenContractOrNative
-        ? [poolResponse.assets[1], poolResponse.assets[0]]
-        : [poolResponse.assets[0], poolResponse.assets[1]];
+        ? [poolResponse.assets[0], poolResponse.assets[1]]
+        : [poolResponse.assets[1], poolResponse.assets[0]];
       const tokenAAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
         .times(tokenA.amount).div(poolResponse.total_share).integerValue();
       const tokenBAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
