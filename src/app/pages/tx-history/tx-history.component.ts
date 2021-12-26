@@ -478,7 +478,10 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     }
 
     // Unbond as LP (and swap)
-    if (msgs[0]?.execute_msg['unbond'] && this.info.farmInfos.find(o => o.farmContract === msgs[0].contract)) {
+    if (msgs[0]?.execute_msg['unbond'] &&
+      this.info.farmInfos.find(o => o.farmContract === msgs[0].contract) &&
+      !(sendExecuteMsg?.msg['withdraw_liquidity'] || sendExecuteMsg?.msg['zap_to_unbond'])
+    ) {
       const unbondMsg = msgs[0].execute_msg['unbond'];
 
       const amount = +unbondMsg.amount / CONFIG.UNIT;
@@ -514,7 +517,6 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const tokenAmount = tokenAmountRaw / this.info.tokenInfos[unbondMsg.asset_token]?.unit;
       const farm = farmInfo?.farm;
       const denomTokenSymbol = farmInfo?.pairSymbol;
-
       if (withdrawLiquidityMsg) {
         return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, false, { tokenAAmount: uusdAmount, tokenBAmount: tokenAmount });
       }
