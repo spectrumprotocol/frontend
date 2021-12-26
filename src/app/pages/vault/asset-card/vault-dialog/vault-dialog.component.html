@@ -765,9 +765,12 @@
               <div *ngIf="withdrawMode !== 'ust' && withdrawMode !== 'ust_bdp'" class="d-flex">
                 <div>Receive</div>
                 <div class="margin-left-auto">
-                  <span *ngIf="withdrawMode === 'tokentoken'">
-                    {{ withdrawAmt | lpSplit: info.poolResponses[vault.assetToken]: vault.symbol: vault.poolInfo.pairSymbol: vault.decimals }}</span>
+                  <ng-container *ngIf="withdrawMode === 'tokentoken'">
+                    {{ withdrawAmt | lpSplit: info.poolResponses[vault.assetToken]: vault.symbol: vault.poolInfo.pairSymbol: vault.decimals }}
+                  </ng-container>
+                  <ng-container *ngIf="withdrawMode === 'lp'">
                     {{ withdrawAmt | number }} {{vault.unitDisplay}}
+                  </ng-container>
                 </div>
               </div>
               <div *ngIf="withdrawMode === 'ust' || withdrawMode === 'ust_bdp'">
