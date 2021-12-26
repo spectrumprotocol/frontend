@@ -23,6 +23,7 @@ export type PoolInfo = PoolItem & {
   farmType: FARM_TYPE_ENUM;
   score: number;
   dex?: DEX;
+  highlight: boolean;
 };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
@@ -46,6 +47,7 @@ export interface FarmInfoService {
   readonly farmContract: string;
   readonly rewardTokenContract: string;
   readonly farmGovContract?: string;
+  readonly pylonLiquidInfo?: { dpPool: string; dpToken: string; bdpPool: string; bdpToken: string };
 
   // auto-compound / auto-stake switch
   readonly autoCompound: boolean;

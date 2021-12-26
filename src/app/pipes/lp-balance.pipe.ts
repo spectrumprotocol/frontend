@@ -2,8 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { BalancePipe } from './balance.pipe';
 import { PoolResponse } from '../services/api/terraswap_pair/pool_response';
-import {TerrajsService} from '../services/terrajs.service';
-import {div} from '../libs/math';
+import { TerrajsService } from '../services/terrajs.service';
 
 @Pipe({
   name: 'lpBalance'
@@ -33,36 +32,25 @@ export class LpBalancePipe implements PipeTransform {
         .times(2)
         .toString();
     } else {
-      const dpTokenList = [this.terrajs.settings.bPsiDPToken];
-      if (dpTokenList.includes(key)){
-        const token1Price = this.balancePipe.transform('1', poolResponses[poolResponse.assets[0].info.token['contract_addr']]);
-        const token2Price = this.balancePipe.transform('1', poolResponses[poolResponse.assets[1].info.token['contract_addr']]);
-        const foundTokenPrice = token1Price ?? token2Price;
-        const poolResponseDPTokenIndex = poolResponses[key].assets.findIndex(asset => asset.info.token['contract_addr'] === key);
-        const poolResponseRewardTokenIndex = poolResponseDPTokenIndex === 0 ? 1 : 0;
-        const dpTokenPerRewardTokenPrice = div(poolResponses[key].assets[poolResponseRewardTokenIndex].amount, poolResponses[key].assets[poolResponseDPTokenIndex].amount);
-        return new BigNumber(lp).times(dpTokenPerRewardTokenPrice).times(foundTokenPrice).toString();
-      } else {
-        const token1Price = this.balancePipe.transform('1', poolResponses[poolResponse.assets[0].info.token['contract_addr']]);
-        if (token1Price) {
-          return new BigNumber(lp)
-            .times(poolResponse.assets[0].amount)
-            .div(poolResponse.total_share)
-            .times(token1Price)
-            .times(2)
-            .toString();
-        }
-        const token2Price = this.balancePipe.transform('1', poolResponses[poolResponse.assets[1].info.token['contract_addr']]);
-        if (token2Price) {
-          return new BigNumber(lp)
-            .times(poolResponse.assets[1].amount)
-            .div(poolResponse.total_share)
-            .times(token2Price)
-            .times(2)
-            .toString();
-        }
-        return null;
+      const token1Price = this.balancePipe.transform('1', poolResponses[poolResponse.assets[0].info.token['contract_addr']]);
+      if (token1Price) {
+        return new BigNumber(lp)
+          .times(poolResponse.assets[0].amount)
+          .div(poolResponse.total_share)
+          .times(token1Price)
+          .times(2)
+          .toString();
       }
+      const token2Price = this.balancePipe.transform('1', poolResponses[poolResponse.assets[1].info.token['contract_addr']]);
+      if (token2Price) {
+        return new BigNumber(lp)
+          .times(poolResponse.assets[1].amount)
+          .div(poolResponse.total_share)
+          .times(token2Price)
+          .times(2)
+          .toString();
+      }
+      return null;
     }
   }
 }

@@ -12,13 +12,12 @@ import {
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import {BPsiDpFarmService} from '../api/bpsidp-farm.service';
-import {WasmService} from '../api/wasm.service';
-import {VaultsResponse} from '../api/gov/vaults_response';
-import {div} from '../../libs/math';
-import {TerraSwapService} from '../api/terraswap.service';
-import {Apollo, gql} from 'apollo-angular';
-import {Denom} from '../../consts/denom';
+import { BPsiDpFarmService } from '../api/bpsidp-farm.service';
+import { WasmService } from '../api/wasm.service';
+import { VaultsResponse } from '../api/gov/vaults_response';
+import { div } from '../../libs/math';
+import { Apollo, gql } from 'apollo-angular';
+import { Denom } from 'src/app/consts/denom';
 
 @Injectable()
 export class BPsiDPFarmInfoService implements FarmInfoService {
@@ -40,7 +39,6 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     private bPsiDpFarmService: BPsiDpFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService,
-    private terraSwap: TerraSwapService,
     private apollo: Apollo,
   ) { }
 
@@ -56,6 +54,15 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nexusGov;
   }
 
+  get pylonLiquidInfo() {
+    return {
+      dpPool: this.terrajs.settings.psiDPGatewayPool,
+      dpToken: this.terrajs.settings.psiDPToken,
+      bdpPool: this.terrajs.settings.bPsiDPGatewayPool,
+      bdpToken: this.terrajs.settings.bPsiDPToken,
+    };
+  }
+
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.bPsiDpFarmService.query({ pools: {} });
     return pool.pools;
@@ -63,7 +70,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
     const farmConfigTask = this.bPsiDpFarmService.query({ config: {} });
-    const balanceOfTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { balance_of: { owner: this.terrajs.settings.bPsiDPFarm} });
+    const balanceOfTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { balance_of: { owner: this.terrajs.settings.bPsiDPFarm } });
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
     const nexusGovStatTask = apollo.query<any>({
       query: gql`{
@@ -77,7 +84,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.bPsiDPFarm)?.weight || 0;
-    const bPsiDPStat = await this.getBPsiDPStat();
+    const bPsiDPStat = await this.getBPsiDPStat(poolResponses);
     const pairs: Record<string, PairStat> = {};
 
     const [farmConfig, nexusGovStat] = await Promise.all([farmConfigTask, nexusGovStatTask]);
@@ -108,23 +115,16 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     }
   }
 
-  async getBPsiDPStat() {
+  async getBPsiDPStat(poolResponses: Record<string, PoolResponse>) {
     const configInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { config: {} });
     const rewardInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { reward: {} });
-    // Pylon Webapp method to get token price
-    const simulateSwapPsiTask = this.terraSwap.query(this.terrajs.settings.nexusPool, { simulation: {
-        offer_asset: {
-          amount: '100000000',
-          info: {
-            token: {
-              contract_addr: this.terrajs.settings.nexusToken
-            }
-          }
-        }
-      }});
-    const [configInfo, rewardInfo, simulateSwapPsiInfo] = await Promise.all([configInfoTask, rewardInfoTask, simulateSwapPsiTask]);
-    const psiPrice = div(simulateSwapPsiInfo.return_amount, 100000000);
+    const [configInfo, rewardInfo] = await Promise.all([configInfoTask, rewardInfoTask]);
 
+    const psiPool = poolResponses[this.dex + '|' + this.getDenomTokenContractOrNative() + '|' + Denom.USD];
+    const [psi, ust] = psiPool.assets[0].info.token?.['contract_addr'] === this.getDenomTokenContractOrNative()
+      ? [psiPool.assets[0].amount, psiPool.assets[1].amount]
+      : [psiPool.assets[1].amount, psiPool.assets[0].amount];
+    const psiPrice = div(ust, psi);
 
     const rewardRate = Number(div(configInfo.distribution_config.reward_rate, 1000000)).toFixed(15);
     const totalDeposit = div(+rewardInfo.total_deposit, 1000000);

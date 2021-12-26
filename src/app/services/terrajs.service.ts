@@ -9,6 +9,7 @@ import { checkAvailableExtension } from '@terra-money/wallet-provider/utils/chec
 import { ModalService } from './modal.service';
 import { throttleAsync } from 'utils-decorators';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
+import BigNumber from 'bignumber.js';
 
 export const BLOCK_TIME = 6500; // 6.5s
 export const DEFAULT_NETWORK = 'mainnet';
@@ -248,4 +249,16 @@ export class TerrajsService implements OnDestroy {
     return new Date(now + (height - this.height) * BLOCK_TIME);
   }
 
+  async deductTax(denom: string, amount: string) {
+    const [taxRate, taxCap] = await Promise.all([
+      this.lcdClient.treasury.taxRate(),
+      this.lcdClient.treasury.taxCap(denom)
+    ]);
+    const num = new BigNumber(amount);
+    let tax = num.minus(num.div(1 + taxRate.toNumber()).integerValue(BigNumber.ROUND_DOWN));
+    if (tax.gt(taxCap.amount.toString())) {
+      tax = new BigNumber(taxCap.amount.toString());
+    }
+    return num.minus(tax).toString();
+  }
 }

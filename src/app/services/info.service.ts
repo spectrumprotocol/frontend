@@ -214,6 +214,7 @@ export class InfoService {
             farmType: farmInfo.farmType ?? 'LP',
             score: (farmInfo.highlight ? 1000000 : 0) + (pool.weight || 0),
             dex: farmInfo.dex ?? 'TERRASWAP',
+            highlight: farmInfo.highlight,
           });
       }
     });
@@ -480,7 +481,9 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.key) / CONFIG.UNIT || 0;
+      const bond_amount = vault.poolInfo.farmType === 'PYLON_LIQUID'
+        ? +rewardInfo.bond_amount
+        : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.key) / CONFIG.UNIT || 0;
       const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.poolInfo.key].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
@@ -492,7 +495,7 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        //TODO add ASTRO and handle farm1 farm2
+        // TODO add ASTRO and handle farm1 farm2
         const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.key];
         const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
         tvl += pending_farm_reward_ust;
@@ -589,6 +592,8 @@ export class InfoService {
       const rewardToken = this.poolInfos[key].rewardTokenContract;
       const baseSymbol = CONFIG.NATIVE_TOKENS.includes(baseToken) ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = CONFIG.NATIVE_TOKENS.includes(denomToken) ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
+      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0);
+
       const vault: Vault = {
         baseSymbol,
         denomSymbol,
@@ -615,6 +620,7 @@ export class InfoService {
         shortUnitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
           : 'LP',
+        score,
       };
       this.allVaults.push(vault);
     }

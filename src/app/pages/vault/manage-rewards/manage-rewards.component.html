@@ -67,7 +67,7 @@
             <ng-container *ngIf="token.key !== 'SPEC'">
               <div class="col-12 col-md-6">
                 <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.value.rewardTokenContract).autoStake"
-                  class="btn btn-secondary f-12 w-100" (click)="moveToGov(token.key)">Move to Gov</button>
+                  class="btn btn-secondary f-12 w-100" (click)="moveToGov(token.value.rewardTokenContract)">Move to Gov</button>
               </div>
             </ng-container>
             <ng-container *ngIf="token.key === 'SPEC'">
@@ -78,7 +78,7 @@
                 </div>
                 <div class="col-sm-12 col-md-6" *ngIf="day !== 0">
                   <button class="btn btn-secondary f-12 w-100" *ngIf="day !== 0"
-                    (click)="moveToGov(token.key, day)">Move to {{day}}-Day Locked Gov</button>
+                    (click)="moveToGov(token.value.rewardTokenContract, day)">Move to {{day}}-Day Locked Gov</button>
                 </div>
               </ng-container>
             </ng-container>
@@ -86,7 +86,6 @@
         </div>
       </div>
     </ng-container>
-    <!-- TODO:: Keep until code approve
     <div class="col-12">
     <div class="table-responsive">
       <table class="table table-reward">
@@ -119,15 +118,15 @@
                   <ng-container *ngIf="token.key === 'SPEC'">
                     <ng-container *ngFor="let day of availablePoolDays">
                       <div class="col" *ngIf="day === 0">
-                        <button class="btn btn-primary f-12" *ngIf="day === 0" (click)="moveToGov(token.key)">Move to No Lock Gov</button>
+                        <button class="btn btn-primary f-12" *ngIf="day === 0" (click)="moveToGov(token.value.rewardTokenContract)">Move to No Lock Gov</button>
                       </div>
                       <div class="col" *ngIf="day !== 0" >
-                        <button class="btn btn-primary  f-12" *ngIf="day !== 0" (click)="moveToGov(token.key, day)">Move to {{day}}-Day Locked Gov</button>
+                        <button class="btn btn-primary  f-12" *ngIf="day !== 0" (click)="moveToGov(token.value.rewardTokenContract, day)">Move to {{day}}-Day Locked Gov</button>
                       </div>
                     </ng-container>
                   </ng-container>
                   <div class="col" *ngIf="token.key !== 'SPEC'">
-                    <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.key).autoStake" class="btn btn-primary  f-12" (click)="moveToGov(token.key)">Move to Gov</button>
+                    <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.key).autoStake" class="btn btn-primary  f-12" (click)="moveToGov(token.value.rewardTokenContract)">Move to Gov</button>
                   </div>
                 </section>
               </td>
@@ -142,5 +141,5 @@
         </button>
       </div>
     </div>
-  </div> -->
+  </div>
   </div>
