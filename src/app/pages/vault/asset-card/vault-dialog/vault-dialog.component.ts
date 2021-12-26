@@ -118,10 +118,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       if (this.terrajs.isConnected) {
         if (this.vault.poolInfo.farmType === 'LP') {
           const tasks: Promise<any>[] = [];
-          if (this.vault.poolInfo.pairSymbol !== 'UST') {
-            tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.denomTokenContractOrNative));
-          }
-          tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.baseTokenContractOrNative));
+          tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.key));
           await Promise.all(tasks);
           if (this.depositTokenAAmtTokenToken && this.tokenAToBeStatic) {
             this.depositTokenATokenTokenChanged(true);
@@ -146,8 +143,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   async refreshData() {
-    if (this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]) {
-      this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.auto_bond_amount / +this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.bond_amount * 100);
+    if (this.info.rewardInfos[this.vault.poolInfo.key]) {
+      this.auto_compound_percent_reallocate = Math.round(+this.info.rewardInfos[this.vault.poolInfo.key]?.auto_bond_amount / +this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount * 100);
     }
     if (this.vault.poolInfo.forceDepositType) {
       this.depositType = this.vault.poolInfo.forceDepositType as any;
@@ -165,7 +162,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   setMaxWithdrawAmount() {
-    const rewardInfo = this.info.rewardInfos?.[this.vault.poolInfo.baseTokenContractOrNative];
+    const rewardInfo = this.info.rewardInfos?.[this.vault.poolInfo.key];
     if (rewardInfo) {
       this.withdrawAmt = +rewardInfo.bond_amount / CONFIG.UNIT;
     }
@@ -211,8 +208,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   private async refreshDataTokenToken(inputFromA: boolean) {
-    const pool = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
-    if (this.vault.poolInfo.pairSymbol === 'UST' && inputFromA) {
+    const pool = this.info.poolResponses[this.vault.poolInfo.key];
+    if (this.vault.denomSymbol === 'UST' && inputFromA) {
       const [asset, ust] = this.findAssetBaseAndNativeToken();
       const amountToken = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
       const amountUST = amountToken.times(ust.amount).div(asset.amount).integerValue();
@@ -258,8 +255,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           amountBase.times(pool.total_share).div(assetBase.amount))
         : amountBase.times(amountDenom).sqrt();
       if (this.vault.pairStat) {
-        const depositTVL = new BigNumber(this.lpBalancePipe.transform(grossLp.toString(), this.info.poolResponses, this.vault.poolInfo.baseTokenContractOrNative));
-        const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.bond_amount || '0');
+        const depositTVL = new BigNumber(this.lpBalancePipe.transform(grossLp.toString(), this.info.poolResponses, this.vault.poolInfo.key));
+        const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
         const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
         this.netLpTokenUST = grossLp.minus(depositFee).toString();
         this.depositFeeTokenUST = depositFee.toString();
@@ -270,14 +267,14 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   private findAssetBaseAndDenom() {
-    const pool = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
-    return pool.assets[0].info.token['contract_addr'] === this.vault.poolInfo.rewardTokenContract
-      ? [pool.assets[1], pool.assets[0]]
-      : [pool.assets[0], pool.assets[1]];
+    const pool = this.info.poolResponses[this.vault.poolInfo.key];
+    return pool.assets[0].info.token['contract_addr'] === this.vault.poolInfo.baseTokenContractOrNative
+      ? [pool.assets[0], pool.assets[1]]
+      : [pool.assets[1], pool.assets[0]];
   }
 
   private findAssetBaseAndNativeToken() {
-    const pool = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
+    const pool = this.info.poolResponses[this.vault.poolInfo.key];
     return pool.assets[0].info.native_token
       ? [pool.assets[1], pool.assets[0]]
       : [pool.assets[0], pool.assets[1]];
@@ -320,7 +317,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             }
           }
         };
-        const pool = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
+        const pool = this.info.poolResponses[this.vault.poolInfo.key];
         const assets = pool.assets[0].info.native_token ? [ust, asset] : [asset, ust];
         const msgs = [
           new MsgExecuteContract(
@@ -678,7 +675,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.withdrawUST = ustAmt.plus(returnAmt).toString();
       this.withdrawMinUST = ustAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
     } else {
-      const poolResponse = this.info.poolResponses[this.vault.poolInfo.baseTokenContractOrNative];
+      const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
       const [tokenA, tokenB] = poolResponse.assets[0].info.token['contract_addr'] === this.vault.poolInfo.baseTokenContractOrNative
         ? [poolResponse.assets[1], poolResponse.assets[0]]
         : [poolResponse.assets[0], poolResponse.assets[1]];
@@ -971,12 +968,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   private calcNewStakeOrCompoundAmount(mode: string) {
-    if (+this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.bond_amount < 10) {
+    if (+this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount < 10) {
       return '0';
     } else if (mode === 'stake') {
-      return times(this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.bond_amount, (100 - this.auto_compound_percent_reallocate) / 100);
+      return times(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount, (100 - this.auto_compound_percent_reallocate) / 100);
     } else if (mode === 'compound') {
-      return times(this.info.rewardInfos[this.vault.poolInfo.baseTokenContractOrNative]?.bond_amount, (this.auto_compound_percent_reallocate) / 100);
+      return times(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount, (this.auto_compound_percent_reallocate) / 100);
     }
   }
 
