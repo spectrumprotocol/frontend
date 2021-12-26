@@ -421,11 +421,11 @@ export class InfoService {
     for (const key of Object.keys(this.poolInfos)) {
         console.log(key);
         const pairInfo = this.pairInfos[key];
-        if (key.split('|')[0] === 'TERRASWAP'){
+        if (key.split('|')[0] === 'TERRASWAP' && pairInfo.contract_addr){
           poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
           .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses Terraswap error: ', error)));
         }
-      else if (key.split('|')[0] === 'ASTROPORT'){
+      else if (key.split('|')[0] === 'ASTROPORT' && pairInfo.contract_addr){
         poolTasks.push(this.astroPort.query(pairInfo.contract_addr, { pool: {} })
           .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses Astroport error: ', error)));
       }
