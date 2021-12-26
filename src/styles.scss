@@ -106,7 +106,7 @@ body {
 
 .btn-connect {
   height: 60px;
-  background-color: $grey-990 !important;
+  background-color: $gray-990 !important;
   color: white !important;
   border: 1px solid white;
   &:hover {
@@ -452,7 +452,8 @@ input[type="number"] {
 }
 
 .platform-logo-halborn {
-  height: 12px;
+  height: 14px;
+  vertical-align: text-top;
 }
 
 .cur-title {
@@ -462,7 +463,7 @@ input[type="number"] {
 }
 
 .card {
-  background-color: $grey-990;
+  background-color: $gray-990;
   border-radius: 0.4rem;
   box-shadow: none;
   .card-body {
@@ -471,7 +472,7 @@ input[type="number"] {
 }
 
 .card-grey {
-  background-color: $grey-990;
+  background-color: $gray-990;
 }
 
 .asset-card {
@@ -589,7 +590,7 @@ input[type="number"] {
   }
 
   .tab-content {
-    background-color: $grey-990 !important;
+    background-color: $gray-990 !important;
     margin-left: 5px;
     margin-right: 5px;
     .tab-pane {
@@ -618,7 +619,7 @@ input[type="number"] {
     border-radius: 6px;
     border: 0 !important;
     border-radius: 6px 6px 0px 0px;
-    background-color: $grey-990 !important;
+    background-color: $gray-990 !important;
     padding: 15px;
   }
   *:focus {
@@ -647,7 +648,7 @@ input[type="number"] {
     padding-top: 20px;
     padding-bottom: 20px;
     border-radius: 200px;
-    background-color: $grey-990;
+    background-color: $gray-990;
   }
 }
 
@@ -686,6 +687,7 @@ i.fa-sort-down {
   background: $primary;
   position: relative;
   border-top-left-radius: 0.3rem;
+  border-bottom-right-radius: 0.3rem;
   font-size: 11px;
 }
 
@@ -696,6 +698,7 @@ i.fa-sort-down {
   background: $primary;
   position: relative;
   border-top-left-radius: 0.3rem;
+  border-bottom-right-radius: 0.3rem;
   font-size: 11px;
   color: black;
 }
@@ -753,10 +756,10 @@ i.fa-sort-down {
 
 .dropdown-menu {
   box-shadow: none;
-  background-color: $grey-990;
+  background-color: $gray-990;
   margin-top: 0px;
   .dropdown-item {
-    background-color: $grey-990;
+    background-color: $gray-990;
     border: 0;
     color: white;
     &.active {

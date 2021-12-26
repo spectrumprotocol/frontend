@@ -657,7 +657,7 @@
 
               <button (click)="doDeposit()" [disabled]="formDeposit.invalid" class="btn btn-primary mt-3"
                       type="submit">Deposit</button>
-              <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" class="text-end small fee-remark text-muted">
+              <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" class="text-end small fee-remark text-muted mt-1">
                 <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">
                   * fees applied
                 </a>
