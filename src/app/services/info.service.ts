@@ -184,9 +184,10 @@ export class InfoService {
             farmTokenContract: farmInfo.farmTokenContract,
             auto_compound: farmInfo.autoCompound,
             auto_stake: farmInfo.autoStake,
+            govLock: farmInfo.govLock,
             forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
-              ? undefined
-              : farmInfo.autoCompound ? 'compound' : 'stake',
+              ? (farmInfo.govLock ? 'compound' : undefined)
+              : (farmInfo.autoCompound ? 'compound' : 'stake'),
             pairSymbol: farmInfo.pairSymbol,
             auditWarning: farmInfo.auditWarning,
             farmType: farmInfo.farmType ?? 'LP',
