@@ -75,6 +75,7 @@ import {MdbValidationModule} from 'mdb-angular-ui-kit/validation';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import { LpEarningPipe } from './pipes/lp-earning.pipe';
 import {BPsiDPFarmInfoService} from './services/farm_info/bPsiDP.farm-info.service';
+import {MockAstroportAnchorFarmInfoService} from './services/farm_info/mock-astroport-anchor.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -157,17 +158,18 @@ registerLocaleData(locale, 'en');
       multi: true
     },
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: MockAstroportAnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: KujiraFarmInfoService, multi: true },
-    { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
+    // { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },
-    { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
-    { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
-    { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
-    { provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true },
-    { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
-    { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
+    // { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
+    // { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
+    // { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
+    // { provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true },
+    // { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
+    // { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

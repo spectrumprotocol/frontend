@@ -16,16 +16,26 @@
           <img [src]="vault.denomSymbol | url:'icon'"
             class="img-fluid rounded-circle assetIcon mt-2 float-start token-denom">
           <div class="name-detail">
-            <h6 class="m-0"> {{vault.name}}</h6>
-            <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
+            <h6 class="m-0"> {{vault.name}}
+              <img *ngIf="vault.poolInfo.dex === 'ASTROPORT'" src="./assets/logo-astroport.svg" class="dex-logo" alt="Astroport DEX">
+              <img *ngIf="vault.poolInfo.dex === 'TERRASWAP'" src="./assets/logo-terraswap.svg" class="dex-logo" alt="Terraswap DEX">
+            </h6>
+            <p class="m-0">
+              <span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span>
+            </p>
           </div>
         </div>
         <div class="p-2 bulk-name-container" *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
           <img [src]="vault.baseSymbol | url:'icon'"
             class="img-fluid rounded-circle assetIcon mt-2 float-start single-assetIcon-for-listview">
           <div class="name-detail">
-            <h6 class="m-0">{{vault.name}}</h6>
-            <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
+            <h6 class="m-0">{{vault.name}}
+              <img *ngIf="vault.poolInfo.dex === 'ASTROPORT'" src="./assets/logo-astroport.svg" class="dex-logo" alt="Astroport DEX">
+              <img *ngIf="vault.poolInfo.dex === 'TERRASWAP'" src="./assets/logo-terraswap.svg" class="dex-logo" alt="Terraswap DEX">
+            </h6>
+            <p class="m-0">
+              <span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span>
+            </p>
           </div>
         </div>
       </div>
@@ -98,15 +108,24 @@
           <img [src]="vault.denomSymbol | url:'icon'"
             class="img-fluid rounded-circle assetIcon float-start token-denom">
           <div class="name-detail">
-            <h6 class="m-0">{{vault.name}}</h6>
-            <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
+            <h6 class="m-0">{{vault.name}}
+              <img *ngIf="vault.poolInfo.dex === 'ASTROPORT'" src="./assets/logo-astroport.svg" class="dex-logo" alt="Astroport DEX">
+              <img *ngIf="vault.poolInfo.dex === 'TERRASWAP'" src="./assets/logo-terraswap.svg" class="dex-logo" alt="Terraswap DEX">
+            </h6>
+            <p class="m-0">
+              <span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span>
+            </p>
           </div>
         </div>
         <div class="pt-2 p-l-0 bulk-name-container" *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
           <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
           <div class="name-detail">
             <h6 class="m-0">{{vault.name}}</h6>
-            <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
+            <p class="m-0">
+              <span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span>
+              <img *ngIf="vault.poolInfo.dex === 'ASTROPORT'" src="./assets/logo-astroport.svg" class="dex-logo" alt="Astroport DEX">
+              <img *ngIf="vault.poolInfo.dex === 'TERRASWAP'" src="./assets/logo-terraswap.svg" class="dex-logo" alt="Terraswap DEX">
+            </p>
           </div>
         </div>
       </div>
