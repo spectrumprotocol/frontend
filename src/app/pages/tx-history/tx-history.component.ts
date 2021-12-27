@@ -36,7 +36,6 @@ const txHistoryFactory = {
         let desc = `Unstaked rewards from ${farm} farm, ${pool}`;
         desc += farmAmount && tokenSymbol ? `, ${farmAmount} ${tokenSymbol}` : '';
         desc += `, ${specAmount} SPEC`;
-
         return desc;
       })
       .join('<br>'),
@@ -47,6 +46,7 @@ const txHistoryFactory = {
     tokenBSymbol: string,
     amount: number,
     compoundRate: number,
+    dex: string,
     provide?:
       | { baseTokenAmount: number; denomTokenAmount: number; }
       | { provideAmount: number; returnAmount?: number; price?: string, returnAmountB?: number, priceB?: string, via?: string },
@@ -60,7 +60,7 @@ const txHistoryFactory = {
       if (farmType === 'PYLON_LIQUID') {
         desc += ` ${amount} ${tokenASymbol}`;
       } else {
-        desc += ` ${amount} ${tokenASymbol}-${tokenBSymbol} LP`;
+        desc += ` ${amount} ${tokenASymbol}-${tokenBSymbol} ${dex} LP`;
       }
       desc += !isSpec ? ' (before deposit fee)' : '';
     } else if ('provideAmount' in provide) {
@@ -70,7 +70,7 @@ const txHistoryFactory = {
       if (farmType === 'PYLON_LIQUID') {
         lpDesc = ` ${amount} ${tokenASymbol}`;
       } else {
-        lpDesc = ` ${amount} ${tokenASymbol}-${tokenBSymbol} LP`;
+        lpDesc = ` ${amount} ${tokenASymbol}-${tokenBSymbol} ${dex} LP`;
       }
       lpDesc += !isSpec ? ' (before deposit fee)' : '';
 
@@ -86,7 +86,7 @@ const txHistoryFactory = {
     } else {
       const { baseTokenAmount, denomTokenAmount } = provide;
 
-      let lpDesc = `${amount} LP`;
+      let lpDesc = `${amount} ${dex} LP`;
       lpDesc += !isSpec ? ' before deposit fee' : '';
 
       desc += ` ${baseTokenAmount} ${tokenASymbol} + ${denomTokenAmount} ${tokenBSymbol} (${lpDesc})`;
@@ -104,14 +104,14 @@ const txHistoryFactory = {
 
     return { desc, action: 'Farm' as const };
   },
-  withdrawFarm: (farm: string, baseTokenSymbol: string, denomTokenSymbol: string, amount: number, isWithdrawToUST: boolean, demand?: { tokenAAmount: number, tokenBAmount?: number }, farmType?: FARM_TYPE_ENUM) => {
+  withdrawFarm: (farm: string, baseTokenSymbol: string, denomTokenSymbol: string, amount: number, isWithdrawToUST: boolean, dex: string, demand?: { tokenAAmount: number, tokenBAmount?: number }, farmType?: FARM_TYPE_ENUM) => {
     let desc = 'Withdrawn';
     let amountDesc = '';
     if (farmType === 'PYLON_LIQUID') {
       amountDesc = `${amount} ${baseTokenSymbol}`;
     } else {
-      // farmType = LP OR null
-      amountDesc = `${amount} ${baseTokenSymbol}-${denomTokenSymbol} LP`;
+      // farmType = ${dex} LP OR null
+      amountDesc = `${amount} ${baseTokenSymbol}-${denomTokenSymbol} ${dex} LP`;
     }
     if (!demand) {
       desc += ` ${amountDesc}`;
@@ -176,6 +176,13 @@ const tryExtractExecuteMsgSend = (executeMsg: object): { amount: string, contrac
 })
 export class TxHistoryComponent implements OnInit, OnDestroy {
 
+  constructor(
+    public info: InfoService,
+    public terrajs: TerrajsService,
+    protected $gaService: GoogleAnalyticsService,
+    private percentPipe: PercentPipe
+  ) { }
+
   private connected: Subscription;
   loading = true;
 
@@ -184,12 +191,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
   txHistoryList: TxHistory[] = [];
   previousTxHistoryLength = 0;
 
-  constructor(
-    public info: InfoService,
-    public terrajs: TerrajsService,
-    protected $gaService: GoogleAnalyticsService,
-    private percentPipe: PercentPipe
-  ) { }
+  poolInfoKeys: string[];
 
   async ngOnInit() {
     this.$gaService.event('OPEN_TX_HISTORY_PAGE');
@@ -274,8 +276,6 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  poolInfoKeys: string[];
-
   findPoolInfo(baseToken: string, denomToken?: string, dex?: string): PoolInfo{
     if (!this.poolInfoKeys){
       this.poolInfoKeys = Object.keys(this.info.poolInfos);
@@ -357,9 +357,9 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
           poolName = 'all pools';
         } else {
           if (farmInfo.farmType === 'PYLON_LIQUID') {
-            poolName = `${this.getSymbol(farmInfo.defaultBaseTokenContractOrNative)} pool`;
+            poolName = `${this.getSymbol(farmInfo.defaultBaseTokenContractOrNative)} ${farmInfo.dex} pool`;
           } else {
-            poolName = `${this.getSymbol(farmInfo.defaultBaseTokenContractOrNative)}-${this.getSymbol(farmInfo.getDenomTokenContractOrNative(baseTokenContract))} pool`;
+            poolName = `${this.getSymbol(farmInfo.defaultBaseTokenContractOrNative)}-${this.getSymbol(farmInfo.getDenomTokenContractOrNative(baseTokenContract))} ${farmInfo.dex} pool`;
           }
         }
 
@@ -367,11 +367,11 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
           const event = events?.find(o => o.type === 'from_contract');
           const farmAmount = +event?.attributes.find(o => o.key === 'farm_amount')?.value / CONFIG.UNIT || 0;
           const specAmount = +event?.attributes.find(o => o.key === 'spec_amount')?.value / CONFIG.UNIT || 0;
-          unstakes.push({ farm: farmInfo.farm, pool: poolName, farmAmount, tokenSymbol: this.getSymbol(farmInfo.rewardTokenContract), specAmount });
+          unstakes.push({ farm: farmInfo.farm, pool: poolName, farmAmount, tokenSymbol: this.getSymbol(farmInfo.rewardTokenContract), specAmount});
         } else {
           const event = events?.find(o => o.type === 'from_contract');
           const specAmount = +event?.attributes.find(o => o.key === 'amount')?.value / CONFIG.UNIT || 0;
-          unstakes.push({ farm: farmInfo.farm, pool: poolName, specAmount });
+          unstakes.push({ farm: farmInfo.farm, pool: poolName, specAmount});
         }
       }
 
@@ -410,11 +410,11 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const farm = farmInfo?.farm;
 
       const via = 'Terraswap';
-      const result = txHistoryFactory.depositFarm(farm, this.getSymbol(farmInfo.defaultBaseTokenContractOrNative), undefined, returnAmount, compoundRate, { provideAmount, returnAmount, price, via }, farmInfo.farmType);
+      const result = txHistoryFactory.depositFarm(farm, this.getSymbol(farmInfo.defaultBaseTokenContractOrNative), undefined, returnAmount, compoundRate, farmInfo.dex, { provideAmount, returnAmount, price, via }, farmInfo.farmType);
       zapSingleAsset = result.desc;
     }
 
-    // Bond with LP
+    // Bond with ${dex} LP
     if (sendExecuteMsg?.msg['bond'] && this.info.farmInfos.find(o => o.farmContract === sendExecuteMsg?.contract)) {
       const bondMsg = sendExecuteMsg.msg['bond'];
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === sendExecuteMsg.contract);
@@ -429,14 +429,14 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       if (depositMsg?.contract === liquidInfo?.dpPool && depositMsg?.execute_msg?.['deposit']) {
         const provideAmount = +depositMsg.coins.find(it => it.denom === Denom.USD)?.amount / CONFIG.UNIT || 0;
         const via = 'Pylon pool';
-        const result = txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, compoundRate, { provideAmount, via }, farmInfo.farmType);
+        const result = txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, compoundRate, farmInfo.dex, { provideAmount, via }, farmInfo.farmType);
         if (zapSingleAsset) {
           return { desc: zapSingleAsset + '<br>' + result.desc, action: 'Farm' };
         } else {
           return result;
         }
       }
-      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, compoundRate, null, farmInfo.farmType);
+      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, compoundRate, farmInfo.dex, null, farmInfo.farmType);
     } else if (zapSingleAsset) {
       return { desc: zapSingleAsset, action: 'Farm' };
     }
@@ -471,7 +471,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         }
       }
 
-      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { baseTokenAmount, denomTokenAmount }, 'LP');
+      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, farmInfo.dex, { baseTokenAmount, denomTokenAmount }, 'LP');
     }
 
     // Bond with UST
@@ -497,15 +497,15 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         const denomTokenOfferAmount = denomTokenOfferAmountKeyIndex.key === 'offer_amount' ? +denomTokenOfferAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
         const denomReturnAmountDenom = denomTokenReturnAmountKeyIndex.key === 'return_amount' ? +denomTokenReturnAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
         const priceDenom = roundSixDecimal(denomTokenOfferAmount / denomReturnAmountDenom);
-        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { provideAmount, returnAmount, price, returnAmountB: denomReturnAmountDenom, priceB: priceDenom }, 'LP');
+        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, farmInfo.dex, { provideAmount, returnAmount, price, returnAmountB: denomReturnAmountDenom, priceB: priceDenom }, 'LP');
       } else {
         const baseTokenSymbol = this.info.tokenInfos[zapToBondMsg.pair_asset.token.contract_addr]?.symbol;
         const denomTokenSymbol = 'UST';
-        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, { provideAmount, returnAmount, price }, 'LP');
+        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, farmInfo.dex, { provideAmount, returnAmount, price }, 'LP');
       }
     }
 
-    // Unbond as LP (and swap)
+    // Unbond as ${dex} LP (and swap)
     if (msgs[0]?.execute_msg['unbond'] &&
       this.info.farmInfos.find(o => o.farmContract === msgs[0].contract) &&
       !(sendExecuteMsg?.msg['withdraw_liquidity'] || sendExecuteMsg?.msg['zap_to_unbond'])
@@ -519,12 +519,12 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const denomTokenSymbol = this.getSymbol(farmInfo?.getDenomTokenContractOrNative(unbondMsg.asset_token));
 
       if (!sendExecuteMsg?.msg['execute_swap_operations']) {
-        return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, false, null, farmInfo.farmType);
+        return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, false, farmInfo.dex, null, farmInfo.farmType);
       }
 
       const totalAmount = +lastContractEvent.attributes.reverse().find(o => o.key === 'return_amount')?.value / CONFIG.UNIT || 0;
 
-      return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, true, { tokenAAmount: totalAmount }, farmInfo.farmType);
+      return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, true, farmInfo.dex, { tokenAAmount: totalAmount }, farmInfo.farmType);
     }
 
     // Unbond as token+UST & Unbond as UST
@@ -546,7 +546,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const farm = farmInfo?.farm;
       const denomTokenSymbol = this.getSymbol(farmInfo?.getDenomTokenContractOrNative(unbondMsg.asset_token));
       if (withdrawLiquidityMsg) {
-        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, false, { tokenAAmount: uusdAmount, tokenBAmount: tokenAmount });
+        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, false, farmInfo.dex, { tokenAAmount: uusdAmount, tokenBAmount: tokenAmount });
       }
 
       const zap_to_unbond = ensureBase64toObject(sendExecuteMsg?.msg['zap_to_unbond']);
@@ -555,13 +555,13 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         const uusdReturnAmountKeyIndex = lastContractEvent?.attributes[+uusdAskAssetIndex + 2];
         const uusdReturnAmount = uusdReturnAmountKeyIndex.key === 'return_amount' ? +uusdReturnAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
 
-        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, true, { tokenAAmount: uusdReturnAmount });
+        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, true, farmInfo.dex, { tokenAAmount: uusdReturnAmount });
 
       } else {
         const swappedAmount = +lastContractEvent.attributes.find(o => o.key === 'return_amount')?.value / CONFIG.UNIT || 0;
         const totalAmount = +plus(uusdAmount, swappedAmount);
 
-        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, true, { tokenAAmount: totalAmount });
+        return txHistoryFactory.withdrawFarm(farm, tokenSymbol, denomTokenSymbol, lpAmount, true, farmInfo.dex, { tokenAAmount: totalAmount });
       }
     }
 
@@ -585,7 +585,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       if (farmInfo.farmType === 'PYLON_LIQUID') {
         assetDesc = `${baseSymbol}`;
       } else {
-        assetDesc = `${baseSymbol}-${denomSymbol} LP`;
+        assetDesc = `${baseSymbol}-${denomSymbol} ${farmInfo.dex} LP`;
       }
       return {
         action: 'Farm',
