@@ -112,7 +112,7 @@
             {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}
             <span class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || '0' | balance:
-              info.poolResponses[vault.poolInfo.key] |
+              info.poolResponses[vault.poolInfo.dex + '|' + vault.poolInfo.rewardTokenContract + '|' + 'uusd'] |
               unit: vault.baseDecimals : '1.0-2' }})
             </span>
           </h3>
@@ -833,7 +833,7 @@
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}
                 <small class="text-muted">
                   (${{ info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || '0' | balance:
-                  info.poolResponses[vault.poolInfo.key] |
+                  info.poolResponses[vault.poolInfo.dex + '|' + vault.poolInfo.rewardTokenContract + '|' + 'uusd'] |
                   unit: vault.baseDecimals : '1.0-2' }})
                 </small>
               </div>
