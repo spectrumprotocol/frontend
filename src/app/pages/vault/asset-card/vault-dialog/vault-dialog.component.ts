@@ -298,7 +298,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
 
     if (this.depositMode === 'tokentoken') {
-      if (this.vault.poolInfo.pairSymbol === 'UST') {
+      if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
         const assetAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
         const ustAmount = times(this.depositUSTAmountTokenUST, CONFIG.UNIT);
         const asset = {
@@ -422,7 +422,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const farmContract = this.vault.poolInfo.farmContract;
       const depositUST = times(this.depositUSTAmtUST, CONFIG.UNIT);
       const coin = new Coin(Denom.USD, depositUST);
-      if (this.vault.poolInfo.pairSymbol === 'UST') {
+      if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
         const msgs = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.staker, {
           zap_to_bond: {
             contract: farmContract,
@@ -656,7 +656,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         .times(1 - +this.SLIPPAGE)
         .integerValue(BigNumber.ROUND_DOWN)
         .toString();
-    } else if (this.vault.poolInfo.pairSymbol === 'UST') {
+    } else if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
       const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
       const [tokenAsset, ustAsset] = poolResponse.assets[0].info.native_token
         ? [poolResponse.assets[1], poolResponse.assets[0]]
@@ -744,7 +744,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       await this.terrajs.post([unbond]);
     } else if (this.withdrawMode === 'ust') {
       let msg: object;
-      if (this.vault.poolInfo.pairSymbol === 'UST') {
+      if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
         msg = {
           zap_to_unbond: {
             sell_asset: { token: { contract_addr: this.vault.poolInfo.asset_token } },

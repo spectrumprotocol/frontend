@@ -343,24 +343,23 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
           continue;
         }
 
-        const assetTokenContract = msg.execute_msg['withdraw'].asset_token;
-        const baseToken = this.info.tokenInfos[assetTokenContract]?.symbol;
+        const baseTokenContract = msg.execute_msg['withdraw'].asset_token;
+        const baseSymbol = this.info.tokenInfos[baseTokenContract]?.symbol;
         let poolName: string;
-
-        if (baseToken) {
+        if (baseSymbol) {
           if (farmInfo.farmType === 'PYLON_LIQUID') {
-            poolName = `${baseToken} pool`;
+            poolName = `${baseSymbol} pool`;
           } else {
-            const denomSymbol = this.getSymbol(farmInfo.getDenomTokenContractOrNative());
-            poolName = `${baseToken}-${denomSymbol} pool`;
+            const denomSymbol = this.getSymbol(farmInfo.getDenomTokenContractOrNative(baseTokenContract));
+            poolName = `${baseSymbol}-${denomSymbol} pool`;
           }
         } else if (farmInfo.rewardTokenContract === this.terrajs.settings.mirrorToken) {
           poolName = 'all pools';
         } else {
           if (farmInfo.farmType === 'PYLON_LIQUID') {
-            poolName = `${assetTokenContract} pool`;
+            poolName = `${this.getSymbol(farmInfo.defaultBaseTokenContractOrNative)} pool`;
           } else {
-            poolName = `${assetTokenContract}-${farmInfo.getDenomTokenContractOrNative(assetTokenContract)} pool`;
+            poolName = `${this.getSymbol(farmInfo.defaultBaseTokenContractOrNative)}-${this.getSymbol(farmInfo.getDenomTokenContractOrNative(baseTokenContract))} pool`;
           }
         }
 
