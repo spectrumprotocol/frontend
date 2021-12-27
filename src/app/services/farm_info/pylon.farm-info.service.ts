@@ -28,7 +28,7 @@ export class PylonFarmInfoService implements FarmInfoService {
   farmColor = '#00cfda';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
-  dex: DEX = 'TERRASWAP';
+  dex: DEX = 'Terraswap';
 
   get defaultBaseTokenContractOrNative() {
     return this.terrajs.settings.pylonToken;

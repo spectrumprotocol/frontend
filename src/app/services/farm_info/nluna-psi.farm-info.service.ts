@@ -29,7 +29,7 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
   farmColor = '#F4B6C7';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
-  dex: DEX = 'TERRASWAP';
+  dex: DEX = 'Terraswap';
 
   get defaultBaseTokenContractOrNative() {
     return this.terrajs.settings.nLunaToken;

@@ -28,7 +28,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'PYLON_LIQUID';
   highlight = true;
   auditWarning = false;
-  dex: DEX = 'TERRASWAP';
+  dex: DEX = 'Terraswap';
 
   get defaultBaseTokenContractOrNative() {
     return this.terrajs.settings.bPsiDPToken;

@@ -130,14 +130,14 @@
 <!--            TODO this spec pool response have to be changed once migrated to astroport-->
             <span class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || '0' | balance:
-              info.poolResponses['TERRASWAP'+'|'+terrajs.settings.specToken+'|'+'uusd'] |
+              info.poolResponses['Terraswap'+'|'+terrajs.settings.specToken+'|'+'uusd'] |
               unit: 6 : '1.0-2' }})
             </span>
           </h3>
         </div>
       </div>
     </div>
-    <div *ngIf="vault.poolInfo.dex === 'ASTROPORT'" class="col col-mb">
+    <div *ngIf="vault.poolInfo.dex === 'Astroport'" class="col col-mb">
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
@@ -819,7 +819,7 @@
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || 0 | unit }}
                 <small class="text-muted">
                   (${{ info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || '0' | balance:
-                  info.poolResponses['TERRASWAP'+'|'+terrajs.settings.specToken+'|'+'uusd'] |
+                  info.poolResponses['Terraswap'+'|'+terrajs.settings.specToken+'|'+'uusd'] |
                   unit: 6 : '1.0-2' }})
                 </small>
               </div>

@@ -28,7 +28,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
   auditWarning = true;
   farmColor = '#249fd4';
   farmType: FARM_TYPE_ENUM = 'LP';
-  dex: DEX = 'TERRASWAP';
+  dex: DEX = 'Terraswap';
 
   get defaultBaseTokenContractOrNative() {
     return this.terrajs.settings.terraworldToken;

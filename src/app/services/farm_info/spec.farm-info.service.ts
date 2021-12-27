@@ -25,7 +25,7 @@ export class SpecFarmInfoService implements FarmInfoService {
   farmColor = '#fc5185';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
-  dex: DEX = 'TERRASWAP';
+  dex: DEX = 'Terraswap';
 
   get defaultBaseTokenContractOrNative() {
     return this.terrajs.settings.specToken;

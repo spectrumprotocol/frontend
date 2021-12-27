@@ -27,7 +27,7 @@ export class MockAstroportAnchorFarmInfoService implements FarmInfoService {
   farmColor = '#3bac3b';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
-  dex: DEX = 'ASTROPORT';
+  dex: DEX = 'Astroport';
 
   get defaultBaseTokenContractOrNative() {
     return this.terrajs.settings.anchorAstroportToken;

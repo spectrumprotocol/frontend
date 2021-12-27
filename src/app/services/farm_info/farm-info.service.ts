@@ -11,7 +11,7 @@ import { VaultsResponse } from '../api/gov/vaults_response';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem | PylonLiquidPoolItem;
 export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID';
-export type DEX = 'TERRASWAP' | 'ASTROPORT';
+export type DEX = 'Terraswap' | 'Astroport';
 export type PoolInfo = PoolItem & {
   key: string;
   farm: string;

@@ -27,7 +27,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
   farmColor = '#3bac3b';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
-  dex: DEX = 'TERRASWAP';
+  dex: DEX = 'Terraswap';
 
   get defaultBaseTokenContractOrNative() {
     return this.terrajs.settings.anchorToken;
