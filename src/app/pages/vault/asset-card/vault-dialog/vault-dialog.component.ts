@@ -677,8 +677,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else {
       const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
       const [tokenA, tokenB] = poolResponse.assets[0].info.token['contract_addr'] === this.vault.poolInfo.baseTokenContractOrNative
-        ? [poolResponse.assets[0], poolResponse.assets[1]]
-        : [poolResponse.assets[1], poolResponse.assets[0]];
+        ? [poolResponse.assets[1], poolResponse.assets[0]]
+        : [poolResponse.assets[0], poolResponse.assets[1]];
       const tokenAAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
         .times(tokenA.amount).div(poolResponse.total_share).integerValue();
       const tokenBAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
@@ -695,7 +695,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const withdrawA = tokenAAmt.plus(returnAmt);
       const withdrawMinA = tokenAAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE));
 
-      const simulate2 = await this.terraSwap.query(this.info.pairInfos[tokenA.info.token['contract_addr']].contract_addr, {
+      const simulate2 = await this.terraSwap.query(this.info.pairInfos[this.vault.poolInfo.dex + '|' + tokenA.info.token['contract_addr']  + '|' + Denom.USD].contract_addr, {
         simulation: {
           offer_asset: {
             info: tokenA.info,
