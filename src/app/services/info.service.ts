@@ -335,6 +335,7 @@ export class InfoService {
     });
     await Promise.all([
       this.refreshGovStat(stat),
+      this.refreshMarketCap(),
       ...tasks
     ]);
 
