@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { AnchorFarmService } from '../api/anchor-farm.service';
 import { AnchorStakingService } from '../api/anchor-staking.service';
-import { PoolItem } from '../api/anchor_farm/pools_response';
-import { RewardInfoResponseItem } from '../api/anchor_farm/reward_info_response';
+import {Decimal, PoolItem, Uint128} from '../api/astroport_ust_farm/pools_response';
+import { RewardInfoResponseItem } from '../api/astroport_ust_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
   DEX,
@@ -59,8 +59,23 @@ export class MockAstroportAnchorFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.anchorFarm.query({ pools: {} });
-    return pool.pools;
+    return [
+      {
+        asset_token: this.terrajs.settings.anchorAstroportToken,
+        auto_spec_share_index: '0',
+        farm_share: '0',
+        farm_share_index: '0',
+        farm2_share: '0',
+        farm2_share_index: '0',
+        stake_spec_share_index: '0',
+        staking_token: '0',
+        state_spec_share_index: '0',
+        total_auto_bond_share: '0',
+        total_stake_bond_amount: '0',
+        total_stake_bond_share: '0',
+        weight: 100,
+      }
+    ];
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
@@ -116,12 +131,28 @@ export class MockAstroportAnchorFarmInfoService implements FarmInfoService {
   }
 
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const rewardInfo = await this.anchorFarm.query({
-      reward_info: {
-        staker_addr: this.terrajs.address,
+    return [
+      {
+        asset_token: this.terrajs.settings.anchorAstroportToken,
+        auto_bond_amount: '1000000',
+        auto_bond_share: '1000000',
+        auto_spec_share_index: '1000000',
+        bond_amount: '2000000',
+        deposit_amount: '1500000',
+        deposit_time: 1640617615,
+        farm_share: '1000000',
+        farm_share_index: '1000000',
+        farm2_share: '1000000',
+        farm2_share_index: '1000000',
+        pending_farm_reward: '1000000',
+        pending_farm2_reward: '1500000',
+        pending_spec_reward: '1000000',
+        spec_share: '1000000',
+        stake_bond_amount: '1000000',
+        stake_bond_share: '1000000',
+        stake_spec_share_index: '1000000',
       }
-    });
-    return rewardInfo.reward_infos;
+    ];
   }
 
   getStakeGovMsg(amount: string): MsgExecuteContract {
