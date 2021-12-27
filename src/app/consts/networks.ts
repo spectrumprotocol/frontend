@@ -54,6 +54,7 @@ export interface ISettings {
   bPsiDPToken: string;
   psiDPGatewayPool: string;
   psiDPToken: string;
+  astroToken: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -123,6 +124,7 @@ export const networks: Record<string, ISettings> = {
     bPsiDPToken: 'terra1zsaswh926ey8qa5x4vj93kzzlfnef0pstuca0y', // Pylon Psi-bPsiDP-24m Pair terra167gwjhv4mrs0fqj0q5tejyl6cz6qc2cl95z530
     psiDPGatewayPool: 'terra1xu84jh7x2ugt3gkpv8d450hdwcyejtcwwkkzgv',
     psiDPToken: 'terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc',
+    astroToken: '',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -191,6 +193,7 @@ export const networks: Record<string, ISettings> = {
     bPsiDPToken: 'terra1ex8ss7xhwcf8x6n47dn656hf8t0cw97myjr35a',
     psiDPGatewayPool: 'terra1zd8q7wltywdd90x2skvexh06p6r8mwljfqx4eu',
     psiDPToken: 'terra1c6vsshlv5gqtwq48darkunnpxu5ustcv96e0qk',
+    astroToken: 'terra1cc2up8erdqn2l7nz37qjgvnqy56sr38aj9vqry',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',

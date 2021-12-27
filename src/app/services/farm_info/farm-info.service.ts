@@ -28,7 +28,7 @@ export type PoolInfo = PoolItem & {
   highlight: boolean;
   hasProxyReward: boolean;
 };
-export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem | AstroportUSTRewardInfoResponseItem;
+export type RewardInfoResponseItem = AstroportUSTRewardInfoResponseItem | MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
 export interface PairStat {
   tvl: string;

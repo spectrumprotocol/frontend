@@ -35,6 +35,7 @@ export interface Stat {
   govTvl: string;
   govApr: number;
   govPoolCount: number;
+  astroApr: number;
 }
 
 export type PendingReward = {
@@ -312,6 +313,7 @@ export class InfoService {
       govTvl: '0',
       govApr: 0,
       govPoolCount: 1,
+      astroApr: 0, // TODO get astro apr
     };
     const vaultsTask = this.gov.vaults();
     await this.refreshPoolInfos();
