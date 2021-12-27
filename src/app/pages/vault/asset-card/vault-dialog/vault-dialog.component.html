@@ -244,7 +244,7 @@
                     <div class="input-group">
                       <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"><img
                         [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle me-1"
-                        height="24" width="24">{{vault.poolInfo.token_symbol}}</span>
+                        height="24" width="24">{{vault.denomSymbol}}</span>
                       <input #depositTokenBAmtTokenTokenCtl="ngModel"
                              (input)="depositTokenBTokenTokenChanged(false, $event)" [(ngModel)]="depositTokenBAmtTokenToken"
                              [class.is-invalid]="(formDeposit.submitted || depositTokenBAmtTokenTokenCtl.touched) && depositTokenBAmtTokenTokenCtl.invalid"

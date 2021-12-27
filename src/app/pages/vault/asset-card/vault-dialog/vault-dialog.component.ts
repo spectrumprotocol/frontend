@@ -512,7 +512,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
                 pair_contract: this.info.pairInfos[this.vault.poolInfo.key].contract_addr,
                 asset_info: {
                   token: {
-                    contract_addr: this.vault.poolInfo.farmTokenContract,
+                    contract_addr: this.vault.poolInfo.denomTokenContractOrNative,
                   },
                 },
                 belief_price: this.basedTokenPrice,
