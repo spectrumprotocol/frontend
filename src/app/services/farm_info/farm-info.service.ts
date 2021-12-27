@@ -4,6 +4,8 @@ import { PoolItem as nAssetPsiPoolItem } from '../api/nexus_nassets_psi_farm/poo
 import { PoolItem as PylonLiquidPoolItem } from '../api/pylon_liquid_farm/pools_response';
 import { RewardInfoResponseItem as MirrorRewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
 import { RewardInfoResponseItem as SpecRewardInfoResponseItem } from '../api/spec_farm/reward_info_response';
+import { RewardInfoResponseItem as AstroportUSTRewardInfoResponseItem } from '../api/astroport_ust_farm/reward_info_response';
+
 import { InjectionToken } from '@angular/core';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
@@ -26,7 +28,7 @@ export type PoolInfo = PoolItem & {
   highlight: boolean;
   hasProxyReward: boolean;
 };
-export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
+export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem | AstroportUSTRewardInfoResponseItem;
 
 export interface PairStat {
   tvl: string;

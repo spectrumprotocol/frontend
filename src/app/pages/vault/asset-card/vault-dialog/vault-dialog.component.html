@@ -107,17 +107,47 @@
         </div>
       </div>
     </div>
-    <div *ngIf="vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="col col-mb">
+    <div *ngIf="vault.poolInfo.dex === 'Astroport'" class="col col-mb">
+      <div class="card box-left h-100">
+        <div class="card-body">
+          <p class="card-text sub-topic">
+            Staked ASTRO
+          </p>
+          <h3 class="card-title text-primary">
+            1
+            <span class="small text-white">
+              ($1)</span>
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="vault.poolInfo.dex === 'Terraswap' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="col col-mb">
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
             Staked {{ vault.rewardSymbol }}
           </p>
           <h3 class="card-title text-primary">
-<!--            TODO pending_farm2_reward for dual reward-->
             {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}
             <span class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || '0' | balance:
+              info.poolResponses[vault.poolInfo.dex + '|' + vault.poolInfo.rewardTokenContract + '|' + 'uusd'] |
+              unit: vault.baseDecimals : '1.0-2' }})
+            </span>
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake && vault.poolInfo.hasProxyReward" class="col col-mb">
+      <div class="card box-left h-100">
+        <div class="card-body">
+          <p class="card-text sub-topic">
+            Staked {{ vault.rewardSymbol }}
+          </p>
+          <h3 class="card-title text-primary">
+            {{info.rewardInfos[vault.poolInfo.key]?.pending_farm2_reward || 0 | unit : vault.baseDecimals }}
+            <span class="small text-white">
+              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.pending_farm2_reward || '0' | balance:
               info.poolResponses[vault.poolInfo.dex + '|' + vault.poolInfo.rewardTokenContract + '|' + 'uusd'] |
               unit: vault.baseDecimals : '1.0-2' }})
             </span>
@@ -139,20 +169,6 @@
               info.poolResponses['Terraswap'+'|'+terrajs.settings.specToken+'|'+'uusd'] |
               unit: 6 : '1.0-2' }})
             </span>
-          </h3>
-        </div>
-      </div>
-    </div>
-    <div *ngIf="vault.poolInfo.dex === 'Astroport'" class="col col-mb">
-      <div class="card box-left h-100">
-        <div class="card-body">
-          <p class="card-text sub-topic">
-            Staked ASTRO
-          </p>
-          <h3 class="card-title text-primary">
-            1
-            <span class="small text-white">
-              ($1)</span>
           </h3>
         </div>
       </div>
