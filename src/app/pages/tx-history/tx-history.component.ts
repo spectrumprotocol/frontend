@@ -267,7 +267,11 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
   }
 
   getSymbol(contract_addr: string){
-    return this.info.tokenInfos[contract_addr].symbol;
+    if (CONFIG.NATIVE_TOKENS.includes(contract_addr)){
+      return Denom.display[contract_addr];
+    } else {
+      return this.info.tokenInfos[contract_addr]?.symbol;
+    }
   }
 
   poolInfoKeys: string[];
