@@ -31,6 +31,7 @@ export interface Vault {
   unitDisplay: string;
   shortUnitDisplay: string;
   score: number;
+  fullName: string;
 }
 
 @Component({

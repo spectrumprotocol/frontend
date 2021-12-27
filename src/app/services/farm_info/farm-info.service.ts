@@ -24,6 +24,7 @@ export type PoolInfo = PoolItem & {
   score: number;
   dex?: DEX;
   highlight: boolean;
+  hasProxyReward: boolean;
 };
 export type RewardInfoResponseItem = MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
@@ -62,6 +63,7 @@ export interface FarmInfoService {
   readonly farmType?: FARM_TYPE_ENUM;
   readonly highlight?: boolean;
   readonly dex?: DEX;
+  readonly hasProxyReward?: boolean;
 
   // baseToken should be is get from querying poolInfo
   readonly defaultBaseTokenContractOrNative: string;

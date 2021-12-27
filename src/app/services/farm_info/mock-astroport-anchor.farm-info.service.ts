@@ -28,6 +28,7 @@ export class MockAstroportAnchorFarmInfoService implements FarmInfoService {
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
+  hasProxyReward = true;
 
   get defaultBaseTokenContractOrNative() {
     return this.terrajs.settings.anchorAstroportToken;

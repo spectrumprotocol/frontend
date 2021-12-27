@@ -215,6 +215,7 @@ export class InfoService {
             score: (farmInfo.highlight ? 1000000 : 0) + (pool.weight || 0),
             dex: farmInfo.dex ?? 'Terraswap',
             highlight: farmInfo.highlight,
+            hasProxyReward: farmInfo.hasProxyReward ?? false
           });
       }
     });
@@ -622,6 +623,9 @@ export class InfoService {
           ? baseSymbol
           : 'LP',
         score,
+        fullName: poolInfo.farmType === 'PYLON_LIQUID'
+          ? `${baseSymbol} ${poolInfo.dex}`
+          : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
       };
       this.allVaults.push(vault);
     }
