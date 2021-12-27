@@ -427,7 +427,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
 
       const depositMsg = msgs[msgs.length - 3];
       const liquidInfo = farmInfo.pylonLiquidInfo;
-      if (depositMsg?.contract === liquidInfo.dpPool && depositMsg.execute_msg?.['deposit']) {
+      if (depositMsg?.contract === liquidInfo?.dpPool && depositMsg?.execute_msg?.['deposit']) {
         const provideAmount = +depositMsg.coins.find(it => it.denom === Denom.USD)?.amount / CONFIG.UNIT || 0;
         const via = 'Pylon pool';
         const result = txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, compoundRate, { provideAmount, via }, farmInfo.farmType);
