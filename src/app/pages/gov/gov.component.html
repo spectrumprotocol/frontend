@@ -72,12 +72,13 @@
           <div class="card-body ps-3">
             <p class="card-text sub-topic">
               Staked in Gov
+              
             </p>
+            <p *ngIf="+myBalance?.balance" class="small text-primary mb-0 float-end mg-10">{{stakedInGovAPR | percent}} APR</p>
             <h3 class="card-title">
               <app-digit [value]="+myBalance?.balance / UNIT"></app-digit>
               <span class="cur-title"> SPEC</span>
             </h3>
-            <p *ngIf="+myBalance?.balance" class="small text-primary mb-0">{{stakedInGovAPR | percent}} APR</p>
           </div>
         </div>
       </div>

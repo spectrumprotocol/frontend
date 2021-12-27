@@ -2,7 +2,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { BalancePipe } from './balance.pipe';
 import { PoolResponse } from '../services/api/terraswap_pair/pool_response';
-import { TerrajsService } from '../services/terrajs.service';
 
 @Pipe({
   name: 'lpBalance'
@@ -10,8 +9,7 @@ import { TerrajsService } from '../services/terrajs.service';
 export class LpBalancePipe implements PipeTransform {
 
   constructor(
-    private balancePipe: BalancePipe,
-    private terrajs: TerrajsService
+    private balancePipe: BalancePipe
   ) { }
 
   transform(lp: any, poolResponses: Record<string, PoolResponse>, key: string): string {
