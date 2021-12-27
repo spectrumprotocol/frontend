@@ -30,6 +30,10 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   auditWarning = false;
   dex: DEX = 'TERRASWAP';
 
+  get defaultBaseTokenContractOrNative() {
+    return this.terrajs.settings.bPsiDPToken;
+  }
+
   // not actually denom, but has trade pair
   getDenomTokenContractOrNative(baseToken?: string): string{
     return this.terrajs.settings.nexusToken;

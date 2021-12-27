@@ -30,6 +30,10 @@ export class TerraworldFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'TERRASWAP';
 
+  get defaultBaseTokenContractOrNative() {
+    return this.terrajs.settings.terraworldToken;
+  }
+
   getDenomTokenContractOrNative(baseToken?: string){
     return Denom.USD;
   }

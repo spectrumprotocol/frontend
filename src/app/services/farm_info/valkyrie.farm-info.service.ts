@@ -28,6 +28,10 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'TERRASWAP';
 
+  get defaultBaseTokenContractOrNative() {
+    return this.terrajs.settings.valkyrieToken;
+  }
+
   getDenomTokenContractOrNative(baseToken?: string){
     return Denom.USD;
   }

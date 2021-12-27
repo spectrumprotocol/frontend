@@ -31,6 +31,10 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'TERRASWAP';
 
+  get defaultBaseTokenContractOrNative() {
+    return this.terrajs.settings.nLunaToken;
+  }
+
   getDenomTokenContractOrNative(baseToken?: string){
     return this.terrajs.settings.nexusToken;
   }

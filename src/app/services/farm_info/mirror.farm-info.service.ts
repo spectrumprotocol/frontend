@@ -29,6 +29,10 @@ export class MirrorFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'TERRASWAP';
 
+  get defaultBaseTokenContractOrNative() {
+    return this.terrajs.settings.mirrorToken;
+  }
+
   getDenomTokenContractOrNative(baseToken?: string){
     return Denom.USD;
   }

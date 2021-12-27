@@ -63,7 +63,8 @@ export interface FarmInfoService {
   readonly highlight?: boolean;
   readonly dex?: DEX;
 
-  // baseToken is get from querying poolInfo
+  // baseToken should be is get from querying poolInfo
+  readonly defaultBaseTokenContractOrNative: string;
   getDenomTokenContractOrNative(baseToken?: string): string;
 
   queryPoolItems(): Promise<PoolItem[]>;

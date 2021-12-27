@@ -22,6 +22,10 @@ export class OrionFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'TERRASWAP';
 
+  get defaultBaseTokenContractOrNative() {
+    return this.terrajs.settings.orionToken;
+  }
+
   getDenomTokenContractOrNative(baseToken?: string){
     return Denom.USD;
   }

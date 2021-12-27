@@ -480,9 +480,10 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = vault.poolInfo.farmType === 'PYLON_LIQUID'
+      const bond_amount = (vault.poolInfo.farmType === 'PYLON_LIQUID'
         ? +rewardInfo.bond_amount
-        : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.key) / CONFIG.UNIT || 0;
+        : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.key))
+          / CONFIG.UNIT || 0;
       const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.poolInfo.key].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 

@@ -27,6 +27,10 @@ export class SpecFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'TERRASWAP';
 
+  get defaultBaseTokenContractOrNative() {
+    return this.terrajs.settings.specToken;
+  }
+
   getDenomTokenContractOrNative(baseToken?: string){
     return Denom.USD;
   }

@@ -29,6 +29,10 @@ export class AnchorFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'TERRASWAP';
 
+  get defaultBaseTokenContractOrNative() {
+    return this.terrajs.settings.anchorToken;
+  }
+
   getDenomTokenContractOrNative(baseToken?: string): string{
     return Denom.USD;
   }
