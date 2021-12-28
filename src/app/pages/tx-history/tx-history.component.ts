@@ -551,14 +551,17 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const amountToStakePercentage = this.percentPipe.transform(div(rawAmountToStake, totalLP));
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === lastMsg.contract);
       let assetDesc = '';
+      let unit = '';
       if (farmInfo.farmType === 'PYLON_LIQUID') {
         assetDesc = `${tokenSymbol}`;
+        unit = `${tokenSymbol}`;
       } else {
         assetDesc = `${tokenSymbol}-${farmInfo.pairSymbol} LP`;
+        unit = 'LP';
       }
       return {
         action: 'Farm',
-        desc: `Reallocated deposited ${assetDesc} to auto-compound ${amountToAutoPercentage}, auto-stake ${amountToStakePercentage} (${amountToAuto} LP, ${amountToStake} LP) `,
+        desc: `Reallocated deposited ${assetDesc} to auto-compound ${amountToAutoPercentage}, auto-stake ${amountToStakePercentage} (${amountToAuto} ${unit}, ${amountToStake} ${unit}) `,
       };
     }
 
