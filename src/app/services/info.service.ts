@@ -463,6 +463,10 @@ export class InfoService {
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
       const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+      // TODO this does not present in Astroport version
+      if (data.infoSchemaVersion){
+        location.reload(true);
+      }
       if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
         throw (data);
       }
