@@ -160,7 +160,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     const current_distribution_schedule = (config.distribution_schedule as []).find(obj => height >= +obj[0] && height <= +obj[1]);
     const totalMint = +current_distribution_schedule[2];
     const apr = new BigNumber(totalMint).div(state.total_bond_amount);
-    const apy = (+apr / 365 + 1) ** 365 - 1; // pending compound calc
+    const apy = (+apr / 8760 + 1) ** 8760 - 1; // pending compound calc
     return {
       apy,
     };
