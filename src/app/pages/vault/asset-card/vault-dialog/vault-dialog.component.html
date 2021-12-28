@@ -693,7 +693,7 @@
             </div>
           </form>
         </mdb-tab>
-        <mdb-tab *ngIf="!vault.poolInfo.forceDepositType && !info.DISABLED_VAULTS.includes(vault.poolInfo.dex+'|'+vault.baseSymbol)"
+        <mdb-tab *ngIf="vault.poolInfo.auto_stake && vault.poolInfo.auto_compound && !info.DISABLED_VAULTS.includes(vault.poolInfo.dex+'|'+vault.baseSymbol)"
                  title="Reallocate">
           <form #formReallocate="ngForm" class="needs-validation p-3" novalidate>
             <div class="card card-green">
@@ -754,6 +754,19 @@
                 | unit: 6 : '1.0-6'}} {{ vault.shortUnitDisplay }}
                 <span class="small">({{auto_compound_percent_reallocate / 100 || 0 |
                   percent:'0.2-2'}})</span>
+              </div>
+            </div>
+            <div *ngIf="vault.poolInfo.govLock" class="card card-red mt-3">
+              <div class="card-body">
+                <div class="card-text small mb-1">
+                  <div class="bulk-name-container">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="name-detail">
+                      Auto-stake now turned off because {{vault.poolInfo.farm}} Gov has locking period. 
+                      You still earn {{ vault.poolInfo.token_symbol }}, but the token will not be staked to Gov to earn extra income.
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="d-grid mt-3">

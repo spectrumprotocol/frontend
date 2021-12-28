@@ -25,6 +25,7 @@ export class PylonFarmInfoService implements FarmInfoService {
   farm = 'Pylon';
   autoCompound = true;
   autoStake = true;
+  govLock = true;
   farmColor = '#00cfda';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
@@ -71,7 +72,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.pylonFarm)?.weight || 0;
     const pylonLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/liquidity/v1/overview`));
-    const pylonGovStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/governance/v1/overview`));
+    // const pylonGovStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/governance/v1/overview`));
     const pairs: Record<string, PairStat> = {};
 
     const poolApr = +(pylonLPStat.apy || 0);
@@ -104,7 +105,7 @@ export class PylonFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: +(pylonGovStat.apy || 0),
+        farmApr: 0, // +(pylonGovStat.apy || 0),
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,

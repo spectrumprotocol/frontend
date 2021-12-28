@@ -27,6 +27,9 @@ export type PoolInfo = PoolItem & {
   dex?: DEX;
   highlight: boolean;
   hasProxyReward: boolean;
+  auto_compound: boolean;
+  auto_stake: boolean;
+  govLock: boolean;
 };
 export type RewardInfoResponseItem = AstroportUSTRewardInfoResponseItem | MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 
@@ -55,6 +58,7 @@ export interface FarmInfoService {
   // auto-compound / auto-stake switch
   readonly autoCompound: boolean;
   readonly autoStake: boolean;
+  readonly govLock?: boolean;
 
   // unaudit notice
   readonly auditWarning?: boolean;
