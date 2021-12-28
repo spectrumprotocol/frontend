@@ -256,6 +256,14 @@ export class InfoService {
           });
         }
       });
+    // TODO remove this once ASTRO-UST farm is operate
+    this.pairInfos['Astroport|' + this.terrajs.settings.astroToken + '|' + Denom.USD] = await this.astroportFactory.query({
+      pair: {
+        asset_infos: [
+          { token: { contract_addr: this.terrajs.settings.astroToken } }, { native_token: { denom: Denom.USD } }
+        ]
+      }
+    });
     if (tasks.length) {
       await Promise.all(tasks).catch(err => console.error('pairInfo query error: ', err));
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
