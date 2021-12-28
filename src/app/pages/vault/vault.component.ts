@@ -24,6 +24,10 @@ export interface Vault {
   compoundApy: number;
   stakeApy: number;
   apy: number;
+  name: string;
+  unitDisplay: string;
+  shortUnitDisplay: string;
+  score: number;
 }
 
 @Component({
@@ -140,7 +144,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     if (this.lastSortBy !== this.sortBy) {
       switch (this.sortBy) {
         case 'multiplier':
-          vaults.sort((a, b) => (b.pairStat?.multiplier || 0) - (a.pairStat?.multiplier || 0));
+          vaults.sort((a, b) => b.score - a.score);
           break;
         case 'apy':
           vaults.sort((a, b) => b.apy - a.apy);

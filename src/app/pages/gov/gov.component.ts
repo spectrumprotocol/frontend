@@ -125,11 +125,13 @@ export class GovComponent implements OnInit, OnDestroy {
         const unlockAt = balanceInfo?.unlock ? new Date(balanceInfo.unlock * 1000) : null;
         const poolTvl = +pool.total_balance * +this.info.specPrice;
         const apr = vaultFeeByPools[pool.days] / poolTvl;
+        const austApr = +anchorRatePerYear;
 
         return {
           userBalance,
           userAUst,
           userProfit,
+          austApr,
           unlockAt,
           days: pool.days,
           apr: apr + apr * +anchorRatePerYear / 2,

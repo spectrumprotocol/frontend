@@ -1,6 +1,6 @@
 @import "src/scss/variables";
 
-.no-padding{
+.no-padding {
   padding-left: unset;
   padding-right: unset;
 }
@@ -20,7 +20,12 @@
   padding: 2px;
 }
 
-.token-denom{
+.single-assetIcon-for-listview {
+  margin-left: 11px;
+  margin-right: 11px;
+}
+
+.token-denom {
   position: inherit;
   //z-index: -1;
   margin-left: -10px;
@@ -51,23 +56,23 @@
   color: rgb(4, 180, 48);
 }
 
-.badge-disabled {
+.badge-deposited {
   top: 0;
   right: 0;
   border-top-left-radius: 0.25rem;
   background: $primary;
   width: fit-content;
-  padding: 2px 10px;
 }
 
 .badge-deposit-disabled {
   height: fit-content;
   width: fit-content;
-  padding: 2px 10px;
   background: $text-error;
   position: relative;
   border-top-right-radius: 0.3rem;
   font-size: 11px;
+  padding: 2px 10px;
+  border-bottom-left-radius: 0.3rem;
 }
 
 @-webkit-keyframes mover {
@@ -97,7 +102,7 @@
 }
 
 ::ng-deep {
-  .custom-slider .ngx-slider{
+  .custom-slider .ngx-slider {
     .ngx-slider-bar {
       background: $white;
       height: 10px;
@@ -108,38 +113,37 @@
       top: auto;
       bottom: -16px;
       background-color: $primary;
-      &:focus{
+      &:focus {
         outline-style: none !important;
         outline-width: 0 !important;
       }
-      &:after{
+      &:after {
         display: none;
       }
     }
     .ngx-slider-bubble {
       display: none;
-
     }
   }
 }
 
-.desc-slider{
+.desc-slider {
   font-size: 0.8em;
 }
 
-.input-compound-stake{
+.input-compound-stake {
   width: 3em !important;
   padding-left: unset !important;
   padding-right: unset !important;
   text-align: center !important;
 }
 
-.input-compound-stake-percent{
+.input-compound-stake-percent {
   padding-left: 0.4em;
   padding-top: 0.4rem;
 }
 
-.slider-compound-stake{
+.slider-compound-stake {
   margin-top: -1.2em;
 }
 
@@ -158,11 +162,11 @@
 }
 
 .dot-line {
-    height: 1px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border-bottom: 1px dashed hsla(0, 0%, 100%, 0.1);
-    background-color: transparent;
+  height: 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed hsla(0, 0%, 100%, 0.1);
+  background-color: transparent;
 }
 
 @media screen and (max-width: 1199px) {

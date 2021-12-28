@@ -189,6 +189,8 @@ export class InfoService {
               : farmInfo.autoCompound ? 'compound' : 'stake',
             pairSymbol: farmInfo.pairSymbol,
             auditWarning: farmInfo.auditWarning,
+            farmType: farmInfo.farmType ?? 'LP',
+            highlight: farmInfo.highlight,
           });
       }
     });
@@ -353,9 +355,9 @@ export class InfoService {
     const poolResponses: Record<string, PoolResponse> = {};
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
-      const pairInfo = this.pairInfos[key];
-      poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-        .then(it => poolResponses[key] = it));
+        const pairInfo = this.pairInfos[key];
+        poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
+          .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses error: ', error)));
     }
     await Promise.all(poolTasks);
     this.poolResponses = poolResponses;
@@ -406,7 +408,10 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.assetToken) / CONFIG.UNIT || 0;
+      const bond_amount = (vault.poolInfo.farmType === 'PYLON_LIQUID'
+        ? +rewardInfo.bond_amount
+        : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.assetToken))
+          / CONFIG.UNIT || 0;
       const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.assetToken].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
@@ -503,6 +508,8 @@ export class InfoService {
       const farmApy = poolApr + poolApr * farmApr / 2;
       const stakeApy = farmApy + specApy;
       const apy = Math.max(compoundApy, stakeApy);
+      const poolInfo = this.poolInfos[key];
+      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0);
 
       const vault: Vault = {
         symbol: this.tokenInfos[key]?.symbol,
@@ -511,13 +518,23 @@ export class InfoService {
         assetToken: key,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
-        poolInfo: this.poolInfos[key],
+        poolInfo,
         pairInfo: this.pairInfos[key],
         specApy,
         farmApy,
         compoundApy,
         stakeApy,
         apy,
+        name: poolInfo.farmType === 'PYLON_LIQUID'
+          ? this.tokenInfos[key]?.symbol
+          : `${this.tokenInfos[key]?.symbol}-${poolInfo.pairSymbol} LP`,
+        unitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
+          ? this.tokenInfos[key]?.symbol
+          : `${this.tokenInfos[key]?.symbol}-${poolInfo.pairSymbol} LP`,
+        shortUnitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
+          ? this.tokenInfos[key]?.symbol
+          : 'LP',
+        score,
       };
       this.allVaults.push(vault);
     }

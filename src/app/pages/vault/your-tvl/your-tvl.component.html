@@ -1,7 +1,7 @@
 <div class="card p-3">
   <div class="row">
     <div class="col">
-      <h5 class="text-center">My Total value
+      <h5 class="text-center">My Total Value
       <i class="margin-left-auto margin-top-close-button fas fa-times fa-lg float-end fs-5" role="button" (click)="closeModal()"></i>
       </h5>
     </div>
@@ -32,7 +32,7 @@
     </div>
     <ng-container *ngFor="let chartData of chartDataList; let i = index;">
       <div class="d-flex ptb-10" *ngIf="chartData.value > 0.01" [ngClass]="{'switch-grey': i%2 === 0 }">
-        <span class="legend-square" [style.background-color]="chartColors.domain[i]"></span> {{chartData.name}} farm
+        <span class="legend-square" [style.background-color]="chartColors.domain[i]"></span> {{chartData.name}}
         <span class="margin-left-auto">
           <app-digit [duration]=300 [value]="chartData.value" [format]="'1.2-2'"></app-digit> UST
           <div class="your-tvl-percentage">(<app-digit [duration]=300 [value]="chartData.value * 100 / info.myTvl" [format]="'1.2-2'"></app-digit> %)</div>
