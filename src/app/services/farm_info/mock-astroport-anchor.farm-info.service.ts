@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { AnchorFarmService } from '../api/anchor-farm.service';
 import { AnchorStakingService } from '../api/anchor-staking.service';
-import {Decimal, PoolItem, Uint128} from '../api/astroport_ust_farm/pools_response';
-import { RewardInfoResponseItem } from '../api/astroport_ust_farm/reward_info_response';
+import {Decimal, PoolItem, Uint128} from '../api/astro_token_ust_farm/pools_response';
+import { RewardInfoResponseItem } from '../api/astro_token_ust_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
   DEX,
