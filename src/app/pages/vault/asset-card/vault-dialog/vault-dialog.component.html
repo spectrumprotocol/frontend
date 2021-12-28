@@ -466,7 +466,7 @@
               <div *ngIf="depositbDPTokenAmtbDPToken" class="mt-3 pool-info">
                 <div *ngIf="+depositFeeLp" class="row">
                   <div class="col">Deposit Fee (&lt;0.1%)</div>
-                  <div *ngIf="+depositFeeLp > 0" class="col text-end">{{depositFeeLp | number }} {{vault.poolInfo.baseTokenContractOrNative}}</div>
+                  <div *ngIf="+depositFeeLp > 0" class="col text-end">{{depositFeeLp | number }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+depositFeeLp > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
                       <span class="visually-hidden">Loading...</span>
@@ -475,7 +475,7 @@
                 </div>
                 <div *ngIf="+depositFeeLp" class="row">
                   <div class="col">Net bDP Token</div>
-                  <div *ngIf="+netLpLp > 0" class="col text-end">{{netLpLp | number }} {{vault.poolInfo.baseTokenContractOrNative}}</div>
+                  <div *ngIf="+netLpLp > 0" class="col text-end">{{netLpLp | number }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+netLpLp > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
                       <span class="visually-hidden">Loading...</span>
@@ -504,16 +504,16 @@
               <div *ngIf="depositUSTAmtbDPToken" class="mt-3 pool-info">
                 <div class="row" *ngIf="lpFromSwapDP">
                   <div class="col">Swap</div>
-                  <div class="col text-end">{{ ustForSwapDP | unit }}&nbsp;UST &gt; {{lpFromSwapDP | unit }}&nbsp;{{vault.poolInfo.baseTokenContractOrNative}}</div>
+                  <div class="col text-end">{{ ustForSwapDP | unit }}&nbsp;UST &gt; {{lpFromSwapDP | unit }}&nbsp;{{vault.baseSymbol}}</div>
                 </div>
                 <div class="row" *ngIf="lpFromDepositDP">
                   <div class="col">Deposit</div>
-                  <div class="col text-end">{{ ustForDepositDP | unit }}&nbsp;UST &gt; {{lpFromDepositDP | unit }}&nbsp;{{vault.poolInfo.baseTokenContractOrNative}}</div>
+                  <div class="col text-end">{{ ustForDepositDP | unit }}&nbsp;UST &gt; {{lpFromDepositDP | unit }}&nbsp;{{vault.baseSymbol}}</div>
                 </div>
 
                 <div class="row">
                   <div class="col">Gross bDP</div>
-                  <div *ngIf="+grossLpUST > 0" class="col text-end">{{grossLpUST | unit }} {{vault.poolInfo.baseTokenContractOrNative}}</div>
+                  <div *ngIf="+grossLpUST > 0" class="col text-end">{{grossLpUST | unit }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+grossLpUST > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
                       <span class="visually-hidden">Loading...</span>
@@ -523,7 +523,7 @@
 
                 <div *ngIf="+depositFeeUST" class="row">
                   <div class="col">Deposit Fee (&lt;0.1%)</div>
-                  <div *ngIf="+depositFeeUST > 0" class="col text-end">{{depositFeeUST | unit }} {{vault.poolInfo.baseTokenContractOrNative}}</div>
+                  <div *ngIf="+depositFeeUST > 0" class="col text-end">{{depositFeeUST | unit }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+depositFeeUST > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
                       <span class="visually-hidden">Loading...</span>
@@ -532,7 +532,7 @@
                 </div>
                 <div *ngIf="+depositFeeUST" class="row">
                   <div class="col">Net bDP</div>
-                  <div *ngIf="+netLpUST > 0" class="col text-end">{{netLpUST | unit }} {{vault.poolInfo.baseTokenContractOrNative}}</div>
+                  <div *ngIf="+netLpUST > 0" class="col text-end">{{netLpUST | unit }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+netLpUST > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
                       <span class="visually-hidden">Loading...</span>
@@ -796,7 +796,7 @@
                   <ng-container *ngIf="withdrawMode === 'tokentoken'">
                     {{ withdrawAmt | lpSplit: info.poolResponses[vault.poolInfo.key]: vault.baseSymbol: vault.denomSymbol: vault.baseDecimals }}
                   </ng-container>
-                  <ng-container *ngIf="withdrawMode === 'lp'">
+                  <ng-container *ngIf="withdrawMode === 'lp' || withdrawMode === 'bdp'">
                     {{ withdrawAmt | number }} {{vault.unitDisplay}}
                   </ng-container>
                 </div>
