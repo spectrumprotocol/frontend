@@ -128,7 +128,7 @@
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
-            Staked {{ vault.rewardSymbol }}
+            <ng-container *ngIf="!vault.poolInfo.govLock">Staked</ng-container> {{ vault.rewardSymbol }}
           </p>
           <h3 class="card-title text-primary">
             {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}
@@ -762,8 +762,8 @@
                   <div class="bulk-name-container">
                     <i class="fas fa-exclamation-triangle"></i>
                     <div class="name-detail">
-                      Auto-stake now turned off because {{vault.poolInfo.farm}} Gov has locking period. 
-                      You still earn {{ vault.poolInfo.token_symbol }}, but the token will not be staked to Gov to earn extra income.
+                      Auto-stake is now turned off because {{vault.poolInfo.farm}} Gov has locking period.
+                      You still earn {{ vault.rewardSymbol }}, but the token will not be staked to Gov to earn extra income.
                     </div>
                   </div>
                 </div>
@@ -867,8 +867,8 @@
             </div>
             <div *ngIf="vault.poolInfo.dex === 'Terraswap' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="row">
               <div class="col">
-                Staked {{ vault.rewardSymbol }}
-                <small class="text-primary">APR: {{ vault.pairStat?.farmApr | percent }}</small>
+                <ng-container *ngIf="!vault.poolInfo.govLock">Staked</ng-container> {{ vault.rewardSymbol }}
+                <small class="text-primary" *ngIf="!vault.poolInfo.govLock">APR: {{ vault.pairStat?.farmApr | percent }}</small>
               </div>
               <div class="col text-end">
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}
@@ -881,8 +881,8 @@
             </div>
             <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake && vault.poolInfo.hasProxyReward" class="row">
               <div class="col">
-                Staked {{ vault.rewardSymbol }}
-                <small class="text-primary">APR: {{ vault.pairStat?.farmApr | percent }}</small>
+                <ng-container *ngIf="!vault.poolInfo.govLock">Staked</ng-container> {{ vault.rewardSymbol }}
+                <small class="text-primary" *ngIf="!vault.poolInfo.govLock">APR: {{ vault.pairStat?.farmApr | percent }}</small>
               </div>
               <div class="col text-end">
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_farm2_reward || 0 | unit : vault.baseDecimals }}
