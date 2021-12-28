@@ -952,14 +952,14 @@
       <div #dropdownDepositMode class="dropdown" mdbDropdown>
         <button class="btn dropdown-toggle btn-drop" mdbDropdownToggle type="button">
           <ng-container *ngIf="depositMode === 'bdp'">
-            <img [src]="vault.poolInfo.baseTokenContractOrNative | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" height="24" width="24">{{ vault.poolInfo.baseTokenContractOrNative }}</ng-container>
+            <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" height="24" width="24">{{ vault.baseSymbol }}</ng-container>
           <ng-container *ngIf="depositMode === 'ust_bdp'">
             <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" height="24" width="24">UST</ng-container>
         </button>
         <ul class="dropdown-menu" mdbDropdownMenu>
           <li><a (click)="dropdownDepositMode.hide(); changeDepositMode('bdp')" [class.active]="depositMode === 'bdp'"
                  class="dropdown-item">
-            <img [src]="vault.poolInfo.baseTokenContractOrNative | url:'icon'" class="deposit-ust" height="25" width="25">{{vault.poolInfo.baseTokenContractOrNative}}</a></li>
+            <img [src]="vault.baseSymbol | url:'icon'" class="deposit-ust" height="25" width="25">{{vault.baseSymbol}}</a></li>
           <li><a (click)="dropdownDepositMode.hide(); changeDepositMode('ust_bdp')" [class.active]="depositMode === 'ust_bdp'"
                  class="dropdown-item">
             <img [src]="'UST' | url:'icon'" class="deposit-ust" height="25" width="25">UST</a></li>
@@ -973,7 +973,7 @@
       <div #dropdownWithdrawMode class="dropdown" mdbDropdown>
         <button class="btn dropdown-toggle btn-drop" mdbDropdownToggle type="button">
           <ng-container *ngIf="withdrawMode === 'bdp'">
-            <img [src]="vault.poolInfo.baseTokenContractOrNative | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" height="24" width="24">{{ vault.poolInfo.baseTokenContractOrNative }}
+            <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" height="24" width="24">{{ vault.baseSymbol }}
           </ng-container>
           <ng-container *ngIf="withdrawMode === 'ust_bdp'">
             <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" height="24" width="24">UST
@@ -982,7 +982,7 @@
         <ul class="dropdown-menu" mdbDropdownMenu>
           <li><a (click)="withdrawMode = 'bdp'; dropdownWithdrawMode.hide()" [class.active]="withdrawMode === 'bdp'"
                  class="dropdown-item">
-            <img [src]="vault.poolInfo.baseTokenContractOrNative | url:'icon'" class="deposit-ust" height="24" width="24">{{ vault.poolInfo.baseTokenContractOrNative }}
+            <img [src]="vault.baseSymbol | url:'icon'" class="deposit-ust" height="24" width="24">{{ vault.baseSymbol }}
           </a></li>
           <li><a (click)="withdrawMode = 'ust_bdp'; dropdownWithdrawMode.hide()" [class.active]="withdrawMode === 'ust_bdp'"
                  class="dropdown-item">

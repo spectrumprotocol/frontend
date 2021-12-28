@@ -120,11 +120,13 @@
         <div class="pt-2 p-l-0 bulk-name-container" *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
           <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
           <div class="name-detail">
-            <h6 class="m-0">{{vault.name}}</h6>
-            <p class="m-0">
-              <span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span>
+            <h6 class="m-0">
+              {{vault.name}}
               <img *ngIf="vault.poolInfo.dex === 'Astroport'" src="./assets/logo-astroport.svg" class="dex-logo" alt="Astroport DEX">
               <img *ngIf="vault.poolInfo.dex === 'Terraswap'" src="./assets/logo-terraswap.svg" class="dex-logo" alt="Terraswap DEX">
+            </h6>
+            <p class="m-0">
+              <span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span>
             </p>
           </div>
         </div>
