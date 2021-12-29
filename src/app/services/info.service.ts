@@ -1,13 +1,13 @@
-import {Inject, Injectable} from '@angular/core';
-import {BLOCK_TIME, TerrajsService} from './terrajs.service';
-import {TokenService} from './api/token.service';
-import {BankService} from './api/bank.service';
-import {TerraSwapService} from './api/terraswap.service';
-import {PoolResponse} from './api/terraswap_pair/pool_response';
-import {div, minus, plus, times} from '../libs/math';
-import {CONFIG} from '../consts/config';
-import {TerraSwapFactoryService} from './api/terraswap-factory.service';
-import {GovService} from './api/gov.service';
+import { Inject, Injectable } from '@angular/core';
+import { BLOCK_TIME, TerrajsService } from './terrajs.service';
+import { TokenService } from './api/token.service';
+import { BankService } from './api/bank.service';
+import { TerraSwapService } from './api/terraswap.service';
+import { PoolResponse } from './api/terraswap_pair/pool_response';
+import { div, minus, plus, times } from '../libs/math';
+import { CONFIG } from '../consts/config';
+import { TerraSwapFactoryService } from './api/terraswap-factory.service';
+import { GovService } from './api/gov.service';
 import {
   FARM_INFO_SERVICE,
   FarmInfoService,
@@ -15,17 +15,17 @@ import {
   PoolInfo,
   RewardInfoResponseItem
 } from './farm_info/farm-info.service';
-import {fromEntries} from '../libs/core';
-import {PairInfo} from './api/terraswap_factory/pair_info';
-import {BalancePipe} from '../pipes/balance.pipe';
-import {LpBalancePipe} from '../pipes/lp-balance.pipe';
-import {Vault} from '../pages/vault/vault.component';
-import {HttpClient} from '@angular/common/http';
-import {memoize} from 'utils-decorators';
-import {Denom} from '../consts/denom';
-import {WalletService} from './api/wallet.service';
-import {AstroportService} from './api/astroport.service';
-import {AstroportFactoryService} from './api/astroport-factory.service';
+import { fromEntries } from '../libs/core';
+import { PairInfo } from './api/terraswap_factory/pair_info';
+import { BalancePipe } from '../pipes/balance.pipe';
+import { LpBalancePipe } from '../pipes/lp-balance.pipe';
+import { Vault } from '../pages/vault/vault.component';
+import { HttpClient } from '@angular/common/http';
+import { memoize } from 'utils-decorators';
+import { Denom } from '../consts/denom';
+import { WalletService } from './api/wallet.service';
+import { AstroportService } from './api/astroport.service';
+import { AstroportFactoryService } from './api/astroport-factory.service';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -52,7 +52,7 @@ export type Portfolio = {
   total_reward_ust: number;
   gov: PendingReward;
   avg_tokens_apr?: number;
-  tokens: Map<string, PendingReward & { rewardTokenContract: string, apr?: number } >;
+  tokens: Map<string, PendingReward & { rewardTokenContract: string, apr?: number }>;
   farms: Map<string, PortfolioItem>;
 };
 
@@ -87,7 +87,7 @@ export class InfoService {
   ) {
     try {
       const infoSchemaVersion = localStorage.getItem('infoSchemaVersion');
-      if (infoSchemaVersion && +infoSchemaVersion >= 2){
+      if (infoSchemaVersion && +infoSchemaVersion >= 2) {
         const poolJson = localStorage.getItem('poolInfos');
         if (poolJson) {
           this.poolInfos = JSON.parse(poolJson);
@@ -238,7 +238,7 @@ export class InfoService {
         const denomTokenContractOrNative = this.poolInfos[key].denomTokenContractOrNative;
         const tokenB = CONFIG.NATIVE_TOKENS.includes(denomTokenContractOrNative) ?
           { native_token: { denom: denomTokenContractOrNative } } : { token: { contract_addr: denomTokenContractOrNative } };
-        if (this.poolInfos[key].dex === 'Terraswap'){
+        if (this.poolInfos[key].dex === 'Terraswap') {
           this.pairInfos[key] = await this.terraSwapFactory.query({
             pair: {
               asset_infos: [
@@ -247,7 +247,7 @@ export class InfoService {
             }
           });
         }
-        else if (this.poolInfos[key].dex === 'Astroport'){
+        else if (this.poolInfos[key].dex === 'Astroport') {
           this.pairInfos[key] = await this.astroportFactory.query({
             pair: {
               asset_infos: [
@@ -286,13 +286,13 @@ export class InfoService {
       const baseTokenContractOrNative = this.poolInfos[key].baseTokenContractOrNative;
       const denomTokenContractOrNative = this.poolInfos[key].denomTokenContractOrNative;
       const rewardTokenContract = this.poolInfos[key].rewardTokenContract;
-      if (baseTokenContractOrNative && !CONFIG.NATIVE_TOKENS.includes(baseTokenContractOrNative)){
+      if (baseTokenContractOrNative && !CONFIG.NATIVE_TOKENS.includes(baseTokenContractOrNative)) {
         cw20Tokens.add(baseTokenContractOrNative);
       }
-      if (denomTokenContractOrNative && !CONFIG.NATIVE_TOKENS.includes(denomTokenContractOrNative)){
+      if (denomTokenContractOrNative && !CONFIG.NATIVE_TOKENS.includes(denomTokenContractOrNative)) {
         cw20Tokens.add(denomTokenContractOrNative);
       }
-      if (rewardTokenContract && !CONFIG.NATIVE_TOKENS.includes(rewardTokenContract)){
+      if (rewardTokenContract && !CONFIG.NATIVE_TOKENS.includes(rewardTokenContract)) {
         cw20Tokens.add(rewardTokenContract);
       }
     });
@@ -406,19 +406,19 @@ export class InfoService {
     const base = key.split('|')[1];
     const denom = key.split('|')[2];
     const tasks: Promise<any>[] = [];
-    if (!CONFIG.NATIVE_TOKENS.includes(base)){
+    if (!CONFIG.NATIVE_TOKENS.includes(base)) {
       tasks.push(this.token.balance(base)
         .then(it => this.tokenBalances[base] = it.balance));
     }
-    if (!CONFIG.NATIVE_TOKENS.includes(denom)){
+    if (!CONFIG.NATIVE_TOKENS.includes(denom)) {
       tasks.push(this.token.balance(denom)
         .then(it => this.tokenBalances[denom] = it.balance));
     }
-    if (dex === 'Terraswap'){
+    if (dex === 'Terraswap') {
       tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
         .then(it => this.poolResponses[key] = it));
     }
-    if (dex === 'Astroport'){
+    if (dex === 'Astroport') {
       tasks.push(this.astroPort.query(pairInfo.contract_addr, { pool: {} })
         .then(it => this.poolResponses[key] = it));
     }
@@ -433,12 +433,12 @@ export class InfoService {
     const poolResponses: Record<string, PoolResponse> = {};
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
-        const pairInfo = this.pairInfos[key];
-        if (key.split('|')[0] === 'Terraswap' && pairInfo?.contract_addr){
-          poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
+      const pairInfo = this.pairInfos[key];
+      if (key.split('|')[0] === 'Terraswap' && pairInfo?.contract_addr) {
+        poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
           .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses Terraswap error: ', error)));
-        }
-      else if (key.split('|')[0] === 'Astroport' && pairInfo?.contract_addr){
+      }
+      else if (key.split('|')[0] === 'Astroport' && pairInfo?.contract_addr) {
         poolTasks.push(this.astroPort.query(pairInfo.contract_addr, { pool: {} })
           .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses Astroport error: ', error)));
       }
@@ -482,7 +482,7 @@ export class InfoService {
       farms: new Map(),
     };
     for (const farmInfo of this.farmInfos) {
-      if (this.tokenInfos[farmInfo.rewardTokenContract]?.symbol){
+      if (this.tokenInfos[farmInfo.rewardTokenContract]?.symbol) {
         portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { rewardTokenContract: farmInfo.rewardTokenContract, pending_reward_token: 0, pending_reward_ust: 0, pending_reward_astro: 0 });
         portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
       } else {
@@ -500,7 +500,7 @@ export class InfoService {
       const bond_amount = (vault.poolInfo.farmType === 'PYLON_LIQUID'
         ? +rewardInfo.bond_amount
         : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.key))
-          / CONFIG.UNIT || 0;
+        / CONFIG.UNIT || 0;
       const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.poolInfo.key].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 

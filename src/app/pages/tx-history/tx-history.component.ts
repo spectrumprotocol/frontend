@@ -585,7 +585,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       let unit = '';
       if (farmInfo.farmType === 'PYLON_LIQUID') {
         assetDesc = `${baseSymbol}`;
-        unit = `${tokenSymbol}`;
+        unit = `${baseSymbol}`;
       } else {
         assetDesc = `${baseSymbol}-${denomSymbol} ${farmInfo.dex} LP`;
         unit = 'LP';
