@@ -356,9 +356,9 @@ export class InfoService {
     const poolResponses: Record<string, PoolResponse> = {};
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
-        const pairInfo = this.pairInfos[key];
-        poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-          .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses error: ', error)));
+      const pairInfo = this.pairInfos[key];
+      poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
+        .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses error: ', error)));
     }
     await Promise.all(poolTasks);
     this.poolResponses = poolResponses;
@@ -412,7 +412,7 @@ export class InfoService {
       const bond_amount = (vault.poolInfo.farmType === 'PYLON_LIQUID'
         ? +rewardInfo.bond_amount
         : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.assetToken))
-          / CONFIG.UNIT || 0;
+        / CONFIG.UNIT || 0;
       const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.assetToken].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
@@ -464,9 +464,14 @@ export class InfoService {
     try {
       const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
       // TODO this does not present in Astroport version
-      if (data.infoSchemaVersion){
-        location.reload(true);
+      if (data.infoSchemaVersion) {
+        if (!localStorage.getItem('reload')) {
+          localStorage.setItem('reload', 'true');
+          location.reload();
+        }
+        throw new Error('reload required');
       }
+      localStorage.removeItem('reload');
       if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
         throw (data);
       }
