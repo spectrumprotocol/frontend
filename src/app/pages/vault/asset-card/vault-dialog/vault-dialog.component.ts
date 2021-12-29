@@ -1071,7 +1071,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const maxFarmAmount = outPool.minus(inPool).div(bDpPoolAfterCom.plus(ustPool));
       let maxUst = bDpPoolAfterCom.times(maxFarmAmount)
         .div(maxFarmAmount.plus(farmPool2))
-        .multipliedBy(0.99)  // buffer for tax
+        .multipliedBy(0.985)  // buffer for tax
         .integerValue();
       if (maxUst.lt(500_000000)) {
         maxUst = new BigNumber(0);

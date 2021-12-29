@@ -11,13 +11,12 @@ import {
   PoolItem,
   RewardInfoResponseItem
 } from './farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import {HttpClient} from '@angular/common/http';
-import {WasmService} from '../api/wasm.service';
-import {div, times} from '../../libs/math';
-import {Denom} from '../../consts/denom';
+import { WasmService } from '../api/wasm.service';
+import { div } from '../../libs/math';
+import { Denom } from '../../consts/denom';
 import { VaultsResponse } from '../api/gov/vaults_response';
 
 @Injectable()
@@ -128,16 +127,16 @@ export class TerraworldFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.terraworldGov,
           amount,
-          msg: toBase64({bond: {}})
+          msg: toBase64({ bond: {} })
         }
       }
     );
   }
 
-  async getTerraworldLPStat(twdPoolResponse: PoolResponse){
+  async getTerraworldLPStat(twdPoolResponse: PoolResponse) {
     const height = await this.terrajs.getHeight();
     const configTask = this.wasm.query(this.terrajs.settings.terraworldStaking, { config: {} });
-    const stateTask = this.wasm.query(this.terrajs.settings.terraworldStaking, { state: {block_height: height} });
+    const stateTask = this.wasm.query(this.terrajs.settings.terraworldStaking, { state: { block_height: height } });
     const [config, state] = await Promise.all([configTask, stateTask]);
     const twdPoolUSTAmount = twdPoolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? twdPoolResponse.assets[1].amount : twdPoolResponse.assets[0].amount;
     const twdPoolTWDAmount = twdPoolResponse.assets[1]?.info?.token ? twdPoolResponse.assets[1].amount : twdPoolResponse.assets[0].amount;
@@ -152,10 +151,10 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     };
   }
 
-  async getTerraworldGovStat(){
+  async getTerraworldGovStat() {
     const height = await this.terrajs.getHeight();
     const configTask = this.wasm.query(this.terrajs.settings.terraworldGov, { config: {} });
-    const stateTask = this.wasm.query(this.terrajs.settings.terraworldGov, { state: {block_height: height} });
+    const stateTask = this.wasm.query(this.terrajs.settings.terraworldGov, { state: { block_height: height } });
     const [config, state] = await Promise.all([configTask, stateTask]);
     const current_distribution_schedule = (config.distribution_schedule as []).find(obj => height >= +obj[0] && height <= +obj[1]);
     const totalMint = +current_distribution_schedule[2];
