@@ -85,7 +85,7 @@ export const networks: Record<string, ISettings> = {
     specFarm: 'terra17hjvrkcwn3jk2qf69s5ldxx5rjccchu35assga',
     terraSwapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
     terraSwapRouter: 'terra19qx5xe6q9ll4w0890ux7lv2p4mf3csd4qvt3ex',
-    astroportFactory: '',
+    astroportFactory: 'terra1fnywlw4edny3vw44x04xd67uzkdqluymgreu7g',
     staker: 'terra1fxwelge6mf5l6z0rjpylzcfq9w9tw2q7tewaf5',
     stakerSingleAsset: 'terra12kzevdnqe4k82cg5f07dywgj4lvkshhhwh4gnc',
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
