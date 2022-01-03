@@ -15,10 +15,11 @@ import {toBase64} from '../../../libs/base64';
 import {PoolResponse} from '../../api/terraswap_pair/pool_response';
 import {VaultsResponse} from '../../api/gov/vaults_response';
 import {Denom} from '../../../consts/denom';
-import {div} from '../../../libs/math';
+import {div, times} from '../../../libs/math';
 import {AstroportLunaBlunaFarmService} from '../../api/astroport-lunabluna-farm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
 import {WasmService} from '../../api/wasm.service';
+import {BalancePipe} from '../../../pipes/balance.pipe';
 
 @Injectable()
 export class AstroportLunaBlunaFarmInfoService implements FarmInfoService {
@@ -41,7 +42,8 @@ export class AstroportLunaBlunaFarmInfoService implements FarmInfoService {
   constructor(
     private farmService: AstroportLunaBlunaFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService
+    private wasm: WasmService,
+    private balancePipe: BalancePipe
   ) {
   }
 
@@ -65,8 +67,6 @@ export class AstroportLunaBlunaFarmInfoService implements FarmInfoService {
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const key = this.dex + '|' + this.terrajs.settings.bLunaToken + '|' + Denom.LUNA;
-    console.log(pairInfos)
-    console.log(pairInfos[key]);
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
     const farmConfigTask = this.farmService.query({ config: {} });
 
@@ -81,16 +81,17 @@ export class AstroportLunaBlunaFarmInfoService implements FarmInfoService {
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
-    // TODO get luna price
-    const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
-    if (!uusd) {
+    const ulunaAsset = p.assets.find(a => a.info.native_token?.['denom'] === Denom.LUNA);
+    if (!ulunaAsset) {
       return;
     }
+    const ulunaPrice = this.balancePipe.transform('1', poolResponses[this.dex + '|' + Denom.LUNA + '|' + Denom.USD]);
+    const totalUlunaValueUST = times(ulunaPrice, ulunaAsset.amount);
 
     const poolApr = +(lpStat.apr || 0);
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
-    pair.tvl = new BigNumber(uusd.amount)
+    pair.tvl = new BigNumber(totalUlunaValueUST)
       .times(depositAmount)
       .times(2)
       .div(p.total_share)
