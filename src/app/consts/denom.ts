@@ -3,6 +3,6 @@ export const Denom = {
   LUNA : 'uluna',
   display: {
     ['uusd']: 'UST',
-    ['uluna']: 'Luna'
+    ['uluna']: 'LUNA'
   }
 };
