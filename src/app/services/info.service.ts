@@ -152,7 +152,7 @@ export class InfoService {
 
   DISABLED_VAULTS: Array<string> = ['Terraswap|mAMC', 'Terraswap|mGME', 'Terraswap|VKR'];
 
-  async refreshBalance(opt: { spec?: boolean; ust?: boolean; lp?: boolean }) {
+  async refreshBalance(opt: { spec?: boolean; native_token?: boolean; lp?: boolean }) {
     if (!this.terrajs.isConnected) {
       return;
     }
@@ -167,11 +167,20 @@ export class InfoService {
         .then(it => this.userSpecLpAmount = div(it.balance, CONFIG.UNIT));
       tasks.push(task);
     }
-    if (opt.ust) {
-      const task = this.bankService.balances()
-        .then(it => this.userUstAmount = div(it.get(Denom.USD)?.amount.toNumber() ?? 0, CONFIG.UNIT));
-      tasks.push(task);
+    if (opt.native_token) {
+      tasks.push(this.refreshNativeTokensTask());
     }
+  }
+
+  refreshNativeTokensTask(){
+    const task = this.bankService.balances()
+      .then(it => {
+        this.userUstAmount = div(it.get(Denom.USD)?.amount.toNumber() ?? 0, CONFIG.UNIT);
+        it.toArray().forEach(coin => {
+          this.tokenBalances[coin.denom] = div(coin.amount.toNumber() ?? 0, CONFIG.UNIT);
+        });
+      });
+    return task;
   }
 
   @memoize(1000)
@@ -400,7 +409,11 @@ export class InfoService {
   }
 
   async refreshTokenBalance(assetToken: string) {
-    this.tokenBalances[assetToken] = (await this.token.balance(assetToken)).balance;
+    if (CONFIG.NATIVE_TOKENS.includes(assetToken)){
+      await this.refreshNativeTokensTask();
+    } else {
+      this.tokenBalances[assetToken] = (await this.token.balance(assetToken)).balance;
+    }
   }
 
   async refreshPoolResponse(key: string) {
