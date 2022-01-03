@@ -55,6 +55,11 @@ export interface ISettings {
   psiDPGatewayPool: string;
   psiDPToken: string;
   astroToken: string;
+  bLunaToken: string;
+  astroportGov: string;
+  astroportAstroUstFarm: string;
+  astroportLunaUstFarm: string;
+  astroportLunaBlunaFarm: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -125,6 +130,11 @@ export const networks: Record<string, ISettings> = {
     psiDPGatewayPool: 'terra1xu84jh7x2ugt3gkpv8d450hdwcyejtcwwkkzgv',
     psiDPToken: 'terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc',
     astroToken: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
+    bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
+    astroportGov: '',
+    astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
+    astroportLunaUstFarm: 'terra1egstlx9c9pq5taja5sg0yhraa0cl5laxyvm3ln',
+    astroportLunaBlunaFarm: 'terra1ejl4v53w4all7zkw8nfkw2q6d3qkpls8m4cav4',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -194,6 +204,11 @@ export const networks: Record<string, ISettings> = {
     psiDPGatewayPool: 'terra1zd8q7wltywdd90x2skvexh06p6r8mwljfqx4eu',
     psiDPToken: 'terra1c6vsshlv5gqtwq48darkunnpxu5ustcv96e0qk',
     astroToken: 'terra1cc2up8erdqn2l7nz37qjgvnqy56sr38aj9vqry',
+    bLunaToken: '',
+    astroportGov: '',
+    astroportAstroUstFarm: '',
+    astroportLunaUstFarm: '',
+    astroportLunaBlunaFarm: '',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',

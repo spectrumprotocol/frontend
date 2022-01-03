@@ -75,8 +75,11 @@ import {MdbValidationModule} from 'mdb-angular-ui-kit/validation';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import { LpEarningPipe } from './pipes/lp-earning.pipe';
 import {BPsiDPFarmInfoService} from './services/farm_info/bPsiDP.farm-info.service';
-import {MockAstroportAnchorFarmInfoService} from './services/farm_info/mock-astroport-anchor.farm-info.service';
-import {MockAstroportAstroUstFarmInfoService} from './services/farm_info/mock-astroport-astro-ust.farm-info.service';
+import {MockAstroportAnchorFarmInfoService} from './services/farm_info/astroport/mock-astroport-anchor.farm-info.service';
+import {MockAstroportAstroUstFarmInfoService} from './services/farm_info/astroport/astroport-astro-ust.farm-info.service';
+import {AstroportAstroUstFarmService} from './services/api/astroport-astroust-farm.service';
+import {AstroportLunaUstFarmService} from './services/api/astroport-lunaust-farm.service';
+import {AstroportLunaBlunaFarmService} from './services/api/astroport-lunabluna-farm.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -159,7 +162,9 @@ registerLocaleData(locale, 'en');
       multi: true
     },
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: MockAstroportAstroUstFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportAstroUstFarmService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportLunaUstFarmService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportLunaBlunaFarmService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: MockAstroportAnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: KujiraFarmInfoService, multi: true },

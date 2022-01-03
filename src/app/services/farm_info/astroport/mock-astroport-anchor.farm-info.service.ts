@@ -1,37 +1,37 @@
 import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { AnchorFarmService } from '../api/anchor-farm.service';
-import { AnchorStakingService } from '../api/anchor-staking.service';
-import {Decimal, PoolItem, Uint128} from '../api/astro_token_ust_farm/pools_response';
-import { RewardInfoResponseItem } from '../api/astro_token_ust_farm/reward_info_response';
-import { TerrajsService } from '../terrajs.service';
+import { AnchorFarmService } from '../../api/anchor-farm.service';
+import { AnchorStakingService } from '../../api/anchor-staking.service';
+import {Decimal, PoolItem, Uint128} from '../../api/astroport_token_ust_farm/pools_response';
+import { RewardInfoResponseItem } from '../../api/astroport_token_ust_farm/reward_info_response';
+import { TerrajsService } from '../../terrajs.service';
 import {
   DEX,
   FarmInfoService,
   FARM_TYPE_ENUM,
   PairStat,
   PoolInfo
-} from './farm-info.service';
+} from '../farm-info.service';
 import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
-import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {toBase64} from '../../../libs/base64';
+import {PoolResponse} from '../../api/terraswap_pair/pool_response';
 import {HttpClient} from '@angular/common/http';
-import {VaultsResponse} from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import {VaultsResponse} from '../../api/gov/vaults_response';
+import {Denom} from '../../../consts/denom';
 
 @Injectable()
-export class MockAstroportAstroUstFarmInfoService implements FarmInfoService {
-  farm = 'Astro';
+export class MockAstroportAnchorFarmInfoService implements FarmInfoService {
+  farm = 'Anchor';
   autoCompound = true;
   autoStake = true;
   farmColor = '#3bac3b';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
-  hasProxyReward = false;
+  hasProxyReward = true;
 
   get defaultBaseTokenContractOrNative() {
-    return this.terrajs.settings.astroToken;
+    return this.terrajs.settings.anchorAstroportToken;
   }
 
   getDenomTokenContractOrNative(baseToken?: string): string{
@@ -51,7 +51,7 @@ export class MockAstroportAstroUstFarmInfoService implements FarmInfoService {
   }
 
   get rewardTokenContract() {
-    return this.terrajs.settings.astroToken;
+    return this.terrajs.settings.anchorAstroportToken;
   }
 
   get farmGovContract() {
@@ -61,7 +61,7 @@ export class MockAstroportAstroUstFarmInfoService implements FarmInfoService {
   async queryPoolItems(): Promise<PoolItem[]> {
     return [
       {
-        asset_token: this.terrajs.settings.astroToken,
+        asset_token: this.terrajs.settings.anchorAstroportToken,
         auto_spec_share_index: '0',
         farm_share: '0',
         farm_share_index: '0',
@@ -93,7 +93,7 @@ export class MockAstroportAstroUstFarmInfoService implements FarmInfoService {
     const pairs: Record<string, PairStat> = {};
 
     const poolApr = +(anchorStat?.apy || 0);
-    const key = this.dex + '|' + this.terrajs.settings.astroToken + '|' + this.getDenomTokenContractOrNative();
+    const key = this.dex + '|' + this.terrajs.settings.anchorAstroportToken + '|' + this.getDenomTokenContractOrNative();
     pairs[key] = createPairStat(poolApr, key);
 
     const rewardInfo = await rewardInfoTask;
@@ -133,7 +133,7 @@ export class MockAstroportAstroUstFarmInfoService implements FarmInfoService {
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
     return [
       {
-        asset_token: this.terrajs.settings.astroToken,
+        asset_token: this.terrajs.settings.anchorAstroportToken,
         auto_bond_amount: '1000000',
         auto_bond_share: '1000000',
         auto_spec_share_index: '1000000',
