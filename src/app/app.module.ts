@@ -76,7 +76,6 @@ import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import { LpEarningPipe } from './pipes/lp-earning.pipe';
 import {BPsiDPFarmInfoService} from './services/farm_info/bPsiDP.farm-info.service';
 import {MockAstroportAnchorFarmInfoService} from './services/farm_info/astroport/mock-astroport-anchor.farm-info.service';
-import {MockAstroportAstroUstFarmInfoService} from './services/farm_info/astroport/astroport-astro-ust.farm-info.service';
 import {AstroportAstroUstFarmService} from './services/api/astroport-astroust-farm.service';
 import {AstroportLunaUstFarmService} from './services/api/astroport-lunaust-farm.service';
 import {AstroportLunaBlunaFarmService} from './services/api/astroport-lunabluna-farm.service';
