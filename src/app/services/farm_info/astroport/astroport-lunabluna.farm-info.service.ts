@@ -61,7 +61,6 @@ export class AstroportLunaBlunaFarmInfoService implements FarmInfoService {
 
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.farmService.query({ pools: {} });
-    console.log(pool);
     return pool.pools;
   }
 

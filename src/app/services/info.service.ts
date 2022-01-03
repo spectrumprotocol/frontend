@@ -274,6 +274,8 @@ export class InfoService {
   private cleanSymbol(symbol: string) {
     if (symbol.startsWith('wh')) {
       return symbol.substr(2);
+    } else if (symbol === 'BLUNA') {
+      return 'bLUNA';
     } else {
       return symbol;
     }
