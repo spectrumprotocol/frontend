@@ -57,6 +57,7 @@ export interface ISettings {
   astroToken: string;
   bLunaToken: string;
   astroportGov: string;
+  astroportGenerator: string;
   astroportAstroUstFarm: string;
   astroportLunaUstFarm: string;
   astroportLunaBlunaFarm: string;
@@ -132,6 +133,7 @@ export const networks: Record<string, ISettings> = {
     astroToken: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
     bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
     astroportGov: '',
+    astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
     astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
     astroportLunaUstFarm: 'terra1egstlx9c9pq5taja5sg0yhraa0cl5laxyvm3ln',
     astroportLunaBlunaFarm: 'terra1ejl4v53w4all7zkw8nfkw2q6d3qkpls8m4cav4',
@@ -206,6 +208,7 @@ export const networks: Record<string, ISettings> = {
     astroToken: 'terra1cc2up8erdqn2l7nz37qjgvnqy56sr38aj9vqry',
     bLunaToken: '',
     astroportGov: '',
+    astroportGenerator: '',
     astroportAstroUstFarm: '',
     astroportLunaUstFarm: '',
     astroportLunaBlunaFarm: '',

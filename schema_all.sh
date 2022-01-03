@@ -25,3 +25,5 @@ npx json2ts -i ../astroport/astroport/contracts/pair/schema/ -o ./src/app/servic
 npx json2ts -i ../astroport/astroport/contracts/pair_stable/schema/ -o ./src/app/services/api/astroport_pair_stable
 npx json2ts -i ../astroport/astroport/contracts/router/schema/ -o ./src/app/services/api/astroport_router
 npx json2ts -i ../astroport/astroport/contracts/token/schema/ -o ./src/app/services/api/astroport_token
+npx json2ts -i ../astroport/astroport-core/contracts/tokenomics/generator/schema/ -o ./src/app/services/api/astroport_generator
+

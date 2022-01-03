@@ -18,6 +18,7 @@ import { VaultsResponse } from '../api/gov/vaults_response';
 import { div } from '../../libs/math';
 import { Apollo, gql } from 'apollo-angular';
 import { Denom } from 'src/app/consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class BPsiDPFarmInfoService implements FarmInfoService {
@@ -72,7 +73,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const farmConfigTask = this.bPsiDpFarmService.query({ config: {} });
     const balanceOfTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { balance_of: { owner: this.terrajs.settings.bPsiDPFarm } });
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
