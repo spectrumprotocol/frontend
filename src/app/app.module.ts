@@ -75,6 +75,7 @@ import {MdbValidationModule} from 'mdb-angular-ui-kit/validation';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import { LpEarningPipe } from './pipes/lp-earning.pipe';
 import {BPsiDPFarmInfoService} from './services/farm_info/bPsiDP.farm-info.service';
+import {MdbCheckboxModule} from 'mdb-angular-ui-kit/checkbox';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -126,27 +127,28 @@ registerLocaleData(locale, 'en');
     VaultDialogComponent,
     LpEarningPipe,
   ],
-  imports: [
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    BrowserModule,
-    ClipboardModule,
-    FormsModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    PrettyJsonModule,
-    GraphQLModule,
-    NgxGoogleAnalyticsModule.forRoot(CONFIG.GOOGLE_ANALYTICS_ID),
-    NgxGoogleAnalyticsRouterModule,
-    NgxChartsModule,
-    NgxSliderModule,
-    MdbTooltipModule,
-    MdbDropdownModule,
-    MdbTabsModule,
-    MdbCollapseModule,
-    MdbFormsModule,
-    MdbValidationModule,
-  ],
+    imports: [
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        BrowserModule,
+        ClipboardModule,
+        FormsModule,
+        HttpClientModule,
+        ReactiveFormsModule,
+        PrettyJsonModule,
+        GraphQLModule,
+        NgxGoogleAnalyticsModule.forRoot(CONFIG.GOOGLE_ANALYTICS_ID),
+        NgxGoogleAnalyticsRouterModule,
+        NgxChartsModule,
+        NgxSliderModule,
+        MdbTooltipModule,
+        MdbDropdownModule,
+        MdbTabsModule,
+        MdbCollapseModule,
+        MdbFormsModule,
+        MdbValidationModule,
+        MdbCheckboxModule,
+    ],
   providers: [
     // { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true},
     MdbModalService,
