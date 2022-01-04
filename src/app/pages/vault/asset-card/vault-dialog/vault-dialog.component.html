@@ -289,26 +289,26 @@
                 </div>
                 <div class="row">
                   <div class="col">Gross LP</div>
-                  <div *ngIf="+grossLpTokenNative > 0" class="col text-end">{{grossLpTokenNative | unit }} LP</div>
-                  <div *ngIf="!(+grossLpTokenNative > 0)" class="col text-end">
+                  <div *ngIf="+grossLpTokenToken > 0" class="col text-end">{{grossLpTokenToken | unit }} LP</div>
+                  <div *ngIf="!(+grossLpTokenToken > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
                       <span class="visually-hidden">Loading...</span>
                     </div>
                   </div>
                 </div>
-                <div *ngIf="+depositFeeTokenNative" class="row">
+                <div *ngIf="+depositFeeTokenToken" class="row">
                   <div class="col">Deposit Fee (&lt;0.1%)</div>
-                  <div *ngIf="+depositFeeTokenNative > 0" class="col text-end">{{depositFeeTokenNative | unit }} LP</div>
-                  <div *ngIf="!(+depositFeeTokenNative > 0)" class="col text-end">
+                  <div *ngIf="+depositFeeTokenToken > 0" class="col text-end">{{depositFeeTokenToken | unit }} LP</div>
+                  <div *ngIf="!(+depositFeeTokenToken > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
                       <span class="visually-hidden">Loading...</span>
                     </div>
                   </div>
                 </div>
-                <div *ngIf="+depositFeeTokenNative" class="row">
+                <div *ngIf="+depositFeeTokenToken" class="row">
                   <div class="col">Net LP</div>
-                  <div *ngIf="+netLpTokenNative > 0" class="col text-end">{{netLpTokenNative | unit }} LP</div>
-                  <div *ngIf="!(+netLpTokenNative > 0)" class="col text-end">
+                  <div *ngIf="+netLpTokenToken > 0" class="col text-end">{{netLpTokenToken | unit }} LP</div>
+                  <div *ngIf="!(+netLpTokenToken > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
                       <span class="visually-hidden">Loading...</span>
                     </div>
