@@ -828,7 +828,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         }
       );
       const lossPercent = (((+this.withdrawAmt * CONFIG.UNIT - +this.withdrawUST) / (+this.withdrawAmt * CONFIG.UNIT)) * 100).toFixed(2);
-      const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.symbol} at about ${lossPercent}% loss.` : undefined;
+      const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.symbol} at about ${lossPercent}% discount.` : undefined;
       await this.terrajs.post([unbond, withdrawUst], confirmMsg);
     }
     this.withdrawAmt = undefined;
