@@ -236,40 +236,43 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.depositUSTAmountTokenUST = amountUST.plus(tax.amount.toString())
         .div(CONFIG.UNIT)
         .toNumber();
-    } else if (this.vault.poolInfo.denomTokenContractOrNative === Denom.LUNA && inputFromA){
+    } else if (this.vault.poolInfo.denomTokenContractOrNative === Denom.LUNA) {
       // TODO this can be generalized for other denom native tokens
-      // bLUNA-LUNA
       const [asset, uluna] = this.findAssetBaseAndNativeToken();
-      const amountToken = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
-      const amountLUNA = amountToken.times(uluna.amount).div(asset.amount).integerValue();
+      let amountAsset: BigNumber;
+      let amountUluna: BigNumber;
+      const denomUnit = CONFIG.UNIT;
+      if (inputFromA) {
+        amountAsset = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
+        amountUluna = amountAsset.times(uluna.amount).div(asset.amount).integerValue();
+        this.depositTokenBAmtTokenToken = amountUluna.div(denomUnit).toNumber();
+      } else {
+        amountUluna = new BigNumber(this.depositTokenBAmtTokenToken).times(denomUnit);
+        amountAsset = amountUluna.times(asset.amount).div(uluna.amount).integerValue();
+        this.depositTokenAAmtTokenToken = amountAsset.div(this.vault.baseUnit).toNumber();
+      }
+
       const grossLp = gt(pool.total_share, 0)
         ? BigNumber.minimum(
-          amountLUNA.times(pool.total_share).div(uluna.amount),
-          amountToken.times(pool.total_share).div(asset.amount))
-        : amountToken.times(amountLUNA).sqrt();
+          amountUluna.times(pool.total_share).div(uluna.amount),
+          amountAsset.times(pool.total_share).div(asset.amount))
+        : amountAsset.times(amountUluna).sqrt();
       if (this.vault.pairStat) {
-        const ulunaPrice = this.balancePipe.transform('1', this.info.poolResponses[this.vault.poolInfo.dex + '|' + Denom.LUNA + '|' + Denom.USD]);
-        const depositTVL = amountLUNA.multipliedBy(+ulunaPrice).multipliedBy('2');
+        const depositTVL = new BigNumber(this.lpBalancePipe.transform(grossLp.toString(), this.info.poolResponses, this.vault.poolInfo.key));
         const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
-        const depositFee = this.vault.poolInfo.farm === 'Spectrum'
-          ? new BigNumber('0')
-          : grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+        const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
         this.netLpTokenNative = grossLp.minus(depositFee).toString();
         this.depositFeeTokenNative = depositFee.toString();
       }
       this.grossLpTokenNative = grossLp.toString();
-
-      const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountLUNA.toString(), denom: Denom.LUNA }));
-      this.depositUSTAmountTokenUST = amountLUNA.plus(tax.amount.toString())
-        .div(CONFIG.UNIT)
-        .toNumber();
-
-    } else if (this.vault.poolInfo.baseTokenContractOrNative === Denom.LUNA && this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
+    }
+      else if (this.vault.poolInfo.baseTokenContractOrNative === Denom.LUNA && this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
       const [uluna, uusd] = this.findAnotherNativeTokenAndUST();
       const amountuluna = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
 
 
     } else {
+      // nAsset-Psi
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
       let amountBase: BigNumber;
       let amountDenom: BigNumber;

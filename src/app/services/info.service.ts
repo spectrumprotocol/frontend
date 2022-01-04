@@ -177,7 +177,7 @@ export class InfoService {
       .then(it => {
         this.userUstAmount = div(it.get(Denom.USD)?.amount.toNumber() ?? 0, CONFIG.UNIT);
         it.toArray().forEach(coin => {
-          this.tokenBalances[coin.denom] = div(coin.amount.toNumber() ?? 0, CONFIG.UNIT);
+          this.tokenBalances[coin.denom] = coin.amount.toString() ?? '0';
         });
       }).finally(() => {
         if (!this.tokenBalances[Denom.LUNA]){
@@ -648,10 +648,10 @@ export class InfoService {
         baseSymbol,
         denomSymbol,
         rewardSymbol: this.tokenInfos[rewardToken]?.symbol,
-        baseDecimals: CONFIG.NATIVE_TOKENS.includes(baseToken) ? null : this.tokenInfos[baseToken]?.decimals,
-        baseUnit: this.tokenInfos[baseToken]?.unit,
-        denomDecimals: CONFIG.NATIVE_TOKENS.includes(denomToken) ? null : this.tokenInfos[denomToken]?.decimals,
-        denomUnit: this.tokenInfos[denomToken]?.unit,
+        baseDecimals: CONFIG.NATIVE_TOKENS.includes(baseToken) ? CONFIG.DIGIT : this.tokenInfos[baseToken]?.decimals,
+        baseUnit: CONFIG.NATIVE_TOKENS.includes(baseToken) ? CONFIG.UNIT : this.tokenInfos[baseToken]?.unit,
+        denomDecimals: CONFIG.NATIVE_TOKENS.includes(denomToken) ? CONFIG.DIGIT : this.tokenInfos[denomToken]?.decimals,
+        denomUnit: CONFIG.NATIVE_TOKENS.includes(denomToken) ? CONFIG.UNIT : this.tokenInfos[denomToken]?.unit,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
         poolInfo,
