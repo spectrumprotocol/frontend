@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { BalancePipe } from './balance.pipe';
 import { PoolResponse } from '../services/api/terraswap_pair/pool_response';
 import {Denom} from '../consts/denom';
+import {TerrajsService} from '../services/terrajs.service';
 
 @Pipe({
   name: 'lpBalance'
@@ -10,7 +11,8 @@ import {Denom} from '../consts/denom';
 export class LpBalancePipe implements PipeTransform {
 
   constructor(
-    private balancePipe: BalancePipe
+    private balancePipe: BalancePipe,
+    private terrajs: TerrajsService
   ) { }
 
   transform(lp: any, poolResponses: Record<string, PoolResponse>, key: string): string {
@@ -18,6 +20,18 @@ export class LpBalancePipe implements PipeTransform {
       return undefined;
     }
     const poolResponse = poolResponses[key];
+    if (key === `Astroport|${this.terrajs.settings.bLunaToken}|${Denom.LUNA}`){
+      const [lunaAsset, blunaAsset] = poolResponse.assets[0].info.native_token?.['denom'] === Denom.LUNA
+        ? [poolResponse.assets[0], poolResponse.assets[1]]
+        : [poolResponse.assets[1], poolResponse.assets[0]];
+      const ulunaPrice = this.balancePipe.transform('1', poolResponses['Astroport|' + Denom.LUNA + '|' + Denom.USD]);
+      return new BigNumber(lp)
+        .times(lunaAsset.amount)
+        .div(poolResponse.total_share)
+        .times(ulunaPrice)
+        .times(2)
+        .toString();
+    }
     if (poolResponse.assets[0].info.native_token) {
       return new BigNumber(lp)
         .times(poolResponse.assets[0].amount)
