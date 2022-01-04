@@ -265,6 +265,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         .toNumber();
 
     } else if (this.vault.poolInfo.baseTokenContractOrNative === Denom.LUNA && this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
+      const [uluna, uusd] = this.findAnotherNativeTokenAndUST();
+      const amountuluna = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
+
 
     } else {
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
@@ -308,6 +311,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   private findAssetBaseAndNativeToken() {
     const pool = this.info.poolResponses[this.vault.poolInfo.key];
     return pool.assets[0].info.native_token
+      ? [pool.assets[1], pool.assets[0]]
+      : [pool.assets[0], pool.assets[1]];
+  }
+
+  private findAnotherNativeTokenAndUST() {
+    const pool = this.info.poolResponses[this.vault.poolInfo.key];
+    return pool.assets[0].info.native_token?.['denom'] === Denom.USD
       ? [pool.assets[1], pool.assets[0]]
       : [pool.assets[0], pool.assets[1]];
   }

@@ -13,7 +13,7 @@ export class UnitPipe implements PipeTransform {
   ) { }
 
   transform(value: any, decimals?: number, digitsInfo?: string) {
-    if (value == null) {
+    if (value == null || !decimals) {
       return value;
     }
     return this.decimalPipe.transform(div(value, decimals ? 10 ** decimals : CONFIG.UNIT), !digitsInfo && decimals ? `1.0-${decimals}` : digitsInfo );

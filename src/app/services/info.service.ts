@@ -350,7 +350,7 @@ export class InfoService {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos);
         Object.assign(stat.pairs, pairStats);
       } catch (e) {
-        console.log('queryPairStats error >> ', e);
+        console.error('queryPairStats error >> ', e);
         if (!this.stat) {
           throw e;
         }
@@ -449,7 +449,6 @@ export class InfoService {
     tasks.push(this.token.balance(pairInfo.liquidity_token)
       .then(it => this.lpTokenBalances[pairInfo.liquidity_token] = it.balance));
     await Promise.all(tasks);
-    console.log(this.tokenBalances)
   }
 
   @memoize(1000)
@@ -649,9 +648,9 @@ export class InfoService {
         baseSymbol,
         denomSymbol,
         rewardSymbol: this.tokenInfos[rewardToken]?.symbol,
-        baseDecimals: this.tokenInfos[baseToken]?.decimals,
+        baseDecimals: CONFIG.NATIVE_TOKENS.includes(baseToken) ? null : this.tokenInfos[baseToken]?.decimals,
         baseUnit: this.tokenInfos[baseToken]?.unit,
-        denomDecimals: this.tokenInfos[denomToken]?.decimals,
+        denomDecimals: CONFIG.NATIVE_TOKENS.includes(denomToken) ? null : this.tokenInfos[denomToken]?.decimals,
         denomUnit: this.tokenInfos[denomToken]?.unit,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
