@@ -992,12 +992,19 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     const depositTVL = new BigNumber(this.depositUSTAmtUST).times(CONFIG.UNIT);
     if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
       const [assetBase, assetNativeToken] = this.findAssetBaseAndNativeToken();
-      const res = await this.staker.query({
+      const simulate_zap_to_bond_msg = {
         simulate_zap_to_bond: {
           pair_asset: assetBase.info,
           provide_asset: { amount: depositTVL.toString(), info: assetNativeToken.info } // OK now
         }
-      });
+      };
+      let res;
+      if (this.vault.poolInfo.dex === 'Terraswap'){
+        res = await this.staker.query(simulate_zap_to_bond_msg);
+      } else if (this.vault.poolInfo.dex === 'Astroport'){
+        // TODO add staker Astroport
+        res = await this.staker.query(simulate_zap_to_bond_msg);
+      }
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
       this.tokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.baseDecimals);
     } else {
