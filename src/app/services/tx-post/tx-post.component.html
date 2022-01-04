@@ -40,12 +40,17 @@
             </div>
         </div>
     </div>
+    <div class="row mt-3" *ngIf="confirmMsg">
+      <div class="col-12">
+        <input type="checkbox" mdbCheckbox class="form-check-input" [(ngModel)]="confirmCheck"> {{confirmMsg}}
+      </div>
+    </div>
 </div>
 <div class="modal-footer">
     <button type="button" class="relative waves-light btn btn-secondary" (click)="cancel()" *ngIf="!executed || failed"
         [disabled]="loading">Cancel</button>
     <button type="button" class="relative waves-light btn btn-primary" (click)="execute()" *ngIf="!executed && !failed"
-        [disabled]="loading">Confirm</button>
+        [disabled]="loading || (confirmMsg && !confirmCheck)">Confirm</button>
     <button type="button" class="relative waves-light btn btn-primary" (click)="done()"
         *ngIf="executed && !failed">Done</button>
 </div>

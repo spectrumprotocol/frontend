@@ -16,12 +16,14 @@ export class TxPostComponent implements OnInit {
   loading = true;
   loadingMsg: string;
   msgs: Msg[];
+  confirmMsg?: string;
   failed = false;
   failMsg: string;
   signMsg: any;
   UNIT = CONFIG.UNIT;
   txhash: string;
   link: string;
+  confirmCheck = false;
 
   constructor(
     private httpClient: HttpClient,
