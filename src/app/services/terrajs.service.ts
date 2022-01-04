@@ -221,7 +221,7 @@ export class TerrajsService implements OnDestroy {
     return res as any;
   }
 
-  async post(msgs: Msg[] | Msg) {
+  async post(msgs: Msg[] | Msg, confirmMsg?: string) {
     if (this.posting) {
       return;
     }
@@ -233,6 +233,7 @@ export class TerrajsService implements OnDestroy {
         ignoreBackdropClick: true,
         data: {
           msgs: msgs instanceof Array ? msgs : [msgs],
+          confirmMsg
         }
       });
       const result = await ref.onClose.toPromise();

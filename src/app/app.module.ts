@@ -82,6 +82,7 @@ import {AstroportLunaBlunaFarmService} from './services/api/astroport-lunabluna-
 import {AstroportAstroUstFarmInfoService} from './services/farm_info/astroport/astroport-astro-ust.farm-info.service';
 import {AstroportLunaUstFarmInfoService} from './services/farm_info/astroport/astroport-luna-ust-farm-info.service';
 import {AstroportLunaBlunaFarmInfoService} from './services/farm_info/astroport/astroport-lunabluna.farm-info.service';
+import {MdbCheckboxModule} from 'mdb-angular-ui-kit/checkbox';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -133,27 +134,28 @@ registerLocaleData(locale, 'en');
     VaultDialogComponent,
     LpEarningPipe,
   ],
-  imports: [
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    BrowserModule,
-    ClipboardModule,
-    FormsModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    PrettyJsonModule,
-    GraphQLModule,
-    NgxGoogleAnalyticsModule.forRoot(CONFIG.GOOGLE_ANALYTICS_ID),
-    NgxGoogleAnalyticsRouterModule,
-    NgxChartsModule,
-    NgxSliderModule,
-    MdbTooltipModule,
-    MdbDropdownModule,
-    MdbTabsModule,
-    MdbCollapseModule,
-    MdbFormsModule,
-    MdbValidationModule,
-  ],
+    imports: [
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        BrowserModule,
+        ClipboardModule,
+        FormsModule,
+        HttpClientModule,
+        ReactiveFormsModule,
+        PrettyJsonModule,
+        GraphQLModule,
+        NgxGoogleAnalyticsModule.forRoot(CONFIG.GOOGLE_ANALYTICS_ID),
+        NgxGoogleAnalyticsRouterModule,
+        NgxChartsModule,
+        NgxSliderModule,
+        MdbTooltipModule,
+        MdbDropdownModule,
+        MdbTabsModule,
+        MdbCollapseModule,
+        MdbFormsModule,
+        MdbValidationModule,
+        MdbCheckboxModule,
+    ],
   providers: [
     // { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true},
     MdbModalService,
