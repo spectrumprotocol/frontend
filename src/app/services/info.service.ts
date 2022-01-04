@@ -179,6 +179,10 @@ export class InfoService {
         it.toArray().forEach(coin => {
           this.tokenBalances[coin.denom] = div(coin.amount.toNumber() ?? 0, CONFIG.UNIT);
         });
+      }).finally(() => {
+        if (!this.tokenBalances[Denom.LUNA]){
+          this.tokenBalances[Denom.LUNA] = '0';
+        }
       });
     return task;
   }
@@ -425,10 +429,14 @@ export class InfoService {
     if (!CONFIG.NATIVE_TOKENS.includes(base)) {
       tasks.push(this.token.balance(base)
         .then(it => this.tokenBalances[base] = it.balance));
+    } else {
+      tasks.push(this.refreshNativeTokensTask());
     }
     if (!CONFIG.NATIVE_TOKENS.includes(denom)) {
       tasks.push(this.token.balance(denom)
         .then(it => this.tokenBalances[denom] = it.balance));
+    } else {
+      tasks.push(this.refreshNativeTokensTask());
     }
     if (dex === 'Terraswap') {
       tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
@@ -441,6 +449,7 @@ export class InfoService {
     tasks.push(this.token.balance(pairInfo.liquidity_token)
       .then(it => this.lpTokenBalances[pairInfo.liquidity_token] = it.balance));
     await Promise.all(tasks);
+    console.log(this.tokenBalances)
   }
 
   @memoize(1000)

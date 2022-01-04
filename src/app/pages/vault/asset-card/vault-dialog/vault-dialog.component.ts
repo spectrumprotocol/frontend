@@ -21,6 +21,7 @@ import { StakerService } from '../../../../services/api/staker.service';
 import { ExecuteMsg as StakerExecuteMsg } from '../../../../services/api/staker/execute_msg';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { TerraSwapRouterService } from '../../../../services/api/terraswap-router.service';
+import {BalancePipe} from '../../../../pipes/balance.pipe';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | 'ust_bdp';
@@ -61,9 +62,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   withdrawTokenPrice: string;
   withdrawBaseTokenPrice: string;
 
-  grossLpTokenUST: string;
-  depositFeeTokenUST: string;
-  netLpTokenUST: string;
+  grossLpTokenNative: string;
+  depositFeeTokenNative: string;
+  netLpTokenNative: string;
 
   depositFeeLp: string;
   netLpLp: string;
@@ -103,7 +104,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private tokenService: TokenService,
     private staker: StakerService,
     private terraSwap: TerraSwapService,
-    private terraSwapRouter: TerraSwapRouterService
+    private terraSwapRouter: TerraSwapRouterService,
+    private balancePipe: BalancePipe
   ) { }
 
   ngOnInit() {
@@ -181,9 +183,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (!this.depositTokenAAmtTokenToken) {
       this.depositUSTAmountTokenUST = undefined;
       this.depositTokenBAmtTokenToken = undefined;
-      this.grossLpTokenUST = undefined;
-      this.depositFeeTokenUST = undefined;
-      this.netLpTokenUST = undefined;
+      this.grossLpTokenNative = undefined;
+      this.depositFeeTokenNative = undefined;
+      this.netLpTokenNative = undefined;
     }
     this.refreshDataTokenToken(true);
   }
@@ -200,16 +202,16 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (!this.depositTokenBAmtTokenToken) {
       this.depositUSTAmountTokenUST = undefined;
       this.depositTokenAAmtTokenToken = undefined;
-      this.grossLpTokenUST = undefined;
-      this.depositFeeTokenUST = undefined;
-      this.netLpTokenUST = undefined;
+      this.grossLpTokenNative = undefined;
+      this.depositFeeTokenNative = undefined;
+      this.netLpTokenNative = undefined;
     }
     this.refreshDataTokenToken(false);
   }
 
   private async refreshDataTokenToken(inputFromA: boolean) {
     const pool = this.info.poolResponses[this.vault.poolInfo.key];
-    if (this.vault.denomSymbol === 'UST' && inputFromA) {
+    if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD && inputFromA && !CONFIG.NATIVE_TOKENS.includes(this.vault.poolInfo.baseTokenContractOrNative)) {
       const [asset, ust] = this.findAssetBaseAndNativeToken();
       const amountToken = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
       const amountUST = amountToken.times(ust.amount).div(asset.amount).integerValue();
@@ -225,15 +227,45 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         const depositFee = this.vault.poolInfo.farm === 'Spectrum'
           ? new BigNumber('0')
           : grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
-        this.netLpTokenUST = grossLp.minus(depositFee).toString();
-        this.depositFeeTokenUST = depositFee.toString();
+        this.netLpTokenNative = grossLp.minus(depositFee).toString();
+        this.depositFeeTokenNative = depositFee.toString();
       }
-      this.grossLpTokenUST = grossLp.toString();
+      this.grossLpTokenNative = grossLp.toString();
 
       const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountUST.toString(), denom: 'uusd' }));
       this.depositUSTAmountTokenUST = amountUST.plus(tax.amount.toString())
         .div(CONFIG.UNIT)
         .toNumber();
+    } else if (this.vault.poolInfo.denomTokenContractOrNative === Denom.LUNA && inputFromA){
+      // TODO this can be generalized for other denom native tokens
+      // bLUNA-LUNA
+      const [asset, uluna] = this.findAssetBaseAndNativeToken();
+      const amountToken = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
+      const amountLUNA = amountToken.times(uluna.amount).div(asset.amount).integerValue();
+      const grossLp = gt(pool.total_share, 0)
+        ? BigNumber.minimum(
+          amountLUNA.times(pool.total_share).div(uluna.amount),
+          amountToken.times(pool.total_share).div(asset.amount))
+        : amountToken.times(amountLUNA).sqrt();
+      if (this.vault.pairStat) {
+        const ulunaPrice = this.balancePipe.transform('1', this.info.poolResponses[this.vault.poolInfo.dex + '|' + Denom.LUNA + '|' + Denom.USD]);
+        const depositTVL = amountLUNA.multipliedBy(+ulunaPrice).multipliedBy('2');
+        const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
+        const depositFee = this.vault.poolInfo.farm === 'Spectrum'
+          ? new BigNumber('0')
+          : grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+        this.netLpTokenNative = grossLp.minus(depositFee).toString();
+        this.depositFeeTokenNative = depositFee.toString();
+      }
+      this.grossLpTokenNative = grossLp.toString();
+
+      const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({ amount: amountLUNA.toString(), denom: Denom.LUNA }));
+      this.depositUSTAmountTokenUST = amountLUNA.plus(tax.amount.toString())
+        .div(CONFIG.UNIT)
+        .toNumber();
+
+    } else if (this.vault.poolInfo.baseTokenContractOrNative === Denom.LUNA && this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
+
     } else {
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
       let amountBase: BigNumber;
@@ -258,10 +290,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         const depositTVL = new BigNumber(this.lpBalancePipe.transform(grossLp.toString(), this.info.poolResponses, this.vault.poolInfo.key));
         const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
         const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
-        this.netLpTokenUST = grossLp.minus(depositFee).toString();
-        this.depositFeeTokenUST = depositFee.toString();
+        this.netLpTokenNative = grossLp.minus(depositFee).toString();
+        this.depositFeeTokenNative = depositFee.toString();
       }
-      this.grossLpTokenUST = grossLp.toString();
+      this.grossLpTokenNative = grossLp.toString();
 
     }
   }
@@ -577,9 +609,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositUSTAmountTokenUST = undefined;
     this.depositUSTAmtUST = undefined;
 
-    this.netLpTokenUST = undefined;
-    this.depositFeeTokenUST = undefined;
-    this.netLpTokenUST = undefined;
+    this.netLpTokenNative = undefined;
+    this.depositFeeTokenNative = undefined;
+    this.netLpTokenNative = undefined;
 
     this.depositFeeLp = undefined;
     this.netLpLp = undefined;
