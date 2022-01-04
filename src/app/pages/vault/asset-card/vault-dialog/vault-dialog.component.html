@@ -256,7 +256,7 @@
                     </div>
                   </ng-container>
                   <ng-container *ngIf="vault.denomSymbol !== 'UST'">
-                    <div class="text-end mt-3 mb-1 fw-bold-600">
+                    <div class="text-end small mt-3 mb-1 fw-bold-600">
                       <span class="sub-topic mb-1">Balance: </span>
                       <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.denomTokenContractOrNative]"
                             aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
