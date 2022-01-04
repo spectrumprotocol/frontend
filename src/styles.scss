@@ -375,6 +375,11 @@ input[type="number"] {
   border: solid 1px $orion;
 }
 
+.bg-Astroport {
+  background: $astroport-bg;
+  border: solid 1px $astroport;
+}
+
 .bg-Kujira {
   background: $kujira;
   background: -webkit-linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);
