@@ -58,6 +58,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   withdrawMode: DEPOSIT_WITHDRAW_MODE_ENUM;
 
   key_luna_ust = `Astroport|${Denom.LUNA}|${Denom.USD}`;
+  key_bluna_luna = `Astroport|${this.terrajs.settings.bLunaToken}|${Denom.LUNA}`;
 
   withdrawAmt: number;
   withdrawUST: string;
@@ -452,6 +453,51 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           )
         ];
         await this.terrajs.post(msgs);
+      } else if (this.vault.poolInfo.key === this.key_bluna_luna) {
+        const assetLunaAmount = times(this.depositTokenAAmtTokenToken, this.UNIT);
+        const assetBlunaAmount = times(this.depositTokenBAmtTokenToken, this.UNIT);
+        const assetLuna = {
+          amount: assetLunaAmount,
+          info: {
+            native_token: {
+              denom: Denom.LUNA
+            }
+          }
+        };
+        const assetDenom = {
+          amount: assetBlunaAmount,
+          info: {
+            token: {
+              contract_addr: this.vault.poolInfo.baseTokenContractOrNative,
+            }
+          }
+        };
+
+        const msgs = [
+          new MsgExecuteContract(
+            this.terrajs.address,
+            this.vault.poolInfo.baseTokenContractOrNative,
+            {
+              increase_allowance: {
+                amount: assetBlunaAmount,
+                spender: staker,
+              }
+            }
+          ),
+          new MsgExecuteContract(
+            this.terrajs.address,
+            staker,
+            {
+              bond: {
+                assets: [assetDenom, assetLuna],
+                compound_rate: auto_compound_ratio,
+                contract: this.vault.poolInfo.farmContract,
+                slippage_tolerance: CONFIG.SLIPPAGE_TOLERANCE
+              }
+            }, new Coins([new Coin(Denom.LUNA, assetLunaAmount)])
+          )
+        ];
+        await this.terrajs.post(msgs);
       } else {
         const assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.UNIT);
         const assetDenomAmount = times(this.depositTokenBAmtTokenToken, this.UNIT);
@@ -467,7 +513,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           amount: assetDenomAmount,
           info: {
             token: {
-              contract_addr: this.vault.poolInfo.rewardTokenContract,
+              contract_addr: this.vault.poolInfo.denomTokenContractOrNative,
             }
           }
         };
