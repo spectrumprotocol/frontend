@@ -19,7 +19,7 @@ import { NethPsiFarmService } from '../api/neth-psi-farm.service';
 import { NethPsiStakingService } from '../api/neth-psi-staking.service';
 import { BalancePipe } from '../../pipes/balance.pipe';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
 
 @Injectable()
 export class NethPsiFarmInfoService implements FarmInfoService {
@@ -31,11 +31,11 @@ export class NethPsiFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.nEthToken;
   }
 
-  getDenomTokenContractOrNative(baseToken?: string){
+  get denomTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 

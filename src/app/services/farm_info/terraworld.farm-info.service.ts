@@ -28,13 +28,10 @@ export class TerraworldFarmInfoService implements FarmInfoService {
   farmColor = '#249fd4';
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.terraworldToken;
-  }
-
-  getDenomTokenContractOrNative(baseToken?: string){
-    return Denom.USD;
   }
 
   constructor(

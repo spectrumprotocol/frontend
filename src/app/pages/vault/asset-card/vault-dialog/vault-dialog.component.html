@@ -117,7 +117,7 @@
             {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}
             <span class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || '0' | balance:
-              info.poolResponses[vault.poolInfo.dex + '|' + terrajs.settings.astroToken + '|' + 'uusd'] |
+              info.poolResponses[ASTRO_KEY] |
               unit: vault.baseDecimals : '1.0-2' }})
             </span>
           </h3>
@@ -134,7 +134,7 @@
             {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}
             <span class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || '0' | balance:
-              info.poolResponses[vault.poolInfo.dex + '|' + vault.poolInfo.rewardTokenContract + '|' + 'uusd'] |
+              info.poolResponses[vault.poolInfo.rewardKey] |
               unit: vault.baseDecimals : '1.0-2' }})
             </span>
           </h3>
@@ -151,7 +151,7 @@
             {{info.rewardInfos[vault.poolInfo.key]?.pending_farm2_reward || 0 | unit : vault.baseDecimals }}
             <span class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.pending_farm2_reward || '0' | balance:
-              info.poolResponses[vault.poolInfo.dex + '|' + vault.poolInfo.rewardTokenContract + '|' + 'uusd'] |
+              info.poolResponses[vault.poolInfo.rewardKey] |
               unit: vault.baseDecimals : '1.0-2' }})
             </span>
           </h3>
@@ -169,7 +169,7 @@
 <!--            TODO this spec pool response have to be changed once migrated to astroport-->
             <span class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || '0' | balance:
-              info.poolResponses['Terraswap'+'|'+terrajs.settings.specToken+'|'+'uusd'] |
+              info.poolResponses[SPEC_KEY] |
               unit: 6 : '1.0-2' }})
             </span>
           </h3>
@@ -178,7 +178,7 @@
     </div>
     <div class="row tab-container g-0">
       <mdb-tabs [justified]="true">
-        <mdb-tab *ngIf="!info.DISABLED_VAULTS.includes(vault.poolInfo.dex+'|'+vault.baseSymbol)" title="Deposit">
+        <mdb-tab *ngIf="!info.DISABLED_VAULTS.has(vault.poolInfo.key)" title="Deposit">
           <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
             <div *ngIf="depositMode === 'tokentoken'" class="mt-3">
               <div class="card card-green">
@@ -201,18 +201,18 @@
                 <div class="col col-mbp">
                   <div class="text-end small margin-18 mb-1 fw-bold">
                     <span class="sub-topic">Balance: </span>
-                    <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.baseTokenContractOrNative]"
+                    <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.baseTokenContract]"
                           aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
                       <span class="visually-hidden">Loading...</span>
                     </span>
-                    <span class="text-white">{{ info.tokenBalances[vault.poolInfo.baseTokenContractOrNative] | unit : vault.baseDecimals }} {{ vault.baseSymbol }}</span>
+                    <span class="text-white">{{ info.tokenBalances[vault.poolInfo.baseTokenContract] | unit : vault.baseDecimals }} {{ vault.baseSymbol }}</span>
                   </div>
                   <div class="input-group">
                     <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
                     <input #depositTokenAAmtTokenTokenCtl="ngModel"
                            (input)="depositTokenATokenTokenChanged(false, $event)" [(ngModel)]="depositTokenAAmtTokenToken"
                            [class.is-invalid]="(formDeposit.submitted || depositTokenAAmtTokenTokenCtl.touched) && depositTokenAAmtTokenTokenCtl.invalid"
-                           [max]="+info.tokenBalances[vault.poolInfo.baseTokenContractOrNative] / vault.baseUnit" [min]="0.000001"
+                           [max]="+info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit" [min]="0.000001"
                            [pattern]="'^[0-9]+(.[0-9]{0,' + vault.baseDecimals + '})?$'" [step]="0.000001"
                            class="form-control fix-border" name="depositTokenAAmtTokenTokenCtl" required type="number" />
                     <button (click)="setMaxDepositTokenATokenToken()" class="btn btn-max last" type="button">
@@ -246,9 +246,9 @@
                         this transaction</div>
                     </div>
                     <div class="text-end">
-                      <span *ngIf="depositTokenAAmtTokenToken > +info.tokenBalances[vault.poolInfo.baseTokenContractOrNative] / vault.baseUnit"
+                      <span *ngIf="depositTokenAAmtTokenToken > +info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit"
                             class="invalid-feedback-custom">
-                        Amount must be between 0 and {{info.tokenBalances[vault.poolInfo.baseTokenContractOrNative] | unit : vault.baseDecimals }}
+                        Amount must be between 0 and {{info.tokenBalances[vault.poolInfo.baseTokenContract] | unit : vault.baseDecimals }}
                       </span>
                       <span *ngIf="depositTokenAAmtTokenTokenCtl.errors?.pattern" class="invalid-feedback-custom">
                         Amount must be within {{vault.baseDecimals}} decimal points
@@ -259,11 +259,11 @@
                     <div class="text-end mt-3 mb-1 fw-bold-600">
                       <span class="sub-topic mb-1">Balance: </span>
 <!--                      //TODO tokenBalances support native token?-->
-                      <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.denomTokenContractOrNative]"
+                      <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.denomTokenContract]"
                             aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
                         <span class="visually-hidden">Loading...</span>
                       </span>
-                      <span class="text-white">{{ info.tokenBalances[vault.poolInfo.denomTokenContractOrNative] | unit }}
+                      <span class="text-white">{{ info.tokenBalances[vault.poolInfo.denomTokenContract] | unit }}
                         {{ vault.denomSymbol }}</span>
                     </div>
                     <div class="input-group">
@@ -273,7 +273,7 @@
                       <input #depositTokenBAmtTokenTokenCtl="ngModel"
                              (input)="depositTokenBTokenTokenChanged(false, $event)" [(ngModel)]="depositTokenBAmtTokenToken"
                              [class.is-invalid]="(formDeposit.submitted || depositTokenBAmtTokenTokenCtl.touched) && depositTokenBAmtTokenTokenCtl.invalid"
-                             [max]="+info.tokenBalances[vault.poolInfo.denomTokenContractOrNative] / vault.denomUnit"
+                             [max]="+info.tokenBalances[vault.poolInfo.denomTokenContract] / vault.denomUnit"
                              [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
                              class="form-control fix-border" name="depositTokenBAmtTokenTokenCtl" required type="number" />
                       <button (click)="setMaxDepositTokenBTokenToken()" class="btn btn-max last" type="button">
@@ -446,18 +446,18 @@
               </div>
               <div class="text-end small mt-3 mb-1 text-muted fw-bold-600">
                 <span class="sub-topic">Balance: </span>
-                <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.baseTokenContractOrNative]"
+                <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.baseTokenContract]"
                       aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
                     <span class="visually-hidden">Loading...</span>
                   </span>
-                <span class="text-white">{{ info.tokenBalances[vault.poolInfo.baseTokenContractOrNative] | unit }} {{ vault.baseSymbol }}</span>
+                <span class="text-white">{{ info.tokenBalances[vault.poolInfo.baseTokenContract] | unit }} {{ vault.baseSymbol }}</span>
               </div>
               <div class="input-group">
                 <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
                 <input #depositbDPTokenAmtbDPTokenCtl="ngModel" (input)="depositbDPTokenChanged(false, $event)"
                        [(ngModel)]="depositbDPTokenAmtbDPToken"
                        [class.is-invalid]="(formDeposit.submitted || depositbDPTokenAmtbDPTokenCtl.touched) && depositbDPTokenAmtbDPTokenCtl.invalid"
-                       [max]="+info.tokenBalances[vault.poolInfo.baseTokenContractOrNative]" [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
+                       [max]="+info.tokenBalances[vault.poolInfo.baseTokenContract]" [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
                        class="form-control fix-border" name="depositbDPTokenAmtbDPToken" required type="number" />
                 <button (click)="setMaxDepositbDPToken()" class="btn btn-max last" type="button">
                   Max
@@ -693,7 +693,7 @@
             </div>
           </form>
         </mdb-tab>
-        <mdb-tab *ngIf="vault.poolInfo.auto_stake && vault.poolInfo.auto_compound && !info.DISABLED_VAULTS.includes(vault.poolInfo.dex+'|'+vault.baseSymbol)"
+        <mdb-tab *ngIf="vault.poolInfo.auto_stake && vault.poolInfo.auto_compound && !info.DISABLED_VAULTS.has(vault.poolInfo.key)"
                  title="Reallocate">
           <form #formReallocate="ngForm" class="needs-validation p-3" novalidate>
             <div class="card card-green">
@@ -860,7 +860,7 @@
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}
                 <small class="text-muted">
                   (${{ info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || '0' | balance:
-                  info.poolResponses[vault.poolInfo.dex + '|' + terrajs.settings.astroToken + '|' + 'uusd'] |
+                  info.poolResponses[ASTRO_KEY] |
                   unit: vault.baseDecimals : '1.0-2' }})
                 </small>
               </div>
@@ -874,7 +874,7 @@
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}
                 <small class="text-muted">
                   (${{ info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || '0' | balance:
-                  info.poolResponses[vault.poolInfo.dex + '|' + vault.poolInfo.rewardTokenContract + '|' + 'uusd'] |
+                  info.poolResponses[vault.poolInfo.rewardKey] |
                   unit: vault.baseDecimals : '1.0-2' }})
                 </small>
               </div>
@@ -888,7 +888,7 @@
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_farm2_reward || 0 | unit : vault.baseDecimals }}
                 <small class="text-muted">
                   (${{ info.rewardInfos[vault.poolInfo.key]?.pending_farm2_reward || '0' | balance:
-                  info.poolResponses[vault.poolInfo.dex + '|' + vault.poolInfo.rewardTokenContract + '|' + 'uusd'] |
+                  info.poolResponses[vault.poolInfo.rewardKey] |
                   unit: vault.baseDecimals : '1.0-2' }})
                 </small>
               </div>
@@ -901,7 +901,7 @@
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || 0 | unit }}
                 <small class="text-muted">
                   (${{ info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || '0' | balance:
-                  info.poolResponses['Terraswap'+'|'+terrajs.settings.specToken+'|'+'uusd'] |
+                  info.poolResponses[SPEC_KEY] |
                   unit: 6 : '1.0-2' }})
                 </small>
               </div>

@@ -29,13 +29,10 @@ export class MockAstroportAstroUstFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
   hasProxyReward = false;
+  denomTokenContract = Denom.USD;
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.astroToken;
-  }
-
-  getDenomTokenContractOrNative(baseToken?: string): string{
-    return Denom.USD;
   }
 
   constructor(
@@ -93,7 +90,7 @@ export class MockAstroportAstroUstFarmInfoService implements FarmInfoService {
     const pairs: Record<string, PairStat> = {};
 
     const poolApr = +(anchorStat?.apy || 0);
-    const key = this.dex + '|' + this.terrajs.settings.astroToken + '|' + this.getDenomTokenContractOrNative();
+    const key = `${this.dex}|${this.terrajs.settings.astroToken}|${this.denomTokenContract}`;
     pairs[key] = createPairStat(poolApr, key);
 
     const rewardInfo = await rewardInfoTask;

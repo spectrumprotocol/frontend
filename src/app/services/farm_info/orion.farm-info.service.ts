@@ -5,12 +5,12 @@ import { OrionStakingService } from '../api/orion-staking.service';
 import { PoolItem } from '../api/orion_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/orion_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
-import {DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo} from './farm-info.service';
+import { DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
 
 @Injectable()
 export class OrionFarmInfoService implements FarmInfoService {
@@ -21,13 +21,10 @@ export class OrionFarmInfoService implements FarmInfoService {
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.orionToken;
-  }
-
-  getDenomTokenContractOrNative(baseToken?: string){
-    return Denom.USD;
   }
 
   constructor(

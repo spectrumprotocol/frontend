@@ -18,7 +18,7 @@ import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
 
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
@@ -30,13 +30,10 @@ export class PylonFarmInfoService implements FarmInfoService {
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.pylonToken;
-  }
-
-  getDenomTokenContractOrNative(baseToken?: string){
-    return Denom.USD;
   }
 
   constructor(

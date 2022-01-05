@@ -11,11 +11,11 @@ import {
   PoolItem,
   RewardInfoResponseItem
 } from './farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
 
 @Injectable()
 export class SpecFarmInfoService implements FarmInfoService {
@@ -26,13 +26,10 @@ export class SpecFarmInfoService implements FarmInfoService {
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.specToken;
-  }
-
-  getDenomTokenContractOrNative(baseToken?: string){
-    return Denom.USD;
   }
 
   constructor(
@@ -107,7 +104,7 @@ export class SpecFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.gov,
           amount,
-          msg: toBase64({stake_tokens: additionalData})
+          msg: toBase64({ stake_tokens: additionalData })
         }
       }
     );

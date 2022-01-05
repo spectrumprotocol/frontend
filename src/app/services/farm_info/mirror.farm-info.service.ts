@@ -12,11 +12,11 @@ import {
   PoolInfo,
   PoolItem
 } from './farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
 
 @Injectable()
 export class MirrorFarmInfoService implements FarmInfoService {
@@ -28,13 +28,10 @@ export class MirrorFarmInfoService implements FarmInfoService {
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.mirrorToken;
-  }
-
-  getDenomTokenContractOrNative(baseToken?: string){
-    return Denom.USD;
   }
 
   constructor(
@@ -99,7 +96,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     const pairs: Record<string, PairStat> = {};
     for (const asset of mirrorStat.data.assets) {
       const poolApr = +(asset.statistic.apr?.long || 0);
-      const key = this.dex + '|' + asset.token + '|' + this.getDenomTokenContractOrNative();
+      const key = `${this.dex}|${asset.token}|${this.denomTokenContract}`;
       pairs[key] = createPairStat(poolApr, key);
     }
 
@@ -107,7 +104,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
     const tasks = rewardInfos.reward_infos.map(async it => {
-      const key = this.dex + '|' + it.asset_token + '|' + this.getDenomTokenContractOrNative();
+      const key = `${this.dex}|${it.asset_token}|${this.denomTokenContract}`;
       const p = poolResponses[key];
       const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
       if (!uusd) {
@@ -157,7 +154,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.mirrorGov,
           amount,
-          msg: toBase64({stake_voting_tokens: {}})
+          msg: toBase64({ stake_voting_tokens: {} })
         }
       }
     );

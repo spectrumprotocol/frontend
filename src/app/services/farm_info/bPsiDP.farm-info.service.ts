@@ -30,12 +30,12 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   auditWarning = false;
   dex: DEX = 'Terraswap';
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.bPsiDPToken;
   }
 
   // not actually denom, but has trade pair
-  getDenomTokenContractOrNative(baseToken?: string): string{
+  get denomTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 
@@ -96,7 +96,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     const specbPsiDPTvl = (await balanceOfTask)?.amount || '0';
 
     const poolApr = +(bPsiDPStat.apr || 0);
-    const key = this.dex + '|' + this.terrajs.settings.bPsiDPToken + '|' + this.getDenomTokenContractOrNative();
+    const key = `${this.dex}|${this.terrajs.settings.bPsiDPToken}|${this.denomTokenContract}`;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
     pair.tvl = specbPsiDPTvl;
@@ -124,8 +124,8 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     const rewardInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { reward: {} });
     const [configInfo, rewardInfo] = await Promise.all([configInfoTask, rewardInfoTask]);
 
-    const psiPool = poolResponses[this.dex + '|' + this.getDenomTokenContractOrNative() + '|' + Denom.USD];
-    const [psi, ust] = psiPool.assets[0].info.token?.['contract_addr'] === this.getDenomTokenContractOrNative()
+    const psiPool = poolResponses[`${this.dex}|${this.denomTokenContract}|${Denom.USD}`];
+    const [psi, ust] = psiPool.assets[0].info.token?.['contract_addr'] === this.denomTokenContract
       ? [psiPool.assets[0].amount, psiPool.assets[1].amount]
       : [psiPool.assets[1].amount, psiPool.assets[0].amount];
     const psiPrice = div(ust, psi);

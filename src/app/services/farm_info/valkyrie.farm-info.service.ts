@@ -8,15 +8,15 @@ import {
   PairStat,
   PoolInfo
 } from './farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { ValkyrieFarmService } from '../api/valkyrie-farm.service';
 import { ValkyrieStakingService } from '../api/valkyrie-staking.service';
 import { PoolItem } from '../api/valkyrie_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/valkyrie_farm/reward_info_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
 
 @Injectable()
 export class ValkyrieFarmInfoService implements FarmInfoService {
@@ -27,13 +27,10 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.valkyrieToken;
-  }
-
-  getDenomTokenContractOrNative(baseToken?: string){
-    return Denom.USD;
   }
 
   constructor(
@@ -127,11 +124,11 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
       this.terrajs.address,
       this.terrajs.settings.valkyrieToken,
       {
-          send: {
-            contract: this.terrajs.settings.valkyrieGov,
-            amount,
-            msg: toBase64({stake_governance_token: {}})
-          }
+        send: {
+          contract: this.terrajs.settings.valkyrieGov,
+          amount,
+          msg: toBase64({ stake_governance_token: {} })
+        }
       }
     );
   }

@@ -17,7 +17,7 @@ import { NexusFarmService } from '../api/nexus-farm.service';
 import { RewardInfoResponseItem } from '../api/nexus_farm/reward_info_response';
 import { NexusStakingService } from '../api/nexus-staking.service';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
 
 @Injectable()
 export class NexusFarmInfoService implements FarmInfoService {
@@ -28,13 +28,10 @@ export class NexusFarmInfoService implements FarmInfoService {
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.nexusToken;
-  }
-
-  getDenomTokenContractOrNative(baseToken?: string){
-    return Denom.USD;
   }
 
   constructor(

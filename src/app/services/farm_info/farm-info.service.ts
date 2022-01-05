@@ -17,9 +17,10 @@ export type DEX = 'Terraswap' | 'Astroport';
 export type PoolInfo = PoolItem & {
   key: string;
   farm: string;
-  baseTokenContractOrNative: string;
-  denomTokenContractOrNative?: string;
+  baseTokenContract: string;
+  denomTokenContract?: string;
   rewardTokenContract: string;
+  rewardKey: string;
   farmContract: string;
   auditWarning?: boolean;
   farmType: FARM_TYPE_ENUM;
@@ -72,8 +73,8 @@ export interface FarmInfoService {
   readonly hasProxyReward?: boolean;
 
   // baseToken should be is get from querying poolInfo
-  readonly defaultBaseTokenContractOrNative: string;
-  getDenomTokenContractOrNative(baseToken?: string): string;
+  readonly defaultBaseTokenContract: string;
+  readonly denomTokenContract: string;
 
   queryPoolItems(): Promise<PoolItem[]>;
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>>;

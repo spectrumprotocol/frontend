@@ -19,7 +19,7 @@ import { NlunaPsiFarmService } from '../api/nluna-psi-farm.service';
 import { NlunaPsiStakingService } from '../api/nluna-psi-staking.service';
 import { BalancePipe } from '../../pipes/balance.pipe';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
 
 @Injectable()
 export class NlunaPsiFarmInfoService implements FarmInfoService {
@@ -30,13 +30,10 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
 
-  get defaultBaseTokenContractOrNative() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.nLunaToken;
-  }
-
-  getDenomTokenContractOrNative(baseToken?: string){
-    return this.terrajs.settings.nexusToken;
   }
 
   constructor(

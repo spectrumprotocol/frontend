@@ -12,7 +12,7 @@ import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import BigNumber from 'bignumber.js';
 
 export const BLOCK_TIME = 6500; // 6.5s
-export const DEFAULT_NETWORK = 'testnet';
+export const DEFAULT_NETWORK = 'mainnet';
 
 export type Result = SyncTxBroadcastResult.Data;
 export interface PostResponse {

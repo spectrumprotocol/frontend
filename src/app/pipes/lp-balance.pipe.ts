@@ -18,13 +18,13 @@ export class LpBalancePipe implements PipeTransform {
       return undefined;
     }
     const poolResponse = poolResponses[key];
-    if (poolResponse.assets[0].info.native_token) {
+    if (poolResponse.assets[0].info.native_token?.['denom'] === Denom.USD) {
       return new BigNumber(lp)
         .times(poolResponse.assets[0].amount)
         .div(poolResponse.total_share)
         .times(2)
         .toString();
-    } else if (poolResponse.assets[1].info.native_token) {
+    } else if (poolResponse.assets[1].info.native_token?.['denom'] === Denom.USD) {
       return new BigNumber(lp)
         .times(poolResponse.assets[1].amount)
         .div(poolResponse.total_share)
