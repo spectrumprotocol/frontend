@@ -57,6 +57,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositMode: DEPOSIT_WITHDRAW_MODE_ENUM;
   withdrawMode: DEPOSIT_WITHDRAW_MODE_ENUM;
 
+  key_luna_ust = `Astroport|${Denom.LUNA}|${Denom.USD}`;
+
   withdrawAmt: number;
   withdrawUST: string;
   withdrawMinUST: string;
@@ -267,7 +269,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         this.depositFeeTokenToken = depositFee.toString();
       }
       this.grossLpTokenToken = grossLp.toString();
-    } else if (this.vault.poolInfo.baseTokenContractOrNative === Denom.LUNA && this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
+    } else if (this.vault.poolInfo.key === this.key_luna_ust) {
       // LUNA-UST
       const [uluna, uusd] = this.findAnotherNativeTokenAndUST();
       const amountuluna = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
@@ -368,7 +370,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     const staker = this.vault.poolInfo.dex === 'Terraswap' ? this.terrajs.settings.staker : this.terrajs.settings.stakerAstroport;
 
     if (this.depositMode === 'tokentoken') {
-      if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
+      if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD && !CONFIG.NATIVE_TOKENS.includes(this.vault.poolInfo.baseTokenContractOrNative)) {
         const assetAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
         const ustAmount = times(this.depositUSTAmountTokenUST, CONFIG.UNIT);
         const asset = {
@@ -412,6 +414,41 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               }
             },
             new Coins([new Coin(Denom.USD, ustAmount)])
+          )
+        ];
+        await this.terrajs.post(msgs);
+      } else if (this.vault.poolInfo.key === this.key_luna_ust){
+        const lunaAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
+        const ustAmount = times(this.depositUSTAmountTokenUST, CONFIG.UNIT);
+        const lunaAsset = {
+          amount: lunaAmount,
+          info: {
+            native_token: {
+              denom: Denom.LUNA
+            }
+          }
+        };
+        const ustAsset = {
+          amount: ustAmount,
+          info: {
+            native_token: {
+              denom: Denom.USD
+            }
+          }
+        };
+        const msgs = [
+          new MsgExecuteContract(
+            this.terrajs.address,
+            staker,
+            {
+              bond: {
+                assets: [lunaAsset, ustAsset],
+                compound_rate: auto_compound_ratio,
+                contract: this.vault.poolInfo.farmContract,
+                slippage_tolerance: CONFIG.SLIPPAGE_TOLERANCE
+              }
+            },
+            new Coins([new Coin(Denom.USD, ustAmount), new Coin(Denom.LUNA, lunaAmount)])
           )
         ];
         await this.terrajs.post(msgs);
@@ -492,7 +529,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const farmContract = this.vault.poolInfo.farmContract;
       const depositUST = times(this.depositUSTAmtUST, CONFIG.UNIT);
       const coin = new Coin(Denom.USD, depositUST);
-      if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
+      if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD && !CONFIG.NATIVE_TOKENS.includes(this.vault.poolInfo.baseTokenContractOrNative)) {
         const msgs = new MsgExecuteContract(this.terrajs.address, staker, {
           zap_to_bond: {
             contract: farmContract,
@@ -515,6 +552,29 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           }
         } as StakerExecuteMsg, new Coins([coin]));
 
+        await this.terrajs.post(msgs);
+      } else if (this.vault.poolInfo.key === this.key_luna_ust){
+        const msgs = new MsgExecuteContract(this.terrajs.address, staker, {
+          zap_to_bond: {
+            contract: farmContract,
+            provide_asset: {
+              info: {
+                native_token: {
+                  denom: Denom.USD
+                }
+              },
+              amount: depositUST
+            },
+            pair_asset: {
+              native_token: {
+                denom: Denom.LUNA
+              },
+            },
+            belief_price: this.toContractPrice(this.tokenPrice, 6, this.vault.baseDecimals),
+            max_spread: CONFIG.SLIPPAGE_TOLERANCE,
+            compound_rate: auto_compound_ratio,
+          }
+        } as StakerExecuteMsg, new Coins([coin]));
         await this.terrajs.post(msgs);
       } else {
         const msgs = new MsgExecuteContract(this.terrajs.address, staker, {
