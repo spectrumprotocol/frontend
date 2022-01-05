@@ -634,7 +634,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               },
               amount: depositUST
             },
-            pair_asset: {
+            pair_asset: CONFIG.NATIVE_TOKENS.includes(this.vault.poolInfo.denomTokenContractOrNative) ? {
+              native_token : {
+                denom: this.vault.poolInfo.denomTokenContractOrNative // uluna
+              }
+            } : {
               token: {
                 contract_addr: this.vault.poolInfo.denomTokenContractOrNative // psi
               },
@@ -644,13 +648,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             compound_rate: auto_compound_ratio,
             pair_asset_b: {
               token: {
-                contract_addr: this.vault.poolInfo.baseTokenContractOrNative // nasset
+                contract_addr: this.vault.poolInfo.baseTokenContractOrNative // nasset, bluna
               },
             },
             belief_price_b: this.basedTokenPrice
           }
         } as StakerExecuteMsg, new Coins([coin]));
-
+        console.log(msgs);
         await this.terrajs.post(msgs);
       }
     } else if (this.depositMode === 'bdp') {
@@ -924,7 +928,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
         msg = {
           zap_to_unbond: {
-            sell_asset: { token: { contract_addr: this.vault.poolInfo.asset_token } },
+            sell_asset: CONFIG.NATIVE_TOKENS.includes(this.vault.poolInfo.baseTokenContractOrNative)
+              ? {native_token: {denom: this.vault.poolInfo.baseTokenContractOrNative}} : { token: { contract_addr: this.vault.poolInfo.baseTokenContractOrNative } },
             target_asset: { native_token: { denom: Denom.USD } },
             belief_price: this.withdrawTokenPrice,
             max_spread: this.SLIPPAGE,
@@ -933,8 +938,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       } else {
         msg = {
           zap_to_unbond: {
-            sell_asset: { token: { contract_addr: this.vault.poolInfo.rewardTokenContract } },
-            sell_asset_b: { token: { contract_addr: this.vault.poolInfo.asset_token } },
+            sell_asset: CONFIG.NATIVE_TOKENS.includes(this.vault.poolInfo.denomTokenContractOrNative)
+              ? {native_token: {denom: this.vault.poolInfo.denomTokenContractOrNative}} : { token: { contract_addr: this.vault.poolInfo.denomTokenContractOrNative } },
+            sell_asset_b: CONFIG.NATIVE_TOKENS.includes(this.vault.poolInfo.baseTokenContractOrNative)
+              ? {native_token: {denom: this.vault.poolInfo.baseTokenContractOrNative}} : { token: { contract_addr: this.vault.poolInfo.baseTokenContractOrNative } },
             target_asset: { native_token: { denom: Denom.USD } },
             belief_price: this.withdrawTokenPrice,
             belief_price_b: this.withdrawBaseTokenPrice,
@@ -1104,11 +1111,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     let grossLp: BigNumber;
     const depositTVL = new BigNumber(this.depositUSTAmtUST).times(CONFIG.UNIT);
     if (this.vault.poolInfo.denomTokenContractOrNative === Denom.USD) {
+      // LUNA-UST also ok
       const [assetBase, assetNativeToken] = this.findAssetBaseAndNativeToken();
       const simulate_zap_to_bond_msg = {
         simulate_zap_to_bond: {
           pair_asset: assetBase.info,
-          provide_asset: { amount: depositTVL.toString(), info: assetNativeToken.info } // OK now
+          provide_asset: { amount: depositTVL.toString(), info: assetNativeToken.info }
         }
       };
       let res;
@@ -1119,7 +1127,32 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
       this.tokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.baseDecimals);
-    } else {
+    }
+    else if (this.vault.poolInfo.key === this.key_bluna_luna) {
+      // bLUNA-LUNA
+      const [assetBluna, assetLuna] = this.findAssetBaseAndNativeToken();
+      const simulate_zap_to_bond_msg = {
+        simulate_zap_to_bond: {
+          pair_asset_b: assetBluna.info,
+          pair_asset: assetLuna.info,
+          provide_asset: {
+            amount: depositTVL.toString(),
+            info: { native_token: { denom: Denom.USD } }
+          }
+        }
+      };
+      let res;
+      if (this.vault.poolInfo.dex === 'Terraswap'){
+        res = await this.staker.query(simulate_zap_to_bond_msg);
+      } else if (this.vault.poolInfo.dex === 'Astroport'){
+        res = await this.stakerAstroport.query(simulate_zap_to_bond_msg);
+      }
+      grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
+      const denomDecimals = CONFIG.DIGIT;
+      this.tokenPrice = this.toUIPrice(res.belief_price, 6, denomDecimals);
+      this.basedTokenPrice = this.toUIPrice(res.belief_price_b, denomDecimals, this.vault.baseDecimals);
+    }
+    else {
       const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
       const res = await this.staker.query({
         simulate_zap_to_bond: {
