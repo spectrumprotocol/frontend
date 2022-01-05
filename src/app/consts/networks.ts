@@ -18,6 +18,7 @@ export interface ISettings {
   astroportFactory: string;
   staker: string;
   stakerSingleAsset: string;
+  stakerAstroport: string;
   anchorGov: string;
   anchorStaking: string;
   anchorToken: string;
@@ -94,6 +95,7 @@ export const networks: Record<string, ISettings> = {
     astroportFactory: 'terra1fnywlw4edny3vw44x04xd67uzkdqluymgreu7g',
     staker: 'terra1fxwelge6mf5l6z0rjpylzcfq9w9tw2q7tewaf5',
     stakerSingleAsset: 'terra12kzevdnqe4k82cg5f07dywgj4lvkshhhwh4gnc',
+    stakerAstroport: 'terra10u9342cdwwqpe4wz9mf2c00ytlcr847wpe0xh4',
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
     anchorStaking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
     anchorToken: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
@@ -169,6 +171,7 @@ export const networks: Record<string, ISettings> = {
     astroportFactory: 'terra1xkuxfhxa2jmjercq3ryplnj65huhlxl5mv3d6x',
     staker: 'terra15nwqmmmza9y643apneg0ddwt0ekk38qdevnnjt',
     stakerSingleAsset: 'terra1xt7p5a5dezj4d5h4rhry6mr6khhfhgnszem08s',
+    stakerAstroport: '',
     anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
     anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
     anchorToken: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
