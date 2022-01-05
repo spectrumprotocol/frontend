@@ -18,6 +18,7 @@ export interface ISettings {
   astroportFactory: string;
   staker: string;
   stakerSingleAsset: string;
+  stakerAstroport: string;
   anchorGov: string;
   anchorStaking: string;
   anchorToken: string;
@@ -55,6 +56,12 @@ export interface ISettings {
   psiDPGatewayPool: string;
   psiDPToken: string;
   astroToken: string;
+  bLunaToken: string;
+  astroportGov: string;
+  astroportGenerator: string;
+  astroportAstroUstFarm: string;
+  astroportLunaUstFarm: string;
+  astroportLunaBlunaFarm: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -88,6 +95,7 @@ export const networks: Record<string, ISettings> = {
     astroportFactory: 'terra1fnywlw4edny3vw44x04xd67uzkdqluymgreu7g',
     staker: 'terra1fxwelge6mf5l6z0rjpylzcfq9w9tw2q7tewaf5',
     stakerSingleAsset: 'terra12kzevdnqe4k82cg5f07dywgj4lvkshhhwh4gnc',
+    stakerAstroport: 'terra10u9342cdwwqpe4wz9mf2c00ytlcr847wpe0xh4',
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
     anchorStaking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
     anchorToken: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
@@ -125,6 +133,12 @@ export const networks: Record<string, ISettings> = {
     psiDPGatewayPool: 'terra1xu84jh7x2ugt3gkpv8d450hdwcyejtcwwkkzgv',
     psiDPToken: 'terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc',
     astroToken: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
+    bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
+    astroportGov: '',
+    astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
+    astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
+    astroportLunaUstFarm: 'terra1egstlx9c9pq5taja5sg0yhraa0cl5laxyvm3ln',
+    astroportLunaBlunaFarm: 'terra1ejl4v53w4all7zkw8nfkw2q6d3qkpls8m4cav4',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -157,6 +171,7 @@ export const networks: Record<string, ISettings> = {
     astroportFactory: 'terra1xkuxfhxa2jmjercq3ryplnj65huhlxl5mv3d6x',
     staker: 'terra15nwqmmmza9y643apneg0ddwt0ekk38qdevnnjt',
     stakerSingleAsset: 'terra1xt7p5a5dezj4d5h4rhry6mr6khhfhgnszem08s',
+    stakerAstroport: '',
     anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
     anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
     anchorToken: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
@@ -194,6 +209,12 @@ export const networks: Record<string, ISettings> = {
     psiDPGatewayPool: 'terra1zd8q7wltywdd90x2skvexh06p6r8mwljfqx4eu',
     psiDPToken: 'terra1c6vsshlv5gqtwq48darkunnpxu5ustcv96e0qk',
     astroToken: 'terra1cc2up8erdqn2l7nz37qjgvnqy56sr38aj9vqry',
+    bLunaToken: '',
+    astroportGov: '',
+    astroportGenerator: '',
+    astroportAstroUstFarm: '',
+    astroportLunaUstFarm: '',
+    astroportLunaBlunaFarm: '',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',

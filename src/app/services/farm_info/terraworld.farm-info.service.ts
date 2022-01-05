@@ -18,6 +18,7 @@ import { WasmService } from '../api/wasm.service';
 import { div } from '../../libs/math';
 import { Denom } from '../../consts/denom';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class TerraworldFarmInfoService implements FarmInfoService {
@@ -57,7 +58,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
     const rewardInfoTask = this.wasm.query(this.terrajs.settings.terraworldStaking, { staker_info: { block_height: +height, staker: this.terrajs.settings.terraworldFarm } });
     const farmConfigTask = this.terraworldFarm.query({ config: {} });
@@ -65,7 +66,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.terraworldFarm)?.weight || 0;
-    const key = this.dex + '|' + this.terrajs.settings.terraworldToken + '|' + Denom.USD;
+    const key = `${this.dex}|${this.terrajs.settings.terraworldToken}|${Denom.USD}`;
     const terraworldLPStat = await this.getTerraworldLPStat(poolResponses[key]);
     const terraworldGovStat = await this.getTerraworldGovStat();
     const pairs: Record<string, PairStat> = {};

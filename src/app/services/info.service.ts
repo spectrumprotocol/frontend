@@ -152,7 +152,7 @@ export class InfoService {
 
   DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|uusd', 'Terraswap|mGME|uusd', 'Terraswap|VKR|uusd']);
 
-  async refreshBalance(opt: { spec?: boolean; ust?: boolean; lp?: boolean }) {
+  async refreshBalance(opt: { spec?: boolean; native_token?: boolean; lp?: boolean }) {
     if (!this.terrajs.isConnected) {
       return;
     }
@@ -167,10 +167,19 @@ export class InfoService {
         .then(it => this.userSpecLpAmount = div(it.balance, CONFIG.UNIT));
       tasks.push(task);
     }
-    if (opt.ust) {
-      const task = this.bankService.balances()
-        .then(it => this.userUstAmount = div(it.get(Denom.USD)?.amount.toNumber() ?? 0, CONFIG.UNIT));
-      tasks.push(task);
+    if (opt.native_token) {
+      tasks.push(this.refreshNativeTokensTask());
+    }
+  }
+
+  async refreshNativeTokensTask() {
+    const it = await this.bankService.balances();
+    this.userUstAmount = div(it.get(Denom.USD)?.amount.toNumber() ?? 0, CONFIG.UNIT);
+    for (const coin of it.toArray()) {
+      this.tokenBalances[coin.denom] = coin.amount.toString() ?? '0';
+    }
+    if (!this.tokenBalances[Denom.LUNA]) {
+      this.tokenBalances[Denom.LUNA] = '0';
     }
   }
 
@@ -268,6 +277,8 @@ export class InfoService {
   private cleanSymbol(symbol: string) {
     if (symbol.startsWith('wh')) {
       return symbol.substr(2);
+    } else if (symbol === 'BLUNA') {
+      return 'bLUNA';
     } else {
       return symbol;
     }
@@ -326,9 +337,10 @@ export class InfoService {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
         .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
-        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults);
+        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos);
         Object.assign(stat.pairs, pairStats);
       } catch (e) {
+        console.error('queryPairStats error >> ', e);
         if (!this.stat) {
           throw e;
         }
@@ -391,7 +403,11 @@ export class InfoService {
   }
 
   async refreshTokenBalance(assetToken: string) {
-    this.tokenBalances[assetToken] = (await this.token.balance(assetToken)).balance;
+    if (assetToken.startsWith('u')) {
+      await this.refreshNativeTokensTask();
+    } else {
+      this.tokenBalances[assetToken] = (await this.token.balance(assetToken)).balance;
+    }
   }
 
   async refreshPoolResponse(key: string) {
@@ -401,10 +417,14 @@ export class InfoService {
     if (!base.startsWith('u')) {
       tasks.push(this.token.balance(base)
         .then(it => this.tokenBalances[base] = it.balance));
+    } else {
+      tasks.push(this.refreshNativeTokensTask());
     }
     if (!denom.startsWith('u')) {
       tasks.push(this.token.balance(denom)
         .then(it => this.tokenBalances[denom] = it.balance));
+    } else {
+      tasks.push(this.refreshNativeTokensTask());
     }
     if (dex === 'Terraswap') {
       tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
@@ -540,43 +560,43 @@ export class InfoService {
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
-    try {
-      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      // TODO this does not present in Astroport version
-      if (data.infoSchemaVersion) {
-        if (!localStorage.getItem('reload')) {
-          localStorage.setItem('reload', 'true');
-          location.reload();
-        }
-        throw new Error('reload required');
-      }
-      localStorage.removeItem('reload');
-      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
-        throw (data);
-      }
-      Object.assign(this.tokenInfos, data.tokenInfos);
-      this.stat = data.stat;
-      this.pairInfos = data.pairInfos;
-      this.poolInfos = data.poolInfos;
-      this.circulation = data.circulation;
-      this.marketCap = data.marketCap;
-      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-      localStorage.setItem('stat', JSON.stringify(this.stat));
-      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-      localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-      if (skipPoolResponses) {
-        this.poolResponses = data.poolResponses;
-        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-      }
-    } catch (ex) {
-      // fallback if api die
-      console.error('Error in retrieveCachedStat: fallback local info service data init');
-      console.error(ex);
-      await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
-      localStorage.setItem('infoSchemaVersion', '2');
+    // try {
+    //   const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+    //   // TODO this does not present in Astroport version
+    //   if (data.infoSchemaVersion) {
+    //     if (!localStorage.getItem('reload')) {
+    //       localStorage.setItem('reload', 'true');
+    //       location.reload();
+    //     }
+    //     throw new Error('reload required');
+    //   }
+    //   localStorage.removeItem('reload');
+    //   if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
+    //     throw (data);
+    //   }
+    //   Object.assign(this.tokenInfos, data.tokenInfos);
+    //   this.stat = data.stat;
+    //   this.pairInfos = data.pairInfos;
+    //   this.poolInfos = data.poolInfos;
+    //   this.circulation = data.circulation;
+    //   this.marketCap = data.marketCap;
+    //   localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+    //   localStorage.setItem('stat', JSON.stringify(this.stat));
+    //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+    //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+    //   localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
+    //   if (skipPoolResponses) {
+    //     this.poolResponses = data.poolResponses;
+    //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+    //   }
+    // } catch (ex) {
+    //   // fallback if api die
+    //   console.error('Error in retrieveCachedStat: fallback local info service data init');
+    //   console.error(ex);
+    await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
+    localStorage.setItem('infoSchemaVersion', '2');
 
-    }
+    // }
   }
 
   updateVaults() {
@@ -613,10 +633,10 @@ export class InfoService {
         baseSymbol,
         denomSymbol,
         rewardSymbol: this.tokenInfos[rewardToken]?.symbol,
-        baseDecimals: this.tokenInfos[baseToken]?.decimals,
-        baseUnit: this.tokenInfos[baseToken]?.unit,
-        denomDecimals: this.tokenInfos[denomToken]?.decimals,
-        denomUnit: this.tokenInfos[denomToken]?.unit,
+        baseDecimals: baseToken.startsWith('u') ? CONFIG.DIGIT : this.tokenInfos[baseToken]?.decimals,
+        baseUnit: baseToken.startsWith('u') ? CONFIG.UNIT : this.tokenInfos[baseToken]?.unit,
+        denomDecimals: denomToken.startsWith('u') ? CONFIG.DIGIT : this.tokenInfos[denomToken]?.decimals,
+        denomUnit: denomToken.startsWith('u') ? CONFIG.UNIT : this.tokenInfos[denomToken]?.unit,
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
         poolInfo,

@@ -1,23 +1,23 @@
 import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { AnchorFarmService } from '../api/anchor-farm.service';
-import { AnchorStakingService } from '../api/anchor-staking.service';
-import { Decimal, PoolItem, Uint128 } from '../api/astro_token_ust_farm/pools_response';
-import { RewardInfoResponseItem } from '../api/astro_token_ust_farm/reward_info_response';
-import { TerrajsService } from '../terrajs.service';
+import { AnchorFarmService } from '../../api/anchor-farm.service';
+import { AnchorStakingService } from '../../api/anchor-staking.service';
+import {Decimal, PoolItem, Uint128} from '../../api/astroport_token_ust_farm/pools_response';
+import { RewardInfoResponseItem } from '../../api/astroport_token_ust_farm/reward_info_response';
+import { TerrajsService } from '../../terrajs.service';
 import {
   DEX,
   FarmInfoService,
   FARM_TYPE_ENUM,
   PairStat,
   PoolInfo
-} from './farm-info.service';
+} from '../farm-info.service';
 import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../libs/base64';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
+import {toBase64} from '../../../libs/base64';
+import {PoolResponse} from '../../api/terraswap_pair/pool_response';
 import { HttpClient } from '@angular/common/http';
-import { VaultsResponse } from '../api/gov/vaults_response';
-import { Denom } from '../../consts/denom';
+import {VaultsResponse} from '../../api/gov/vaults_response';
+import {Denom} from '../../../consts/denom';
 
 @Injectable()
 export class MockAstroportAnchorFarmInfoService implements FarmInfoService {
@@ -90,7 +90,7 @@ export class MockAstroportAnchorFarmInfoService implements FarmInfoService {
     const pairs: Record<string, PairStat> = {};
 
     const poolApr = +(anchorStat?.apy || 0);
-    const key = this.dex + '|' + this.terrajs.settings.anchorAstroportToken + '|' + this.denomTokenContract;
+    const key = `${this.dex}|${this.terrajs.settings.anchorAstroportToken}|${this.denomTokenContract}`;
     pairs[key] = createPairStat(poolApr, key);
 
     const rewardInfo = await rewardInfoTask;

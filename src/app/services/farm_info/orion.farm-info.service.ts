@@ -11,6 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
 import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class OrionFarmInfoService implements FarmInfoService {
@@ -47,7 +48,7 @@ export class OrionFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const unixTimeSecond = Math.floor(Date.now() / 1000);
     const rewardInfoTask = this.orionStaking.query({ staker_info: { timestamp: +unixTimeSecond, staker: this.terrajs.settings.orionFarm } });
     const farmConfigTask = this.orionFarm.query({ config: {} });
@@ -59,7 +60,7 @@ export class OrionFarmInfoService implements FarmInfoService {
     const pairs: Record<string, PairStat> = {};
 
     const poolApr = +orionLPStat?.lp?.apr / 100 || 0;
-    const key = this.dex + '|' + this.terrajs.settings.orionToken + '|' + Denom.USD;
+    const key = `${this.dex}|${this.terrajs.settings.orionToken}|${Denom.USD}`;
     pairs[key] = createPairStat(poolApr, key);
 
     const rewardInfo = await rewardInfoTask;

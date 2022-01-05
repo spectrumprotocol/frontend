@@ -165,7 +165,7 @@ export class TradeComponent implements OnInit, OnDestroy {
     await this.terrajs.post(swapBuySPECMsg);
     this.amountBuySPEC = null;
     this.amountBuyUST = null;
-    await this.infoService.refreshBalance({ spec: true, ust: true });
+    await this.infoService.refreshBalance({ spec: true, native_token: true });
     this.formBuySpec.form.markAsPristine();
     this.formBuySpec.form.markAsUntouched();
   }
@@ -271,7 +271,7 @@ export class TradeComponent implements OnInit, OnDestroy {
     await this.terrajs.post(sendSellSPECMsg);
     this.amountSellSPEC = null;
     this.amountSellUST = null;
-    await this.infoService.refreshBalance({ spec: true, ust: true });
+    await this.infoService.refreshBalance({ spec: true, native_token: true });
   }
 
 }

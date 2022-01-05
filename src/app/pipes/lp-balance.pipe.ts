@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { BalancePipe } from './balance.pipe';
 import { PoolResponse } from '../services/api/terraswap_pair/pool_response';
 import {Denom} from '../consts/denom';
+import {TerrajsService} from '../services/terrajs.service';
 
 @Pipe({
   name: 'lpBalance'
@@ -10,7 +11,8 @@ import {Denom} from '../consts/denom';
 export class LpBalancePipe implements PipeTransform {
 
   constructor(
-    private balancePipe: BalancePipe
+    private balancePipe: BalancePipe,
+    private terrajs: TerrajsService
   ) { }
 
   transform(lp: any, poolResponses: Record<string, PoolResponse>, key: string): string {
@@ -18,6 +20,7 @@ export class LpBalancePipe implements PipeTransform {
       return undefined;
     }
     const poolResponse = poolResponses[key];
+
     if (poolResponse.assets[0].info.native_token?.['denom'] === Denom.USD) {
       return new BigNumber(lp)
         .times(poolResponse.assets[0].amount)
@@ -32,7 +35,7 @@ export class LpBalancePipe implements PipeTransform {
         .toString();
     } else {
       const dex = key.split('|')[0];
-      const token1Price = this.balancePipe.transform('1', poolResponses[dex + '|' + poolResponse.assets[0].info.token['contract_addr'] + '|' + Denom.USD]);
+      const token1Price = this.balancePipe.transform('1', poolResponses[`${dex}|${poolResponse.assets[0].info.token['contract_addr']}|${Denom.USD}`]);
       if (token1Price) {
         return new BigNumber(lp)
           .times(poolResponse.assets[0].amount)
@@ -41,7 +44,7 @@ export class LpBalancePipe implements PipeTransform {
           .times(2)
           .toString();
       }
-      const token2Price = this.balancePipe.transform('1', poolResponses[dex + '|' + poolResponse.assets[1].info.token['contract_addr'] + '|' + Denom.USD]);
+      const token2Price = this.balancePipe.transform('1', poolResponses[`${dex}|${poolResponse.assets[1].info.token['contract_addr']}|${Denom.USD}`]);
       if (token2Price) {
         return new BigNumber(lp)
           .times(poolResponse.assets[1].amount)

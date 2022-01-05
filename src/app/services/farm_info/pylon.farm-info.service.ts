@@ -19,6 +19,7 @@ import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
 import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
@@ -60,7 +61,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
     const rewardInfoTask = this.pylonStaking.query({ staker_info: { block_height: +height, staker: this.terrajs.settings.pylonFarm } });
     const farmConfigTask = this.pylonFarm.query({ config: {} });
@@ -73,7 +74,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     const pairs: Record<string, PairStat> = {};
 
     const poolApr = +(pylonLPStat.apy || 0);
-    const key = this.dex + '|' + this.terrajs.settings.pylonToken + '|' + Denom.USD;
+    const key = `${this.dex}|${this.terrajs.settings.pylonToken}|${Denom.USD}`;
 
     pairs[key] = createPairStat(poolApr, key);
 

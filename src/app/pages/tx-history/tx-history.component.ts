@@ -459,7 +459,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     }
 
     // Bond with UST
-    if (lastMsg.execute_msg['zap_to_bond'] && lastMsg.contract === this.terrajs.settings.staker) {
+    if (lastMsg.execute_msg['zap_to_bond'] && [this.terrajs.settings.staker, this.terrajs.settings.stakerAstroport].includes(lastMsg.contract)) {
       const zapToBondMsg = lastMsg.execute_msg['zap_to_bond'];
 
       const provideAmount = +lastContractEvent?.attributes.find(o => o.key === 'provide_amount')?.value / CONFIG.UNIT || 0;

@@ -17,6 +17,7 @@ import { PoolItem } from '../api/valkyrie_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/valkyrie_farm/reward_info_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
 import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class ValkyrieFarmInfoService implements FarmInfoService {
@@ -56,7 +57,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const rewardInfoTask = this.valkyrieStaking.query({ staker_info: { staker: this.terrajs.settings.valkyrieFarm } });
     const farmConfigTask = this.valkyrieFarm.query({ config: {} });
     // const valkyrieStatTask = this.httpClient.get<any>(this.terrajs.settings.valkyrieAPI + '/liquidity-provision/stake/apr').toPromise();
@@ -71,7 +72,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
 
     // const poolApr = +(valkyrieStat?.data?.apr || 0);
     const poolApr = 0;
-    const key = this.dex + '|' + this.terrajs.settings.valkyrieToken + '|' + Denom.USD;
+    const key = `${this.dex}|${this.terrajs.settings.valkyrieToken}|${Denom.USD}`;
     pairs[key] = createPairStat(poolApr, key);
 
     const rewardInfo = await rewardInfoTask;

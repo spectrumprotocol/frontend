@@ -34,7 +34,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
     this.processes.add(
       this.terrajs.heightChanged.pipe(
         tap(async () => {
-          await this.info.refreshBalance({ ust: true, spec: true });
+          await this.info.refreshBalance({ native_token: true, spec: true });
         })
       ).subscribe()
     );

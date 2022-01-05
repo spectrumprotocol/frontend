@@ -14,8 +14,8 @@ export type Decimal = string;
 
 export interface ConfigInfo {
   anchor_market: string;
-  astro_gov_proxy: string;
   astro_token: string;
+  astro_ust_pair_contract: string;
   astroport_generator: string;
   aust_token: string;
   base_denom: string;
@@ -23,11 +23,14 @@ export interface ConfigInfo {
   controller: string;
   controller_fee: Decimal;
   deposit_fee: Decimal;
+  farm_token: string;
+  luna_ust_pair_contract: string;
   owner: string;
   pair_contract: string;
   platform: string;
   platform_fee: Decimal;
   spectrum_gov: string;
   spectrum_token: string;
+  xastro_proxy: string;
   [k: string]: unknown;
 }

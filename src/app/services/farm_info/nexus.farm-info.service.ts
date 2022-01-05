@@ -18,6 +18,7 @@ import { RewardInfoResponseItem } from '../api/nexus_farm/reward_info_response';
 import { NexusStakingService } from '../api/nexus-staking.service';
 import { VaultsResponse } from '../api/gov/vaults_response';
 import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class NexusFarmInfoService implements FarmInfoService {
@@ -58,7 +59,7 @@ export class NexusFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
     const nexusLPStatTask = apollo.query<any>({
       query: gql`{
@@ -90,7 +91,7 @@ export class NexusFarmInfoService implements FarmInfoService {
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const key = this.dex + '|' + this.terrajs.settings.nexusToken + '|' + Denom.USD;
+    const key = `${this.dex}|${this.terrajs.settings.nexusToken}|${Denom.USD}`;
     const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {

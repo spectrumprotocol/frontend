@@ -20,6 +20,7 @@ import { NethPsiStakingService } from '../api/neth-psi-staking.service';
 import { BalancePipe } from '../../pipes/balance.pipe';
 import { VaultsResponse } from '../api/gov/vaults_response';
 import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class NethPsiFarmInfoService implements FarmInfoService {
@@ -64,7 +65,7 @@ export class NethPsiFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
     const nexusLPStatTask = apollo.query<any>({
       query: gql`{
@@ -96,13 +97,13 @@ export class NethPsiFarmInfoService implements FarmInfoService {
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const key = this.dex + '|' + this.terrajs.settings.nEthToken + '|' + this.terrajs.settings.nexusToken;
+    const key = `${this.dex}|${this.terrajs.settings.nEthToken}|${this.terrajs.settings.nexusToken}`;
     const p = poolResponses[key];
     const psiAsset = p.assets.find(a => a.info.token?.['contract_addr'] === this.terrajs.settings.nexusToken);
     if (!psiAsset) {
       return;
     }
-    const psiPrice = this.balancePipe.transform('1', poolResponses[this.dex + '|' + this.terrajs.settings.nexusToken + '|' + Denom.USD]);
+    const psiPrice = this.balancePipe.transform('1', poolResponses[`${this.dex}|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
     const totalPsiValueUST = times(psiPrice, psiAsset.amount);
     const nEthPsiTvl = new BigNumber(totalPsiValueUST)
       .times(rewardInfo.bond_amount)
