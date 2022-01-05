@@ -24,7 +24,7 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
   farm = 'Astroport';
   autoCompound = true;
   autoStake = false;
-  farmColor = '#f9d85e';
+  farmColor = '#463df6';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
