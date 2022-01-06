@@ -13,6 +13,8 @@ import { TokenService } from '../../services/api/token.service';
 import { TerrajsService } from '../../services/terrajs.service';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
 import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-gov-poll-new',
@@ -30,6 +32,7 @@ export class GovPollNewComponent implements OnInit, OnDestroy {
   connected: Subscription;
   maxAmount = 0;
   config: ConfigInfo;
+  production = environment.production;
 
   @ViewChild('form') form: NgForm;
   @ViewChild('dropdown') dropdown: MdbDropdownDirective;
@@ -149,4 +152,33 @@ export class GovPollNewComponent implements OnInit, OnDestroy {
     this.executeMsgs.push(getMsg(type));
     this.dropdown.hide();
   }
+
+  async simulate() {
+    const msgs: MsgExecuteContract[] = [];
+    msgs.push(new MsgExecuteContract(
+      this.terrajs.settings.gov,
+      this.terrajs.settings.gov,
+      { mint: {} })
+    );
+    for (const msg of this.executeMsgs) {
+      msgs.push(new MsgExecuteContract(
+        this.terrajs.settings.gov,
+        msg.execute.contract,
+        JSON.parse(msg.execute.msg)
+      ));
+    }
+    try {
+      await this.terrajs.lcdClient.tx.create(
+        this.terrajs.settings.gov,
+        {
+          msgs,
+          feeDenoms: ['uusd']
+        }
+      );
+      console.log('success');
+    } catch (e) {
+      console.error(e.response?.data?.error || e.message);
+    }
+  }
+
 }
