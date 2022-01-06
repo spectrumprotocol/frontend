@@ -268,7 +268,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
   }
 
   getSymbol(contract_addr: string) {
-    if (contract_addr.startsWith('u')) {
+    if (contract_addr?.startsWith('u')) {
       return Denom.display[contract_addr];
     } else {
       return this.info.tokenInfos[contract_addr]?.symbol;
@@ -433,7 +433,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === bondMsg.contract);
       const farm = farmInfo.farm;
       const compoundRate = +bondMsg.compound_rate;
-      
+
       const baseTokenSymbol = bondMsg.assets[0].info?.token ? this.getSymbol(bondMsg.assets[0].info?.token?.['contract_addr']) : this.getSymbol(bondMsg.assets[0].info?.native_token?.['denom']);
       let baseTokenAmount: number;
       if (bondMsg.assets[0].info?.native_token?.['denom'] === Denom.USD){
@@ -463,7 +463,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
 
       const provideAmount = +lastContractEvent?.attributes.find(o => o.key === 'provide_amount')?.value / CONFIG.UNIT || 0;
       const offerAmount = +lastContractEvent?.attributes.find(o => o.key === 'offer_amount')?.value / CONFIG.UNIT || 0;
-      const returnAmount = +lastContractEvent?.attributes.find(o => o.key === 'return_amount')?.value / this.info.tokenInfos[zapToBondMsg.pair_asset.token.contract_addr]?.unit || 0;
+      const returnAmount = +lastContractEvent?.attributes.find(o => o.key === 'return_amount')?.value / (zapToBondMsg.pair_asset.token ? this.info.tokenInfos[zapToBondMsg.pair_asset.token.contract_addr]?.unit : CONFIG.UNIT);
       const lpAmount = +lastContractEvent?.attributes.find(o => o.key === 'share')?.value / CONFIG.UNIT || 0;
       const price = roundSixDecimal(offerAmount / returnAmount);
       const compoundRate = +zapToBondMsg.compound_rate;
@@ -473,18 +473,18 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       const pair_asset_b_token_contract_addr = zapToBondMsg.pair_asset_b?.token?.contract_addr;
       if (pair_asset_b_token_contract_addr) {
         const baseTokenSymbol = this.getSymbol(pair_asset_b_token_contract_addr);
-        const denomTokenSymbol = this.getSymbol(zapToBondMsg.pair_asset.token.contract_addr);
+        const denomTokenSymbol = zapToBondMsg.pair_asset.token ? this.getSymbol(zapToBondMsg.pair_asset.token.contract_addr) : this.getSymbol(zapToBondMsg.pair_asset.native_token.denom);
         const denomTokenAskAssetIndex = lastContractEvent?.attributes.findIndex(o => o.key === 'ask_asset' && o.value === pair_asset_b_token_contract_addr);
         const denomTokenOfferAmountKeyIndex = lastContractEvent?.attributes[+denomTokenAskAssetIndex + 1];
         const denomTokenReturnAmountKeyIndex = lastContractEvent?.attributes[+denomTokenAskAssetIndex + 2];
         const denomTokenOfferAmount = denomTokenOfferAmountKeyIndex.key === 'offer_amount' ? +denomTokenOfferAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
         const denomReturnAmountDenom = denomTokenReturnAmountKeyIndex.key === 'return_amount' ? +denomTokenReturnAmountKeyIndex.value / CONFIG.UNIT || 0 : null;
         const priceDenom = roundSixDecimal(denomTokenOfferAmount / denomReturnAmountDenom);
-        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, farmInfo.dex, { provideAmount, returnAmount, price, returnAmountB: denomReturnAmountDenom, priceB: priceDenom }, 'LP');
+        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, farmInfo?.dex, { provideAmount, returnAmount, price, returnAmountB: denomReturnAmountDenom, priceB: priceDenom }, 'LP');
       } else {
-        const baseTokenSymbol = this.getSymbol(zapToBondMsg.pair_asset.token.contract_addr);
+        const baseTokenSymbol = zapToBondMsg.pair_asset.token ? this.getSymbol(zapToBondMsg.pair_asset.token.contract_addr) : this.getSymbol(zapToBondMsg.pair_asset.native_token.denom);
         const denomTokenSymbol = 'UST';
-        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, farmInfo.dex, { provideAmount, returnAmount, price }, 'LP');
+        return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, farmInfo?.dex, { provideAmount, returnAmount, price }, 'LP');
       }
     }
 
