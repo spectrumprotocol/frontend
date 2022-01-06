@@ -173,7 +173,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: KujiraFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },

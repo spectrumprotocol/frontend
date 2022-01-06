@@ -2,8 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { div, times } from '../libs/math';
 import { PoolResponse } from '../services/api/terraswap_pair/pool_response';
 import { InfoService } from '../services/info.service';
-import {Denom} from '../consts/denom';
-import {CONFIG} from '../consts/config';
+import { Denom } from '../consts/denom';
+import { CONFIG } from '../consts/config';
 
 @Pipe({
   name: 'price'
@@ -19,22 +19,23 @@ export class PricePipe implements PipeTransform {
     if (!poolResponse) {
       return undefined;
     }
-    if (key === `Astroport|${Denom.LUNA}|${Denom.USD}`){
-      const [lunaAsset, uusdAsset] = poolResponse.assets[0].info.native_token?.['denom'] === Denom.USD
-        ? [poolResponse.assets[1], poolResponse.assets[0]]
-        : [poolResponse.assets[0], poolResponse.assets[1]];
-      return this.toUIPrice(div(uusdAsset.amount, lunaAsset.amount),
-        CONFIG.DIGIT, CONFIG.DIGIT);
-    }
     const baseToken = key.split('|')[1];
-    if (poolResponse.assets[0].info.token?.['contract_addr'] === baseToken) {
+    const asset0Token: string = poolResponse.assets[0].info.token
+      ? poolResponse.assets[0].info.token?.['contract_addr']
+      : poolResponse.assets[0].info.native_token?.['denom'];
+    const asset1Token: string = poolResponse.assets[1].info.token
+      ? poolResponse.assets[1].info.token?.['contract_addr']
+      : poolResponse.assets[1].info.native_token?.['denom'];
+    const asset0Decimals = asset0Token.startsWith('u') ? 6 : this.info.tokenInfos[asset0Token]?.decimals || 6;
+    const asset1Decimals = asset1Token.startsWith('u') ? 6 : this.info.tokenInfos[asset1Token]?.decimals || 6;
+    if (asset0Token === baseToken) {
       return this.toUIPrice(div(poolResponse.assets[1].amount, poolResponse.assets[0].amount),
-        poolResponse.assets[1].info.native_token ? 6 : this.info.tokenInfos[poolResponse.assets[1].info.token['contract_addr']]?.decimals || 6,
-        this.info.tokenInfos[baseToken].decimals);
+        asset1Decimals,
+        asset0Decimals);
     } else {
       return this.toUIPrice(div(poolResponse.assets[0].amount, poolResponse.assets[1].amount),
-        poolResponse.assets[0].info.native_token ? 6 : this.info.tokenInfos[poolResponse.assets[0].info.token['contract_addr']]?.decimals || 6,
-        this.info.tokenInfos[baseToken].decimals);
+        asset0Decimals,
+        asset1Decimals);
     }
   }
 

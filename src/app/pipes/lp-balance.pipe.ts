@@ -2,8 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { BalancePipe } from './balance.pipe';
 import { PoolResponse } from '../services/api/terraswap_pair/pool_response';
-import {Denom} from '../consts/denom';
-import {TerrajsService} from '../services/terrajs.service';
+import { Denom } from '../consts/denom';
+import { TerrajsService } from '../services/terrajs.service';
 
 @Pipe({
   name: 'lpBalance'
@@ -35,7 +35,10 @@ export class LpBalancePipe implements PipeTransform {
         .toString();
     } else {
       const dex = key.split('|')[0];
-      const token1Price = this.balancePipe.transform('1', poolResponses[`${dex}|${poolResponse.assets[0].info.token['contract_addr']}|${Denom.USD}`]);
+      const asset0Token: string = poolResponse.assets[0].info.token
+        ? poolResponse.assets[0].info.token?.['contract_addr']
+        : poolResponse.assets[0].info.native_token?.['denom'];
+      const token1Price = this.balancePipe.transform('1', poolResponses[`${dex}|${asset0Token}|${Denom.USD}`]);
       if (token1Price) {
         return new BigNumber(lp)
           .times(poolResponse.assets[0].amount)
@@ -44,7 +47,10 @@ export class LpBalancePipe implements PipeTransform {
           .times(2)
           .toString();
       }
-      const token2Price = this.balancePipe.transform('1', poolResponses[`${dex}|${poolResponse.assets[1].info.token['contract_addr']}|${Denom.USD}`]);
+      const asset1Token: string = poolResponse.assets[1].info.token
+        ? poolResponse.assets[1].info.token?.['contract_addr']
+        : poolResponse.assets[1].info.native_token?.['denom'];
+      const token2Price = this.balancePipe.transform('1', poolResponses[`${dex}|${asset1Token}|${Denom.USD}`]);
       if (token2Price) {
         return new BigNumber(lp)
           .times(poolResponse.assets[1].amount)

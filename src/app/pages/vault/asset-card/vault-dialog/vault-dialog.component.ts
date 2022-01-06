@@ -24,6 +24,7 @@ import { TerraSwapRouterService } from '../../../../services/api/terraswap-route
 import { StakerAstroportService } from '../../../../services/api/staker-astroport.service';
 import { AstroportService } from '../../../../services/api/astroport.service';
 import { SimulateZapToBondResponse } from 'src/app/services/api/staker/simulate_zap_to_bond_response';
+import { SimulationResponse } from 'src/app/services/api/terraswap_pair/simulation_response';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | 'ust_bdp';
@@ -255,16 +256,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   private findAssetBaseAndDenom() {
-    const pool = this.info.poolResponses[this.vault.poolInfo.key];
-    if (this.vault.poolInfo.baseTokenContract.startsWith('u')) {
-      return pool.assets[0].info.native_token?.['denom'] === this.vault.poolInfo.baseTokenContract
-        ? [pool.assets[0], pool.assets[1]]
-        : [pool.assets[1], pool.assets[0]];
-    } else {
-      return pool.assets[0].info.token?.['contract_addr'] === this.vault.poolInfo.baseTokenContract
-        ? [pool.assets[0], pool.assets[1]]
-        : [pool.assets[1], pool.assets[0]];
-    }
+    const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
+    const asset0Token: string = poolResponse.assets[0].info.token
+      ? poolResponse.assets[0].info.token?.['contract_addr']
+      : poolResponse.assets[0].info.native_token?.['denom'];
+    return asset0Token === this.vault.poolInfo.baseTokenContract
+      ? [poolResponse.assets[0], poolResponse.assets[1]]
+      : [poolResponse.assets[1], poolResponse.assets[0]];
   }
 
   private findAssetBaseAndUST() {
@@ -615,7 +613,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.withdrawMinUST = ustAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
     } else {
       const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
-      const [tokenA, tokenB] = poolResponse.assets[0].info.token['contract_addr'] === this.vault.poolInfo.baseTokenContract
+      const asset0Token: string = poolResponse.assets[0].info.token
+        ? poolResponse.assets[0].info.token?.['contract_addr']
+        : poolResponse.assets[0].info.native_token?.['denom'];
+      const [tokenA, tokenB] = asset0Token === this.vault.poolInfo.baseTokenContract
         ? [poolResponse.assets[1], poolResponse.assets[0]]
         : [poolResponse.assets[0], poolResponse.assets[1]];
       const tokenAAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
@@ -642,8 +643,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           }
         }
       };
-      let simulate2;
-      const tokenAContractAddrOrDenom = tokenA.info.token?.['contract_addr'] ? tokenA.info.token?.['contract_addr'] : tokenA.info.native_token?.['denom'];
+      let simulate2: SimulationResponse;
+      const tokenAContractAddrOrDenom = tokenA.info.token?.['contract_addr'] || tokenA.info.native_token?.['denom'];
       if (this.vault.poolInfo.dex === 'Astroport') {
         simulate2 = await this.astroport.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${Denom.USD}`].contract_addr, simulation_msg);
       } else if (this.vault.poolInfo.dex === 'Terraswap') {
