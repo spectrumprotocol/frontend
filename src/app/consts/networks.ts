@@ -209,7 +209,6 @@ export const networks: Record<string, ISettings> = {
     psiDPGatewayPool: 'terra1zd8q7wltywdd90x2skvexh06p6r8mwljfqx4eu',
     psiDPToken: 'terra1c6vsshlv5gqtwq48darkunnpxu5ustcv96e0qk',
     astroToken: 'terra1cc2up8erdqn2l7nz37qjgvnqy56sr38aj9vqry',
-    bLunaToken: '',
     bLunaToken: 'bLunaToken',
     astroportGov: '',
     astroportGenerator: '',
