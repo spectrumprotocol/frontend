@@ -342,7 +342,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         staker,
         {
           bond: {
-            assets: [assetDenom, assetBase],
+            assets: [assetBase, assetDenom],
             compound_rate: auto_compound_ratio,
             contract: this.vault.poolInfo.farmContract,
             slippage_tolerance: CONFIG.SLIPPAGE_TOLERANCE
