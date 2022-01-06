@@ -19,7 +19,7 @@ export type PoolInfo = PoolItem & {
   key: string;
   farm: string;
   baseTokenContract: string;
-  denomTokenContract?: string;
+  denomTokenContract: string;
   rewardTokenContract: string;
   rewardKey: string;
   farmContract: string;

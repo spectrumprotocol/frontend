@@ -9,7 +9,7 @@ import { PercentPipe } from '@angular/common';
 import { Event, MsgExecuteContract } from '@terra-money/terra.js';
 import { Denom } from '../../consts/denom';
 import { fromBase64 } from 'src/app/libs/base64';
-import { FARM_TYPE_ENUM, PoolInfo } from '../../services/farm_info/farm-info.service';
+import { FARM_TYPE_ENUM } from '../../services/farm_info/farm-info.service';
 
 interface TxHistory {
   desc: string;

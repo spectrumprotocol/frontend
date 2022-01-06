@@ -16,8 +16,10 @@ export interface Vault {
   rewardSymbol: string;
   baseDecimals: number;
   baseUnit: number;
+  baseAssetInfo: object;
   denomDecimals: number;
   denomUnit: number;
+  denomAssetInfo: object;
   lpToken: string;
   pairInfo: PairInfo;
   poolInfo: PoolInfo;

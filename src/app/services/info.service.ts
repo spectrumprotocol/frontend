@@ -168,11 +168,12 @@ export class InfoService {
       tasks.push(task);
     }
     if (opt.native_token) {
-      tasks.push(this.refreshNativeTokensTask());
+      tasks.push(this.refreshNativeTokens());
     }
   }
 
-  async refreshNativeTokensTask() {
+  @memoize(1000)
+  async refreshNativeTokens() {
     const it = await this.bankService.balances();
     this.userUstAmount = div(it.get(Denom.USD)?.amount.toNumber() ?? 0, CONFIG.UNIT);
     for (const coin of it.toArray()) {
@@ -404,7 +405,7 @@ export class InfoService {
 
   async refreshTokenBalance(assetToken: string) {
     if (assetToken.startsWith('u')) {
-      await this.refreshNativeTokensTask();
+      await this.refreshNativeTokens();
     } else {
       this.tokenBalances[assetToken] = (await this.token.balance(assetToken)).balance;
     }
@@ -418,13 +419,13 @@ export class InfoService {
       tasks.push(this.token.balance(base)
         .then(it => this.tokenBalances[base] = it.balance));
     } else {
-      tasks.push(this.refreshNativeTokensTask());
+      tasks.push(this.refreshNativeTokens());
     }
     if (!denom.startsWith('u')) {
       tasks.push(this.token.balance(denom)
         .then(it => this.tokenBalances[denom] = it.balance));
     } else {
-      tasks.push(this.refreshNativeTokensTask());
+      tasks.push(this.refreshNativeTokens());
     }
     if (dex === 'Terraswap') {
       tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
@@ -637,6 +638,12 @@ export class InfoService {
         baseUnit: baseToken.startsWith('u') ? CONFIG.UNIT : this.tokenInfos[baseToken]?.unit,
         denomDecimals: denomToken.startsWith('u') ? CONFIG.DIGIT : this.tokenInfos[denomToken]?.decimals,
         denomUnit: denomToken.startsWith('u') ? CONFIG.UNIT : this.tokenInfos[denomToken]?.unit,
+        baseAssetInfo: baseToken.startsWith('u')
+          ? { native_token: { denom: baseToken } }
+          : { token: { contract_addr: baseToken } },
+        denomAssetInfo: denomToken.startsWith('u')
+          ? { native_token: { denom: denomToken } }
+          : { token: { contract_addr: denomToken } },
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
         poolInfo,
