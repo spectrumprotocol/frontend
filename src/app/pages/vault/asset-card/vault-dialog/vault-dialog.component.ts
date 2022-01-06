@@ -327,7 +327,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       } else {
         msgs.push(new MsgExecuteContract(
           this.terrajs.address,
-          this.vault.poolInfo.rewardTokenContract,
+          this.vault.poolInfo.denomTokenContract,
           {
             increase_allowance: {
               amount: assetDenomAmount,
