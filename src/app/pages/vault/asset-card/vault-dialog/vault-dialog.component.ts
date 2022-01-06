@@ -411,7 +411,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             belief_price_b: this.basedTokenPrice
           }
         } as StakerExecuteMsg, new Coins([coin]));
-        console.log(msgs);
         await this.terrajs.post(msgs);
       }
     } else if (this.depositMode === 'bdp') {
@@ -446,19 +445,19 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             },
             swap_operations: [
               {
-                pair_contract: this.info.pairInfos[this.vault.poolInfo.key].contract_addr,
+                pair_contract: this.info.pairInfos[this.vault.poolInfo.rewardKey].contract_addr,
                 asset_info: {
                   token: {
-                    contract_addr: this.vault.poolInfo.denomTokenContract,
+                    contract_addr: this.vault.poolInfo.rewardTokenContract,
                   },
                 },
                 belief_price: this.basedTokenPrice,
               },
               {
-                pair_contract: this.info.pairInfos[this.vault.poolInfo.rewardKey].contract_addr,
+                pair_contract: this.info.pairInfos[this.vault.poolInfo.key].contract_addr,
                 asset_info: {
                   token: {
-                    contract_addr: this.vault.poolInfo.rewardTokenContract,
+                    contract_addr: this.vault.poolInfo.baseTokenContract,
                   },
                 },
                 belief_price: this.tokenPrice,
@@ -1051,44 +1050,25 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
 
     if (+this.ustForSwapDP) {
-      this.tokenPrice = floor18Decimal(div(farmPool2, bDpPool));
-      this.basedTokenPrice = floor18Decimal(div(ustPool, farmPool1));
-      const simulateSwapOperationRes = await this.terraSwapRouter.query({
-        simulate_swap_operations: {
-          offer_amount: this.ustForSwapDP.toString(),
-          operations: [
-            {
-              terra_swap: {
-                offer_asset_info: {
-                  native_token: {
-                    denom: Denom.USD
-                  }
-                },
-                ask_asset_info: {
-                  token: {
-                    contract_addr: this.vault.poolInfo.denomTokenContract
-                  }
-                }
-              }
-            },
-            {
-              terra_swap: {
-                offer_asset_info: {
-                  token: {
-                    contract_addr: this.vault.poolInfo.denomTokenContract
-                  }
-                },
-                ask_asset_info: {
-                  token: {
-                    contract_addr: this.vault.poolInfo.baseTokenContract
-                  }
-                }
-              }
-            }
-          ]
+      const simulate1 = await this.terraSwap.query(this.info.pairInfos[this.vault.poolInfo.rewardKey].contract_addr, {
+        simulation: {
+          offer_asset: {
+            info: { native_token: { denom: Denom.USD } },
+            amount: this.ustForSwapDP,
+          }
         }
       });
-      this.lpFromSwapDP = simulateSwapOperationRes.amount;
+      this.basedTokenPrice = floor18Decimal(div(this.ustForSwapDP, simulate1.return_amount));
+      const simulate2 = await this.terraSwap.query(this.info.pairInfos[this.vault.poolInfo.key].contract_addr, {
+        simulation: {
+          offer_asset: {
+            info: { token: { contract_addr: this.vault.poolInfo.rewardTokenContract } },
+            amount: simulate1.return_amount,
+          }
+        }
+      });
+      this.tokenPrice = floor18Decimal(div(simulate1.return_amount, simulate2.return_amount));
+      this.lpFromSwapDP = simulate2.return_amount;
     } else {
       this.lpFromSwapDP = undefined;
     }

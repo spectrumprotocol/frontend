@@ -178,7 +178,7 @@ registerLocaleData(locale, 'en');
     // { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
     TruncatePipe,
