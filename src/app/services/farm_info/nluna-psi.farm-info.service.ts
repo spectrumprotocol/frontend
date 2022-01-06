@@ -31,10 +31,13 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
-  denomTokenContract = Denom.USD;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.nLunaToken;
+  }
+
+  get denomTokenContract() {
+    return this.terrajs.settings.nexusToken;
   }
 
   constructor(

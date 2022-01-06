@@ -257,8 +257,7 @@ export class InfoService {
               ]
             }
           });
-        }
-        else if (this.poolInfos[key].dex === 'Astroport') {
+        } else if (this.poolInfos[key].dex === 'Astroport') {
           this.pairInfos[key] = await this.astroportFactory.query({
             pair: {
               asset_infos: [
