@@ -27,7 +27,6 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   autoStake = true;
   farmColor = '#00cfda';
   farmType: FARM_TYPE_ENUM = 'PYLON_LIQUID';
-  highlight = true;
   auditWarning = false;
   dex: DEX = 'Terraswap';
 

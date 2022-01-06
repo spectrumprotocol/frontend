@@ -29,6 +29,7 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
   denomTokenContract = Denom.USD;
+  highlight = true;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.astroToken;
