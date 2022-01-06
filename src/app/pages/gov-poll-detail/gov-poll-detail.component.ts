@@ -10,7 +10,9 @@ import { GovService } from '../../services/api/gov.service';
 import { ConfigInfo } from '../../services/api/gov/config_info';
 import { PollInfo } from '../../services/api/gov/polls_response';
 import { TerrajsService } from '../../services/terrajs.service';
-import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { environment } from 'src/environments/environment';
+import { fromBase64 } from 'src/app/libs/base64';
 
 @Component({
   selector: 'app-gov-poll-detail',
@@ -28,6 +30,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
   canEnd = false;
   canExecute = false;
   canExpire = false;
+  production = environment.production;
 
   amount: number;
   maxAmount = 0;
@@ -52,7 +55,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
     this.$gaService.event('VIEW_GOV_POLL', poll_id.toString());
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
-        const stateTask = this.gov.query({ state: { } })
+        const stateTask = this.gov.query({ state: {} })
           .then(it => this.staked = +it.total_staked);
         const configTask = this.gov.config()
           .then(it => this.config = it);
@@ -125,7 +128,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
           this.terrajs.address,
           this.terrajs.settings.gov,
           {
-            mint: { }
+            mint: {}
           }
         ),
         new MsgExecuteContract(
@@ -142,7 +145,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
           this.terrajs.address,
           this.terrajs.settings.gov,
           {
-            mint: { }
+            mint: {}
           }
         ),
         new MsgExecuteContract(
@@ -159,7 +162,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
           this.terrajs.address,
           this.terrajs.settings.gov,
           {
-            mint: { }
+            mint: {}
           }
         ),
         new MsgExecuteContract(
@@ -173,5 +176,33 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
     }
 
     this.router.navigateByUrl('/gov');
+  }
+
+  async simulate() {
+    const msgs: MsgExecuteContract[] = [];
+    msgs.push(new MsgExecuteContract(
+      this.terrajs.settings.gov,
+      this.terrajs.settings.gov,
+      { mint: {} })
+    );
+    for (const msg of this.poll.execute_msgs) {
+      msgs.push(new MsgExecuteContract(
+        this.terrajs.settings.gov,
+        msg.execute.contract,
+        JSON.parse(msg.execute.msg)
+      ));
+    }
+    try {
+      await this.terrajs.lcdClient.tx.create(
+        this.terrajs.settings.gov,
+        {
+          msgs,
+          feeDenoms: ['uusd']
+        }
+      );
+      console.log('success');
+    } catch (e) {
+      console.error(e.response?.data?.error || e.message);
+    }
   }
 }

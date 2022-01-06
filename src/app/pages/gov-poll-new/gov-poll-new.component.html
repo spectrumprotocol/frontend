@@ -154,5 +154,20 @@
                 </div>
             </div>
         </div>
+        <div class="row pt-3" *ngIf="!production">
+            <div class="card spec-form">
+                <div class="card-header mt-1 fw-bold">
+                    Simulate
+                </div>
+                <div class="card-body">
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" (click)="simulate()">
+                            Simulate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </main>
