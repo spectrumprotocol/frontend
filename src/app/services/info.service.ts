@@ -151,6 +151,15 @@ export class InfoService {
   portfolio: Portfolio;
 
   DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|uusd', 'Terraswap|mGME|uusd', 'Terraswap|VKR|uusd']);
+  DISABLED_TESTNET_FARM_CONTRACTS = new Set([this.terrajs.settings.bPsiDPFarm, this.terrajs.settings.astroportAstroUstFarm, this.terrajs.settings.astroportLunaUstFarm, this.terrajs.settings.astroportLunaBlunaFarm]);
+
+  shouldEnableFarmInfo(farmInfo: FarmInfoService){
+    if (this.terrajs.network?.name){
+      return this.terrajs.network?.name === 'testnet' ? !this.DISABLED_TESTNET_FARM_CONTRACTS.has(farmInfo.farmContract) : true;
+    } else {
+      return true;
+    }
+  }
 
   async refreshBalance(opt: { spec?: boolean; native_token?: boolean; lp?: boolean }) {
     if (!this.terrajs.isConnected) {
@@ -391,7 +400,7 @@ export class InfoService {
 
   async refreshRewardInfos() {
     const rewardInfos: InfoService['rewardInfos'] = {};
-    const tasks = this.farmInfos.map(async farmInfo => {
+    const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const rewards = await farmInfo.queryRewards();
       for (const reward of rewards) {
         rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
@@ -491,7 +500,7 @@ export class InfoService {
       tokens: new Map(),
       farms: new Map(),
     };
-    for (const farmInfo of this.farmInfos) {
+    for (const farmInfo of this.farmInfos.filter(fi => this.shouldEnableFarmInfo(fi))) {
       if (this.tokenInfos[farmInfo.rewardTokenContract]?.symbol) {
         portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { rewardTokenContract: farmInfo.rewardTokenContract, pending_reward_token: 0, pending_reward_ust: 0, pending_reward_astro: 0 });
         portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
