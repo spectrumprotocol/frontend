@@ -441,7 +441,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       } else if (bondMsg.assets[0].info?.native_token?.['denom'].startsWith('u')){
         baseTokenAmount = +bondMsg.assets[0].amount / CONFIG.UNIT;
       } else {
-        baseTokenAmount = +bondMsg.assets[0].amount / this.info.tokenInfos[bondMsg.assets[0].info?.token?.['contract_addr']].decimals;
+        baseTokenAmount = +bondMsg.assets[0].amount / this.info.tokenInfos[bondMsg.assets[0].info?.token?.['contract_addr']].unit;
       }
 
       const denomTokenSymbol = bondMsg.assets[1].info?.token ? this.getSymbol(bondMsg.assets[1].info?.token?.['contract_addr']) : this.getSymbol(bondMsg.assets[1].info?.native_token?.['denom']);
@@ -451,7 +451,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       } else if (bondMsg.assets[1].info?.native_token?.['denom'].startsWith('u')){
         denomTokenAmount = +bondMsg.assets[1].amount / CONFIG.UNIT;
       } else {
-        denomTokenAmount = +bondMsg.assets[1].amount / this.info.tokenInfos[bondMsg.assets[1].info?.token?.['contract_addr']].decimals;
+        denomTokenAmount = +bondMsg.assets[1].amount / this.info.tokenInfos[bondMsg.assets[1].info?.token?.['contract_addr']].unit;
       }
 
       return txHistoryFactory.depositFarm(farm, baseTokenSymbol, denomTokenSymbol, lpAmount, compoundRate, farmInfo.dex, { baseTokenAmount, denomTokenAmount }, 'LP');
