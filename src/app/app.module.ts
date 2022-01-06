@@ -75,9 +75,6 @@ import {MdbValidationModule} from 'mdb-angular-ui-kit/validation';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import { LpEarningPipe } from './pipes/lp-earning.pipe';
 import {BPsiDPFarmInfoService} from './services/farm_info/bPsiDP.farm-info.service';
-import {AstroportAstroUstFarmService} from './services/api/astroport-astroust-farm.service';
-import {AstroportLunaUstFarmService} from './services/api/astroport-lunaust-farm.service';
-import {AstroportLunaBlunaFarmService} from './services/api/astroport-lunabluna-farm.service';
 import {AstroportAstroUstFarmInfoService} from './services/farm_info/astroport/astroport-astro-ust.farm-info.service';
 import {AstroportLunaUstFarmInfoService} from './services/farm_info/astroport/astroport-luna-ust-farm-info.service';
 import {AstroportLunaBlunaFarmInfoService} from './services/farm_info/astroport/astroport-luna-bluna.farm-info.service';
@@ -168,18 +165,16 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AstroportAstroUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportLunaUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportLunaBlunaFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: MockAstroportAnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: KujiraFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,
