@@ -11,7 +11,7 @@ import { WasmService } from './wasm.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AstroportLunaBlunaFarmService {
+export class AstroportBlunalunaFarmService {
 
   constructor(
     private terrajs: TerrajsService,
@@ -23,10 +23,10 @@ export class AstroportLunaBlunaFarmService {
   query(msg: Extract<QueryMsg, { reward_info: unknown }>): Promise<RewardInfoResponse>;
   query(msg: Extract<QueryMsg, { state: unknown }>): Promise<StateInfo>;
   query(msg: QueryMsg): Promise<any> {
-    return this.wasm.query(this.terrajs.settings.astroportLunaBlunaFarm, msg);
+    return this.wasm.query(this.terrajs.settings.astroportBlunaLunaFarm, msg);
   }
 
   handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
-    return this.wasm.execute(this.terrajs.settings.astroportLunaBlunaFarm, msg, opts);
+    return this.wasm.execute(this.terrajs.settings.astroportBlunaLunaFarm, msg, opts);
   }
 }

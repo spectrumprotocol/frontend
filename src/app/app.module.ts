@@ -77,7 +77,7 @@ import { LpEarningPipe } from './pipes/lp-earning.pipe';
 import {BPsiDPFarmInfoService} from './services/farm_info/bPsiDP.farm-info.service';
 import {AstroportAstroUstFarmInfoService} from './services/farm_info/astroport/astroport-astro-ust.farm-info.service';
 import {AstroportLunaUstFarmInfoService} from './services/farm_info/astroport/astroport-luna-ust-farm-info.service';
-import {AstroportLunaBlunaFarmInfoService} from './services/farm_info/astroport/astroport-luna-bluna.farm-info.service';
+import {AstroportBlunaLunaFarmInfoService} from './services/farm_info/astroport/astroport-bluna-luna.farm-info.service';
 import {MdbCheckboxModule} from 'mdb-angular-ui-kit/checkbox';
 
 // alter default decimal to 6
@@ -164,7 +164,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportAstroUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportLunaUstFarmInfoService, multi: true },
-    { provide: FARM_INFO_SERVICE, useClass: AstroportLunaBlunaFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportBlunaLunaFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },

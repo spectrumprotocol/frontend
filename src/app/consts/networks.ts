@@ -61,7 +61,7 @@ export interface ISettings {
   astroportGenerator: string;
   astroportAstroUstFarm: string;
   astroportLunaUstFarm: string;
-  astroportLunaBlunaFarm: string;
+  astroportBlunaLunaFarm: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -138,7 +138,7 @@ export const networks: Record<string, ISettings> = {
     astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
     astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
     astroportLunaUstFarm: 'terra1egstlx9c9pq5taja5sg0yhraa0cl5laxyvm3ln',
-    astroportLunaBlunaFarm: 'terra1ejl4v53w4all7zkw8nfkw2q6d3qkpls8m4cav4',
+    astroportBlunaLunaFarm: 'terra1ejl4v53w4all7zkw8nfkw2q6d3qkpls8m4cav4',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -214,7 +214,7 @@ export const networks: Record<string, ISettings> = {
     astroportGenerator: '',
     astroportAstroUstFarm: 'astroportAstroUstFarm',
     astroportLunaUstFarm: 'astroportLunaUstFarm',
-    astroportLunaBlunaFarm: 'astroportLunaBlunaFarm',
+    astroportBlunaLunaFarm: 'astroportLunaBlunaFarm',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',

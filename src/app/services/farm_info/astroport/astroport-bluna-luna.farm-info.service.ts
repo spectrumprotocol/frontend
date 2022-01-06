@@ -16,13 +16,13 @@ import {PoolResponse} from '../../api/terraswap_pair/pool_response';
 import {VaultsResponse} from '../../api/gov/vaults_response';
 import {Denom} from '../../../consts/denom';
 import {div, times} from '../../../libs/math';
-import {AstroportLunaBlunaFarmService} from '../../api/astroport-lunabluna-farm.service';
+import {AstroportBlunalunaFarmService} from '../../api/astroport-blunaluna-farm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
 import {WasmService} from '../../api/wasm.service';
 import {BalancePipe} from '../../../pipes/balance.pipe';
 
 @Injectable()
-export class AstroportLunaBlunaFarmInfoService implements FarmInfoService {
+export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
   farm = 'Astroport';
   autoCompound = true;
   autoStake = false;
@@ -38,7 +38,7 @@ export class AstroportLunaBlunaFarmInfoService implements FarmInfoService {
   }
 
   constructor(
-    private farmService: AstroportLunaBlunaFarmService,
+    private farmService: AstroportBlunalunaFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService,
     private balancePipe: BalancePipe
@@ -46,7 +46,7 @@ export class AstroportLunaBlunaFarmInfoService implements FarmInfoService {
   }
 
   get farmContract() {
-    return this.terrajs.settings.astroportLunaBlunaFarm;
+    return this.terrajs.settings.astroportBlunaLunaFarm;
   }
 
   get rewardTokenContract() {
