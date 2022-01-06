@@ -43,8 +43,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   UNIT: number = CONFIG.UNIT;
   SLIPPAGE = CONFIG.SLIPPAGE_TOLERANCE;
-  ASTRO_KEY = 'Astroport|ASTRO|uusd';
-  SPEC_KEY = 'Terraswap|SPEC|uusd';
+  ASTRO_KEY = `Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`;
+  SPEC_KEY = `Terraswap|${this.terrajs.settings.specToken}|${Denom.USD}`;
 
   // naming convention: actual input field, input mode
   depositTokenAAmtTokenToken: number;
