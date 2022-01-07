@@ -150,7 +150,7 @@ export class InfoService {
 
   portfolio: Portfolio;
 
-  DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|uusd', 'Terraswap|mGME|uusd', 'Terraswap|VKR|uusd']);
+  DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST']);
   DISABLED_TESTNET_FARM_CONTRACTS = new Set([this.terrajs.settings.bPsiDPFarm, this.terrajs.settings.astroportAstroUstFarm, this.terrajs.settings.astroportLunaUstFarm, this.terrajs.settings.astroportBlunaLunaFarm]);
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService){

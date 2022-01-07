@@ -178,7 +178,7 @@
     </div>
     <div class="row tab-container g-0">
       <mdb-tabs [justified]="true">
-        <mdb-tab *ngIf="!info.DISABLED_VAULTS.has(vault.poolInfo.key)" title="Deposit">
+        <mdb-tab *ngIf="!info.DISABLED_VAULTS.has(vault.poolInfo.dex+'|'+vault.baseSymbol+'|'+vault.denomSymbol)" title="Deposit">
           <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
             <div *ngIf="depositMode === 'tokentoken'" class="mt-3">
               <div class="card card-green">
@@ -692,7 +692,7 @@
             </div>
           </form>
         </mdb-tab>
-        <mdb-tab *ngIf="vault.poolInfo.auto_stake && vault.poolInfo.auto_compound && !info.DISABLED_VAULTS.has(vault.poolInfo.key)"
+        <mdb-tab *ngIf="vault.poolInfo.auto_stake && vault.poolInfo.auto_compound && !info.DISABLED_VAULTS.has(vault.poolInfo.dex+'|'+vault.baseSymbol+'|'+vault.denomSymbol)"
                  title="Reallocate">
           <form #formReallocate="ngForm" class="needs-validation p-3" novalidate>
             <div class="card card-green">
