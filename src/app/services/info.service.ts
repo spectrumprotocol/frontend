@@ -150,12 +150,11 @@ export class InfoService {
 
   portfolio: Portfolio;
 
-  DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST']);
-  DISABLED_TESTNET_FARM_CONTRACTS = new Set([this.terrajs.settings.bPsiDPFarm, this.terrajs.settings.astroportAstroUstFarm, this.terrajs.settings.astroportLunaUstFarm, this.terrajs.settings.astroportBlunaLunaFarm]);
+  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST']);
 
-  shouldEnableFarmInfo(farmInfo: FarmInfoService){
-    if (this.terrajs.network?.name){
-      return this.terrajs.network?.name === 'testnet' ? !this.DISABLED_TESTNET_FARM_CONTRACTS.has(farmInfo.farmContract) : true;
+  shouldEnableFarmInfo(farmInfo: FarmInfoService) {
+    if (this.terrajs.network?.name) {
+      return this.terrajs.network?.name === 'testnet' && !farmInfo.mainnetOnly;
     } else {
       return true;
     }
@@ -664,6 +663,7 @@ export class InfoService {
         fullName: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
+        disabled: this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`),
       };
       this.allVaults.push(vault);
     }

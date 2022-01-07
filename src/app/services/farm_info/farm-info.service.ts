@@ -67,6 +67,7 @@ export interface FarmInfoService {
 
   // color for chart
   readonly farmColor: string;
+  readonly mainnetOnly?: boolean;
 
   readonly farmType?: FARM_TYPE_ENUM;
   readonly highlight?: boolean;

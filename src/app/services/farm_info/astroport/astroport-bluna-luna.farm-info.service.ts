@@ -15,7 +15,7 @@ import {toBase64} from '../../../libs/base64';
 import {PoolResponse} from '../../api/terraswap_pair/pool_response';
 import {VaultsResponse} from '../../api/gov/vaults_response';
 import {Denom} from '../../../consts/denom';
-import {div, times} from '../../../libs/math';
+import {times} from '../../../libs/math';
 import {AstroportBlunalunaFarmService} from '../../api/astroport-blunaluna-farm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
 import {WasmService} from '../../api/wasm.service';
@@ -32,6 +32,7 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
   dex: DEX = 'Astroport';
   denomTokenContract = Denom.LUNA;
   highlight = true;
+  mainnetOnly = true;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.bLunaToken;

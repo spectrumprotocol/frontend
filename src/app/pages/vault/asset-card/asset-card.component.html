@@ -2,7 +2,7 @@
   <span class="position-absolute" *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10">
     <div class="badge-deposited text-white">Deposited</div>
   </span>
-  <span class="position-absolute grid-badge mb-1" *ngIf="info.DISABLED_VAULTS.has(vault.poolInfo.dex+'|'+vault.baseSymbol+'|'+vault.denomSymbol)">
+  <span class="position-absolute grid-badge mb-1" *ngIf="vault.disabled">
     <div class="badge-deposit-disabled">Deposit Disabled</div>
   </span>
   <span class="position-absolute grid-badge mb-1" *ngIf="vault.poolInfo?.highlight">

@@ -32,6 +32,7 @@ export class AstroportLunaUstFarmInfoService implements FarmInfoService {
   defaultBaseTokenContract = Denom.LUNA;
   denomTokenContract = Denom.USD;
   highlight = true;
+  mainnetOnly = true;
 
   constructor(
     private farmService: AstroportLunaUstFarmService,

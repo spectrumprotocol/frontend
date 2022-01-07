@@ -34,6 +34,7 @@ export interface Vault {
   shortUnitDisplay: string;
   score: number;
   fullName: string;
+  disabled: boolean;
 }
 
 @Component({
@@ -166,7 +167,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
     if (this.showDepositedPoolOnly) {
       const oldVaults = vaults;
-      vaults = vaults.filter(it => +this.info.rewardInfos?.[it.poolInfo.baseTokenContract]?.bond_amount >= 10);
+      vaults = vaults.filter(it => +this.info.rewardInfos?.[it.poolInfo.key]?.bond_amount >= 10);
       if (vaults.length === 0 && resetFilterOnEmpty) {
         this.showDepositedPoolOnly = false;
         vaults = oldVaults;
