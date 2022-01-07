@@ -98,17 +98,6 @@
 
         <mdb-tab [disabled]="!detail.moveOptions.length" title="Move">
           <div class="d-grid gap-3 p-3">
-            <div *ngIf="detail.moveOptions.length > 1">
-              <div class="small">Lock Duration (Days)</div>
-              <div class="btn-group w-100">
-                <button *ngFor="let option of detail.moveOptions" type="button" class="btn btn-lg"
-                  [class.btn-secondary]="moveDays === option.days"
-                  [class.btn-outline-secondary]="moveDays !== option.days"
-                  (click)="moveDays = option.days; calculateMoveUnlock()">
-                  {{ option.days }}
-                </button>
-              </div>
-            </div>
             <div>
               <div class="text-end small margin-18 mb-1 fw-bold">
                 <span class="sub-topic">Balance: </span>
@@ -130,12 +119,23 @@
               <div class="flex-grow-1">Lock Duration:&nbsp;</div>
               <div>{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
             </div>
+            <div *ngIf="detail.moveOptions.length > 1">
+              <div class="small">Target pool</div>
+              <div class="btn-group w-100">
+                <button *ngFor="let option of detail.moveOptions" type="button" class="btn btn-lg"
+                  [class.btn-auto]="moveDays === option.days"
+                  [class.btn-outline-auto]="moveDays !== option.days"
+                  (click)="moveDays = option.days; calculateMoveUnlock()">
+                  {{ option.days }}-Day Locked
+                </button>
+              </div>
+            </div>
             <div class="d-flex flex-wrap small text-muted">
               <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
               <div>{{ estimatedMoveUnlock ? (estimatedMoveUnlock | date:'medium') : '-' }}</div>
             </div>
             <button type="button" class="btn btn-lg btn-primary" (click)="submitMove()"
-              [disabled]="moveAmount <= 0 || moveAmountModel.invalid">
+              [disabled]="moveAmount <= 0 || !moveDays || moveAmountModel.invalid">
               Move
             </button>
           </div>

@@ -98,21 +98,6 @@
     .btn-group {
         height: 50px;
     }
-    .btn-auto {
-        border: solid 1px $primary;
-        background-color: $btn-bg;
-        font-weight: bold;
-        z-index: 1;
-    }
-    .btn-outline-auto {
-        color: white;
-        border: 0;
-        background-color: $gray-950;
-        font-weight: bold;
-        &:hover {
-            z-index: 0;
-        }
-    }
 }
 
 .auto-compound {

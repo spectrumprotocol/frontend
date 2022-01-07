@@ -297,7 +297,7 @@
                   </div>
                 </div>
                 <div *ngIf="+depositFeeTokenToken" class="row">
-                  <div class="col">Deposit Fee (&lt;0.1%)</div>
+                  <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeTokenToken > 0" class="col text-end">{{depositFeeTokenToken | unit }} LP</div>
                   <div *ngIf="!(+depositFeeTokenToken > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
@@ -346,7 +346,7 @@
               </div>
               <div *ngIf="depositLPAmtLP" @fade class="mt-3 pool-info">
                 <div *ngIf="+depositFeeLp" class="row">
-                  <div class="col">Deposit Fee (&lt;0.1%)</div>
+                  <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeLp > 0" class="col text-end">{{depositFeeLp | number }} LP</div>
                   <div *ngIf="!(+depositFeeLp > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
@@ -412,7 +412,7 @@
                   </div>
                 </div>
                 <div *ngIf="+depositFeeUST" class="row">
-                  <div class="col">Deposit Fee (&lt;0.1%)</div>
+                  <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeUST > 0" class="col text-end">{{depositFeeUST | number }} LP</div>
                   <div *ngIf="!(+depositFeeUST > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
@@ -464,7 +464,7 @@
               </div>
               <div *ngIf="depositbDPTokenAmtbDPToken" class="mt-3 pool-info">
                 <div *ngIf="+depositFeeLp" class="row">
-                  <div class="col">Deposit Fee (&lt;0.1%)</div>
+                  <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeLp > 0" class="col text-end">{{depositFeeLp | number }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+depositFeeLp > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
@@ -521,7 +521,7 @@
                 </div>
 
                 <div *ngIf="+depositFeeUST" class="row">
-                  <div class="col">Deposit Fee (&lt;0.1%)</div>
+                  <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeUST > 0" class="col text-end">{{depositFeeUST | unit }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+depositFeeUST > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">

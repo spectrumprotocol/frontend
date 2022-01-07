@@ -28,7 +28,9 @@ export class ManageRewardsComponent implements OnInit{
 
   ngOnInit() {
     this.gov.state().then(state => {
-      this.availablePoolDays = state.pools.filter(pool => pool.active).map(pool => pool.days);
+      this.availablePoolDays = state.pools
+        .filter(pool => pool.weight > 0)
+        .map(pool => pool.days);
     });
   }
 
