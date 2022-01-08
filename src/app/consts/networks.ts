@@ -62,6 +62,10 @@ export interface ISettings {
   astroportAstroUstFarm: string;
   astroportLunaUstFarm: string;
   astroportBlunaLunaFarm: string;
+  terraNameServiceGov: string;
+  terraNameServiceStaking: string;
+  terraNameServiceToken: string;
+  terraNameServiceFarm: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -139,6 +143,10 @@ export const networks: Record<string, ISettings> = {
     astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
     astroportLunaUstFarm: 'terra1egstlx9c9pq5taja5sg0yhraa0cl5laxyvm3ln',
     astroportBlunaLunaFarm: 'terra1ejl4v53w4all7zkw8nfkw2q6d3qkpls8m4cav4',
+    terraNameServiceGov: 'terra1a5thpf2gdrrneewjkutyz5q6zr2kn8ymg0cxn9',
+    terraNameServiceStaking: 'terra1u94zwrreyz3t0jx25nl7800pxsrk6e6dwjqpsx', // tns pool terra1hqnk9expq3k4la2ruzdnyapgndntec4fztdyln
+    terraNameServiceToken: 'terra14vz4v8adanzph278xyeggll4tfww7teh0xtw2y', // tns lp terra1kg9vmu4e43d3pz0dfsdg9vzwgnnuf6uf3z9jwj
+    terraNameServiceFarm: '',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -215,6 +223,10 @@ export const networks: Record<string, ISettings> = {
     astroportAstroUstFarm: 'astroportAstroUstFarm',
     astroportLunaUstFarm: 'astroportLunaUstFarm',
     astroportBlunaLunaFarm: 'astroportLunaBlunaFarm',
+    terraNameServiceGov: 'terra1hdps6vdnknhr72vn99uqqvmmsn9c43en6vq26z',
+    terraNameServiceStaking: 'terra1g9s3az3ra8uayvpm0zgj5mpx927et9mlqwfjfu', // tns pool terra12l4yfytser4hkezsq4g23st2a0ntgletukwxpw
+    terraNameServiceToken: 'terra16qrvv9wukzzq0d7wxhkxrh5vv6m7lt770r0xts', // tns lp terra1cxt4rrstqhldhnwyzuk03jswx584e9w2xw896z
+    terraNameServiceFarm: '',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
