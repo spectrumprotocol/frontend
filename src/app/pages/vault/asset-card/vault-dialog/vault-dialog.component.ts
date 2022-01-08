@@ -269,13 +269,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       : [poolResponse.assets[1], poolResponse.assets[0]];
   }
 
-  private findAssetBaseAndUST() {
-    const pool = this.info.poolResponses[this.vault.poolInfo.key];
-    return pool.assets[0].info.native_token?.['denom'] === Denom.USD
-      ? [pool.assets[1], pool.assets[0]]
-      : [pool.assets[0], pool.assets[1]];
-  }
-
   async doDeposit() {
     if (!this.depositType) {
       return;
@@ -296,10 +289,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     const staker = this.vault.poolInfo.dex === 'Terraswap' ? this.terrajs.settings.staker : this.terrajs.settings.stakerAstroport;
 
     if (this.depositMode === 'tokentoken') {
-      const assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.UNIT);
+      const assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
       const assetDenomAmount = this.vault.poolInfo.denomTokenContract === Denom.USD
         ? times(this.depositUSTAmountTokenUST, CONFIG.UNIT)
-        : times(this.depositTokenBAmtTokenToken, this.UNIT);
+        : times(this.depositTokenBAmtTokenToken, this.vault.denomUnit);
       const assetBase = {
         amount: assetBaseAmount,
         info: this.vault.baseAssetInfo
@@ -346,7 +339,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         staker,
         {
           bond: {
-            assets: [assetBase, assetDenom],
+            assets: this.vault.poolInfo.denomTokenContract.startsWith('u')
+              ? [assetBase, assetDenom]
+              : [assetDenom, assetBase],
             compound_rate: auto_compound_ratio,
             contract: this.vault.poolInfo.farmContract,
             slippage_tolerance: CONFIG.SLIPPAGE_TOLERANCE
