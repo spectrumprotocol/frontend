@@ -5,6 +5,7 @@ import { CONFIG } from '../../consts/config';
 import { TerrajsService } from '../terrajs.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import {MdbModalRef} from 'mdb-angular-ui-kit/modal';
+import {InfoService} from '../info.service';
 
 @Component({
   selector: 'app-tx-post',
@@ -29,7 +30,8 @@ export class TxPostComponent implements OnInit {
     private httpClient: HttpClient,
     private modalRef: MdbModalRef<TxPostComponent>,
     private terrajs: TerrajsService,
-    protected $gaService: GoogleAnalyticsService
+    protected $gaService: GoogleAnalyticsService,
+    private infoService: InfoService
   ) { }
 
   async ngOnInit() {
@@ -42,6 +44,16 @@ export class TxPostComponent implements OnInit {
         msgs: this.msgs,
         feeDenoms: ['uusd']
       });
+      const taxAndGas = +this.signMsg.fee.amount.get('uusd').amount?.toNumber() || 0;
+      const uusdToBeSent = +this.msgs[this.msgs.length - 1]?.['coins']?.get('uusd')?.amount?.toNumber() || 0;
+      if (taxAndGas + uusdToBeSent > +this.infoService.userUstAmount * CONFIG.UNIT){
+        throw {
+          message: `UST amount inputted plus fee of ${+taxAndGas / CONFIG.UNIT} UST exceeds your available UST.`
+        };
+      } else if (+this.infoService.userUstAmount * CONFIG.UNIT - taxAndGas - uusdToBeSent < 1 * CONFIG.UNIT){
+        this.confirmMsg = `You may not have enough UST for next transactions fee. Continue to proceed?`;
+      }
+
     } catch (e) {
       console.error(e);
       this.failed = true;
