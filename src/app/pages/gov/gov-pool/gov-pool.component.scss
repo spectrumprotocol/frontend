@@ -55,3 +55,24 @@ span.is-invalid {
     padding-top: 7px;
   }
 }
+
+.locked-pools-container {
+  .btn-group {
+      height: 50px;
+  }
+  .btn-pool {
+      border: solid 1px $primary;
+      background-color: $btn-bg;
+      font-weight: bold;
+      z-index: 1;
+  }
+  .btn-outline-pool {
+      color: white;
+      border: 1px solid #414851;
+      background-color: $gray-950;
+      font-weight: bold;
+      &:hover {
+          z-index: 0;
+      }
+  }
+}
