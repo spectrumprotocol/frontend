@@ -129,7 +129,7 @@ export class InfoService {
   specPoolInfo: PoolResponse;
   specPrice: string;
 
-  private poolInfoNetwork: string;
+  private loadedNetwork: string;
   poolInfos: Record<string, PoolInfo>;
   pairInfos: Record<string, PairInfo> = {};
   tokenInfos: Record<string, TokenInfo> = {};
@@ -199,17 +199,17 @@ export class InfoService {
   }
 
   async ensurePoolInfoLoaded() {
-    if (this.poolInfos && this.poolInfoNetwork === this.terrajs.settings.chainID) {
+    if (this.poolInfos && this.loadedNetwork === this.terrajs.settings.chainID) {
       return this.poolInfos;
     }
     await this.refreshPoolInfos();
-    this.poolInfoNetwork = this.terrajs.settings.chainID;
+    this.loadedNetwork = this.terrajs.settings.chainID;
   }
 
   @memoize(1000)
   async refreshPoolInfos() {
     const poolInfos: Record<string, PoolInfo> = {};
-    const tasks = this.farmInfos.map(async farmInfo => {
+    const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       if (!farmInfo.farmContract) {
         return;
       }
@@ -341,7 +341,7 @@ export class InfoService {
     await this.refreshPoolInfos();
     await this.refreshPoolResponses();
     const vaults = await vaultsTask;
-    const tasks = this.farmInfos.map(async farmInfo => {
+    const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
         .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
@@ -573,7 +573,7 @@ export class InfoService {
     //   if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
     //     throw (data);
     //   }
-    //   Object.assign(this.tokenInfos, data.tokenInfos);
+    //   this.tokenInfos = data.tokenInfos;
     //   this.stat = data.stat;
     //   this.pairInfos = data.pairInfos;
     //   this.poolInfos = data.poolInfos;
@@ -594,10 +594,14 @@ export class InfoService {
     //   console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
       localStorage.setItem('infoSchemaVersion', '2');
+      this.loadedNetwork = this.terrajs.settings.chainID;
     // }
   }
 
   updateVaults() {
+    if (this.loadedNetwork !== this.terrajs.settings.chainID) {
+      return;
+    }
     const token = this.terrajs.settings.specToken;
     if (!this.tokenInfos?.[token]) {
       return;
