@@ -292,6 +292,10 @@ input[type="number"] {
   &:focus {
     background-color: transparent;
     border: 1px solid #414851;
+    box-shadow: none;
+  }
+  &:hover {
+    cursor: pointer;
   }
   &::placeholder {
     color: $gray-600;
@@ -461,7 +465,7 @@ input[type="number"] {
 }
 
 .platform-logo-insurace {
-  height: 15px;
+  height: 16px;
 }
 
 .cur-title {
@@ -766,12 +770,16 @@ i.fa-sort-down {
   box-shadow: none;
   background-color: $gray-990;
   margin-top: 0px;
+  border: 1px solid $gray-970;
   .dropdown-item {
     background-color: $gray-990;
     border: 0;
     color: white;
     &.active {
       background-color: $gray-950;
+    }
+    &:hover {
+      background-color: $gray-950 !important;
     }
   }
 }
