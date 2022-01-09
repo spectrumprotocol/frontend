@@ -89,7 +89,7 @@
             <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
               info.poolResponses : vault.poolInfo.key | unit: 6: '1.0-2' }})
-              <i [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo"
+              <i *ngIf="vault.poolInfo.key !== SPEC_KEY" [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo"
                  class="fas fa-info-circle info-icon super"></i>
             </span>
           </h3>
@@ -185,7 +185,7 @@
                 <div class="card-body">
                   <div class="small p-2">
                     <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}? <a
-                          [href]="vault.baseSymbol | url:'trade'" target="_blank">Buy</a>
+                          [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
                     <span *ngIf="vault.poolInfo.farm === 'Mirror' && vault.baseSymbol.startsWith('m')">
                       or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Borrow</a>
                     </span>
@@ -437,7 +437,7 @@
                   <div class="small p-2">
                     <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}?
                     <a [href]="vault.baseSymbol | url:'deposit_pylon_gateway'" target="_blank">Deposit via Pylon Gateway</a>
-                    or <a [href]="vault.baseSymbol | url:'trade'" target="_blank">Buy</a>
+                    or <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
                     {{ vault.baseSymbol }} to farm
                     with.
                   </div>

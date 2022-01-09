@@ -154,7 +154,7 @@ export class InfoService {
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
-      return this.terrajs.network?.name === 'testnet' && !farmInfo.mainnetOnly;
+      return this.terrajs.network?.name === 'mainnet' || !farmInfo.mainnetOnly;
     } else {
       return true;
     }
