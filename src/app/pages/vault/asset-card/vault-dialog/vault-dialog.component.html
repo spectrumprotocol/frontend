@@ -69,7 +69,7 @@
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
-            Daily Rate <i class="fas fa-info-circle info-icon super" mdbTooltip="Estimated rate of return per day on auto-compound strategy"></i>
+            Daily Rate <i class="fas fa-info-circle info-icon super" mdbTooltip="Estimated rate of return per day"></i>
           </p>
           <h3 class="card-title">
             {{ vault.pairStat?.dpr || 0 | percent }}
@@ -663,21 +663,6 @@
                         to
                         {{vault.poolInfo.farm}} Gov
                         under your address to earn the benefits.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div *ngIf="(+info.userUstAmount - +depositUSTAmountTokenUST < warnUSTTooLowAfterTx && depositMode === 'tokentoken')
-              || (+info.userUstAmount - +depositUSTAmtUST < warnUSTTooLowAfterTx && depositMode === 'ust' || depositMode === 'ust_bdp')"
-                   class="card card-red mt-3">
-                <div class="card-body">
-                  <div class="card-text small mb-1">
-                    <div class="bulk-name-container">
-                      <i class="fas fa-exclamation-triangle"></i>
-                      <div class="name-detail">
-                        After you perform this transaction, you may not have enough UST for next transactions.
                       </div>
                     </div>
                   </div>

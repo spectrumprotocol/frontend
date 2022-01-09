@@ -103,7 +103,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     hideLimitLabels: true,
   };
   bufferUST = 3.5;
-  warnUSTTooLowAfterTx = 2;
 
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
