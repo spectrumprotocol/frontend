@@ -10,7 +10,7 @@
   </span>
   <div class="card-body pt-15">
     <div *ngIf="!isGrid" (click)="openModal()" class="row asset-card-info">
-      <div class="col-12 col-md-3 text-center no-padding">
+      <div class="col-12 col-md-4 text-center no-padding">
         <div class="p-2 bulk-name-container" *ngIf="vault.poolInfo.farmType === 'LP'">
           <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon mt-2 float-start">
           <img [src]="vault.denomSymbol | url:'icon'"
@@ -39,7 +39,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-9">
+      <div class="col-12 col-md-8">
         <div class="row">
           <div class="col-12 col-sm-4 mt-1">
             <div class="f-12 sub-topic">TVL</div>
