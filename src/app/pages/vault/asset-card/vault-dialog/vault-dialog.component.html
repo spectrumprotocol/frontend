@@ -389,6 +389,9 @@
                 <button (click)="setMaxDepositUST()" class="btn btn-max last" type="button">
                   Max
                 </button>
+                <div *ngIf="depositUSTAmtUSTCtl.errors?.max" class="invalid-feedback text-end">UST is not
+                  enough for
+                  this transaction</div>
               </div>
 
               <div *ngIf="depositUSTAmtUST" class="mt-3 pool-info">
@@ -498,6 +501,9 @@
                 <button (click)="setMaxDepositUSTForBDP()" class="btn btn-max last" type="button">
                   Max
                 </button>
+                <div *ngIf="depositBDPAmtUSTCtl.errors?.max" class="invalid-feedback text-end">UST is not
+                  enough for
+                  this transaction</div>
               </div>
 
               <div *ngIf="depositUSTAmtbDPToken" class="mt-3 pool-info">
