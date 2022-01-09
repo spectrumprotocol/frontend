@@ -102,7 +102,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     showTicksValues: false,
     hideLimitLabels: true,
   };
-  bufferUST = 2;
+  bufferUST = 3.5;
 
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
@@ -922,7 +922,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   setMaxDepositUST() {
     if (+this.info.userUstAmount > this.bufferUST) {
-      this.depositUSTAmtUST = +floorSixDecimal(+this.info.userUstAmount - 3.5);
+      this.depositUSTAmtUST = +floorSixDecimal(+this.info.userUstAmount - this.bufferUST);
     }
     this.depositUSTChanged(true);
   }
@@ -988,7 +988,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   setMaxDepositUSTForBDP() {
     if (+this.info.userUstAmount > this.bufferUST) {
-      this.depositUSTAmtbDPToken = +floorSixDecimal(+this.info.userUstAmount - 3.5);
+      this.depositUSTAmtbDPToken = +floorSixDecimal(+this.info.userUstAmount - this.bufferUST);
     }
     this.depositUSTForBDPChanged(true);
   }
