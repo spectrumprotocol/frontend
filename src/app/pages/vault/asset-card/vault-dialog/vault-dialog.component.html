@@ -185,7 +185,7 @@
                 <div class="card-body">
                   <div class="small p-2">
                     <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}? <a
-                          [href]="vault.baseSymbol | url:'trade'" target="_blank">Buy</a>
+                          [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
                     <span *ngIf="vault.poolInfo.farm === 'Mirror' && vault.baseSymbol.startsWith('m')">
                       or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Borrow</a>
                     </span>
@@ -437,7 +437,7 @@
                   <div class="small p-2">
                     <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}?
                     <a [href]="vault.baseSymbol | url:'deposit_pylon_gateway'" target="_blank">Deposit via Pylon Gateway</a>
-                    or <a [href]="vault.baseSymbol | url:'trade'" target="_blank">Buy</a>
+                    or <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
                     {{ vault.baseSymbol }} to farm
                     with.
                   </div>
