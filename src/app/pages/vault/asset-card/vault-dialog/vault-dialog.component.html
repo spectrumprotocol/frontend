@@ -321,8 +321,8 @@
               <div class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
-                    <i class="fas fa-info-circle info-icon"></i>  Already have LP token? Deposit here, or <a
-                    href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
+                    <i class="fas fa-info-circle info-icon"></i>  Already have LP token? Deposit here or <a
+                    [href]="vault.baseSymbol | url:'provideLP' : vault.poolInfo.dex" target="_blank">provide/withdraw LP</a>
                   </div>
                 </div>
               </div>
