@@ -625,8 +625,9 @@ export class InfoService {
       const rewardToken = this.poolInfos[key].rewardTokenContract;
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
-      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0);
-
+      const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`); 
+      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
+      
       const vault: Vault = {
         baseSymbol,
         denomSymbol,
@@ -663,7 +664,7 @@ export class InfoService {
         fullName: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
-        disabled: this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`),
+        disabled,
       };
       this.allVaults.push(vault);
     }
