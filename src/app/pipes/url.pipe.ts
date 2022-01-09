@@ -67,7 +67,7 @@ export class UrlPipe implements PipeTransform {
           case 'ORNb': return `https://terra.orion.money/`;
           case 'KUJI': return `https://blue.kujira.app/`;
           case 'bPsiDP-24m': return 'https://app.terraswap.io/#Swap';
-          case 'bLUNA': return `https://app.astroport.fi/swap?from=uusd&to=terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp`;
+          case 'bLUNA': return `https://app.astroport.fi/swap?from=uluna&to=terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp`;
           case 'LUNA': return `https://app.astroport.fi/swap?from=uusd&to=uluna`;
           case 'ASTRO': return `https://app.astroport.fi/swap?from=uusd&to=terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3`;
           default: {
