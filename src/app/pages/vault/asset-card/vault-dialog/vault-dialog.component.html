@@ -199,7 +199,7 @@
               </div>
               <div class="row">
                 <div class="col col-mbp">
-                  <div class="text-end small margin-18 mb-1 fw-bold">
+                  <div class="text-end small mt-3 mb-1 fw-bold">
                     <span class="sub-topic">Balance: </span>
                     <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.baseTokenContract]"
                           aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
@@ -229,7 +229,7 @@
                 </div>
                 <div class="col col-mbp">
                   <ng-container *ngIf="vault.denomSymbol === 'UST'">
-                    <div class="text-end small mt-3 fw-bold-600 mb-1">
+                    <div class="text-end small mt-3 mb-1 fw-bold">
                       <span class="sub-topic">Balance: </span>
                       <span class="text-white">{{ info.userUstAmount | number }} UST</span>
                     </div>
@@ -256,7 +256,7 @@
                     </div>
                   </ng-container>
                   <ng-container *ngIf="vault.denomSymbol !== 'UST'">
-                    <div class="text-end small mt-3 mb-1 fw-bold-600">
+                    <div class="text-end small mt-3 mb-1 fw-bold">
                       <span class="sub-topic mb-1">Balance: </span>
                       <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.denomTokenContract]"
                             aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
@@ -321,8 +321,8 @@
               <div class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
-                    <i class="fas fa-info-circle info-icon"></i>  Already have LP token? Deposit here, or <a
-                    href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
+                    <i class="fas fa-info-circle info-icon"></i>  Already have LP token? Deposit here or <a
+                    [href]="vault.baseSymbol | url:'provideLP' : vault.poolInfo.dex" target="_blank">provide/withdraw LP</a>
                   </div>
                 </div>
               </div>
@@ -651,7 +651,7 @@
               </div>
 
               <div *ngIf="depositType && depositType !== 'compound' && vault.poolInfo.farm !== 'Spectrum'"
-                   class="card card-red mt-3">
+                   class="card card-warning mt-3">
                 <div class="card-body">
                   <div class="card-text small mb-1">
                     <div class="bulk-name-container">

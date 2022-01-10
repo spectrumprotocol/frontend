@@ -78,6 +78,19 @@ export class UrlPipe implements PipeTransform {
             }
           }
         }
+      case 'provideLP':
+        switch (symbol) {
+          case 'bLUNA': return `https://app.astroport.fi/pools/terra1j66jatn3k50hjtg2xemnjm8s7y8dws9xqa5y8w`;
+          case 'LUNA': return `https://app.astroport.fi/pools/terra1m6ywlgn6wrjuagcmmezzz2a029gtldhey5k552`;
+          case 'ASTRO': return `https://app.astroport.fi/pools/terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7`;
+          default: {
+            if (dex === 'Astroport') {
+              return 'https://app.astroport.fi/pools';
+            } else {
+              return 'https://app.terraswap.io/#Provide';
+            }
+          }
+        }
       case 'mint':
         if (symbol.startsWith('m')) {
           return 'https://terra.mirror.finance/mint#open';

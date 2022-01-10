@@ -129,7 +129,7 @@ export class InfoService {
   specPoolInfo: PoolResponse;
   specPrice: string;
 
-  private poolInfoNetwork: string;
+  private loadedNetwork: string;
   poolInfos: Record<string, PoolInfo>;
   pairInfos: Record<string, PairInfo> = {};
   tokenInfos: Record<string, TokenInfo> = {};
@@ -199,17 +199,17 @@ export class InfoService {
   }
 
   async ensurePoolInfoLoaded() {
-    if (this.poolInfos && this.poolInfoNetwork === this.terrajs.settings.chainID) {
+    if (this.poolInfos && this.loadedNetwork === this.terrajs.settings.chainID) {
       return this.poolInfos;
     }
     await this.refreshPoolInfos();
-    this.poolInfoNetwork = this.terrajs.settings.chainID;
+    this.loadedNetwork = this.terrajs.settings.chainID;
   }
 
   @memoize(1000)
   async refreshPoolInfos() {
     const poolInfos: Record<string, PoolInfo> = {};
-    const tasks = this.farmInfos.map(async farmInfo => {
+    const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       if (!farmInfo.farmContract) {
         return;
       }
@@ -341,7 +341,7 @@ export class InfoService {
     await this.refreshPoolInfos();
     await this.refreshPoolResponses();
     const vaults = await vaultsTask;
-    const tasks = this.farmInfos.map(async farmInfo => {
+    const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
         .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
@@ -568,36 +568,40 @@ export class InfoService {
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
-    try {
-      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
-        throw (data);
-      }
-      Object.assign(this.tokenInfos, data.tokenInfos);
-      this.stat = data.stat;
-      this.pairInfos = data.pairInfos;
-      this.poolInfos = data.poolInfos;
-      this.circulation = data.circulation;
-      this.marketCap = data.marketCap;
-      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-      localStorage.setItem('stat', JSON.stringify(this.stat));
-      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-      localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-      if (skipPoolResponses) {
-        this.poolResponses = data.poolResponses;
-        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-      }
-    } catch (ex) {
-      // fallback if api die
-      console.error('Error in retrieveCachedStat: fallback local info service data init');
-      console.error(ex);
-      await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
-      localStorage.setItem('infoSchemaVersion', '2');
-    }
+    // try {
+    //   const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+    //   if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
+    //     throw (data);
+    //   }
+    //   this.tokenInfos = data.tokenInfos;
+    //   this.stat = data.stat;
+    //   this.pairInfos = data.pairInfos;
+    //   this.poolInfos = data.poolInfos;
+    //   this.circulation = data.circulation;
+    //   this.marketCap = data.marketCap;
+    //   localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+    //   localStorage.setItem('stat', JSON.stringify(this.stat));
+    //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+    //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+    //   localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
+    //   if (skipPoolResponses) {
+    //     this.poolResponses = data.poolResponses;
+    //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+    //   }
+    // } catch (ex) {
+    //   // fallback if api die
+    //   console.error('Error in retrieveCachedStat: fallback local info service data init');
+    //   console.error(ex);
+    await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
+    localStorage.setItem('infoSchemaVersion', '2');
+    this.loadedNetwork = this.terrajs.settings.chainID;
+    // }
   }
 
   updateVaults() {
+    if (this.loadedNetwork !== this.terrajs.settings.chainID) {
+      return;
+    }
     const token = this.terrajs.settings.specToken;
     if (!this.tokenInfos?.[token]) {
       return;
@@ -625,7 +629,8 @@ export class InfoService {
       const rewardToken = this.poolInfos[key].rewardTokenContract;
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
-      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0);
+      const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
+      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
 
       const vault: Vault = {
         baseSymbol,
@@ -663,7 +668,7 @@ export class InfoService {
         fullName: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
-        disabled: this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`),
+        disabled,
       };
       this.allVaults.push(vault);
     }

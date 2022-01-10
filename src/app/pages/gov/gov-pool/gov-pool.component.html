@@ -115,9 +115,10 @@
                 <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
               </div>
             </div>
-            <div *ngIf="detail.moveOptions.length === 1" class="d-flex flex-wrap small text-muted">
+            <div class="d-flex flex-wrap small text-muted">
               <div class="flex-grow-1">Lock Duration:&nbsp;</div>
-              <div>{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
+              <div *ngIf="moveDays">{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
+              <div *ngIf="!moveDays">-</div>
             </div>
             <div *ngIf="detail.moveOptions.length > 1">
               <div class="small">Target pool</div>
