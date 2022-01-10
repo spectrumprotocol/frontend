@@ -150,7 +150,7 @@ export class InfoService {
 
   portfolio: Portfolio;
 
-  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST']);
+  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST']);
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
