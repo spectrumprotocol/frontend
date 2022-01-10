@@ -96,7 +96,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     const mirrorGovStat = await mirrorGovStatTask;
     const pairs: Record<string, PairStat> = {};
     for (const asset of mirrorStat.data.assets) {
-      const poolApr = +(asset.statistic.apr?.long || 0);
+      const poolApr = asset.token === this.terrajs.settings.mirrorToken ? 0 : +(asset.statistic.apr?.long || 0);
       const key = `${this.dex}|${asset.token}|${this.denomTokenContract}`;
       pairs[key] = createPairStat(poolApr, key);
     }
