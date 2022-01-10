@@ -592,11 +592,10 @@ export class InfoService {
     //   // fallback if api die
     //   console.error('Error in retrieveCachedStat: fallback local info service data init');
     //   console.error(ex);
-      await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
-      localStorage.setItem('infoSchemaVersion', '2');
-      this.loadedNetwork = this.terrajs.settings.chainID;
+    await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
+    localStorage.setItem('infoSchemaVersion', '2');
+    this.loadedNetwork = this.terrajs.settings.chainID;
     // }
-  }
   }
 
   updateVaults() {
@@ -630,7 +629,7 @@ export class InfoService {
       const rewardToken = this.poolInfos[key].rewardTokenContract;
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
-      const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`); 
+      const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
 
       const vault: Vault = {
