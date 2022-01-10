@@ -20,8 +20,8 @@ import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
 
 @Injectable()
-export class AstroportAncUstFarmInfoService implements FarmInfoService {
-  farm = 'Anchor';
+export class AstroportMirUstFarmInfoService implements FarmInfoService {
+  farm = 'Mirror';
   autoCompound = true;
   autoStake = false;
   farmColor = '#3bac3b';
@@ -34,7 +34,7 @@ export class AstroportAncUstFarmInfoService implements FarmInfoService {
   hasProxyReward = true;
 
   get defaultBaseTokenContract() {
-    return this.terrajs.settings.anchorToken;
+    return this.terrajs.settings.mirrorToken;
   }
 
   constructor(
@@ -45,15 +45,15 @@ export class AstroportAncUstFarmInfoService implements FarmInfoService {
   }
 
   get farmContract() {
-    return this.terrajs.settings.astroportAncUstFarm;
+    return this.terrajs.settings.astroportMirUstFarm;
   }
 
   get rewardTokenContract() {
-    return this.terrajs.settings.anchorToken;
+    return this.terrajs.settings.mirrorToken;
   }
 
   get farmGovContract() {
-    return this.terrajs.settings.anchorGov;
+    return this.terrajs.settings.mirrorGov;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
@@ -121,10 +121,10 @@ export class AstroportAncUstFarmInfoService implements FarmInfoService {
   getStakeGovMsg(amount: string): MsgExecuteContract {
     return new MsgExecuteContract(
       this.terrajs.address,
-      this.terrajs.settings.anchorToken,
+      this.terrajs.settings.mirrorToken,
       {
         send: {
-          contract: this.terrajs.settings.anchorGov,
+          contract: this.terrajs.settings.mirrorGov,
           amount,
           msg: toBase64({ stake_voting_tokens: {} })
         }

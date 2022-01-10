@@ -20,11 +20,11 @@ import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
 
 @Injectable()
-export class AstroportAncUstFarmInfoService implements FarmInfoService {
-  farm = 'Anchor';
+export class AstroportSttUstFarmInfoService implements FarmInfoService {
+  farm = 'Starterra';
   autoCompound = true;
   autoStake = false;
-  farmColor = '#3bac3b';
+  farmColor = '#ffee00';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
@@ -34,7 +34,7 @@ export class AstroportAncUstFarmInfoService implements FarmInfoService {
   hasProxyReward = true;
 
   get defaultBaseTokenContract() {
-    return this.terrajs.settings.anchorToken;
+    return this.terrajs.settings.starterraToken;
   }
 
   constructor(
@@ -45,15 +45,15 @@ export class AstroportAncUstFarmInfoService implements FarmInfoService {
   }
 
   get farmContract() {
-    return this.terrajs.settings.astroportAncUstFarm;
+    return this.terrajs.settings.astroportSttUstFarm;
   }
 
   get rewardTokenContract() {
-    return this.terrajs.settings.anchorToken;
+    return this.terrajs.settings.starterraToken;
   }
 
   get farmGovContract() {
-    return this.terrajs.settings.anchorGov;
+    return null;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
@@ -116,20 +116,6 @@ export class AstroportAncUstFarmInfoService implements FarmInfoService {
       }
     });
     return rewardInfo.reward_infos;
-  }
-
-  getStakeGovMsg(amount: string): MsgExecuteContract {
-    return new MsgExecuteContract(
-      this.terrajs.address,
-      this.terrajs.settings.anchorToken,
-      {
-        send: {
-          contract: this.terrajs.settings.anchorGov,
-          amount,
-          msg: toBase64({ stake_voting_tokens: {} })
-        }
-      }
-    );
   }
 
   async getLPStat(poolResponse: PoolResponse) {
