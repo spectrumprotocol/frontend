@@ -79,6 +79,7 @@ import {AstroportAstroUstFarmInfoService} from './services/farm_info/astroport/a
 import {AstroportLunaUstFarmInfoService} from './services/farm_info/astroport/astroport-luna-ust-farm-info.service';
 import {AstroportBlunaLunaFarmInfoService} from './services/farm_info/astroport/astroport-bluna-luna.farm-info.service';
 import {MdbCheckboxModule} from 'mdb-angular-ui-kit/checkbox';
+import {AstroportAncUstFarmInfoService} from './services/farm_info/astroport/astroport-anc-ust.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -166,6 +167,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AstroportLunaUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportBlunaLunaFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportAncUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },
