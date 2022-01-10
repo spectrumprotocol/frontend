@@ -34,7 +34,7 @@ export class AstroportAncUstFarmInfoService implements FarmInfoService {
   hasProxyReward = true;
 
   get defaultBaseTokenContract() {
-    return this.terrajs.settings.astroToken;
+    return this.terrajs.settings.anchorToken;
   }
 
   constructor(
