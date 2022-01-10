@@ -7,7 +7,7 @@ const MIRROR_ICON_URL = 'https://whitelist.mirror.finance/images';
 })
 export class UrlPipe implements PipeTransform {
 
-  transform(symbol: string, type: string) {
+  transform(symbol: string, type: string, dex?: string) {
     if (!symbol) {
       return symbol;
     }
@@ -67,7 +67,29 @@ export class UrlPipe implements PipeTransform {
           case 'ORNb': return `https://terra.orion.money/`;
           case 'KUJI': return `https://blue.kujira.app/`;
           case 'bPsiDP-24m': return 'https://app.terraswap.io/#Swap';
-          default: return 'https://terra.mirror.finance/trade#buy';
+          case 'bLUNA': return `https://app.astroport.fi/swap?from=uluna&to=terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp`;
+          case 'LUNA': return `https://app.astroport.fi/swap?from=uusd&to=uluna`;
+          case 'ASTRO': return `https://app.astroport.fi/swap?from=uusd&to=terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3`;
+          default: {
+            if (dex === 'Astroport') {
+              return 'https://app.astroport.fi/swap';
+            } else {
+              return 'https://app.terraswap.io/#Swap';
+            }
+          }
+        }
+      case 'provideLP':
+        switch (symbol) {
+          case 'bLUNA': return `https://app.astroport.fi/pools/terra1j66jatn3k50hjtg2xemnjm8s7y8dws9xqa5y8w`;
+          case 'LUNA': return `https://app.astroport.fi/pools/terra1m6ywlgn6wrjuagcmmezzz2a029gtldhey5k552`;
+          case 'ASTRO': return `https://app.astroport.fi/pools/terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7`;
+          default: {
+            if (dex === 'Astroport') {
+              return 'https://app.astroport.fi/pools';
+            } else {
+              return 'https://app.terraswap.io/#Provide';
+            }
+          }
         }
       case 'mint':
         if (symbol.startsWith('m')) {

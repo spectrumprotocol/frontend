@@ -89,7 +89,7 @@
             <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
               info.poolResponses : vault.poolInfo.key | unit: 6: '1.0-2' }})
-              <i [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo"
+              <i *ngIf="vault.poolInfo.key !== SPEC_KEY" [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo"
                  class="fas fa-info-circle info-icon super"></i>
             </span>
           </h3>
@@ -185,7 +185,7 @@
                 <div class="card-body">
                   <div class="small p-2">
                     <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}? <a
-                          [href]="vault.baseSymbol | url:'trade'" target="_blank">Buy</a>
+                          [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
                     <span *ngIf="vault.poolInfo.farm === 'Mirror' && vault.baseSymbol.startsWith('m')">
                       or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Borrow</a>
                     </span>
@@ -199,7 +199,7 @@
               </div>
               <div class="row">
                 <div class="col col-mbp">
-                  <div class="text-end small margin-18 mb-1 fw-bold">
+                  <div class="text-end small mt-3 mb-1 fw-bold">
                     <span class="sub-topic">Balance: </span>
                     <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.baseTokenContract]"
                           aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
@@ -229,7 +229,7 @@
                 </div>
                 <div class="col col-mbp">
                   <ng-container *ngIf="vault.denomSymbol === 'UST'">
-                    <div class="text-end small mt-3 fw-bold-600 mb-1">
+                    <div class="text-end small mt-3 mb-1 fw-bold">
                       <span class="sub-topic">Balance: </span>
                       <span class="text-white">{{ info.userUstAmount | number }} UST</span>
                     </div>
@@ -256,7 +256,7 @@
                     </div>
                   </ng-container>
                   <ng-container *ngIf="vault.denomSymbol !== 'UST'">
-                    <div class="text-end small mt-3 mb-1 fw-bold-600">
+                    <div class="text-end small mt-3 mb-1 fw-bold">
                       <span class="sub-topic mb-1">Balance: </span>
                       <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.denomTokenContract]"
                             aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
@@ -297,7 +297,7 @@
                   </div>
                 </div>
                 <div *ngIf="+depositFeeTokenToken" class="row">
-                  <div class="col">Deposit Fee (&lt;0.1%)</div>
+                  <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeTokenToken > 0" class="col text-end">{{depositFeeTokenToken | unit }} LP</div>
                   <div *ngIf="!(+depositFeeTokenToken > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
@@ -321,8 +321,8 @@
               <div class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
-                    <i class="fas fa-info-circle info-icon"></i>  Already have LP token? Deposit here, or <a
-                    href="https://app.terraswap.io/#Provide" target="_blank">provide/withdraw LP</a>
+                    <i class="fas fa-info-circle info-icon"></i>  Already have LP token? Deposit here or <a
+                    [href]="vault.baseSymbol | url:'provideLP' : vault.poolInfo.dex" target="_blank">provide/withdraw LP</a>
                   </div>
                 </div>
               </div>
@@ -346,7 +346,7 @@
               </div>
               <div *ngIf="depositLPAmtLP" @fade class="mt-3 pool-info">
                 <div *ngIf="+depositFeeLp" class="row">
-                  <div class="col">Deposit Fee (&lt;0.1%)</div>
+                  <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeLp > 0" class="col text-end">{{depositFeeLp | number }} LP</div>
                   <div *ngIf="!(+depositFeeLp > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
@@ -412,7 +412,7 @@
                   </div>
                 </div>
                 <div *ngIf="+depositFeeUST" class="row">
-                  <div class="col">Deposit Fee (&lt;0.1%)</div>
+                  <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeUST > 0" class="col text-end">{{depositFeeUST | number }} LP</div>
                   <div *ngIf="!(+depositFeeUST > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
@@ -437,7 +437,7 @@
                   <div class="small p-2">
                     <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}?
                     <a [href]="vault.baseSymbol | url:'deposit_pylon_gateway'" target="_blank">Deposit via Pylon Gateway</a>
-                    or <a [href]="vault.baseSymbol | url:'trade'" target="_blank">Buy</a>
+                    or <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
                     {{ vault.baseSymbol }} to farm
                     with.
                   </div>
@@ -464,7 +464,7 @@
               </div>
               <div *ngIf="depositbDPTokenAmtbDPToken" class="mt-3 pool-info">
                 <div *ngIf="+depositFeeLp" class="row">
-                  <div class="col">Deposit Fee (&lt;0.1%)</div>
+                  <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeLp > 0" class="col text-end">{{depositFeeLp | number }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+depositFeeLp > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
@@ -521,7 +521,7 @@
                 </div>
 
                 <div *ngIf="+depositFeeUST" class="row">
-                  <div class="col">Deposit Fee (&lt;0.1%)</div>
+                  <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeUST > 0" class="col text-end">{{depositFeeUST | unit }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+depositFeeUST > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
@@ -651,7 +651,7 @@
               </div>
 
               <div *ngIf="depositType && depositType !== 'compound' && vault.poolInfo.farm !== 'Spectrum'"
-                   class="card card-red mt-3">
+                   class="card card-warning mt-3">
                 <div class="card-body">
                   <div class="card-text small mb-1">
                     <div class="bulk-name-container">

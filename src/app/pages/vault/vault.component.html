@@ -45,7 +45,7 @@
             <h3 class="card-title">
               <app-digit [value]="+info.specPrice"></app-digit> <span class="cur-title"> UST</span>
               <a class="margin-left-auto text-light small"
-                href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" alt="SPEC price chart" target="_blank">
+                href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" alt="SPEC price chart" title="SPEC price chart" target="_blank">
                 <img class="float-end mg-18" src="../../../assets/Icon_Chart.svg">
               </a>
             </h3>
@@ -80,7 +80,7 @@
                 <h3 class="card-title text-primary">
                   <app-digit [value]="info.myTvl"></app-digit> <span class="cur-title text-white"> UST</span>
                   <a role="button" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
-                    (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon_PieChart.svg"></a>
+                    (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon_PieChart.svg" alt="Portfolio allocation" title="Portfolio allocation"></a>
                 </h3>
               </div>
             </div>

@@ -100,13 +100,15 @@
           <div class="d-grid gap-3 p-3">
             <div *ngIf="detail.moveOptions.length > 1">
               <div class="small">Lock Duration (Days)</div>
-              <div class="btn-group w-100">
-                <button *ngFor="let option of detail.moveOptions" type="button" class="btn btn-lg"
-                  [class.btn-secondary]="moveDays === option.days"
-                  [class.btn-outline-secondary]="moveDays !== option.days"
-                  (click)="moveDays = option.days; calculateMoveUnlock()">
-                  {{ option.days }}
-                </button>
+              <div class="locked-pools-container">
+                <div class="btn-group w-100">
+                  <button *ngFor="let option of detail.moveOptions" type="button" class="btn"
+                    [class.btn-pool]="moveDays === option.days"
+                    [class.btn-outline-pool]="moveDays !== option.days"
+                    (click)="moveDays = option.days; calculateMoveUnlock()">
+                    {{ option.days }}
+                  </button>
+                </div>
               </div>
             </div>
             <div>
@@ -126,9 +128,10 @@
                 <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
               </div>
             </div>
-            <div *ngIf="detail.moveOptions.length === 1" class="d-flex flex-wrap small text-muted">
+            <div class="d-flex flex-wrap small text-muted">
               <div class="flex-grow-1">Lock Duration:&nbsp;</div>
-              <div>{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
+              <div *ngIf="moveDays">{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
+              <div *ngIf="!moveDays">-</div>
             </div>
             <div class="d-flex flex-wrap small text-muted">
               <div class="flex-grow-1">Estimated Unlock Time:&nbsp;</div>
