@@ -46,6 +46,10 @@ export class UrlPipe implements PipeTransform {
           case 'LUNA': return `https://assets.terra.money/icon/60/Luna.png`;
           case 'ASTRO': return `https://astroport.fi/astro_logo.png`;
           case 'Astroport': return `https://astroport.fi/astro_logo.png`;
+          case 'Apollo': return 'https://finder.extraterrestrial.money/images/APOLLO60.png';
+          case 'APOLLO': return 'https://finder.extraterrestrial.money/images/APOLLO60.png';
+          case 'STT': return 'https://starterra.io/assets/100x100_starterra.png';
+          case 'Starterra': return 'https://starterra.io/assets/100x100_starterra.png';
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -70,6 +74,8 @@ export class UrlPipe implements PipeTransform {
           case 'bLUNA': return `https://app.astroport.fi/swap?from=uluna&to=terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp`;
           case 'LUNA': return `https://app.astroport.fi/swap?from=uusd&to=uluna`;
           case 'ASTRO': return `https://app.astroport.fi/swap?from=uusd&to=terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3`;
+          case 'APOLLO': return `https://app.astroport.fi/swap?from=uusd&to=terra100yeqvww74h4yaejj6h733thgcafdaukjtw397`;
+          case 'STT': return `https://app.astroport.fi/swap?from=uusd&to=terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n`;
           default: {
             if (dex === 'Astroport') {
               return 'https://app.astroport.fi/swap';

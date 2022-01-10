@@ -384,6 +384,16 @@ input[type="number"] {
   border: solid 1px $astroport;
 }
 
+.bg-Apollo {
+  background: $apollo-bg;
+  border: solid 1px $apollo;
+}
+
+.bg-Starterra {
+  background: $starterra-bg;
+  border: solid 1px $starterra;
+}
+
 .bg-Kujira {
   background: $kujira;
   background: -webkit-linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);
