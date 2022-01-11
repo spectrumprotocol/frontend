@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ExecuteOptions, TerrajsService } from '../terrajs.service';
-import { ConfigInfo } from './astroport_farm/config_info';
-import { ExecuteMsg } from './astroport_farm/execute_msg';
-import { PoolsResponse } from './astroport_farm/pools_response';
-import { QueryMsg } from './astroport_farm/query_msg';
-import { RewardInfoResponse } from './astroport_farm/reward_info_response';
-import { StateInfo } from './astroport_farm/state_info';
+import { ConfigInfo } from './astroport_token_ust_farm/config_info';
+import { ExecuteMsg } from './astroport_token_ust_farm/execute_msg';
+import { PoolsResponse } from './astroport_token_ust_farm/pools_response';
+import { QueryMsg } from './astroport_token_ust_farm/query_msg';
+import { RewardInfoResponse } from './astroport_token_ust_farm/reward_info_response';
+import { StateInfo } from './astroport_token_ust_farm/state_info';
 import { WasmService } from './wasm.service';
 
 @Injectable({

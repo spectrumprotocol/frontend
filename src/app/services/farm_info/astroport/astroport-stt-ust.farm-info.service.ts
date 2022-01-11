@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { PoolItem } from '../../api/astroport_farm/pools_response';
-import { RewardInfoResponseItem } from '../../api/astroport_farm/reward_info_response';
+import { PoolItem } from '../../api/astroport_token_ust_farm/pools_response';
+import { RewardInfoResponseItem } from '../../api/astroport_token_ust_farm/reward_info_response';
 import { TerrajsService } from '../../terrajs.service';
 import {
   DEX,
