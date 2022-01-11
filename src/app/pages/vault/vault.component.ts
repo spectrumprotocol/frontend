@@ -35,6 +35,8 @@ export interface Vault {
   score: number;
   fullName: string;
   disabled: boolean;
+  will_available_at_astroport: boolean;
+  now_available_at_astroport: boolean;
 }
 
 @Component({
