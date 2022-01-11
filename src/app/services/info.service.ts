@@ -129,7 +129,7 @@ export class InfoService {
 
   portfolio: Portfolio;
 
-  DISABLED_VAULTS: Array<string> = ['mAMC', 'mGME', 'VKR', 'MIR'];
+  DISABLED_VAULTS: Array<string> = ['mAMC', 'mGME', 'VKR', 'MIR', 'ANC'];
 
   async refreshBalance(opt: { spec?: boolean; ust?: boolean; lp?: boolean }) {
     if (!this.terrajs.isConnected) {

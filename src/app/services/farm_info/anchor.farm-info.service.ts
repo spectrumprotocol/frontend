@@ -63,7 +63,8 @@ export class AnchorFarmInfoService implements FarmInfoService {
     const anchorGov = await anchorGovTask;
     const pairs: Record<string, PairStat> = {};
 
-    const poolApr = +(anchorStat?.apy || 0);
+    // const poolApr = +(anchorStat?.apy || 0);
+    const poolApr = 0;
     pairs[this.terrajs.settings.anchorToken] = createPairStat(poolApr, this.terrajs.settings.anchorToken);
 
     const rewardInfo = await rewardInfoTask;
