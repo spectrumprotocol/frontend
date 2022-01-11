@@ -596,6 +596,7 @@ export class InfoService {
       console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
       localStorage.setItem('infoSchemaVersion', '2');
+    } finally {
       this.loadedNetwork = this.terrajs.settings.chainID;
     }
   }
