@@ -18,6 +18,7 @@ import {Denom} from '../../../consts/denom';
 import {AstroportAstroUstFarmService} from '../../api/astroport-astroust-farm.service';
 import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
+import { div } from 'src/app/libs/math';
 
 @Injectable()
 export class AstroportAstroUstFarmInfoService implements FarmInfoService {
@@ -132,10 +133,20 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
   }
 
   async getLPStat(poolResponse: PoolResponse) {
+    const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
+    const alloc_point = 96075;
+    const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
+    const astro_total_emit_per_year = astro_per_block / 7 * 60 * 60 * 24 * 365;
+    const astroPoolUSTAmount = poolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? poolResponse.assets[1].amount : poolResponse.assets[0].amount;
+    const astroPoolASTROAmount = poolResponse.assets[1]?.info?.token ? poolResponse.assets[1].amount : poolResponse.assets[0].amount;
+    const astroPrice = +div(astroPoolUSTAmount, astroPoolASTROAmount);
+    const astroUSTTvl = +poolResponse.assets.find(asset => asset.info?.native_token?.['denom'] === Denom.USD).amount * 2;
+    const apr = astro_total_emit_per_year * astroPrice / astroUSTTvl;
     return {
-      apr: 0
+      apr
     };
   }
+
 
   async getGovStat() {
     return {

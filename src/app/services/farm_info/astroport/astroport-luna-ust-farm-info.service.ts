@@ -19,6 +19,7 @@ import {div} from '../../../libs/math';
 import {AstroportLunaUstFarmService} from '../../api/astroport-lunaust-farm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
 import {WasmService} from '../../api/wasm.service';
+import { balance_transform } from '../../calc/balance_calc';
 
 @Injectable()
 export class AstroportLunaUstFarmInfoService implements FarmInfoService {
@@ -66,7 +67,9 @@ export class AstroportLunaUstFarmInfoService implements FarmInfoService {
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
-    const lpStat = await this.getLPStat(poolResponses[key]);
+    const astroPrice = balance_transform('1', poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]);    
+    
+    const lpStat = await this.getLPStat(poolResponses[key], astroPrice);
     const astroportGovStat = await this.getGovStat();
     const pairs: Record<string, PairStat> = {};
 
@@ -129,9 +132,15 @@ export class AstroportLunaUstFarmInfoService implements FarmInfoService {
     );
   }
 
-  async getLPStat(poolResponse: PoolResponse) {
+  async getLPStat(poolResponse: PoolResponse, astroPrice: string) {
+    const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
+    const alloc_point = 83262;
+    const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
+    const astro_total_emit_per_year = astro_per_block / 7 * 60 * 60 * 24 * 365;
+    const poolTvl = +poolResponse.assets.find(asset => asset.info?.native_token?.['denom'] === Denom.USD).amount * 2;
+    const apr = astro_total_emit_per_year * +astroPrice / poolTvl;
     return {
-      apr: 0
+      apr
     };
   }
 
