@@ -549,10 +549,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       return;
     }
     let commission = 0;
-    if (this.vault.poolInfo.dex === 'Astroport'){
-      if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['stable']){
+    if (this.vault.poolInfo.dex === 'Astroport') {
+      if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['stable']) {
         commission = +CONFIG.ASTROPORT_STABLE_COMMISSION_TOTAL;
-      } else if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['xyk']){
+      } else if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['xyk']) {
         commission = +CONFIG.ASTROPORT_XYK_COMMISSION_TOTAL;
       }
     } else if (this.vault.poolInfo.dex === 'Terraswap') {

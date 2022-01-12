@@ -143,10 +143,6 @@ export class InfoService {
   lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
 
-  cw20tokensWhitelist: any;
-  coinhallPairs: any;
-  lastRefreshCoinHallPairs: number;
-
   myTvl = 0;
   allVaults: Vault[] = [];
 
@@ -241,7 +237,6 @@ export class InfoService {
             dex: farmInfo.dex ?? 'Terraswap',
             highlight: farmInfo.highlight,
             hasProxyReward: farmInfo.hasProxyReward ?? false,
-            tradeApr: 0
           });
       }
     });
@@ -328,20 +323,6 @@ export class InfoService {
     if (tasks.length) {
       await Promise.all(tasks);
       localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-    }
-  }
-
-  getCommissionForLPProviders(dex: string, key: string){
-    if (dex === 'Astroport'){
-      if (this.pairInfos[key]?.pair_type?.['stable']){
-        return +CONFIG.ASTROPORT_STABLE_COMMISSION;
-      } else if (this.pairInfos[key]?.pair_type?.['xyk']){
-        return +CONFIG.ASTROPORT_XYK_COMMISSION;
-      }
-    } else if (dex === 'Terraswap') {
-      return +CONFIG.TERRASWAP_COMMISSION;
-    } else {
-      return 0;
     }
   }
 
@@ -498,12 +479,6 @@ export class InfoService {
       this.refreshPool(),
     ]);
     this.marketCap = +this.circulation / CONFIG.UNIT * +this.specPrice;
-  }
-
-  async ensureCw20tokensWhitelist() {
-    if (!this.cw20tokensWhitelist) {
-      this.cw20tokensWhitelist = await this.httpClient.get<object>('https://assets.terra.money/cw20/tokens.json').toPromise();
-    }
   }
 
   async updateMyTvl() {
