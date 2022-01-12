@@ -20,7 +20,6 @@
     }
 
     .fix-border {
-        border-radius: 0px;
         color: #fff;
         border: 1px solid $gray-970;
         background-color: $gray-960;
@@ -70,6 +69,18 @@
     }
 }
 
+.card-warning {
+    background-color: $card-warning-bg;
+    border: solid 1px $card-warning-border;
+    .card-body {
+        padding: 0.5em 0.5em;
+        .bulk-name-container {
+            display: flex;
+            align-items: center;
+        }
+    }
+}
+
 .card-blue {
   background-color: $card-blue-bg;
   border: solid 1px $card-blue-border;
@@ -106,7 +117,7 @@
     }
     .btn-outline-auto {
         color: white;
-        border: 0;
+        border: 1px solid #414851;
         background-color: $gray-950;
         font-weight: bold;
         &:hover {

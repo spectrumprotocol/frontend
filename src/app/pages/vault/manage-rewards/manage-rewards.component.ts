@@ -32,13 +32,13 @@ export class ManageRewardsComponent implements OnInit{
     });
   }
 
-  getGovFarmInfo(tokenSymbol: string){
-    return this.info.farmInfos.find(x => x.tokenSymbol === tokenSymbol);
+  getGovFarmInfo(rewardTokenContract: string){
+    return this.info.farmInfos.find(x => x.rewardTokenContract === rewardTokenContract);
   }
 
-  async moveToGov(tokenSymbol: string, days?: number) {
-    const isSpec = tokenSymbol === 'SPEC';
-    const govFarmInfo = this.getGovFarmInfo(tokenSymbol);
+  async moveToGov(rewardTokenContract: string, days?: number) {
+    const isSpec = rewardTokenContract === this.terrajs.settings.specToken;
+    const govFarmInfo = this.getGovFarmInfo(rewardTokenContract);
     if (!govFarmInfo.autoStake){
       return;
     }
@@ -46,7 +46,7 @@ export class ManageRewardsComponent implements OnInit{
 
     for (const rewardInfo of Object.values(this.info.rewardInfos)) {
       const farmInfo = this.info.farmInfos.find(x => x.farmContract === rewardInfo.farmContract);
-      if (farmInfo.tokenSymbol !== tokenSymbol && !isSpec) {
+      if (farmInfo.rewardTokenContract !== rewardTokenContract && !isSpec) {
         continue;
       }
 

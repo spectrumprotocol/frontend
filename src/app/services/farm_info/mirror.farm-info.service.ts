@@ -6,26 +6,34 @@ import { MirrorStakingService } from '../api/mirror-staking.service';
 import { RewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX, FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo,
   PoolItem
 } from './farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class MirrorFarmInfoService implements FarmInfoService {
 
   farm = 'Mirror';
-  tokenSymbol = 'MIR';
   autoCompound = true;
   autoStake = true;
   farmColor = '#232C45';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
+
+  get defaultBaseTokenContract() {
+    return this.terrajs.settings.mirrorToken;
+  }
 
   constructor(
     private apollo: Apollo,
@@ -38,7 +46,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.mirrorFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.mirrorToken;
   }
 
@@ -51,7 +59,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     return res.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     // fire query
     const rewardInfoTask = this.mirrorStaking.query({
       reward_info: {
@@ -89,19 +97,21 @@ export class MirrorFarmInfoService implements FarmInfoService {
     const pairs: Record<string, PairStat> = {};
     for (const asset of mirrorStat.data.assets) {
       const poolApr = asset.token === this.terrajs.settings.mirrorToken ? 0 : +(asset.statistic.apr?.long || 0);
-      pairs[asset.token] = createPairStat(poolApr, asset.token);
+      const key = `${this.dex}|${asset.token}|${this.denomTokenContract}`;
+      pairs[key] = createPairStat(poolApr, key);
     }
 
     const rewardInfos = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
     const tasks = rewardInfos.reward_infos.map(async it => {
-      const p = poolResponses[it.asset_token];
+      const key = `${this.dex}|${it.asset_token}|${this.denomTokenContract}`;
+      const p = poolResponses[key];
       const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
       if (!uusd) {
         return;
       }
-      const pair = (pairs[it.asset_token] || (pairs[it.asset_token] = createPairStat(0, it.asset_token)));
+      const pair = (pairs[key] || (pairs[key] = createPairStat(0, key)));
       const value = new BigNumber(uusd.amount)
         .times(it.bond_amount)
         .times(2)
@@ -114,8 +124,8 @@ export class MirrorFarmInfoService implements FarmInfoService {
 
     return pairs;
 
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
@@ -145,7 +155,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.mirrorGov,
           amount,
-          msg: toBase64({stake_voting_tokens: {}})
+          msg: toBase64({ stake_voting_tokens: {} })
         }
       }
     );

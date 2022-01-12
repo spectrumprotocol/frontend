@@ -3,6 +3,8 @@ import { Apollo, gql } from 'apollo-angular';
 import BigNumber from 'bignumber.js';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -17,16 +19,26 @@ import { NlunaPsiFarmService } from '../api/nluna-psi-farm.service';
 import { NlunaPsiStakingService } from '../api/nluna-psi-staking.service';
 import { BalancePipe } from '../../pipes/balance.pipe';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class NlunaPsiFarmInfoService implements FarmInfoService {
   farm = 'Nexus';
-  tokenSymbol = 'Psi';
   autoCompound = true;
   autoStake = true;
   farmColor = '#F4B6C7';
-  pairSymbol = 'Psi';
-  baseSymbol = 'nLuna';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'Terraswap';
+
+  get defaultBaseTokenContract() {
+    return this.terrajs.settings.nLunaToken;
+  }
+
+  get denomTokenContract() {
+    return this.terrajs.settings.nexusToken;
+  }
 
   constructor(
     private nlunaPsiFarmService: NlunaPsiFarmService,
@@ -40,7 +52,7 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nLunaPsiFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 
@@ -53,7 +65,7 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
     const nexusLPStatTask = apollo.query<any>({
       query: gql`{
@@ -85,12 +97,14 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.terrajs.settings.nLunaToken];
+    const key = `${this.dex}|${this.terrajs.settings.nLunaToken}|${this.terrajs.settings.nexusToken}`;
+
+    const p = poolResponses[key];
     const psiAsset = p.assets.find(a => a.info.token?.['contract_addr'] === this.terrajs.settings.nexusToken);
     if (!psiAsset) {
       return;
     }
-    const psiPrice = this.balancePipe.transform('1', poolResponses[this.terrajs.settings.nexusToken]);
+    const psiPrice = this.balancePipe.transform('1', poolResponses[`${this.dex}|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
     const totalPsiValueUST = times(psiPrice, psiAsset.amount);
     const nLunaPsiTvl = new BigNumber(totalPsiValueUST)
       .times(rewardInfo.bond_amount)
@@ -99,16 +113,16 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
       .toString();
 
     const poolApr = +(nexusLPStat.data.getLiquidityPoolApr.psiNLunaLpArp || 0) / 100;
-    pairs[this.terrajs.settings.nLunaToken] = createPairStat(poolApr, this.terrajs.settings.nLunaToken);
-    const pair = pairs[this.terrajs.settings.nLunaToken];
+    pairs[key] = createPairStat(poolApr, key);
+    const pair = pairs[key];
     pair.tvl = nLunaPsiTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,

@@ -3,6 +3,7 @@ import { PoolItem } from '../api/pylon_liquid_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
   FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
@@ -16,18 +17,28 @@ import { WasmService } from '../api/wasm.service';
 import { VaultsResponse } from '../api/gov/vaults_response';
 import { div } from '../../libs/math';
 import { Apollo, gql } from 'apollo-angular';
+import { Denom } from 'src/app/consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class BPsiDPFarmInfoService implements FarmInfoService {
   farm = 'Pylon';
-  tokenSymbol = 'Psi';
   autoCompound = true;
   autoStake = true;
   farmColor = '#00cfda';
-  baseSymbol = 'bPsiDP-24m';
-  pairSymbol = 'bPsiDP-24m';
   farmType: FARM_TYPE_ENUM = 'PYLON_LIQUID';
-  highlight = true;
+  auditWarning = false;
+  dex: DEX = 'Terraswap';
+  mainnetOnly = true;
+
+  get defaultBaseTokenContract() {
+    return this.terrajs.settings.bPsiDPToken;
+  }
+
+  // not actually denom, but has trade pair
+  get denomTokenContract() {
+    return this.terrajs.settings.nexusToken;
+  }
 
   constructor(
     private bPsiDpFarmService: BPsiDpFarmService,
@@ -40,7 +51,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.bPsiDPFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 
@@ -62,7 +73,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const farmConfigTask = this.bPsiDpFarmService.query({ config: {} });
     const balanceOfTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { balance_of: { owner: this.terrajs.settings.bPsiDPFarm } });
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
@@ -86,16 +97,17 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     const specbPsiDPTvl = (await balanceOfTask)?.amount || '0';
 
     const poolApr = +(bPsiDPStat.apr || 0);
-    pairs[this.terrajs.settings.bPsiDPToken] = createPairStat(poolApr, this.terrajs.settings.bPsiDPToken);
-    const pair = pairs[this.terrajs.settings.bPsiDPToken];
+    const key = `${this.dex}|${this.terrajs.settings.bPsiDPToken}|${this.denomTokenContract}`;
+    pairs[key] = createPairStat(poolApr, key);
+    const pair = pairs[key];
     pair.tvl = specbPsiDPTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
@@ -113,8 +125,8 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     const rewardInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { reward: {} });
     const [configInfo, rewardInfo] = await Promise.all([configInfoTask, rewardInfoTask]);
 
-    const psiPool = poolResponses[this.farmTokenContract];
-    const [psi, ust] = psiPool.assets[0].info.token?.['contract_addr'] === this.farmTokenContract
+    const psiPool = poolResponses[`${this.dex}|${this.denomTokenContract}|${Denom.USD}`];
+    const [psi, ust] = psiPool.assets[0].info.token?.['contract_addr'] === this.denomTokenContract
       ? [psiPool.assets[0].amount, psiPool.assets[1].amount]
       : [psiPool.assets[1].amount, psiPool.assets[0].amount];
     const psiPrice = div(ust, psi);

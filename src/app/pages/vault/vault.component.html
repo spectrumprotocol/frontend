@@ -13,6 +13,12 @@
             target="_blank">
             <img src="assets/halborn_logo.svg" alt="Halborn" class="platform-logo-halborn"></a>
         </div>
+        <div class="d-inline-block f-12 ms-2">
+          Get covered at <a
+            href="https://app.insurace.io/Insurance/Cart?id=131&referrer=1384813702756895043012775057428368748461042504960"
+            target="_blank">
+            <img src="assets/insurace.svg" alt="InsurAce" class="platform-logo-insurace"></a>
+        </div>
       </div>
     </div>
     <div class="row g-1 pt-3">
@@ -39,7 +45,7 @@
             <h3 class="card-title">
               <app-digit [value]="+info.specPrice"></app-digit> <span class="cur-title"> UST</span>
               <a class="margin-left-auto text-light small"
-                href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" target="_blank">
+                href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" alt="SPEC price chart" title="SPEC price chart" target="_blank">
                 <img class="float-end mg-18" src="../../../assets/Icon_Chart.svg">
               </a>
             </h3>
@@ -74,7 +80,7 @@
                 <h3 class="card-title text-primary">
                   <app-digit [value]="info.myTvl"></app-digit> <span class="cur-title text-white"> UST</span>
                   <a role="button" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
-                    (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon_PieChart.svg"></a>
+                    (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon_PieChart.svg" alt="Portfolio allocation" title="Portfolio allocation"></a>
                 </h3>
               </div>
             </div>
@@ -99,9 +105,7 @@
 
       <div class="col-12">
         <div class="terra-container mt-2 mb-2">
-          Pylon bPsiDP-24m Vault is now live on Spectrum Protocol! (<a target="_blank" class="text-execute"
-            href="https://spectrum-protocol.medium.com/liquid-pylon-vault-when-lossless-investment-meets-auto-compound-4c682d3e6c54">Learn
-            more</a>)
+          Astroport ASTRO-UST, LUNA-UST, bLUNA-LUNA vaults are now live!
         </div>
       </div>
 

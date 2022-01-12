@@ -44,7 +44,7 @@ export class YourTvlComponent implements OnInit, OnDestroy {
 
   // because totalValueItems input is delayed
   ngOnInit(): void {
-    this.farmInfoList = [...new Map(this.info.farmInfos.map(farmInfo => [farmInfo.farm, farmInfo])).values()];
+    this.farmInfoList = [...new Map(this.info.farmInfos.filter(fi => this.info.shouldEnableFarmInfo(fi)).map(farmInfo => [farmInfo.farm, farmInfo])).values()];
     this.farmInfoName = this.farmInfoList.map(farmInfo => farmInfo.farm);
     this.chartColors.domain = [...this.farmInfoList.map(farmInfo => farmInfo.farmColor), '#ED7B84', '#f5dbcb', '#D6D5B3', '#7EB77F'];
     this.connected = this.terrajs.connected

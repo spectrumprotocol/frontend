@@ -3,6 +3,8 @@ import BigNumber from 'bignumber.js';
 import { TerraworldFarmService } from '../api/terraworld-farm.service';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -16,16 +18,22 @@ import { WasmService } from '../api/wasm.service';
 import { div } from '../../libs/math';
 import { Denom } from '../../consts/denom';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class TerraworldFarmInfoService implements FarmInfoService {
   farm = 'Terraworld';
-  tokenSymbol = 'TWD';
   autoCompound = true;
   autoStake = true;
   auditWarning = true;
   farmColor = '#249fd4';
-  pairSymbol = 'UST';
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
+
+  get defaultBaseTokenContract() {
+    return this.terrajs.settings.terraworldToken;
+  }
 
   constructor(
     private terraworldFarm: TerraworldFarmService,
@@ -37,7 +45,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.terraworldFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.terraworldToken;
   }
 
@@ -50,7 +58,7 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
     const rewardInfoTask = this.wasm.query(this.terrajs.settings.terraworldStaking, { staker_info: { block_height: +height, staker: this.terrajs.settings.terraworldFarm } });
     const farmConfigTask = this.terraworldFarm.query({ config: {} });
@@ -58,14 +66,15 @@ export class TerraworldFarmInfoService implements FarmInfoService {
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.terraworldFarm)?.weight || 0;
-    const terraworldLPStat = await this.getTerraworldLPStat(poolResponses[this.terrajs.settings.terraworldToken]);
+    const key = `${this.dex}|${this.terrajs.settings.terraworldToken}|${Denom.USD}`;
+    const terraworldLPStat = await this.getTerraworldLPStat(poolResponses[key]);
     const terraworldGovStat = await this.getTerraworldGovStat();
     const pairs: Record<string, PairStat> = {};
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.terrajs.settings.terraworldToken];
+    const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;
@@ -77,16 +86,16 @@ export class TerraworldFarmInfoService implements FarmInfoService {
       .toString();
 
     const poolApr = +(terraworldLPStat.apr || 0);
-    pairs[this.terrajs.settings.terraworldToken] = createPairStat(poolApr, this.terrajs.settings.terraworldToken);
-    const pair = pairs[this.terrajs.settings.terraworldToken];
+    pairs[key] = createPairStat(poolApr, key);
+    const pair = pairs[key];
     pair.tvl = specTwdTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,

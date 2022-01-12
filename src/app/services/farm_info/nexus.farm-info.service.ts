@@ -3,6 +3,8 @@ import { Apollo, gql } from 'apollo-angular';
 import BigNumber from 'bignumber.js';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -15,15 +17,23 @@ import { NexusFarmService } from '../api/nexus-farm.service';
 import { RewardInfoResponseItem } from '../api/nexus_farm/reward_info_response';
 import { NexusStakingService } from '../api/nexus-staking.service';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class NexusFarmInfoService implements FarmInfoService {
   farm = 'Nexus';
-  tokenSymbol = 'Psi';
   autoCompound = true;
   autoStake = true;
   farmColor = '#F4B6C7';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
+
+  get defaultBaseTokenContract() {
+    return this.terrajs.settings.nexusToken;
+  }
 
   constructor(
     private nexusFarm: NexusFarmService,
@@ -36,7 +46,7 @@ export class NexusFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nexusFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 
@@ -49,7 +59,7 @@ export class NexusFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
     const nexusLPStatTask = apollo.query<any>({
       query: gql`{
@@ -81,7 +91,8 @@ export class NexusFarmInfoService implements FarmInfoService {
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.terrajs.settings.nexusToken];
+    const key = `${this.dex}|${this.terrajs.settings.nexusToken}|${Denom.USD}`;
+    const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;
@@ -93,16 +104,16 @@ export class NexusFarmInfoService implements FarmInfoService {
       .toString();
 
     const poolApr = +(nexusLPStat.data.getLiquidityPoolApr.psiUstLpApr || 0) / 100;
-    pairs[this.terrajs.settings.nexusToken] = createPairStat(poolApr, this.terrajs.settings.nexusToken);
-    const pair = pairs[this.terrajs.settings.nexusToken];
+    pairs[key] = createPairStat(poolApr, key);
+    const pair = pairs[key];
     pair.tvl = specPsiTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,

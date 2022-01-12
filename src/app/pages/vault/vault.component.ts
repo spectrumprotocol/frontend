@@ -11,10 +11,15 @@ import { MdbModalService } from 'mdb-angular-ui-kit/modal';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
 
 export interface Vault {
-  symbol: string;
-  decimals: number;
-  unit: number;
-  assetToken: string;
+  baseSymbol: string;
+  denomSymbol: string;
+  rewardSymbol: string;
+  baseDecimals: number;
+  baseUnit: number;
+  baseAssetInfo: object;
+  denomDecimals: number;
+  denomUnit: number;
+  denomAssetInfo: object;
   lpToken: string;
   pairInfo: PairInfo;
   poolInfo: PoolInfo;
@@ -28,6 +33,10 @@ export interface Vault {
   unitDisplay: string;
   shortUnitDisplay: string;
   score: number;
+  fullName: string;
+  disabled: boolean;
+  will_available_at_astroport: boolean;
+  now_available_at_astroport: boolean;
 }
 
 @Component({
@@ -160,21 +169,21 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
     if (this.showDepositedPoolOnly) {
       const oldVaults = vaults;
-      vaults = vaults.filter(it => +this.info.rewardInfos?.[it.assetToken]?.bond_amount >= 10);
+      vaults = vaults.filter(it => +this.info.rewardInfos?.[it.poolInfo.key]?.bond_amount >= 10);
       if (vaults.length === 0 && resetFilterOnEmpty) {
         this.showDepositedPoolOnly = false;
         vaults = oldVaults;
       }
     }
     if (this.search) {
-      vaults = vaults.filter(it => it.symbol.toLowerCase().includes(this.search.toLowerCase()));
+      vaults = vaults.filter(it => it.baseSymbol.toLowerCase().includes(this.search.toLowerCase()));
     }
     this.vaults = vaults;
     this.dropdownFarmFilter.hide();
     this.dropdownSortBy.hide();
   }
 
-  vaultId = (_: number, item: Vault) => item.symbol;
+  vaultId = (_: number, item: Vault) => item.baseSymbol;
 
   async openYourTVL() {
     this.$gaService.event('CLICK_OPEN_YOUR_TVL');

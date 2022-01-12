@@ -3,26 +3,35 @@ import BigNumber from 'bignumber.js';
 import { SpecFarmService } from '../api/spec-farm.service';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo,
   PoolItem,
   RewardInfoResponseItem
 } from './farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class SpecFarmInfoService implements FarmInfoService {
   farm = 'Spectrum';
-  tokenSymbol = 'SPEC';
   autoCompound = false;
   autoStake = true;
   farmColor = '#fc5185';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
+
+  get defaultBaseTokenContract() {
+    return this.terrajs.settings.specToken;
+  }
 
   constructor(
     private specFarm: SpecFarmService,
@@ -33,7 +42,7 @@ export class SpecFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.specFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.specToken;
   }
 
@@ -46,7 +55,7 @@ export class SpecFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.specFarm)?.weight || 0;
 
@@ -96,7 +105,7 @@ export class SpecFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.gov,
           amount,
-          msg: toBase64({stake_tokens: additionalData})
+          msg: toBase64({ stake_tokens: additionalData })
         }
       }
     );

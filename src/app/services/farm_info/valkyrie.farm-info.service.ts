@@ -2,27 +2,37 @@ import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo
 } from './farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { ValkyrieFarmService } from '../api/valkyrie-farm.service';
 import { ValkyrieStakingService } from '../api/valkyrie-staking.service';
 import { PoolItem } from '../api/valkyrie_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/valkyrie_farm/reward_info_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class ValkyrieFarmInfoService implements FarmInfoService {
   farm = 'Valkyrie';
-  tokenSymbol = 'VKR';
   autoCompound = true;
   autoStake = true;
   farmColor = '#ffe646';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
+
+  get defaultBaseTokenContract() {
+    return this.terrajs.settings.valkyrieToken;
+  }
 
   constructor(
     private terrajs: TerrajsService,
@@ -34,7 +44,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.valkyrieFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.valkyrieToken;
   }
 
@@ -47,7 +57,7 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const rewardInfoTask = this.valkyrieStaking.query({ staker_info: { staker: this.terrajs.settings.valkyrieFarm } });
     const farmConfigTask = this.valkyrieFarm.query({ config: {} });
     // const valkyrieStatTask = this.httpClient.get<any>(this.terrajs.settings.valkyrieAPI + '/liquidity-provision/stake/apr').toPromise();
@@ -62,17 +72,18 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
 
     // const poolApr = +(valkyrieStat?.data?.apr || 0);
     const poolApr = 0;
-    pairs[this.terrajs.settings.valkyrieToken] = createPairStat(poolApr, this.terrajs.settings.valkyrieToken);
+    const key = `${this.dex}|${this.terrajs.settings.valkyrieToken}|${Denom.USD}`;
+    pairs[key] = createPairStat(poolApr, key);
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.terrajs.settings.valkyrieToken];
+    const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;
     }
-    const pair = pairs[this.terrajs.settings.valkyrieToken];
+    const pair = pairs[key];
     const value = new BigNumber(uusd.amount)
       .times(rewardInfo.bond_amount)
       .times(2)
@@ -84,8 +95,8 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         // poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
@@ -114,11 +125,11 @@ export class ValkyrieFarmInfoService implements FarmInfoService {
       this.terrajs.address,
       this.terrajs.settings.valkyrieToken,
       {
-          send: {
-            contract: this.terrajs.settings.valkyrieGov,
-            amount,
-            msg: toBase64({stake_governance_token: {}})
-          }
+        send: {
+          contract: this.terrajs.settings.valkyrieGov,
+          amount,
+          msg: toBase64({ stake_governance_token: {} })
+        }
       }
     );
   }

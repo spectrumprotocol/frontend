@@ -6,37 +6,48 @@ import { PoolItem } from '../api/anchor_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/anchor_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
   FarmInfoService,
+  FARM_TYPE_ENUM,
   PairStat,
   PoolInfo
 } from './farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../libs/base64';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { HttpClient } from '@angular/common/http';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class AnchorFarmInfoService implements FarmInfoService {
   farm = 'Anchor';
-  tokenSymbol = 'ANC';
   autoCompound = true;
   autoStake = true;
   farmColor = '#3bac3b';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
+
+  get defaultBaseTokenContract() {
+    return this.terrajs.settings.anchorToken;
+  }
 
   constructor(
     private anchorFarm: AnchorFarmService,
     private terrajs: TerrajsService,
     private anchorStaking: AnchorStakingService,
     private httpClient: HttpClient,
-  ) { }
+  ) {
+  }
 
   get farmContract() {
     return this.terrajs.settings.anchorFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.anchorToken;
   }
 
@@ -49,7 +60,7 @@ export class AnchorFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
     const rewardInfoTask = this.anchorStaking.query({ staker_info: { block_height: +height, staker: this.terrajs.settings.anchorFarm } });
     const farmConfigTask = this.anchorFarm.query({ config: {} });
@@ -65,17 +76,18 @@ export class AnchorFarmInfoService implements FarmInfoService {
 
     // const poolApr = +(anchorStat?.apy || 0);
     const poolApr = 0;
-    pairs[this.terrajs.settings.anchorToken] = createPairStat(poolApr, this.terrajs.settings.anchorToken);
+    const key = `${this.dex}|${this.terrajs.settings.anchorToken}|${this.denomTokenContract}`;
+    pairs[key] = createPairStat(poolApr, key);
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.terrajs.settings.anchorToken];
+    const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;
     }
-    const pair = pairs[this.terrajs.settings.anchorToken];
+    const pair = pairs[key];
     const value = new BigNumber(uusd.amount)
       .times(rewardInfo.bond_amount)
       .times(2)
@@ -87,8 +99,8 @@ export class AnchorFarmInfoService implements FarmInfoService {
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
@@ -115,11 +127,11 @@ export class AnchorFarmInfoService implements FarmInfoService {
       this.terrajs.address,
       this.terrajs.settings.anchorToken,
       {
-          send: {
-            contract: this.terrajs.settings.anchorGov,
-            amount,
-            msg: toBase64({stake_voting_tokens: {}})
-          }
+        send: {
+          contract: this.terrajs.settings.anchorGov,
+          amount,
+          msg: toBase64({ stake_voting_tokens: {} })
+        }
       }
     );
   }

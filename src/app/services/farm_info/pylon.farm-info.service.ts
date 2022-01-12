@@ -6,6 +6,8 @@ import { PoolItem } from '../api/pylon_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
+  DEX,
+  FARM_TYPE_ENUM,
   FarmInfoService,
   PairStat,
   PoolInfo
@@ -16,15 +18,24 @@ import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
 export class PylonFarmInfoService implements FarmInfoService {
   farm = 'Pylon';
-  tokenSymbol = 'MINE';
   autoCompound = true;
   autoStake = true;
+  govLock = true;
   farmColor = '#00cfda';
-  pairSymbol = 'UST';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'LP';
+  dex: DEX = 'Terraswap';
+  denomTokenContract = Denom.USD;
+
+  get defaultBaseTokenContract() {
+    return this.terrajs.settings.pylonToken;
+  }
 
   constructor(
     private pylonFarm: PylonFarmService,
@@ -37,7 +48,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.pylonFarm;
   }
 
-  get farmTokenContract() {
+  get rewardTokenContract() {
     return this.terrajs.settings.pylonToken;
   }
 
@@ -50,7 +61,7 @@ export class PylonFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const height = await this.terrajs.getHeight();
     const rewardInfoTask = this.pylonStaking.query({ staker_info: { block_height: +height, staker: this.terrajs.settings.pylonFarm } });
     const farmConfigTask = this.pylonFarm.query({ config: {} });
@@ -59,21 +70,23 @@ export class PylonFarmInfoService implements FarmInfoService {
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.pylonFarm)?.weight || 0;
     const pylonLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/liquidity/v1/overview`));
-    const pylonGovStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/governance/v1/overview`));
+    // const pylonGovStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/governance/v1/overview`));
     const pairs: Record<string, PairStat> = {};
 
     const poolApr = +(pylonLPStat.apy || 0);
-    pairs[this.terrajs.settings.pylonToken] = createPairStat(poolApr, this.terrajs.settings.pylonToken);
+    const key = `${this.dex}|${this.terrajs.settings.pylonToken}|${Denom.USD}`;
+
+    pairs[key] = createPairStat(poolApr, key);
 
     const rewardInfo = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[this.terrajs.settings.pylonToken];
+    const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
     if (!uusd) {
       return;
     }
-    const pair = pairs[this.terrajs.settings.pylonToken];
+    const pair = pairs[key];
     const value = new BigNumber(uusd.amount)
       .times(rewardInfo.bond_amount)
       .times(2)
@@ -85,12 +98,12 @@ export class PylonFarmInfoService implements FarmInfoService {
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
-    function createPairStat(poolApr: number, token: string) {
-      const poolInfo = poolInfos[token];
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: +(pylonGovStat.apy || 0),
+        farmApr: 0, // +(pylonGovStat.apy || 0),
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
