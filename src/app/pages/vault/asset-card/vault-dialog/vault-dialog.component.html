@@ -74,8 +74,8 @@
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
-              LP Commission APR <i class="fas fa-info-circle info-icon super"
-                                   mdbTooltip="cssdfd"></i>
+              Pool APR <i class="fas fa-info-circle info-icon super"
+                                   [mdbTooltip]="'APR (7 days estimate) from trading fee of '+getCommissionForLPProviders() * 100+'%'"></i>
           </p>
           <h3 class="card-title">
             {{ +info.pairLpCommission[vault.poolInfo.key] || 0 | percent }}

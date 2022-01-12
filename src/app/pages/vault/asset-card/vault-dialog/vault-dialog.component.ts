@@ -543,6 +543,20 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       : times(price, 10 ** (ask_decimals - offer_decimals));
   }
 
+  getCommissionForLPProviders(){
+    if (this.vault.poolInfo.dex === 'Astroport'){
+      if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['stable']){
+        return +CONFIG.ASTROPORT_STABLE_COMMISSION;
+      } else if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['xyk']){
+        return +CONFIG.ASTROPORT_XYK_COMMISSION;
+      }
+    } else if (this.vault.poolInfo.dex === 'Terraswap') {
+      return +CONFIG.TERRASWAP_COMMISSION;
+    } else {
+      return 0;
+    }
+  }
+
   @debounce(250)
   async withdrawAmtChanged() {
     if (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_bdp') {
