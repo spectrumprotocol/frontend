@@ -12,7 +12,6 @@ export class LpBalancePipe implements PipeTransform {
 
   constructor(
     private balancePipe: BalancePipe,
-    private terrajs: TerrajsService
   ) { }
 
   transform(lp: any, poolResponses: Record<string, PoolResponse>, key: string): string {

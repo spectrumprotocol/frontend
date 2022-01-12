@@ -532,7 +532,7 @@ export class InfoService {
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
         // TODO add ASTRO and handle farm1 farm2
-        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.key];
+        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardKey];
         const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
         tvl += pending_farm_reward_ust;
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
