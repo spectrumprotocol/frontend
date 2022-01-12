@@ -365,7 +365,6 @@ export class InfoService {
     const pairLpCommission: Record<string, number> = {};
     pairInfosKeys.forEach(key => {
       try {
-        // console.log(this.coinhallPairs[this.pairInfos[key].contract_addr]);
         const coinhallPair = this.coinhallPairs[this.pairInfos[key].contract_addr];
         if (coinhallPair){
           // let baseAssetCoinhall;
@@ -402,7 +401,6 @@ export class InfoService {
       }
     });
     this.pairLpCommission = pairLpCommission;
-    // console.log(this.pairLpCommission)
   }
 
   async refreshStat() {
