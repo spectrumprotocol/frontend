@@ -55,12 +55,17 @@
             </ng-container>
           </p>
           <h3 class="card-title">
-            <span *ngIf="vault.apy > vault.pairStat?.poolApr">
-              <span class="sub-topic text-decoration-line-through text-primary">
-                <span class="sub-topic">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
+            <ng-container *ngIf="vault.poolInfo.farm === 'Spectrum'">
+              <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
+            </ng-container>
+            <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
+              <span *ngIf="vault.apy > vault.pairStat?.poolApr">
+                <span class="sub-topic text-decoration-line-through text-primary">
+                  <span class="sub-topic">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
+                </span>
               </span>
-            </span>
-            <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
+              <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
+            </ng-container>
           </h3>
         </div>
       </div>
