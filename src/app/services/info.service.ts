@@ -112,10 +112,6 @@ export class InfoService {
         if (tokenInfoJson) {
           this.tokenInfos = JSON.parse(tokenInfoJson);
         }
-        const pairLpCommission = localStorage.getItem('pairLpCommission');
-        if (pairLpCommission) {
-          this.pairLpCommission = JSON.parse(pairLpCommission);
-        }
       } else {
         localStorage.removeItem('poolInfos');
         localStorage.removeItem('pairInfos');
@@ -146,7 +142,6 @@ export class InfoService {
   tokenBalances: Record<string, string> = {};
   lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
-  pairLpCommission: Record<string, number> = {};
 
   cw20tokensWhitelist: any;
   coinhallPairs: any;
@@ -246,6 +241,7 @@ export class InfoService {
             dex: farmInfo.dex ?? 'Terraswap',
             highlight: farmInfo.highlight,
             hasProxyReward: farmInfo.hasProxyReward ?? false,
+            tradeApr: await this.getLpApr(key)
           });
       }
     });
@@ -335,41 +331,38 @@ export class InfoService {
     }
   }
 
-  async refreshLpApr(){
+  async getLpApr(key: string): Promise<number>{
     await this.ensureCoinhallPairs();
-    const pairInfosKeys = Object.keys(this.pairInfos);
-    const pairLpCommission: Record<string, number> = {};
-    pairInfosKeys.forEach(key => {
-      try {
-        const coinhallPair = this.coinhallPairs[this.pairInfos[key].contract_addr];
-        if (coinhallPair){
-          let denomAssetCoinhall;
-          let commission = 0;
-          if (key.split('|')[0] === 'Astroport'){
-            if (this.pairInfos[key]?.pair_type?.['stable']){
-              commission = +CONFIG.ASTROPORT_STABLE_COMMISSION;
-            } else if (this.pairInfos[key]?.pair_type?.['xyk']){
-              commission = +CONFIG.ASTROPORT_XYK_COMMISSION;
-            }
-          } else if (key.split('|')[0] === 'Terraswap') {
-            commission = +CONFIG.TERRASWAP_COMMISSION;
+    try {
+      const coinhallPair = this.coinhallPairs[this.pairInfos[key].contract_addr];
+      if (coinhallPair){
+        let denomAssetCoinhall;
+        let commission = 0;
+        if (key.split('|')[0] === 'Astroport'){
+          if (this.pairInfos[key]?.pair_type?.['stable']){
+            commission = +CONFIG.ASTROPORT_STABLE_COMMISSION;
+          } else if (this.pairInfos[key]?.pair_type?.['xyk']){
+            commission = +CONFIG.ASTROPORT_XYK_COMMISSION;
           }
-          if (coinhallPair.asset0?.contractAddress === this.poolInfos[key].denomTokenContract){
-            denomAssetCoinhall = coinhallPair.asset0;
-          } else if (coinhallPair.asset1?.contractAddress === this.poolInfos[key].denomTokenContract){
-            denomAssetCoinhall = coinhallPair.asset1;
-          }
-          if (denomAssetCoinhall){
-            const a = +denomAssetCoinhall.volume7d * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
-            const b = +denomAssetCoinhall.poolAmount * 2 * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
-            pairLpCommission[key] = (365 / 7) * commission * a / b;
-          }
+        } else if (key.split('|')[0] === 'Terraswap') {
+          commission = +CONFIG.TERRASWAP_COMMISSION;
         }
-      } catch (e){
-        console.error('refreshLpCommission error >> ', e);
+        if (coinhallPair.asset0?.contractAddress === key.split('|')[2]){
+          denomAssetCoinhall = coinhallPair.asset0;
+        } else if (coinhallPair.asset1?.contractAddress === key.split('|')[2]){
+          denomAssetCoinhall = coinhallPair.asset1;
+        }
+        if (denomAssetCoinhall){
+          const a = +denomAssetCoinhall.volume7d * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
+          const b = +denomAssetCoinhall.poolAmount * 2 * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
+          return (365 / 7) * commission * a / b;
+        }
       }
-    });
-    this.pairLpCommission = pairLpCommission;
+    } catch (e){
+      console.error('refreshLpCommission error >> ', e);
+      return 0;
+    }
+    return 0;
   }
 
   getCommissionForLPProviders(dex: string, key: string){
@@ -422,7 +415,6 @@ export class InfoService {
     await Promise.all([
       this.refreshGovStat(stat),
       this.refreshMarketCap(),
-      this.refreshLpApr(),
       ...tasks
     ]);
 
@@ -638,7 +630,7 @@ export class InfoService {
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
       const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion || !data.pairLpCommission) {
+      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
         throw (data);
       }
       this.tokenInfos = data.tokenInfos;
@@ -647,13 +639,11 @@ export class InfoService {
       this.poolInfos = data.poolInfos;
       this.circulation = data.circulation;
       this.marketCap = data.marketCap;
-      this.pairLpCommission = data.pairLpCommission;
       localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
       localStorage.setItem('stat', JSON.stringify(this.stat));
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
       localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
       localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-      localStorage.setItem('pairLpCommission', JSON.stringify(this.pairLpCommission));
       if (skipPoolResponses) {
         this.poolResponses = data.poolResponses;
         localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));

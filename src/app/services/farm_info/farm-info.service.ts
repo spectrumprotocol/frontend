@@ -32,6 +32,7 @@ export type PoolInfo = PoolItem & {
   auto_compound: boolean;
   auto_stake: boolean;
   govLock: boolean;
+  tradeApr: number;
 };
 export type RewardInfoResponseItem = AstroportTokenUSTRewardInfoResponseItem | MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
 

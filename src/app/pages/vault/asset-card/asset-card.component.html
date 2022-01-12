@@ -70,7 +70,7 @@
               </ng-container>
               <span class="card-text sub-topic">
                 <br>
-                (+{{ +info.pairLpCommission[vault.poolInfo.key] || 0 | percent }} trade fee)
+                (+{{ vault.poolInfo.tradeApr || 0 | percent }} trade fee)
               <i class="fas fa-info-circle info-icon super"
                [mdbTooltip]="'APR (7 days estimate) from trading fee of '+info.getCommissionForLPProviders(vault.poolInfo.dex, vault.poolInfo.key) * 100+'%'"></i>
               </span>
@@ -188,7 +188,7 @@
                 <div class="f-12 sub-topic">Trade Fee</div>
               </div>
               <div>
-                <div class="f-14 fw-bold">{{ +info.pairLpCommission[vault.poolInfo.key] || 0 | percent }}
+                <div class="f-14 fw-bold">{{ vault.poolInfo.tradeApr || 0 | percent }}
                   <i class="fas fa-info-circle info-icon super"
                      [mdbTooltip]="'APR (7 days estimate) from trading fee of '+info.getCommissionForLPProviders(vault.poolInfo.dex, vault.poolInfo.key) * 100+'%'"></i></div>
               </div>

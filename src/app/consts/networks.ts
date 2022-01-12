@@ -142,7 +142,7 @@ export const networks: Record<string, ISettings> = {
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
-    specAPI: 'https://specapi.azurefd.net/api',
+    specAPI: 'http://localhost:7071/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
     valkyrieAPI: 'https://api.valkyrieprotocol.com',
