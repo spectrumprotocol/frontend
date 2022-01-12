@@ -1,13 +1,13 @@
-import { Inject, Injectable } from '@angular/core';
-import { BLOCK_TIME, TerrajsService } from './terrajs.service';
-import { TokenService } from './api/token.service';
-import { BankService } from './api/bank.service';
-import { TerraSwapService } from './api/terraswap.service';
-import { PoolResponse } from './api/terraswap_pair/pool_response';
-import { div, minus, plus, times } from '../libs/math';
-import { CONFIG } from '../consts/config';
-import { TerraSwapFactoryService } from './api/terraswap-factory.service';
-import { GovService } from './api/gov.service';
+import {Inject, Injectable} from '@angular/core';
+import {BLOCK_TIME, TerrajsService} from './terrajs.service';
+import {TokenService} from './api/token.service';
+import {BankService} from './api/bank.service';
+import {TerraSwapService} from './api/terraswap.service';
+import {PoolResponse} from './api/terraswap_pair/pool_response';
+import {div, minus, plus, times} from '../libs/math';
+import {CONFIG} from '../consts/config';
+import {TerraSwapFactoryService} from './api/terraswap-factory.service';
+import {GovService} from './api/gov.service';
 import {
   FARM_INFO_SERVICE,
   FarmInfoService,
@@ -15,17 +15,17 @@ import {
   PoolInfo,
   RewardInfoResponseItem
 } from './farm_info/farm-info.service';
-import { fromEntries } from '../libs/core';
-import { PairInfo } from './api/terraswap_factory/pair_info';
-import { BalancePipe } from '../pipes/balance.pipe';
-import { LpBalancePipe } from '../pipes/lp-balance.pipe';
-import { Vault } from '../pages/vault/vault.component';
-import { HttpClient } from '@angular/common/http';
-import { memoize } from 'utils-decorators';
-import { Denom } from '../consts/denom';
-import { WalletService } from './api/wallet.service';
-import { AstroportService } from './api/astroport.service';
-import { AstroportFactoryService } from './api/astroport-factory.service';
+import {fromEntries} from '../libs/core';
+import {PairInfo} from './api/terraswap_factory/pair_info';
+import {BalancePipe} from '../pipes/balance.pipe';
+import {LpBalancePipe} from '../pipes/lp-balance.pipe';
+import {Vault} from '../pages/vault/vault.component';
+import {HttpClient} from '@angular/common/http';
+import {memoize} from 'utils-decorators';
+import {Denom} from '../consts/denom';
+import {WalletService} from './api/wallet.service';
+import {AstroportService} from './api/astroport.service';
+import {AstroportFactoryService} from './api/astroport-factory.service';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -142,8 +142,11 @@ export class InfoService {
   tokenBalances: Record<string, string> = {};
   lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
+  pairLpCommission: Record<string, number> = {};
 
   cw20tokensWhitelist: any;
+  coinhallPairs: any;
+  lastRefreshCoinHallPairs: number;
 
   myTvl = 0;
   allVaults: Vault[] = [];
@@ -328,6 +331,69 @@ export class InfoService {
     }
   }
 
+  async refreshLpApr(){
+    await this.ensureCoinhallPairs();
+    // try {
+    //   // console.log(this.coinhallPairs[this.pairInfos[key].contract_addr]);
+    //   const coinhallPair = this.coinhallPairs[this.pairInfos[key].contract_addr];
+    //   if (coinhallPair){
+    //     let baseAssetCoinhall;
+    //     let denomAssetCoinhall;
+    //     if (coinhallPair.assets0?.contractAddress === this.poolInfos[key].baseTokenContract){
+    //       baseAssetCoinhall = coinhallPair.assets0;
+    //     } else if (coinhallPair.assets1?.contractAddress === this.poolInfos[key].baseTokenContract){
+    //       baseAssetCoinhall = coinhallPair.assets1;
+    //     }
+    //     if (coinhallPair.assets0?.contractAddress === this.poolInfos[key].denomTokenContract){
+    //       denomAssetCoinhall = coinhallPair.assets0;
+    //     } else if (coinhallPair.assets1?.contractAddress === this.poolInfos[key].denomTokenContract){
+    //       denomAssetCoinhall = coinhallPair.assets1;
+    //     }
+    //     if (denomAssetCoinhall){
+    //       const a = +denomAssetCoinhall.volume7d * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
+    //       const b = +denomAssetCoinhall.poolAmount * 2 * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
+    //       console.log(denomAssetCoinhall)
+    //       return a / b / 100;
+    //     }
+    //     return null;
+    //   }
+    // } catch (e){
+    //   console.error('refreshLpCommission error >> ', e);
+    //   return null;
+    // }
+    const pairInfosKeys = Object.keys(this.pairInfos);
+    const pairLpCommission: Record<string, number> = {};
+    pairInfosKeys.forEach(key => {
+      try {
+        console.log(this.coinhallPairs[this.pairInfos[key].contract_addr]);
+        const coinhallPair = this.coinhallPairs[this.pairInfos[key].contract_addr];
+        if (coinhallPair){
+          let baseAssetCoinhall;
+          let denomAssetCoinhall;
+          if (coinhallPair.assets0?.contractAddress === this.poolInfos[key].baseTokenContract){
+            baseAssetCoinhall = coinhallPair.assets0;
+          } else if (coinhallPair.assets1?.contractAddress === this.poolInfos[key].baseTokenContract){
+            baseAssetCoinhall = coinhallPair.assets1;
+          }
+          if (coinhallPair.assets0?.contractAddress === this.poolInfos[key].denomTokenContract){
+            denomAssetCoinhall = coinhallPair.assets0;
+          } else if (coinhallPair.assets1?.contractAddress === this.poolInfos[key].denomTokenContract){
+            denomAssetCoinhall = coinhallPair.assets1;
+          }
+          if (baseAssetCoinhall && denomAssetCoinhall){
+            const a = +denomAssetCoinhall.volume7d * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
+            const b = +denomAssetCoinhall.poolAmount * 2 * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
+            pairLpCommission[key] = a / b / 100;
+          }
+        }
+      } catch (e){
+        console.error('refreshLpCommission error >> ', e);
+      }
+    });
+    this.pairLpCommission = pairLpCommission;
+    console.log(this.pairLpCommission)
+  }
+
   async refreshStat() {
     const stat: Stat = {
       pairs: {},
@@ -364,6 +430,7 @@ export class InfoService {
     await Promise.all([
       this.refreshGovStat(stat),
       this.refreshMarketCap(),
+      this.refreshLpApr(),
       ...tasks
     ]);
 
@@ -486,6 +553,13 @@ export class InfoService {
   async ensureCw20tokensWhitelist() {
     if (!this.cw20tokensWhitelist) {
       this.cw20tokensWhitelist = await this.httpClient.get<object>('https://assets.terra.money/cw20/tokens.json').toPromise();
+    }
+  }
+
+  async ensureCoinhallPairs() {
+    if (!this.coinhallPairs || !this.lastRefreshCoinHallPairs || this.lastRefreshCoinHallPairs + 10 * 60 * 1000 > Date.now()){
+      this.coinhallPairs = await this.httpClient.get<object>('https://api.coinhall.org/api/v1/charts/terra/pairs').toPromise();
+      this.lastRefreshCoinHallPairs = Date.now();
     }
   }
 
