@@ -333,48 +333,13 @@ export class InfoService {
 
   async refreshLpApr(){
     await this.ensureCoinhallPairs();
-    // try {
-    //   // console.log(this.coinhallPairs[this.pairInfos[key].contract_addr]);
-    //   const coinhallPair = this.coinhallPairs[this.pairInfos[key].contract_addr];
-    //   if (coinhallPair){
-    //     let baseAssetCoinhall;
-    //     let denomAssetCoinhall;
-    //     if (coinhallPair.assets0?.contractAddress === this.poolInfos[key].baseTokenContract){
-    //       baseAssetCoinhall = coinhallPair.assets0;
-    //     } else if (coinhallPair.assets1?.contractAddress === this.poolInfos[key].baseTokenContract){
-    //       baseAssetCoinhall = coinhallPair.assets1;
-    //     }
-    //     if (coinhallPair.assets0?.contractAddress === this.poolInfos[key].denomTokenContract){
-    //       denomAssetCoinhall = coinhallPair.assets0;
-    //     } else if (coinhallPair.assets1?.contractAddress === this.poolInfos[key].denomTokenContract){
-    //       denomAssetCoinhall = coinhallPair.assets1;
-    //     }
-    //     if (denomAssetCoinhall){
-    //       const a = +denomAssetCoinhall.volume7d * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
-    //       const b = +denomAssetCoinhall.poolAmount * 2 * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
-    //       console.log(denomAssetCoinhall)
-    //       return a / b / 100;
-    //     }
-    //     return null;
-    //   }
-    // } catch (e){
-    //   console.error('refreshLpCommission error >> ', e);
-    //   return null;
-    // }
     const pairInfosKeys = Object.keys(this.pairInfos);
     const pairLpCommission: Record<string, number> = {};
     pairInfosKeys.forEach(key => {
       try {
         const coinhallPair = this.coinhallPairs[this.pairInfos[key].contract_addr];
         if (coinhallPair){
-          // let baseAssetCoinhall;
           let denomAssetCoinhall;
-          // in case might be used later
-          // if (coinhallPair.assets0?.contractAddress === this.poolInfos[key].baseTokenContract){
-          //   baseAssetCoinhall = coinhallPair.assets0;
-          // } else if (coinhallPair.assets1?.contractAddress === this.poolInfos[key].baseTokenContract){
-          //   baseAssetCoinhall = coinhallPair.assets1;
-          // }
           let commission = 0;
           if (key.split('|')[0] === 'Astroport'){
             if (this.pairInfos[key]?.pair_type?.['stable']){
@@ -401,6 +366,20 @@ export class InfoService {
       }
     });
     this.pairLpCommission = pairLpCommission;
+  }
+
+  getCommissionForLPProviders(vault: Vault){
+    if (vault.poolInfo.dex === 'Astroport'){
+      if (this.pairInfos[vault.poolInfo.key]?.pair_type?.['stable']){
+        return +CONFIG.ASTROPORT_STABLE_COMMISSION;
+      } else if (this.pairInfos[vault.poolInfo.key]?.pair_type?.['xyk']){
+        return +CONFIG.ASTROPORT_XYK_COMMISSION;
+      }
+    } else if (vault.poolInfo.dex === 'Terraswap') {
+      return +CONFIG.TERRASWAP_COMMISSION;
+    } else {
+      return 0;
+    }
   }
 
   async refreshStat() {
