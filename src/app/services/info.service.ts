@@ -368,14 +368,14 @@ export class InfoService {
     this.pairLpCommission = pairLpCommission;
   }
 
-  getCommissionForLPProviders(vault: Vault){
-    if (vault.poolInfo.dex === 'Astroport'){
-      if (this.pairInfos[vault.poolInfo.key]?.pair_type?.['stable']){
+  getCommissionForLPProviders(dex: string, key: string){
+    if (dex === 'Astroport'){
+      if (this.pairInfos[key]?.pair_type?.['stable']){
         return +CONFIG.ASTROPORT_STABLE_COMMISSION;
-      } else if (this.pairInfos[vault.poolInfo.key]?.pair_type?.['xyk']){
+      } else if (this.pairInfos[key]?.pair_type?.['xyk']){
         return +CONFIG.ASTROPORT_XYK_COMMISSION;
       }
-    } else if (vault.poolInfo.dex === 'Terraswap') {
+    } else if (dex === 'Terraswap') {
       return +CONFIG.TERRASWAP_COMMISSION;
     } else {
       return 0;
