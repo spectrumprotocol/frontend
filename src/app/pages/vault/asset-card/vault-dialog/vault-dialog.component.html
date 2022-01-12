@@ -30,7 +30,7 @@
 </div>
 <div class="modal-body">
   <div class="row g-1">
-    <div class="col-12 col-md-5">
+    <div class="col-12 col-md-4">
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
@@ -42,7 +42,7 @@
         </div>
       </div>
     </div>
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-3">
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
@@ -71,6 +71,19 @@
       </div>
     </div>
     <div class="col-12 col-md-3">
+      <div class="card box-left h-100">
+        <div class="card-body">
+          <p class="card-text sub-topic">
+              LP Commission APR <i class="fas fa-info-circle info-icon super"
+                                   mdbTooltip="cssdfd"></i>
+          </p>
+          <h3 class="card-title">
+            {{ +info.pairLpCommission[vault.poolInfo.key] || 0 | percent }}
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-2">
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">

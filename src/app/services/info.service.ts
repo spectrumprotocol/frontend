@@ -376,6 +376,16 @@ export class InfoService {
           // } else if (coinhallPair.assets1?.contractAddress === this.poolInfos[key].baseTokenContract){
           //   baseAssetCoinhall = coinhallPair.assets1;
           // }
+          let commission = 0;
+          if (key.split('|')[0] === 'Astroport'){
+            if (this.pairInfos[key]?.pair_type?.['stable']){
+              commission = +CONFIG.ASTROPORT_STABLE_COMMISSION;
+            } else if (this.pairInfos[key]?.pair_type?.['xyk']){
+              commission = +CONFIG.ASTROPORT_XYK_COMMISSION;
+            }
+          } else if (key.split('|')[0] === 'Terraswap') {
+            commission = +CONFIG.TERRASWAP_COMMISSION;
+          }
           if (coinhallPair.asset0?.contractAddress === this.poolInfos[key].denomTokenContract){
             denomAssetCoinhall = coinhallPair.asset0;
           } else if (coinhallPair.asset1?.contractAddress === this.poolInfos[key].denomTokenContract){
@@ -384,7 +394,7 @@ export class InfoService {
           if (denomAssetCoinhall){
             const a = +denomAssetCoinhall.volume7d * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
             const b = +denomAssetCoinhall.poolAmount * 2 * Math.pow(10,  +denomAssetCoinhall.decimals || +CONFIG.DIGIT);
-            pairLpCommission[key] = a / b / 100;
+            pairLpCommission[key] = (365 / 7) * commission * a / b;
           }
         }
       } catch (e){
@@ -392,7 +402,7 @@ export class InfoService {
       }
     });
     this.pairLpCommission = pairLpCommission;
-    console.log(this.pairLpCommission)
+    // console.log(this.pairLpCommission)
   }
 
   async refreshStat() {
