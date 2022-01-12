@@ -68,7 +68,7 @@
               </span>
                 <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
               </ng-container>
-              <span class="card-text sub-topic">
+              <span class="card-text sub-topic" *ngIf="vault.poolInfo.farmType === 'LP'">
                 <br>
                 (+{{ vault.poolInfo.tradeApr || 0 | percent }} trade fee)
               <i class="fas fa-info-circle info-icon super"
@@ -183,7 +183,7 @@
                 </div>
               </div>
             </div>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between" *ngIf="vault.poolInfo.farmType === 'LP'">
               <div>
                 <div class="f-12 sub-topic">Trade Fee</div>
               </div>
@@ -200,6 +200,14 @@
               <div>
                 <div class="f-14 fw-bold">{{vault.pairStat?.dpr || 0 | percent}}</div>
               </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between" *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+            <div>
+              <div class="f-12 sub-topic">&nbsp;</div>
+            </div>
+            <div>
+              <div class="f-14 fw-bold">&nbsp;</div>
             </div>
           </div>
           <div class="col-12 text-center p-2">
