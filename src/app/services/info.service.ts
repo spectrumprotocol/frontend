@@ -1,13 +1,13 @@
-import { Inject, Injectable } from '@angular/core';
-import { BLOCK_TIME, TerrajsService } from './terrajs.service';
-import { TokenService } from './api/token.service';
-import { BankService } from './api/bank.service';
-import { TerraSwapService } from './api/terraswap.service';
-import { PoolResponse } from './api/terraswap_pair/pool_response';
-import { div, minus, plus, times } from '../libs/math';
-import { CONFIG } from '../consts/config';
-import { TerraSwapFactoryService } from './api/terraswap-factory.service';
-import { GovService } from './api/gov.service';
+import {Inject, Injectable} from '@angular/core';
+import {BLOCK_TIME, TerrajsService} from './terrajs.service';
+import {TokenService} from './api/token.service';
+import {BankService} from './api/bank.service';
+import {TerraSwapService} from './api/terraswap.service';
+import {PoolResponse} from './api/terraswap_pair/pool_response';
+import {div, minus, plus, times} from '../libs/math';
+import {CONFIG} from '../consts/config';
+import {TerraSwapFactoryService} from './api/terraswap-factory.service';
+import {GovService} from './api/gov.service';
 import {
   FARM_INFO_SERVICE,
   FarmInfoService,
@@ -15,17 +15,17 @@ import {
   PoolInfo,
   RewardInfoResponseItem
 } from './farm_info/farm-info.service';
-import { fromEntries } from '../libs/core';
-import { PairInfo } from './api/terraswap_factory/pair_info';
-import { BalancePipe } from '../pipes/balance.pipe';
-import { LpBalancePipe } from '../pipes/lp-balance.pipe';
-import { Vault } from '../pages/vault/vault.component';
-import { HttpClient } from '@angular/common/http';
-import { memoize } from 'utils-decorators';
-import { Denom } from '../consts/denom';
-import { WalletService } from './api/wallet.service';
-import { AstroportService } from './api/astroport.service';
-import { AstroportFactoryService } from './api/astroport-factory.service';
+import {fromEntries} from '../libs/core';
+import {PairInfo} from './api/terraswap_factory/pair_info';
+import {BalancePipe} from '../pipes/balance.pipe';
+import {LpBalancePipe} from '../pipes/lp-balance.pipe';
+import {Vault} from '../pages/vault/vault.component';
+import {HttpClient} from '@angular/common/http';
+import {memoize} from 'utils-decorators';
+import {Denom} from '../consts/denom';
+import {WalletService} from './api/wallet.service';
+import {AstroportService} from './api/astroport.service';
+import {AstroportFactoryService} from './api/astroport-factory.service';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -144,6 +144,8 @@ export class InfoService {
   poolResponses: Record<string, PoolResponse> = {};
 
   cw20tokensWhitelist: any;
+  coinhallPairs: any;
+  lastRefreshCoinHallPairs: number;
 
   myTvl = 0;
   allVaults: Vault[] = [];
@@ -239,6 +241,7 @@ export class InfoService {
             dex: farmInfo.dex ?? 'Terraswap',
             highlight: farmInfo.highlight,
             hasProxyReward: farmInfo.hasProxyReward ?? false,
+            tradeApr: 0
           });
       }
     });
@@ -325,6 +328,20 @@ export class InfoService {
     if (tasks.length) {
       await Promise.all(tasks);
       localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+    }
+  }
+
+  getCommissionForLPProviders(dex: string, key: string){
+    if (dex === 'Astroport'){
+      if (this.pairInfos[key]?.pair_type?.['stable']){
+        return +CONFIG.ASTROPORT_STABLE_COMMISSION;
+      } else if (this.pairInfos[key]?.pair_type?.['xyk']){
+        return +CONFIG.ASTROPORT_XYK_COMMISSION;
+      }
+    } else if (dex === 'Terraswap') {
+      return +CONFIG.TERRASWAP_COMMISSION;
+    } else {
+      return 0;
     }
   }
 
