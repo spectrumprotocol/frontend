@@ -548,7 +548,16 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_bdp') {
       return;
     }
-    const commission = this.vault.poolInfo.dex === 'Astroport' ? CONFIG.ASTROPORT_COMMISSION : CONFIG.TERRASWAP_COMMISSION;
+    let commission = 0;
+    if (this.vault.poolInfo.dex === 'Astroport') {
+      if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['stable']) {
+        commission = +CONFIG.ASTROPORT_STABLE_COMMISSION_TOTAL;
+      } else if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['xyk']) {
+        commission = +CONFIG.ASTROPORT_XYK_COMMISSION_TOTAL;
+      }
+    } else if (this.vault.poolInfo.dex === 'Terraswap') {
+      commission = +CONFIG.TERRASWAP_COMMISSION;
+    }
     if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
       const offer_amount = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT).toString();
       const simulateSwapOperationRes = await this.terraSwapRouter.query({
