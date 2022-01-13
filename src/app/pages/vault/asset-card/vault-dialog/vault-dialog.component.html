@@ -50,8 +50,10 @@
               APR
             </ng-container>
             <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-              APY <i class="fas fa-info-circle info-icon super"
-                     mdbTooltip="APY (Annual Percentage Yield) is the rate of return with compound interest in one year."></i>
+              APY <i class="fas fa-info-circle info-icon super" *ngIf="!vault.poolInfo.hasProxyReward"
+                     [mdbTooltip]="'APY (Annual Percentage Yield) is the rate of return with compound interest in one year from '+ vault.rewardSymbol + '.'"></i>
+                  <i class="fas fa-info-circle info-icon super" *ngIf="vault.poolInfo.hasProxyReward"
+                     [mdbTooltip]="'APY (Annual Percentage Yield) is the rate of return with compound interest in one year from '+ vault.rewardSymbol + ', ASTRO.'"></i>
             </ng-container>
           </p>
           <h3 class="card-title">
