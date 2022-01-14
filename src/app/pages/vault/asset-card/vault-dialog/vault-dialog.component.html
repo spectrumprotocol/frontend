@@ -70,9 +70,9 @@
             </ng-container>
           </h3>
           <span class="card-text sub-topic" *ngIf="vault.poolInfo.tradeApr">
-            (+{{ vault.poolInfo.tradeApr || 0 | percent }} trade fee)
+            (+{{ vault.poolInfo.tradeApr || 0 | percent }} LP Income)
             <i class="fas fa-info-circle info-icon super"
-               [mdbTooltip]="'APR (7 days estimate) from trading fee of '+(vault.poolInfo.commission * 100)+'%'"></i>
+               [mdbTooltip]="'Additional LP Commission APR income (7 days estimate) from trading fee of '+(vault.poolInfo.commission * 100)+'%'"></i>
           </span>
         </div>
       </div>
@@ -333,8 +333,8 @@
               <div class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
-                    <i class="fas fa-info-circle info-icon"></i>  Already have LP token? Deposit here or <a
-                    [href]="vault.baseSymbol | url:'provideLP' : vault.poolInfo.dex" target="_blank">provide/withdraw LP</a>
+                    <i class="fas fa-info-circle info-icon"></i>  Already have {{vault.poolInfo.dex}} LP token? Deposit here or <a
+                    [href]="vault.baseSymbol | url:'provideLP' : vault.poolInfo.dex" target="_blank">provide/withdraw {{vault.poolInfo.dex}} LP</a>
                   </div>
                 </div>
               </div>
