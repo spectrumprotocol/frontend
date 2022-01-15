@@ -53,7 +53,9 @@ export class ManageRewardsComponent implements OnInit{
       }
 
       const pendingReward = isSpec ? rewardInfo.pending_spec_reward : rewardInfo.pending_farm_reward as string;
-      withdrawAmounts[farmInfo.farmContract] = plus(pendingReward, withdrawAmounts[farmInfo.farmContract] ?? 0);
+      if (+pendingReward > 0){
+        withdrawAmounts[farmInfo.farmContract] = plus(pendingReward, withdrawAmounts[farmInfo.farmContract] ?? 0);
+      }
     }
 
     const totalAmounts = Object.values(withdrawAmounts).reduce((sum, amount) => plus(sum, amount), '0');
