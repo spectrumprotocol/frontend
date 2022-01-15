@@ -292,6 +292,10 @@ input[type="number"] {
   &:focus {
     background-color: transparent;
     border: 1px solid #414851;
+    box-shadow: none;
+  }
+  &:hover {
+    cursor: pointer;
   }
   &::placeholder {
     color: $gray-600;
@@ -380,6 +384,16 @@ input[type="number"] {
   border: solid 1px $astroport;
 }
 
+.bg-Apollo {
+  background: $apollo-bg;
+  border: solid 1px $apollo;
+}
+
+.bg-Starterra {
+  background: $starterra-bg;
+  border: solid 1px $starterra;
+}
+
 .bg-Kujira {
   background: $kujira;
   background: -webkit-linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);
@@ -461,7 +475,7 @@ input[type="number"] {
 }
 
 .platform-logo-insurace {
-  height: 15px;
+  height: 16px;
 }
 
 .cur-title {
@@ -766,12 +780,16 @@ i.fa-sort-down {
   box-shadow: none;
   background-color: $gray-990;
   margin-top: 0px;
+  border: 1px solid $gray-970;
   .dropdown-item {
     background-color: $gray-990;
     border: 0;
     color: white;
     &.active {
       background-color: $gray-950;
+    }
+    &:hover {
+      background-color: $gray-950 !important;
     }
   }
 }
@@ -815,6 +833,22 @@ i.fa-sort-down {
   }
   .min-125 {
     min-width: 125px;
+  }
+}
+
+.btn-auto {
+  border: solid 1px $primary;
+  background-color: $btn-bg;
+  font-weight: bold;
+  z-index: 1;
+}
+.btn-outline-auto {
+  color: white;
+  border: 0;
+  background-color: $gray-950;
+  font-weight: bold;
+  &:hover {
+      z-index: 0;
   }
 }
 

@@ -109,7 +109,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
     public info: InfoService,
-    private lpBalancePipe: LpBalancePipe,
     private tokenService: TokenService,
     private staker: StakerService,
     private stakerAstroport: StakerAstroportService,
@@ -241,11 +240,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         amountBase.times(pool.total_share).div(assetBase.amount))
       : amountBase.times(amountDenom).sqrt();
     if (this.vault.pairStat) {
-      const depositTVL = new BigNumber(this.lpBalancePipe.transform(grossLp.toString(), this.info.poolResponses, this.vault.poolInfo.key));
-      const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
       const depositFee = this.vault.poolInfo.farm === 'Spectrum'
         ? new BigNumber('0')
-        : grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+        : grossLp.multipliedBy(DEPOSIT_FEE);
       this.netLpTokenToken = grossLp.minus(depositFee).toString();
       this.depositFeeTokenToken = depositFee.toString();
     }
@@ -548,7 +545,16 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_bdp') {
       return;
     }
-    const commission = this.vault.poolInfo.dex === 'Astroport' ? CONFIG.ASTROPORT_COMMISSION : CONFIG.TERRASWAP_COMMISSION;
+    let commission = 0;
+    if (this.vault.poolInfo.dex === 'Astroport') {
+      if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['stable']) {
+        commission = +CONFIG.ASTROPORT_STABLE_COMMISSION_TOTAL;
+      } else if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['xyk']) {
+        commission = +CONFIG.ASTROPORT_XYK_COMMISSION_TOTAL;
+      }
+    } else if (this.vault.poolInfo.dex === 'Terraswap') {
+      commission = +CONFIG.TERRASWAP_COMMISSION;
+    }
     if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
       const offer_amount = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT).toString();
       const simulateSwapOperationRes = await this.terraSwapRouter.query({
@@ -845,10 +851,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.netLpLp = undefined;
     }
     const grossLp = new BigNumber(this.depositLPAmtLP);
-    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositLPAmtLP, CONFIG.UNIT) ?? '0', this.info.poolResponses, this.vault.poolInfo.key));
-    const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
-    const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
-      grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+    const depositFee = this.vault.poolInfo.farm === 'Spectrum'
+      ? new BigNumber('0')
+      : grossLp.multipliedBy(DEPOSIT_FEE);
     this.netLpLp = grossLp.minus(depositFee).toString();
     this.depositFeeLp = depositFee.toString();
   }
@@ -912,9 +917,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.basedTokenPrice = this.toUIPrice(res.belief_price_b, this.vault.baseDecimals, this.vault.baseDecimals);
     }
 
-    const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
-    const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
-      grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+    const depositFee = this.vault.poolInfo.farm === 'Spectrum'
+      ? new BigNumber('0')
+      : grossLp.multipliedBy(DEPOSIT_FEE);
     this.netLpUST = grossLp.minus(depositFee).toString();
     this.grossLpUST = grossLp.toString();
     this.depositFeeUST = depositFee.toString();
@@ -975,9 +980,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
 
     const grossLp = new BigNumber(this.depositbDPTokenAmtbDPToken);
-    const depositTVL = new BigNumber(this.depositbDPTokenAmtbDPToken).times(CONFIG.UNIT);
-    const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
-    const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+    const depositFee = grossLp.multipliedBy(DEPOSIT_FEE);
     this.netLpLp = grossLp.minus(depositFee).toString();
     this.depositFeeLp = depositFee.toString();
   }
@@ -1076,9 +1079,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else {
       this.lpFromDepositDP = undefined;
     }
-    const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
     const grossLp = new BigNumber(this.lpFromSwapDP || 0).plus(this.lpFromDepositDP || 0);
-    const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+    const depositFee = grossLp.multipliedBy(DEPOSIT_FEE);
     this.grossLpUST = grossLp.toString();
     this.netLpUST = grossLp.minus(depositFee).toString();
     this.depositFeeUST = depositFee.toString();

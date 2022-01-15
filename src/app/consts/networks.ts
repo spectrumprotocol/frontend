@@ -22,7 +22,6 @@ export interface ISettings {
   anchorGov: string;
   anchorStaking: string;
   anchorToken: string;
-  anchorAstroportToken: string;
   anchorFarm: string;
   pylonGov: string;
   pylonStaking: string;
@@ -62,6 +61,15 @@ export interface ISettings {
   astroportAstroUstFarm: string;
   astroportLunaUstFarm: string;
   astroportBlunaLunaFarm: string;
+  astroportAncUstFarm: string;
+  astroportMirUstFarm: string;
+  astroportOrionUstFarm: string;
+  astroportSttUstFarm: string;
+  astroportVkrUstFarm: string;
+  astroportMineUstFarm: string;
+  astroportApolloUstFarm: string;
+  starterraToken: string;
+  apolloToken: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -99,7 +107,6 @@ export const networks: Record<string, ISettings> = {
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
     anchorStaking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
     anchorToken: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
-    anchorAstroportToken: '',
     anchorFarm: 'terra1fqzczuddqsdml37a20pysjx5wk9dh4tdzu2mrw',
     pylonGov: 'terra1xu8utj38xuw6mjwck4n97enmavlv852zkcvhgp',
     pylonStaking: 'terra19nek85kaqrvzlxygw20jhy08h3ryjf5kg4ep3l',
@@ -139,6 +146,15 @@ export const networks: Record<string, ISettings> = {
     astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
     astroportLunaUstFarm: 'terra1egstlx9c9pq5taja5sg0yhraa0cl5laxyvm3ln',
     astroportBlunaLunaFarm: 'terra1ejl4v53w4all7zkw8nfkw2q6d3qkpls8m4cav4',
+    astroportAncUstFarm: 'terra1ukm33qyqx0qcz7rupv085rgpx0tp5wzkhmcj3f',
+    astroportMirUstFarm: 'terra1y5hd5ea9dshfwf5eysqtsey7qkdhhktmtw9y3q',
+    astroportOrionUstFarm: 'terra1p30zk5xfn34lygcyhs2us9mxwzsn88v2yqrcw6',
+    astroportSttUstFarm: 'terra10htnzp8gk49u97whehd9uuj5rl2keegcvdhg2q',
+    astroportVkrUstFarm: 'terra1yj34w2n24p4x7s69evjp7ukzz82ca5tvlzqa84',
+    astroportMineUstFarm: 'terra1s9zqk5ksnwp8qywrmdwt2fq0a9l0zc2d2sw2an',
+    astroportApolloUstFarm: 'terra1zngkjhqqearpfhym9x9hnutpklduz45e9uvp9u',
+    starterraToken: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n',
+    apolloToken: 'terra100yeqvww74h4yaejj6h733thgcafdaukjtw397',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -175,7 +191,6 @@ export const networks: Record<string, ISettings> = {
     anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
     anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
     anchorToken: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
-    anchorAstroportToken: 'terra1yz03fpmuhf7w999fng5l5z82cufszlr92ncpzx',
     anchorFarm: 'terra1yvpd3j7mry7qrmmn2x9vapmr9qpzkvjgs4f7z7',
     pylonGov: 'terra1hffjqjscxgz5lnmmtwhksrcg4gd3x4nyp9mzwx',
     pylonStaking: 'terra17av0lfhqymusm6j9jpepzerg6u54q57jp7xnrz',
@@ -215,6 +230,15 @@ export const networks: Record<string, ISettings> = {
     astroportAstroUstFarm: 'astroportAstroUstFarm',
     astroportLunaUstFarm: 'astroportLunaUstFarm',
     astroportBlunaLunaFarm: 'astroportLunaBlunaFarm',
+    astroportAncUstFarm: '',
+    astroportMirUstFarm: '',
+    astroportOrionUstFarm: '',
+    astroportSttUstFarm: '',
+    astroportVkrUstFarm: '',
+    astroportMineUstFarm: '',
+    astroportApolloUstFarm: '',
+    starterraToken: '',
+    apolloToken: '',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
