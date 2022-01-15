@@ -41,7 +41,6 @@ export interface Stat {
 export type PendingReward = {
   pending_reward_token: number;
   pending_reward_ust: number;
-  pending_reward_astro: number;
 };
 
 export type PortfolioItem = {
@@ -489,13 +488,13 @@ export class InfoService {
     let tvl = 0;
     const portfolio: Portfolio = {
       total_reward_ust: 0,
-      gov: { pending_reward_token: 0, pending_reward_ust: 0, pending_reward_astro: 0 },
+      gov: { pending_reward_token: 0, pending_reward_ust: 0 },
       tokens: new Map(),
       farms: new Map(),
     };
     for (const farmInfo of this.farmInfos.filter(fi => this.shouldEnableFarmInfo(fi))) {
       if (this.tokenInfos[farmInfo.rewardTokenContract]?.symbol) {
-        portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { rewardTokenContract: farmInfo.rewardTokenContract, pending_reward_token: 0, pending_reward_ust: 0, pending_reward_astro: 0 });
+        portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { rewardTokenContract: farmInfo.rewardTokenContract, pending_reward_token: 0, pending_reward_ust: 0 });
         portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
       } else {
         console.error('updateMyTvl tokenInfos Symbol not found', farmInfo.rewardTokenContract);
@@ -523,15 +522,33 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        // TODO add ASTRO and handle farm1 farm2
         const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardKey];
-        const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
-        tvl += pending_farm_reward_ust;
+        const astroTokenPoolResponse = this.poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`];
+
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
-        portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
-        portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+        if (farmInfo.dex === 'Astroport'){
+          const pending_farm2_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm2_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
+          tvl += pending_farm2_reward_ust;
+          portfolio.tokens.get(rewardSymbol).pending_reward_token += rewardInfo.pending_farm2_reward ? +rewardInfo.pending_farm2_reward / CONFIG.UNIT : 0;
+          portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm2_reward_ust;
+
+          const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, astroTokenPoolResponse) / CONFIG.UNIT || 0;
+          tvl += pending_farm_reward_ust;
+          portfolio.tokens.get('ASTRO').pending_reward_token += rewardInfo.pending_farm_reward ? +rewardInfo.pending_farm_reward / CONFIG.UNIT : 0;
+          portfolio.tokens.get('ASTRO').pending_reward_ust += pending_farm_reward_ust;
+
+          portfolio.total_reward_ust += pending_farm_reward_ust;
+          portfolio.total_reward_ust += pending_farm2_reward_ust;
+        } else if (farmInfo.dex === 'Terraswap'){
+          const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
+          tvl += pending_farm_reward_ust;
+          portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+          portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
+          portfolio.total_reward_ust += pending_farm_reward_ust;
+        }
         portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[vault.poolInfo.rewardKey]?.farmApr;
-        portfolio.total_reward_ust += pending_farm_reward_ust;
+        portfolio.tokens.get('ASTRO').apr = this.stat.govApr;
+
       }
     }
 
@@ -562,35 +579,35 @@ export class InfoService {
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
-    try {
-      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
-        throw (data);
-      }
-      this.tokenInfos = data.tokenInfos;
-      this.stat = data.stat;
-      this.pairInfos = data.pairInfos;
-      this.poolInfos = data.poolInfos;
-      this.circulation = data.circulation;
-      this.marketCap = data.marketCap;
-      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-      localStorage.setItem('stat', JSON.stringify(this.stat));
-      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-      localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-      if (skipPoolResponses) {
-        this.poolResponses = data.poolResponses;
-        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-      }
-    } catch (ex) {
-      // fallback if api die
-      console.error('Error in retrieveCachedStat: fallback local info service data init');
-      console.error(ex);
+    // try {
+    //   const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+    //   if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
+    //     throw (data);
+    //   }
+    //   this.tokenInfos = data.tokenInfos;
+    //   this.stat = data.stat;
+    //   this.pairInfos = data.pairInfos;
+    //   this.poolInfos = data.poolInfos;
+    //   this.circulation = data.circulation;
+    //   this.marketCap = data.marketCap;
+    //   localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+    //   localStorage.setItem('stat', JSON.stringify(this.stat));
+    //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+    //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+    //   localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
+    //   if (skipPoolResponses) {
+    //     this.poolResponses = data.poolResponses;
+    //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+    //   }
+    // } catch (ex) {
+    //   // fallback if api die
+    //   console.error('Error in retrieveCachedStat: fallback local info service data init');
+    //   console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
       localStorage.setItem('infoSchemaVersion', '2');
-    } finally {
+    // } finally {
       this.loadedNetwork = this.terrajs.settings.chainID;
-    }
+    // }
   }
 
   updateVaults() {

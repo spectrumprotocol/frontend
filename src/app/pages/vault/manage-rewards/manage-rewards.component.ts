@@ -44,32 +44,73 @@ export class ManageRewardsComponent implements OnInit{
     if (!govFarmInfo.autoStake){
       return;
     }
-    const withdrawAmounts: { [farmContract: string]: string } = {};
+    const withdrawAmounts: { [farmContract: string]: {amount: string, dex: string} } = {};
 
     for (const rewardInfo of Object.values(this.info.rewardInfos)) {
       const farmInfo = this.info.farmInfos.find(x => x.farmContract === rewardInfo.farmContract);
       if (farmInfo.rewardTokenContract !== rewardTokenContract && !isSpec) {
         continue;
       }
+      let pendingReward;
+      if (isSpec) {
+        pendingReward = rewardInfo.pending_spec_reward;
+      } else if (farmInfo.dex === 'Terraswap') {
+        pendingReward = rewardInfo.pending_farm_reward;
+      } else if (farmInfo.dex === 'Astroport' && rewardTokenContract !== this.terrajs.settings.astroToken){
+        pendingReward = rewardInfo.pending_farm2_reward;
+      } else if (farmInfo.dex === 'Astroport' && rewardTokenContract === this.terrajs.settings.astroToken){
+        pendingReward = rewardInfo.pending_farm_reward;
+      } else {
+        pendingReward = 0;
+      }
 
-      const pendingReward = isSpec ? rewardInfo.pending_spec_reward : rewardInfo.pending_farm_reward as string;
       if (+pendingReward > 0){
-        withdrawAmounts[farmInfo.farmContract] = plus(pendingReward, withdrawAmounts[farmInfo.farmContract] ?? 0);
+        withdrawAmounts[farmInfo.farmContract] = { amount: plus(pendingReward, withdrawAmounts[farmInfo.farmContract]?.amount ?? 0), dex: farmInfo.dex};
       }
     }
 
-    const totalAmounts = Object.values(withdrawAmounts).reduce((sum, amount) => plus(sum, amount), '0');
+    const totalAmounts = Object.values(withdrawAmounts).reduce((sum, data) => plus(sum, data.amount), '0');
 
     const mintMsg = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.gov, { mint: {} });
     const stakeGovMsg = govFarmInfo.getStakeGovMsg(totalAmounts, isSpec ? { days } : undefined);
-    const withdrawMsgs = Object.keys(withdrawAmounts).map(farmContract =>
-      new MsgExecuteContract(this.terrajs.address, farmContract, {
-        withdraw: {
-          farm_amount: isSpec ? '0' : withdrawAmounts[farmContract],
-          spec_amount: isSpec ? withdrawAmounts[farmContract] : '0',
-        },
-      })
+    const withdrawMsgs = Object.keys(withdrawAmounts).map(farmContract => {
+      if (withdrawAmounts[farmContract].dex === 'Astroport' && rewardTokenContract === this.terrajs.settings.astroToken){
+        return new MsgExecuteContract(this.terrajs.address, farmContract, {
+          withdraw: {
+            farm_amount: withdrawAmounts[farmContract].amount,
+            farm2_amount: '0',
+            spec_amount: '0',
+          },
+        });
+      } else if (withdrawAmounts[farmContract].dex === 'Astroport' && rewardTokenContract !== this.terrajs.settings.astroToken) {
+        return new MsgExecuteContract(this.terrajs.address, farmContract, {
+          withdraw: {
+            farm_amount: '0',
+            farm2_amount: withdrawAmounts[farmContract].amount,
+            spec_amount: '0',
+          },
+        });
+      } else if (withdrawAmounts[farmContract].dex === 'Astroport' && isSpec) {
+        return new MsgExecuteContract(this.terrajs.address, farmContract, {
+          withdraw: {
+            farm_amount: '0',
+            farm2_amount: '0',
+            spec_amount: withdrawAmounts[farmContract].amount,
+          },
+        });
+      } else {
+        // case Terraswap
+        return new MsgExecuteContract(this.terrajs.address, farmContract, {
+          withdraw: {
+            farm_amount: isSpec ? '0' : withdrawAmounts[farmContract].amount,
+            spec_amount: isSpec ? withdrawAmounts[farmContract].amount : '0',
+          },
+        });
+      }
+    }
+
     );
+    console.log([mintMsg, ...withdrawMsgs, stakeGovMsg])
     await this.terrajs.post([mintMsg, ...withdrawMsgs, stakeGovMsg]);
   }
 
@@ -81,7 +122,7 @@ export class ManageRewardsComponent implements OnInit{
     const rewardInfosKeys = Object.keys(this.info.rewardInfos);
     const rewardInfosKeysThatHavePendingRewards: string[] = [];
     for (const key of rewardInfosKeys) {
-      if (+this.info.rewardInfos[key].pending_farm_reward > 0 || +this.info.rewardInfos[key].pending_spec_reward > 0) {
+      if (+this.info.rewardInfos[key].pending_farm_reward > 0 || +this.info.rewardInfos[key].pending_farm2_reward > 0 || +this.info.rewardInfos[key].pending_spec_reward > 0) {
         rewardInfosKeysThatHavePendingRewards.push(key);
       }
     }
