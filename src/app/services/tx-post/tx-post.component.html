@@ -40,9 +40,9 @@
             </div>
         </div>
     </div>
-    <div class="row mt-3" *ngIf="confirmMsg">
+    <div class="row mt-3" *ngIf="confirmMsg && !failed">
       <div class="col-12">
-        <input type="checkbox" mdbCheckbox class="form-check-input" [(ngModel)]="confirmCheck"> {{confirmMsg}}
+        <input type="checkbox" mdbCheckbox class="form-check-input" [(ngModel)]="confirmCheck"><span [innerHTML]="confirmMsg"></span>
       </div>
     </div>
 </div>

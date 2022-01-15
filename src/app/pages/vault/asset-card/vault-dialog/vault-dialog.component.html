@@ -249,7 +249,7 @@
                       <span class="input-group-text f-12 igt-fixwidth fw-bold-600"><img [src]="'UST' | url:'icon'"
                                                                                         class="img-fluid rounded-circle me-1" height="24" width="24">UST</span>
                       <input #depositAmountUSTTokenUSTCtl="ngModel" [(ngModel)]="depositUSTAmountTokenUST"
-                             [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" [max]="+info.userUstAmount - this.bufferUST"
+                             [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" [max]="+info.userUstAmount"
                              [min]="0.000001" [step]="0.000001" aria-describedby="USTLabel"
                              class="form-control fix-border" name="depositUSTAmountTokenUST" readonly
                              required type="number" />
@@ -401,6 +401,9 @@
                 <button (click)="setMaxDepositUST()" class="btn btn-max last" type="button">
                   Max
                 </button>
+                <div *ngIf="depositUSTAmtUSTCtl.errors?.max" class="invalid-feedback text-end">UST is not
+                  enough for
+                  this transaction</div>
               </div>
 
               <div *ngIf="depositUSTAmtUST" class="mt-3 pool-info">
@@ -510,6 +513,9 @@
                 <button (click)="setMaxDepositUSTForBDP()" class="btn btn-max last" type="button">
                   Max
                 </button>
+                <div *ngIf="depositBDPAmtUSTCtl.errors?.max" class="invalid-feedback text-end">UST is not
+                  enough for
+                  this transaction</div>
               </div>
 
               <div *ngIf="depositUSTAmtbDPToken" class="mt-3 pool-info">
