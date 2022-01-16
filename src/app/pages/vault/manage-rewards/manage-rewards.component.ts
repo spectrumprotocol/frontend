@@ -29,7 +29,7 @@ export class ManageRewardsComponent implements OnInit {
   ngOnInit() {
     this.gov.state().then(state => {
       this.availablePoolDays = state.pools
-        .filter(pool => pool.weight > 0)
+        // .filter(pool => pool.weight > 0)
         .map(pool => pool.days);
     });
   }
@@ -47,31 +47,31 @@ export class ManageRewardsComponent implements OnInit {
     }
     const withdrawAmounts: { [farmContract: string]: { amount: string, dex: string } } = {};
 
-    if (!isAstro){
-    for (const rewardInfo of Object.values(this.info.rewardInfos)) {
-      const farmInfo = this.info.farmInfos.find(x => x.farmContract === rewardInfo.farmContract);
+    if (!isAstro) {
+      for (const rewardInfo of Object.values(this.info.rewardInfos)) {
+        const farmInfo = this.info.farmInfos.find(x => x.farmContract === rewardInfo.farmContract);
         if (farmInfo.rewardTokenContract !== rewardTokenContract && (!isSpec || !isAstro)) {
-        continue;
-      }
+          continue;
+        }
         let pendingReward = 0;
-      if (isSpec) {
+        if (isSpec) {
           pendingReward = +rewardInfo.pending_spec_reward;
-      } else if (farmInfo.dex === 'Terraswap') {
+        } else if (farmInfo.dex === 'Terraswap') {
           pendingReward = +rewardInfo.pending_farm_reward;
-        } else if (farmInfo.dex === 'Astroport'){
+        } else if (farmInfo.dex === 'Astroport') {
           pendingReward = +rewardInfo.pending_farm2_reward;
-      }
+        }
         if (+pendingReward > 0) {
           withdrawAmounts[farmInfo.farmContract] = { amount: plus(pendingReward, withdrawAmounts[farmInfo.farmContract]?.amount ?? 0), dex: farmInfo.dex };
+        }
       }
-    }
     } else {
       const farmContractsAstroportDex: Set<string> = new Set(this.info.farmInfos.filter(x => x.dex === 'Astroport').map(x => x.farmContract));
       const rewardInfosAstroportDex = Object.values(this.info.rewardInfos).filter(x => farmContractsAstroportDex.has(x.farmContract));
       for (const rewardInfo of rewardInfosAstroportDex) {
         const pendingReward = +rewardInfo.pending_farm_reward;
-        if (+pendingReward > 0){
-          withdrawAmounts[rewardInfo.farmContract] = { amount: plus(pendingReward, withdrawAmounts[rewardInfo.farmContract]?.amount ?? 0), dex: 'Astroport'};
+        if (+pendingReward > 0) {
+          withdrawAmounts[rewardInfo.farmContract] = { amount: plus(pendingReward, withdrawAmounts[rewardInfo.farmContract]?.amount ?? 0), dex: 'Astroport' };
         }
       }
     }
@@ -81,7 +81,7 @@ export class ManageRewardsComponent implements OnInit {
     const mintMsg = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.gov, { mint: {} });
     const stakeGovMsg = govFarmInfo.getStakeGovMsg(totalAmounts, isSpec ? { days } : undefined);
     const withdrawMsgs = Object.keys(withdrawAmounts).map(farmContract => {
-      if (withdrawAmounts[farmContract].dex === 'Astroport' && isAstro){
+      if (withdrawAmounts[farmContract].dex === 'Astroport' && isAstro) {
         return new MsgExecuteContract(this.terrajs.address, farmContract, {
           withdraw: {
             farm_amount: withdrawAmounts[farmContract].amount,
