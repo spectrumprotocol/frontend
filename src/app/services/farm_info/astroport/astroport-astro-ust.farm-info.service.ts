@@ -24,7 +24,7 @@ import { div } from 'src/app/libs/math';
 export class AstroportAstroUstFarmInfoService implements FarmInfoService {
   farm = 'Astroport';
   autoCompound = true;
-  autoStake = false;
+  autoStake = true;
   farmColor = '#463df6';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
