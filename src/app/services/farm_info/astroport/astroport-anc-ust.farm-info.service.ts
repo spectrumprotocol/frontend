@@ -23,7 +23,7 @@ import {PairInfo} from '../../api/terraswap_factory/pair_info';
 export class AstroportAncUstFarmInfoService implements FarmInfoService {
   farm = 'Anchor';
   autoCompound = true;
-  autoStake = false;
+  autoStake = true;
   farmColor = '#3bac3b';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
