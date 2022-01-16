@@ -50,12 +50,12 @@
           <div class="col-6 mt-1">
             <div class="f-12 sub-topic">
               My Profit</div>
-            <div class="f-14 fw-bold" *ngIf="+detail.userBalance">
+            <div class="f-14 fw-bold" *ngIf="+detail.userProfit">
               <span class="fs-6 text-primary">
                 <app-digit [value]="+detail.userProfit"></app-digit>
               </span> <span class="cur-title"> UST</span>
             </div>
-            <div class="f-14" *ngIf="!+detail.userBalance"><span>-</span></div>
+            <div class="f-14" *ngIf="!+detail.userProfit"><span>-</span></div>
           </div>
         </div>
       </div>
