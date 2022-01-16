@@ -64,7 +64,7 @@
         </div>
         <div class="col-12 col-md-6">
           <section class="row btn-group pe-2">
-            <ng-container *ngIf="token.key !== 'SPEC'">
+            <ng-container *ngIf="token.key !== 'SPEC' && token.key !== 'ASTRO'">
               <div class="col-12 text-center">
                 <button *ngIf="getGovFarmInfo(token.value.rewardTokenContract).autoStake"
                   class="btn btn-secondary f-12 w-50" (click)="moveToGov(token.value.rewardTokenContract)">Move to
