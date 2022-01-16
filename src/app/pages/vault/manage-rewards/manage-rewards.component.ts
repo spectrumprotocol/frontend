@@ -1,12 +1,12 @@
 import { KeyValue } from '@angular/common';
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { plus } from '../../../libs/math';
 import { InfoService, Portfolio } from '../../../services/info.service';
 import { TerrajsService } from '../../../services/terrajs.service';
-import {GovService} from '../../../services/api/gov.service';
-import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import { GovService } from '../../../services/api/gov.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
 
 type MapToKeyValue<T> = T extends Map<infer X, infer Y> ? KeyValue<X, Y> : never;
 
@@ -15,7 +15,7 @@ type MapToKeyValue<T> = T extends Map<infer X, infer Y> ? KeyValue<X, Y> : never
   templateUrl: './manage-rewards.component.html',
   styleUrls: ['./manage-rewards.component.scss'],
 })
-export class ManageRewardsComponent implements OnInit{
+export class ManageRewardsComponent implements OnInit {
   constructor(
     public modalRef: MdbModalRef<ManageRewardsComponent>,
     public info: InfoService,
@@ -34,17 +34,17 @@ export class ManageRewardsComponent implements OnInit{
     });
   }
 
-  getGovFarmInfo(rewardTokenContract: string){
+  getGovFarmInfo(rewardTokenContract: string) {
     return this.info.farmInfos.find(x => x.rewardTokenContract === rewardTokenContract);
   }
 
   async moveToGov(rewardTokenContract: string, days?: number) {
     const isSpec = rewardTokenContract === this.terrajs.settings.specToken;
     const govFarmInfo = this.getGovFarmInfo(rewardTokenContract);
-    if (!govFarmInfo.autoStake){
+    if (!govFarmInfo.autoStake) {
       return;
     }
-    const withdrawAmounts: { [farmContract: string]: {amount: string, dex: string} } = {};
+    const withdrawAmounts: { [farmContract: string]: { amount: string, dex: string } } = {};
 
     for (const rewardInfo of Object.values(this.info.rewardInfos)) {
       const farmInfo = this.info.farmInfos.find(x => x.farmContract === rewardInfo.farmContract);
@@ -56,16 +56,16 @@ export class ManageRewardsComponent implements OnInit{
         pendingReward = rewardInfo.pending_spec_reward;
       } else if (farmInfo.dex === 'Terraswap') {
         pendingReward = rewardInfo.pending_farm_reward;
-      } else if (farmInfo.dex === 'Astroport' && rewardTokenContract !== this.terrajs.settings.astroToken){
+      } else if (farmInfo.dex === 'Astroport' && rewardTokenContract !== this.terrajs.settings.astroToken) {
         pendingReward = rewardInfo.pending_farm2_reward;
-      } else if (farmInfo.dex === 'Astroport' && rewardTokenContract === this.terrajs.settings.astroToken){
+      } else if (farmInfo.dex === 'Astroport' && rewardTokenContract === this.terrajs.settings.astroToken) {
         pendingReward = rewardInfo.pending_farm_reward;
       } else {
         pendingReward = 0;
       }
 
-      if (+pendingReward > 0){
-        withdrawAmounts[farmInfo.farmContract] = { amount: plus(pendingReward, withdrawAmounts[farmInfo.farmContract]?.amount ?? 0), dex: farmInfo.dex};
+      if (+pendingReward > 0) {
+        withdrawAmounts[farmInfo.farmContract] = { amount: plus(pendingReward, withdrawAmounts[farmInfo.farmContract]?.amount ?? 0), dex: farmInfo.dex };
       }
     }
 
@@ -74,7 +74,7 @@ export class ManageRewardsComponent implements OnInit{
     const mintMsg = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.gov, { mint: {} });
     const stakeGovMsg = govFarmInfo.getStakeGovMsg(totalAmounts, isSpec ? { days } : undefined);
     const withdrawMsgs = Object.keys(withdrawAmounts).map(farmContract => {
-      if (withdrawAmounts[farmContract].dex === 'Astroport' && rewardTokenContract === this.terrajs.settings.astroToken){
+      if (withdrawAmounts[farmContract].dex === 'Astroport' && rewardTokenContract === this.terrajs.settings.astroToken) {
         return new MsgExecuteContract(this.terrajs.address, farmContract, {
           withdraw: {
             farm_amount: withdrawAmounts[farmContract].amount,
@@ -110,7 +110,6 @@ export class ManageRewardsComponent implements OnInit{
     }
 
     );
-    console.log([mintMsg, ...withdrawMsgs, stakeGovMsg])
     await this.terrajs.post([mintMsg, ...withdrawMsgs, stakeGovMsg]);
   }
 

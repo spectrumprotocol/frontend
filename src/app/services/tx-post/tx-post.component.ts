@@ -44,16 +44,16 @@ export class TxPostComponent implements OnInit {
         msgs: this.msgs,
         feeDenoms: ['uusd']
       });
-      const taxAndGas = +this.signMsg.fee.amount.get('uusd').amount?.toNumber() || 0;
-      const uusdToBeSent = +this.msgs[this.msgs.length - 1]?.['coins']?.get('uusd')?.amount?.toNumber() || 0;
-      const uusdAfterTx = +this.infoService.userUstAmount * CONFIG.UNIT - taxAndGas - uusdToBeSent;
-      if (taxAndGas + uusdToBeSent > +this.infoService.userUstAmount * CONFIG.UNIT){
-        throw {
-          message: `UST amount inputted plus fee of ${+taxAndGas / CONFIG.UNIT} UST exceeds your available UST.`
-        };
-      } else if (+uusdAfterTx < 2 * CONFIG.UNIT){
-        this.confirmMsg = `You will have ${uusdAfterTx / CONFIG.UNIT} UST after this transaction which may not be enough for next transactions. Continue to proceed?`;
-      }
+      // const taxAndGas = +this.signMsg.fee.amount.get('uusd').amount?.toNumber() || 0;
+      // const uusdToBeSent = +this.msgs[this.msgs.length - 1]?.['coins']?.get('uusd')?.amount?.toNumber() || 0;
+      // const uusdAfterTx = +this.infoService.userUstAmount * CONFIG.UNIT - taxAndGas - uusdToBeSent;
+      // if (taxAndGas + uusdToBeSent > +this.infoService.userUstAmount * CONFIG.UNIT){
+      //   throw {
+      //     message: `UST amount sent plus fee of ${+taxAndGas / CONFIG.UNIT} UST exceeds your available UST.`
+      //   };
+      // } else if (+uusdAfterTx < 2 * CONFIG.UNIT){
+      //   this.confirmMsg = `You will have ${uusdAfterTx / CONFIG.UNIT} UST after this transaction which may not be enough for next transactions. Continue to proceed?`;
+      // }
 
     } catch (e) {
       console.error(e);

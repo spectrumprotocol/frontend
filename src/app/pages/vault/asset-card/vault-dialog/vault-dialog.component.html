@@ -249,13 +249,12 @@
                       <span class="input-group-text f-12 igt-fixwidth fw-bold-600"><img [src]="'UST' | url:'icon'"
                                                                                         class="img-fluid rounded-circle me-1" height="24" width="24">UST</span>
                       <input #depositAmountUSTTokenUSTCtl="ngModel" [(ngModel)]="depositUSTAmountTokenUST"
-                             [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" [max]="+info.userUstAmount"
+                             [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" [max]="+info.userUstAmount - bufferUST"
                              [min]="0.000001" [step]="0.000001" aria-describedby="USTLabel"
                              class="form-control fix-border" name="depositUSTAmountTokenUST" readonly
                              required type="number" />
                       <div *ngIf="depositAmountUSTTokenUSTCtl.errors?.max" class="invalid-feedback text-end">UST is not
-                        enough for
-                        this transaction</div>
+                        enough for this transaction</div>
                     </div>
                     <div class="text-end">
                       <span *ngIf="depositTokenAAmtTokenToken > +info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit"
