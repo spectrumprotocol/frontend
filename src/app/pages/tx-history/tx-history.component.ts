@@ -279,9 +279,8 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     if (!txsItem?.tx?.value?.msg) {
       return;
     }
-
-    const msgs = (txsItem?.tx?.value?.msg.filter(m => m.type === 'wasm/MsgExecuteContract') as MsgExecuteContract.Data[])
-      .map(data => ({ ...data, execute_msg: ensureBase64toObject(data.execute_msg) }));
+    const msgs = (txsItem?.tx?.value?.msg.filter(m => m.type === 'wasm/MsgExecuteContract') as any)
+      .map(data => ({ ...data.value, execute_msg: ensureBase64toObject(data.value.execute_msg) }));
 
     if (!msgs.length) {
       return;
