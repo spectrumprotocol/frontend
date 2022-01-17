@@ -126,7 +126,6 @@ export class TerrajsService implements OnDestroy {
     } else {
       const installTypes = await firstValueFrom(this.walletController.availableInstallTypes());
       const types = connectTypes.concat(installTypes);
-      console.log(types)
       if (types.length === 0) {
         this.modal.alert('No connection option', { iconType: 'danger' });
         throw new Error('No connection option');
@@ -138,7 +137,6 @@ export class TerrajsService implements OnDestroy {
           data: { types }
         });
         connectCallbackData = await ref.onClose.toPromise();
-        console.log(connectCallbackData)
       }
       if (!connectCallbackData.type) {
         throw new Error('Nothing selected');

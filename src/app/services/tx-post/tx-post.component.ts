@@ -46,7 +46,6 @@ export class TxPostComponent implements OnInit {
         msgs: this.msgs,
         feeDenoms: ['uusd']
       });
-      console.log(this.signMsg.auth_info.fee.amount)
       this.fee = this.signMsg.auth_info.fee.amount.get('uusd').amount?.toNumber();
       // const taxAndGas = +this.signMsg.fee.amount.get('uusd').amount?.toNumber() || 0;
       // const uusdToBeSent = +this.msgs[this.msgs.length - 1]?.['coins']?.get('uusd')?.amount?.toNumber() || 0;
