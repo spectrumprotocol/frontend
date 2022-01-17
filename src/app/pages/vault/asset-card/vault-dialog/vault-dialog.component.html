@@ -897,7 +897,7 @@
             <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.auto_stake" class="row">
               <div class="col">
                 Staked ASTRO
-                <small class="text-primary">APR: {{ info.stat.astroApr | percent }}</small>
+                <small class="text-primary">APR: {{ info.stat.pairs[ASTRO_KEY]?.farmApr | percent }}</small>
               </div>
               <div class="col text-end">
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}
