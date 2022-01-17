@@ -35,7 +35,6 @@ export interface Stat {
   govTvl: string;
   govApr: number;
   govPoolCount: number;
-  astroApr: number;
 }
 
 export type PendingReward = {
@@ -334,7 +333,6 @@ export class InfoService {
       govTvl: '0',
       govApr: 0,
       govPoolCount: 1,
-      astroApr: 0, // TODO get astro apr
     };
     const vaultsTask = this.gov.vaults();
     await this.refreshPoolInfos();
@@ -547,8 +545,7 @@ export class InfoService {
           portfolio.total_reward_ust += pending_farm_reward_ust;
         }
         portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[vault.poolInfo.rewardKey]?.farmApr;
-        portfolio.tokens.get('ASTRO').apr = this.stat.govApr;
-
+        portfolio.tokens.get('ASTRO').apr = this.stat?.pairs[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]?.farmApr;
       }
     }
 
