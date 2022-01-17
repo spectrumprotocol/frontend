@@ -545,7 +545,9 @@ export class InfoService {
           portfolio.total_reward_ust += pending_farm_reward_ust;
         }
         portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[vault.poolInfo.rewardKey]?.farmApr;
-        portfolio.tokens.get('ASTRO').apr = this.stat?.pairs[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]?.farmApr;
+        if (portfolio.tokens.get('ASTRO')){
+          portfolio.tokens.get('ASTRO').apr = this.stat?.pairs[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]?.farmApr || 0;
+        }
       }
     }
 
