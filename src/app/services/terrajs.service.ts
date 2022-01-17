@@ -1,11 +1,10 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult } from '@terra-money/terra.js';
+import {Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult, Wallet} from '@terra-money/terra.js';
 import { ISettings, networks } from '../consts/networks';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 import { filter, startWith } from 'rxjs/operators';
 import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus, getChainOptions } from '@terra-money/wallet-provider';
-import { checkAvailableExtension } from '@terra-money/wallet-provider/utils/checkAvailableExtension';
 import { ModalService } from './modal.service';
 import { throttleAsync } from 'utils-decorators';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
@@ -89,7 +88,6 @@ export class TerrajsService implements OnDestroy {
   }
 
   async checkInstalled() {
-    await checkAvailableExtension(1500, true);
     const types = await firstValueFrom((await this.getWalletController()).availableInstallTypes());
     return types.length === 0;
   }
@@ -107,6 +105,7 @@ export class TerrajsService implements OnDestroy {
   }
 
   async connect(auto?: boolean): Promise<void> {
+    let connectCallbackData;
     if (this.isConnected) {
       return;
     }
@@ -127,6 +126,7 @@ export class TerrajsService implements OnDestroy {
     } else {
       const installTypes = await firstValueFrom(this.walletController.availableInstallTypes());
       const types = connectTypes.concat(installTypes);
+      console.log(types)
       if (types.length === 0) {
         this.modal.alert('No connection option', { iconType: 'danger' });
         throw new Error('No connection option');
@@ -137,24 +137,25 @@ export class TerrajsService implements OnDestroy {
         const ref = this.modalService.open(modal.ConnectOptionsComponent, {
           data: { types }
         });
-        type = await ref.onClose.toPromise();
+        connectCallbackData = await ref.onClose.toPromise();
+        console.log(connectCallbackData)
       }
-      if (!type) {
+      if (!connectCallbackData.type) {
         throw new Error('Nothing selected');
       }
-      if (installTypes.includes(type as ConnectType)) {
-        this.walletController.install(type as ConnectType);
+      if (installTypes.includes(connectCallbackData.type as ConnectType)) {
+        this.walletController.install(connectCallbackData.type as ConnectType);
         return;
       }
     }
-    if (!connectTypes.includes(type as ConnectType)) {
+    if (!connectTypes.includes(connectCallbackData.type as ConnectType)) {
       if (auto) {
         return;
       }
       throw new Error('Cannot connect to wallet');
     }
     if (!auto || type !== 'WALLETCONNECT') {
-      this.walletController.connect(type as ConnectType);
+      this.walletController.connect(connectCallbackData.type, connectCallbackData.identifier);
     }
     const state: ConnectedState = await firstValueFrom(this.walletController.states()
       .pipe(filter((it: WalletStates) => it.status === WalletStatus.WALLET_CONNECTED)));

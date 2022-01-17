@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Msg } from '@terra-money/terra.js';
+import {Msg, SignerOptions} from '@terra-money/terra.js';
 import { CONFIG } from '../../consts/config';
 import { TerrajsService } from '../terrajs.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
@@ -40,7 +40,8 @@ export class TxPostComponent implements OnInit {
         throw new Error('please connect your wallet');
       }
       this.loadingMsg = 'Simulating...';
-      this.signMsg = await this.terrajs.lcdClient.tx.create(this.terrajs.address, {
+      const singerOptions: SignerOptions[] = [{address: this.terrajs.address}];
+      this.signMsg = await this.terrajs.lcdClient.tx.create(singerOptions, {
         msgs: this.msgs,
         feeDenoms: ['uusd']
       });

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MsgExecuteContract } from '@terra-money/terra.js';
+import {MsgExecuteContract, SignerOptions} from '@terra-money/terra.js';
 import { Subscription } from 'rxjs';
 import { fade } from '../../consts/animations';
 import { CONFIG } from '../../consts/config';
@@ -193,8 +193,9 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
       ));
     }
     try {
+      const singerOptions: SignerOptions[] = [{address: this.terrajs.settings.gov}];
       await this.terrajs.lcdClient.tx.create(
-        this.terrajs.settings.gov,
+        singerOptions,
         {
           msgs,
           feeDenoms: ['uusd']

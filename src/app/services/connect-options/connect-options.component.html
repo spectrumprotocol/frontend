@@ -3,14 +3,21 @@
 </div>
 <div class="modal-body">
     <div class="d-grid gap-3">
-        <button type="button" *ngIf="types.includes('CHROME_EXTENSION')" class="btn btn-connect" (click)="connect('CHROME_EXTENSION')">
-            <img src="/assets/Terra.svg" /> Terra Station Extension
-        </button>
-        <button type="button" *ngIf="types.includes('WEBEXTENSION')" class="btn btn-connect" (click)="connect('WEBEXTENSION')">
-            <img src="/assets/Terra.svg" /> Terra Station Extension
-        </button>
-        <button type="button" *ngIf="types.includes('WALLETCONNECT')" class="btn btn-connect" (click)="connect('WALLETCONNECT')">
-            <img src="/assets/WalletConnect.png" /> Wallet Connect
-        </button>
+      <ng-container *ngFor="let walletExtension of walletExtensions">
+        <ng-container *ngFor="let type of types">
+          <button type="button" *ngIf="type != 'WALLETCONNECT'" class="btn btn-connect" (click)="connect(type, walletExtension.identifier)">
+            <img [src]="walletExtension.icon" /> {{walletExtension.name}}
+          </button>
+        </ng-container>
+      </ng-container>
+<!--      <button type="button" *ngIf="types.includes('CHROME_EXTENSION')" class="btn btn-connect" (click)="connect('CHROME_EXTENSION')">-->
+<!--          <img src="/assets/Terra.svg" /> Terra Station Extension-->
+<!--      </button>-->
+<!--      <button type="button" *ngIf="types.includes('WEBEXTENSION')" class="btn btn-connect" (click)="connect('WEBEXTENSION')">-->
+<!--          <img src="/assets/Terra.svg" /> Terra Station Extension-->
+<!--      </button>-->
+      <button type="button" *ngIf="types.includes('WALLETCONNECT')" class="btn btn-connect" (click)="connect( 'WALLETCONNECT', null)">
+          <img src="/assets/WalletConnect.png" /> Wallet Connect
+      </button>
     </div>
 </div>

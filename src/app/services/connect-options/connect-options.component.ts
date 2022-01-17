@@ -8,13 +8,17 @@ import {MdbModalRef} from 'mdb-angular-ui-kit/modal';
 })
 export class ConnectOptionsComponent {
   types: string[];
+  walletExtensions: any;
 
   constructor(
     private modalRef: MdbModalRef<ConnectOptionsComponent>
-  ) { }
+  ) {
+    // @ts-ignore
+    this.walletExtensions = window.terraWallets ?? [];
+  }
 
-  connect(type: string) {
-    this.modalRef.close(type);
+  connect(type: string, identifier: string) {
+    this.modalRef.close({type, identifier});
   }
 
 }
