@@ -1,13 +1,13 @@
-import { Inject, Injectable } from '@angular/core';
-import { BLOCK_TIME, TerrajsService } from './terrajs.service';
-import { TokenService } from './api/token.service';
-import { BankService } from './api/bank.service';
-import { TerraSwapService } from './api/terraswap.service';
-import { PoolResponse } from './api/terraswap_pair/pool_response';
-import { div, minus, plus, times } from '../libs/math';
-import { CONFIG } from '../consts/config';
-import { TerraSwapFactoryService } from './api/terraswap-factory.service';
-import { GovService } from './api/gov.service';
+import {Inject, Injectable} from '@angular/core';
+import {BLOCK_TIME, TerrajsService} from './terrajs.service';
+import {TokenService} from './api/token.service';
+import {BankService} from './api/bank.service';
+import {TerraSwapService} from './api/terraswap.service';
+import {PoolResponse} from './api/terraswap_pair/pool_response';
+import {div, minus, plus, times} from '../libs/math';
+import {CONFIG} from '../consts/config';
+import {TerraSwapFactoryService} from './api/terraswap-factory.service';
+import {GovService} from './api/gov.service';
 import {
   FARM_INFO_SERVICE,
   FarmInfoService,
@@ -15,17 +15,17 @@ import {
   PoolInfo,
   RewardInfoResponseItem
 } from './farm_info/farm-info.service';
-import { fromEntries } from '../libs/core';
-import { PairInfo } from './api/terraswap_factory/pair_info';
-import { BalancePipe } from '../pipes/balance.pipe';
-import { LpBalancePipe } from '../pipes/lp-balance.pipe';
-import { Vault } from '../pages/vault/vault.component';
-import { HttpClient } from '@angular/common/http';
-import { memoize } from 'utils-decorators';
-import { Denom } from '../consts/denom';
-import { WalletService } from './api/wallet.service';
-import { AstroportService } from './api/astroport.service';
-import { AstroportFactoryService } from './api/astroport-factory.service';
+import {fromEntries} from '../libs/core';
+import {PairInfo} from './api/terraswap_factory/pair_info';
+import {BalancePipe} from '../pipes/balance.pipe';
+import {LpBalancePipe} from '../pipes/lp-balance.pipe';
+import {Vault} from '../pages/vault/vault.component';
+import {HttpClient} from '@angular/common/http';
+import {memoize} from 'utils-decorators';
+import {Denom} from '../consts/denom';
+import {WalletService} from './api/wallet.service';
+import {AstroportService} from './api/astroport.service';
+import {AstroportFactoryService} from './api/astroport-factory.service';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -35,13 +35,11 @@ export interface Stat {
   govTvl: string;
   govApr: number;
   govPoolCount: number;
-  astroApr: number;
 }
 
 export type PendingReward = {
   pending_reward_token: number;
   pending_reward_ust: number;
-  pending_reward_astro: number;
 };
 
 export type PortfolioItem = {
@@ -129,7 +127,7 @@ export class InfoService {
   specPoolInfo: PoolResponse;
   specPrice: string;
 
-  private poolInfoNetwork: string;
+  private loadedNetwork: string;
   poolInfos: Record<string, PoolInfo>;
   pairInfos: Record<string, PairInfo> = {};
   tokenInfos: Record<string, TokenInfo> = {};
@@ -143,18 +141,18 @@ export class InfoService {
   lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
 
-  cw20tokensWhitelist: any;
-
   myTvl = 0;
   allVaults: Vault[] = [];
 
   portfolio: Portfolio;
 
-  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST']);
+  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST']);
+  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST']);
+  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['']);
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
-      return this.terrajs.network?.name === 'testnet' && !farmInfo.mainnetOnly;
+      return this.terrajs.network?.name === 'mainnet' || !farmInfo.mainnetOnly;
     } else {
       return true;
     }
@@ -199,17 +197,17 @@ export class InfoService {
   }
 
   async ensurePoolInfoLoaded() {
-    if (this.poolInfos && this.poolInfoNetwork === this.terrajs.settings.chainID) {
+    if (this.poolInfos && this.loadedNetwork === this.terrajs.settings.chainID) {
       return this.poolInfos;
     }
     await this.refreshPoolInfos();
-    this.poolInfoNetwork = this.terrajs.settings.chainID;
+    this.loadedNetwork = this.terrajs.settings.chainID;
   }
 
   @memoize(1000)
   async refreshPoolInfos() {
     const poolInfos: Record<string, PoolInfo> = {};
-    const tasks = this.farmInfos.map(async farmInfo => {
+    const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       if (!farmInfo.farmContract) {
         return;
       }
@@ -335,13 +333,12 @@ export class InfoService {
       govTvl: '0',
       govApr: 0,
       govPoolCount: 1,
-      astroApr: 0, // TODO get astro apr
     };
     const vaultsTask = this.gov.vaults();
     await this.refreshPoolInfos();
     await this.refreshPoolResponses();
     const vaults = await vaultsTask;
-    const tasks = this.farmInfos.map(async farmInfo => {
+    const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
         .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
@@ -481,12 +478,6 @@ export class InfoService {
     this.marketCap = +this.circulation / CONFIG.UNIT * +this.specPrice;
   }
 
-  async ensureCw20tokensWhitelist() {
-    if (!this.cw20tokensWhitelist) {
-      this.cw20tokensWhitelist = await this.httpClient.get<object>('https://assets.terra.money/cw20/tokens.json').toPromise();
-    }
-  }
-
   async updateMyTvl() {
     if (!this.terrajs.address) {
       this.rewardInfos = {};
@@ -495,13 +486,13 @@ export class InfoService {
     let tvl = 0;
     const portfolio: Portfolio = {
       total_reward_ust: 0,
-      gov: { pending_reward_token: 0, pending_reward_ust: 0, pending_reward_astro: 0 },
+      gov: { pending_reward_token: 0, pending_reward_ust: 0 },
       tokens: new Map(),
       farms: new Map(),
     };
     for (const farmInfo of this.farmInfos.filter(fi => this.shouldEnableFarmInfo(fi))) {
       if (this.tokenInfos[farmInfo.rewardTokenContract]?.symbol) {
-        portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { rewardTokenContract: farmInfo.rewardTokenContract, pending_reward_token: 0, pending_reward_ust: 0, pending_reward_astro: 0 });
+        portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { rewardTokenContract: farmInfo.rewardTokenContract, pending_reward_token: 0, pending_reward_ust: 0 });
         portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
       } else {
         console.error('updateMyTvl tokenInfos Symbol not found', farmInfo.rewardTokenContract);
@@ -529,15 +520,34 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        // TODO add ASTRO and handle farm1 farm2
-        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.key];
-        const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
-        tvl += pending_farm_reward_ust;
+        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardKey];
+        const astroTokenPoolResponse = this.poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`];
+
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
-        portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
-        portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+        if (farmInfo.dex === 'Astroport'){
+          const pending_farm2_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm2_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
+          tvl += pending_farm2_reward_ust;
+          portfolio.tokens.get(rewardSymbol).pending_reward_token += rewardInfo.pending_farm2_reward ? +rewardInfo.pending_farm2_reward / CONFIG.UNIT : 0;
+          portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm2_reward_ust;
+
+          const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, astroTokenPoolResponse) / CONFIG.UNIT || 0;
+          tvl += pending_farm_reward_ust;
+          portfolio.tokens.get('ASTRO').pending_reward_token += rewardInfo.pending_farm_reward ? +rewardInfo.pending_farm_reward / CONFIG.UNIT : 0;
+          portfolio.tokens.get('ASTRO').pending_reward_ust += pending_farm_reward_ust;
+
+          portfolio.total_reward_ust += pending_farm_reward_ust;
+          portfolio.total_reward_ust += pending_farm2_reward_ust;
+        } else if (farmInfo.dex === 'Terraswap'){
+          const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
+          tvl += pending_farm_reward_ust;
+          portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+          portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
+          portfolio.total_reward_ust += pending_farm_reward_ust;
+        }
         portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[vault.poolInfo.rewardKey]?.farmApr;
-        portfolio.total_reward_ust += pending_farm_reward_ust;
+        if (portfolio.tokens.get('ASTRO')){
+          portfolio.tokens.get('ASTRO').apr = this.stat?.pairs[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]?.farmApr || 0;
+        }
       }
     }
 
@@ -570,10 +580,10 @@ export class InfoService {
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
       const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses) {
+      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
         throw (data);
       }
-      Object.assign(this.tokenInfos, data.tokenInfos);
+      this.tokenInfos = data.tokenInfos;
       this.stat = data.stat;
       this.pairInfos = data.pairInfos;
       this.poolInfos = data.poolInfos;
@@ -594,10 +604,15 @@ export class InfoService {
       console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
       localStorage.setItem('infoSchemaVersion', '2');
+    } finally {
+      this.loadedNetwork = this.terrajs.settings.chainID;
     }
   }
 
   updateVaults() {
+    if (this.loadedNetwork !== this.terrajs.settings.chainID) {
+      return;
+    }
     const token = this.terrajs.settings.specToken;
     if (!this.tokenInfos?.[token]) {
       return;
@@ -625,7 +640,10 @@ export class InfoService {
       const rewardToken = this.poolInfos[key].rewardTokenContract;
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
-      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0);
+      const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
+      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
+      const will_available_at_astroport = this.WILL_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
+      const now_available_at_astroport = this.NOW_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
 
       const vault: Vault = {
         baseSymbol,
@@ -655,15 +673,17 @@ export class InfoService {
           : `${baseSymbol}-${denomSymbol} LP`,
         unitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
-          : `${baseSymbol}-${denomSymbol} LP`,
+          : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
         shortUnitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
-          : 'LP',
+          : `${poolInfo.dex} LP`,
         score,
         fullName: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
-        disabled: this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`),
+        disabled,
+        will_available_at_astroport,
+        now_available_at_astroport
       };
       this.allVaults.push(vault);
     }

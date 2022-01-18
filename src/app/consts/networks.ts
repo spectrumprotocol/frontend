@@ -22,7 +22,6 @@ export interface ISettings {
   anchorGov: string;
   anchorStaking: string;
   anchorToken: string;
-  anchorAstroportToken: string;
   anchorFarm: string;
   pylonGov: string;
   pylonStaking: string;
@@ -62,6 +61,15 @@ export interface ISettings {
   astroportAstroUstFarm: string;
   astroportLunaUstFarm: string;
   astroportBlunaLunaFarm: string;
+  astroportAncUstFarm: string;
+  astroportMirUstFarm: string;
+  astroportOrionUstFarm: string;
+  astroportSttUstFarm: string;
+  astroportVkrUstFarm: string;
+  astroportMineUstFarm: string;
+  astroportApolloUstFarm: string;
+  starterraToken: string;
+  apolloToken: string;
   terraNameServiceGov: string;
   terraNameServiceStaking: string;
   terraNameServiceToken: string;
@@ -103,7 +111,6 @@ export const networks: Record<string, ISettings> = {
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
     anchorStaking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
     anchorToken: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
-    anchorAstroportToken: '',
     anchorFarm: 'terra1fqzczuddqsdml37a20pysjx5wk9dh4tdzu2mrw',
     pylonGov: 'terra1xu8utj38xuw6mjwck4n97enmavlv852zkcvhgp',
     pylonStaking: 'terra19nek85kaqrvzlxygw20jhy08h3ryjf5kg4ep3l',
@@ -138,11 +145,20 @@ export const networks: Record<string, ISettings> = {
     psiDPToken: 'terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc',
     astroToken: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
     bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
-    astroportGov: '',
+    astroportGov: 'terra1nq4aszdm82wujstxwpjxtvckg7ghu63mqkey33',
     astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
     astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
     astroportLunaUstFarm: 'terra1egstlx9c9pq5taja5sg0yhraa0cl5laxyvm3ln',
     astroportBlunaLunaFarm: 'terra1ejl4v53w4all7zkw8nfkw2q6d3qkpls8m4cav4',
+    astroportAncUstFarm: 'terra1ukm33qyqx0qcz7rupv085rgpx0tp5wzkhmcj3f',
+    astroportMirUstFarm: 'terra1y5hd5ea9dshfwf5eysqtsey7qkdhhktmtw9y3q',
+    astroportOrionUstFarm: 'terra1p30zk5xfn34lygcyhs2us9mxwzsn88v2yqrcw6',
+    astroportSttUstFarm: 'terra10htnzp8gk49u97whehd9uuj5rl2keegcvdhg2q',
+    astroportVkrUstFarm: 'terra1yj34w2n24p4x7s69evjp7ukzz82ca5tvlzqa84',
+    astroportMineUstFarm: 'terra1s9zqk5ksnwp8qywrmdwt2fq0a9l0zc2d2sw2an',
+    astroportApolloUstFarm: 'terra1zngkjhqqearpfhym9x9hnutpklduz45e9uvp9u',
+    starterraToken: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n',
+    apolloToken: 'terra100yeqvww74h4yaejj6h733thgcafdaukjtw397',
     terraNameServiceGov: 'terra1a5thpf2gdrrneewjkutyz5q6zr2kn8ymg0cxn9',
     terraNameServiceStaking: 'terra1u94zwrreyz3t0jx25nl7800pxsrk6e6dwjqpsx', // tns pool terra1hqnk9expq3k4la2ruzdnyapgndntec4fztdyln
     terraNameServiceToken: 'terra14vz4v8adanzph278xyeggll4tfww7teh0xtw2y', // tns lp terra1kg9vmu4e43d3pz0dfsdg9vzwgnnuf6uf3z9jwj
@@ -183,7 +199,6 @@ export const networks: Record<string, ISettings> = {
     anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
     anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
     anchorToken: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
-    anchorAstroportToken: 'terra1yz03fpmuhf7w999fng5l5z82cufszlr92ncpzx',
     anchorFarm: 'terra1yvpd3j7mry7qrmmn2x9vapmr9qpzkvjgs4f7z7',
     pylonGov: 'terra1hffjqjscxgz5lnmmtwhksrcg4gd3x4nyp9mzwx',
     pylonStaking: 'terra17av0lfhqymusm6j9jpepzerg6u54q57jp7xnrz',
@@ -223,6 +238,15 @@ export const networks: Record<string, ISettings> = {
     astroportAstroUstFarm: 'astroportAstroUstFarm',
     astroportLunaUstFarm: 'astroportLunaUstFarm',
     astroportBlunaLunaFarm: 'astroportLunaBlunaFarm',
+    astroportAncUstFarm: '',
+    astroportMirUstFarm: '',
+    astroportOrionUstFarm: '',
+    astroportSttUstFarm: '',
+    astroportVkrUstFarm: '',
+    astroportMineUstFarm: '',
+    astroportApolloUstFarm: '',
+    starterraToken: '',
+    apolloToken: '',
     terraNameServiceGov: 'terra1hdps6vdnknhr72vn99uqqvmmsn9c43en6vq26z',
     terraNameServiceStaking: 'terra1g9s3az3ra8uayvpm0zgj5mpx927et9mlqwfjfu', // tns pool terra12l4yfytser4hkezsq4g23st2a0ntgletukwxpw
     terraNameServiceToken: 'terra16qrvv9wukzzq0d7wxhkxrh5vv6m7lt770r0xts', // tns lp terra1cxt4rrstqhldhnwyzuk03jswx584e9w2xw896z

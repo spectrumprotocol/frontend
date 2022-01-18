@@ -50,12 +50,12 @@
           <div class="col-6 mt-1">
             <div class="f-12 sub-topic">
               My Profit</div>
-            <div class="f-14 fw-bold" *ngIf="+detail.userBalance">
+            <div class="f-14 fw-bold" *ngIf="+detail.userProfit">
               <span class="fs-6 text-primary">
                 <app-digit [value]="+detail.userProfit"></app-digit>
               </span> <span class="cur-title"> UST</span>
             </div>
-            <div class="f-14" *ngIf="!+detail.userBalance"><span>-</span></div>
+            <div class="f-14" *ngIf="!+detail.userProfit"><span>-</span></div>
           </div>
         </div>
       </div>
@@ -115,9 +115,10 @@
                 <div *ngIf="moveAmountModel.errors?.pattern; then maxDecimalPlacesError"></div>
               </div>
             </div>
-            <div *ngIf="detail.moveOptions.length === 1" class="d-flex flex-wrap small text-muted">
+            <div class="d-flex flex-wrap small text-muted">
               <div class="flex-grow-1">Lock Duration:&nbsp;</div>
-              <div>{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
+              <div *ngIf="moveDays">{{ moveDays }} Day{{moveDays > 1 ? "s" : ""}}</div>
+              <div *ngIf="!moveDays">-</div>
             </div>
             <div *ngIf="detail.moveOptions.length > 1">
               <div class="small">Target pool</div>

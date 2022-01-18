@@ -11,22 +11,21 @@ import { WasmService } from './wasm.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AstroportAstroUstFarmService {
+export class AstroportTokenUstFarmService {
 
   constructor(
-    private terrajs: TerrajsService,
     private wasm: WasmService,
   ) { }
 
-  query(msg: Extract<QueryMsg, { config: unknown }>): Promise<ConfigInfo>;
-  query(msg: Extract<QueryMsg, { pools: unknown }>): Promise<PoolsResponse>;
-  query(msg: Extract<QueryMsg, { reward_info: unknown }>): Promise<RewardInfoResponse>;
-  query(msg: Extract<QueryMsg, { state: unknown }>): Promise<StateInfo>;
-  query(msg: QueryMsg): Promise<any> {
-    return this.wasm.query(this.terrajs.settings.astroportAstroUstFarm, msg);
+  query(farmAddress: string, msg: Extract<QueryMsg, { config: unknown }>): Promise<ConfigInfo>;
+  query(farmAddress: string, msg: Extract<QueryMsg, { pools: unknown }>): Promise<PoolsResponse>;
+  query(farmAddress: string, msg: Extract<QueryMsg, { reward_info: unknown }>): Promise<RewardInfoResponse>;
+  query(farmAddress: string, msg: Extract<QueryMsg, { state: unknown }>): Promise<StateInfo>;
+  query(farmAddress: string, msg: QueryMsg): Promise<any> {
+    return this.wasm.query(farmAddress, msg);
   }
 
-  handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
-    return this.wasm.execute(this.terrajs.settings.astroportAstroUstFarm, msg, opts);
+  handle(farmAddress: string, msg: ExecuteMsg, opts?: ExecuteOptions) {
+    return this.wasm.execute(farmAddress, msg, opts);
   }
 }

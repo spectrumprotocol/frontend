@@ -266,7 +266,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       : [poolResponse.assets[1], poolResponse.assets[0]];
   }
 
-
   async doDeposit() {
     if (!this.depositType) {
       return;
@@ -287,10 +286,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     const staker = this.vault.poolInfo.dex === 'Terraswap' ? this.terrajs.settings.staker : this.terrajs.settings.stakerAstroport;
 
     if (this.depositMode === 'tokentoken') {
-      const assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.UNIT);
+      const assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
       const assetDenomAmount = this.vault.poolInfo.denomTokenContract === Denom.USD
         ? times(this.depositUSTAmountTokenUST, CONFIG.UNIT)
-        : times(this.depositTokenBAmtTokenToken, this.UNIT);
+        : times(this.depositTokenBAmtTokenToken, this.vault.denomUnit);
       const assetBase = {
         amount: assetBaseAmount,
         info: this.vault.baseAssetInfo
@@ -337,7 +336,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         staker,
         {
           bond: {
-            assets: [assetBase, assetDenom],
+            assets: this.vault.poolInfo.denomTokenContract.startsWith('u')
+              ? [assetBase, assetDenom]
+              : [assetDenom, assetBase],
             compound_rate: auto_compound_ratio,
             contract: this.vault.poolInfo.farmContract,
             slippage_tolerance: CONFIG.SLIPPAGE_TOLERANCE
@@ -544,7 +545,16 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_bdp') {
       return;
     }
-    const commission = this.vault.poolInfo.dex === 'Astroport' ? CONFIG.ASTROPORT_COMMISSION : CONFIG.TERRASWAP_COMMISSION;
+    let commission = 0;
+    if (this.vault.poolInfo.dex === 'Astroport') {
+      if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['stable']) {
+        commission = +CONFIG.ASTROPORT_STABLE_COMMISSION_TOTAL;
+      } else if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['xyk']) {
+        commission = +CONFIG.ASTROPORT_XYK_COMMISSION_TOTAL;
+      }
+    } else if (this.vault.poolInfo.dex === 'Terraswap') {
+      commission = +CONFIG.TERRASWAP_COMMISSION;
+    }
     if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
       const offer_amount = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT).toString();
       const simulateSwapOperationRes = await this.terraSwapRouter.query({
@@ -917,7 +927,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   setMaxDepositUST() {
     if (+this.info.userUstAmount > this.bufferUST) {
-      this.depositUSTAmtUST = +floorSixDecimal(+this.info.userUstAmount - 3.5);
+      this.depositUSTAmtUST = +floorSixDecimal(+this.info.userUstAmount - this.bufferUST);
     }
     this.depositUSTChanged(true);
   }
@@ -981,7 +991,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   setMaxDepositUSTForBDP() {
     if (+this.info.userUstAmount > this.bufferUST) {
-      this.depositUSTAmtbDPToken = +floorSixDecimal(+this.info.userUstAmount - 3.5);
+      this.depositUSTAmtbDPToken = +floorSixDecimal(+this.info.userUstAmount - this.bufferUST);
     }
     this.depositUSTForBDPChanged(true);
   }

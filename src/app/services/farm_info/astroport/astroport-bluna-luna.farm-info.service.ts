@@ -20,12 +20,13 @@ import {AstroportBlunalunaFarmService} from '../../api/astroport-blunaluna-farm.
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
 import {WasmService} from '../../api/wasm.service';
 import {BalancePipe} from '../../../pipes/balance.pipe';
+import { balance_transform } from '../../calc/balance_calc';
 
 @Injectable()
 export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
   farm = 'Astroport';
   autoCompound = true;
-  autoStake = false;
+  autoStake = true;
   farmColor = '#463df6';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
@@ -71,7 +72,10 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
-    const lpStat = await this.getLPStat(poolResponses[key]);
+    const ulunaPrice = balance_transform('1', poolResponses[`${this.dex}|${Denom.LUNA}|${Denom.USD}`]);
+    const astroPrice = balance_transform('1', poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]);
+    
+    const lpStat = await this.getLPStat(poolResponses[key], astroPrice, ulunaPrice);
     const astroportGovStat = await this.getGovStat();
     const pairs: Record<string, PairStat> = {};
 
@@ -83,7 +87,6 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
     if (!ulunaAsset) {
       return;
     }
-    const ulunaPrice = this.balancePipe.transform('1', poolResponses[`${this.dex}|${Denom.LUNA}|${Denom.USD}`]);
     const totalUlunaValueUST = times(ulunaPrice, ulunaAsset.amount);
 
     const poolApr = +(lpStat.apr || 0);
@@ -136,9 +139,15 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
     );
   }
 
-  async getLPStat(poolResponse: PoolResponse) {
+  async getLPStat(poolResponse: PoolResponse, astroPrice: string, ulunaPrice: string) {
+    const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
+    const alloc_point = 160119;
+    const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
+    const astro_total_emit_per_year = astro_per_block / 7 * 60 * 60 * 24 * 365;
+    const blunaLunaTvl = +poolResponse.assets.find(asset => asset.info?.native_token?.['denom'] === Denom.LUNA).amount * +ulunaPrice * 2;
+    const apr = astro_total_emit_per_year * +astroPrice / blunaLunaTvl;
     return {
-      apr: 0
+      apr
     };
   }
 
