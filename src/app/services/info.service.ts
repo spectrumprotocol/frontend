@@ -149,6 +149,7 @@ export class InfoService {
   private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST']);
   private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|VKR|UST', 'Terraswap|MINE|UST']);
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST']);
+  private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set(['Terraswap|Orion|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nEth|Psi']);
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
@@ -644,6 +645,7 @@ export class InfoService {
       const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
       const will_available_at_astroport = this.WILL_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const now_available_at_astroport = this.NOW_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
+      const proxy_reward_not_yet_available = this.PROXY_REWARD_NOT_YET_AVAILABLE.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
 
       const vault: Vault = {
         baseSymbol,
@@ -683,7 +685,8 @@ export class InfoService {
           : `${baseSymbol}-${denomSymbol} LP`,
         disabled,
         will_available_at_astroport,
-        now_available_at_astroport
+        now_available_at_astroport,
+        proxy_reward_not_yet_available
       };
       this.allVaults.push(vault);
     }
