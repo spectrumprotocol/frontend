@@ -52,7 +52,7 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
   }
 
   get rewardTokenContract() {
-    return this.terrajs.settings.nexusFarm;
+    return this.terrajs.settings.nexusToken;
   }
 
   get farmGovContract() {
