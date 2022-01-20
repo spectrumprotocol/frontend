@@ -17,6 +17,9 @@ import {VaultsResponse} from '../../api/gov/vaults_response';
 import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
 import {AstroportTokenTokenFarmService} from '../../api/astroport-tokentoken-farm.service';
+import {Denom} from '../../../consts/denom';
+import {times} from '../../../libs/math';
+import {BalancePipe} from '../../../pipes/balance.pipe';
 
 @Injectable()
 export class AstroportNethPsiFarmInfoService implements FarmInfoService {
@@ -39,7 +42,8 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
   constructor(
     private farmService: AstroportTokenTokenFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService
+    private wasm: WasmService,
+    private balancePipe: BalancePipe
   ) {
   }
 
@@ -75,19 +79,22 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
     const [depositAmount, farmConfig, lpStat, govStat] = await Promise.all([depositAmountTask, farmConfigTask, lpStatTask, govStatTask]);
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
-    const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
-    if (!uusd) {
+    const psiAsset = p.assets.find(a => a.info.token?.['contract_addr'] === this.terrajs.settings.nexusToken);
+    if (!psiAsset) {
       return;
     }
-
-    const poolApr = +(lpStat.apr || 0);
-    pairs[key] = createPairStat(poolApr, key);
-    const pair = pairs[key];
-    pair.tvl = new BigNumber(uusd.amount)
+    const psiPrice = this.balancePipe.transform('1', poolResponses[`${this.dex}|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
+    const totalPsiValueUST = times(psiPrice, psiAsset.amount);
+    const nEthPsiTvl = new BigNumber(totalPsiValueUST)
       .times(depositAmount)
       .times(2)
       .div(p.total_share)
       .toString();
+
+    const poolApr = +(lpStat.apr || 0);
+    pairs[key] = createPairStat(poolApr, key);
+    const pair = pairs[key];
+    pair.tvl = nEthPsiTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
