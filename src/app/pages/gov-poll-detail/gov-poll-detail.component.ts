@@ -11,8 +11,7 @@ import { ConfigInfo } from '../../services/api/gov/config_info';
 import { PollInfo } from '../../services/api/gov/polls_response';
 import { TerrajsService } from '../../services/terrajs.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { environment } from 'src/environments/environment';
-import { fromBase64 } from 'src/app/libs/base64';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-gov-poll-detail',

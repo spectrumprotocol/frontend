@@ -7,7 +7,6 @@ import { GovService } from '../../../services/api/gov.service';
 import { TokenService } from '../../../services/api/token.service';
 import { TerrajsService } from '../../../services/terrajs.service';
 import { MdbCollapseDirective } from 'mdb-angular-ui-kit/collapse';
-import { WasmService } from 'src/app/services/api/wasm.service';
 import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
 
 export enum GovPoolTab {

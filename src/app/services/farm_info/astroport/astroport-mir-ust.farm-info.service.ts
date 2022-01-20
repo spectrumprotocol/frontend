@@ -18,9 +18,9 @@ import {Denom} from '../../../consts/denom';
 import {AstroportTokenUstFarmService} from '../../api/astroport-tokenust-farm.service';
 import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
-import { div } from 'src/app/libs/math';
+import { div } from '../../../libs/math';
 import { MirrorStakingService } from '../../api/mirror-staking.service';
-import { BalancePipe } from 'src/app/pipes/balance.pipe';
+import { BalancePipe } from '../../../pipes/balance.pipe';
 import { Apollo, gql } from 'apollo-angular';
 
 @Injectable()

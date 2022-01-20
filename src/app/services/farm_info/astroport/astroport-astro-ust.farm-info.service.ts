@@ -18,7 +18,7 @@ import {Denom} from '../../../consts/denom';
 import {AstroportAstroUstFarmService} from '../../api/astroport-astroust-farm.service';
 import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
-import { div } from 'src/app/libs/math';
+import { div } from '../../../libs/math';
 
 @Injectable()
 export class AstroportAstroUstFarmInfoService implements FarmInfoService {

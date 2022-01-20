@@ -19,7 +19,7 @@ import {AstroportTokenUstFarmService} from '../../api/astroport-tokenust-farm.se
 import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
 import { HttpClient } from '@angular/common/http';
-import { BalancePipe } from 'src/app/pipes/balance.pipe';
+import { BalancePipe } from '../../../pipes/balance.pipe';
 
 @Injectable()
 export class AstroportVkrUstFarmInfoService implements FarmInfoService {

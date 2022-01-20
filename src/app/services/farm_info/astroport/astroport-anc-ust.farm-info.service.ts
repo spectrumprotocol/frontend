@@ -18,7 +18,7 @@ import { Denom } from '../../../consts/denom';
 import { AstroportTokenUstFarmService } from '../../api/astroport-tokenust-farm.service';
 import { WasmService } from '../../api/wasm.service';
 import { PairInfo } from '../../api/terraswap_factory/pair_info';
-import { BalancePipe } from 'src/app/pipes/balance.pipe';
+import { BalancePipe } from '../../../pipes/balance.pipe';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable()
