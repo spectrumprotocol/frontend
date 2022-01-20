@@ -18,6 +18,10 @@ import {Denom} from '../../../consts/denom';
 import {AstroportTokenUstFarmService} from '../../api/astroport-tokenust-farm.service';
 import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
+import { div } from 'src/app/libs/math';
+import { MirrorStakingService } from '../../api/mirror-staking.service';
+import { BalancePipe } from 'src/app/pipes/balance.pipe';
+import { Apollo, gql } from 'apollo-angular';
 
 @Injectable()
 export class AstroportMirUstFarmInfoService implements FarmInfoService {
@@ -38,9 +42,12 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
   }
 
   constructor(
+    private apollo: Apollo,
     private farmService: AstroportTokenUstFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService
+    private wasm: WasmService,
+    private mirrorStaking: MirrorStakingService,
+    private balancePipe: BalancePipe,
   ) {
   }
 
@@ -66,15 +73,27 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
     const farmConfigTask = this.farmService.query(this.farmContract, { config: {} });
 
+    // fire query
+    const apollo = this.apollo.use(this.terrajs.settings.mirrorGraph);
+    const mirrorGovStatTask = apollo.query<any>({
+      query: gql`query statistic($network: Network) {
+        statistic(network: $network) {
+          govAPR
+        }
+      }`,
+      variables: {
+        network: 'TERRA'
+      }
+    }).toPromise();
+
+    const astroPrice = this.balancePipe.transform('1', poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]);
+
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
-    const lpStat = await this.getLPStat(poolResponses[key]);
-    const astroportGovStat = await this.getGovStat();
+    const lpStatTask =  this.getLPStat(poolResponses[key], +astroPrice);
     const pairs: Record<string, PairStat> = {};
-
-    const depositAmount = +(await depositAmountTask);
-    const farmConfig = await farmConfigTask;
+    const [lpStat, mirrorGovStat, depositAmount, farmConfig] = await Promise.all([lpStatTask, mirrorGovStatTask, depositAmountTask, farmConfigTask]);
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
@@ -100,7 +119,7 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: +(astroportGovStat.apy || 0),
+        farmApr: mirrorGovStat.data.statistic.govAPR,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
@@ -132,15 +151,58 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
     );
   }
 
-  async getLPStat(poolResponse: PoolResponse) {
+  async getLPStat(poolResponse: PoolResponse, astroPrice: number) {
+    const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
+    const alloc_point = 33944;
+    const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
+    const astro_total_emit_per_year = astro_per_block / 6.5 * 60 * 60 * 24 * 365;
+    const farmPoolUSTAmount = poolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? poolResponse.assets[1].amount : poolResponse.assets[0].amount;
+    const farmUSTTvl = +farmPoolUSTAmount * 2;
+    const apr = (astro_total_emit_per_year * +astroPrice / farmUSTTvl) + await this.getMirApr(poolResponse);
     return {
-      apr: 0
+      apr
     };
   }
 
-  async getGovStat() {
-    return {
-      apy: 0
-    };
+  async getMirApr(poolResponse: PoolResponse): Promise<number>{
+    const stakingPoolInfoTask = this.mirrorStaking.query({
+      pool_info: {
+        asset_token: this.terrajs.settings.mirrorToken
+      }
+    });
+    const distributionInfoTask = this.wasm.query(this.terrajs.settings.mirrorFactory, {distribution_info: {}});
+
+
+    // got from apr.ts in Mirror dApp FE
+    // genesis(2020-12-04 04:00 KST) + 6hours
+    const START = 1607022000000 + 60000 * 60 * 6;
+    const YEAR = 60000 * 60 * 24 * 365;
+
+    const distributionSchedules = [
+      [START, YEAR * 1 + START, '54900000000000'],
+      [YEAR * 1 + START, YEAR * 2 + START, '27450000000000'],
+      [YEAR * 2 + START, YEAR * 3 + START, '13725000000000'],
+      [YEAR * 3 + START, YEAR * 4 + START, '6862500000000'],
+    ];
+
+    const now = Date.now();
+    const current_distribution_schedule = distributionSchedules.find(
+      (item) => now >= item[0] && now <= item[1]
+    );
+
+
+    const mirPoolUSTAmount = poolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? poolResponse.assets[1].amount : poolResponse.assets[0].amount;
+    const mirPoolMirAmount = poolResponse.assets[1]?.info?.token ? poolResponse.assets[1].amount : poolResponse.assets[0].amount;
+    const mirPrice = div(mirPoolUSTAmount, mirPoolMirAmount);
+    const [distributionInfo, stakingPoolInfo] = await Promise.all([distributionInfoTask, stakingPoolInfoTask]);
+    const totalMint = +current_distribution_schedule[2];
+    const mintPerYear = totalMint;
+    const mirWeight = +distributionInfo.weights.find(item => item[0] === this.terrajs.settings.mirrorToken)[1];
+    const totalWeight = distributionInfo.weights.reduce((previousValue, currentValue) => previousValue + currentValue[1], 0);
+
+    const c = new BigNumber(mirPoolUSTAmount).multipliedBy(2).div(poolResponse.total_share);
+    const s = new BigNumber(stakingPoolInfo.total_bond_amount).multipliedBy(c);
+    const apr = new BigNumber(mintPerYear).multipliedBy(mirPrice).multipliedBy(mirWeight).div(totalWeight).div(s);
+    return apr.toNumber();
   }
 }

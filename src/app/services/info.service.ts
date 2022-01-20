@@ -149,7 +149,7 @@ export class InfoService {
   private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST']);
   private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MINE|UST']);
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST']);
-  private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set(['Astroport|ORION|UST', 'Astroport|Psi|UST', 'Astroport|nLuna|Psi', 'Astroport|nEth|Psi']);
+  private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set(['Astroport|ORION|UST', 'Astroport|Psi|UST', 'Astroport|nLuna|Psi', 'Astroport|nETH|Psi']);
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
@@ -686,7 +686,7 @@ export class InfoService {
         disabled,
         will_available_at_astroport,
         now_available_at_astroport,
-        proxy_reward_not_yet_available
+        proxy_reward_not_yet_available,
       };
       this.allVaults.push(vault);
     }

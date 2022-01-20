@@ -74,7 +74,7 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
     const ulunaPrice = balance_transform('1', poolResponses[`${this.dex}|${Denom.LUNA}|${Denom.USD}`]);
     const astroPrice = balance_transform('1', poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]);
-    
+
     const lpStat = await this.getLPStat(poolResponses[key], astroPrice, ulunaPrice);
     const astroportGovStat = await this.getGovStat();
     const pairs: Record<string, PairStat> = {};
@@ -141,9 +141,9 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
 
   async getLPStat(poolResponse: PoolResponse, astroPrice: string, ulunaPrice: string) {
     const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
-    const alloc_point = 160119;
+    const alloc_point = 250000;
     const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
-    const astro_total_emit_per_year = astro_per_block / 7 * 60 * 60 * 24 * 365;
+    const astro_total_emit_per_year = astro_per_block / 6.5 * 60 * 60 * 24 * 365;
     const blunaLunaTvl = +poolResponse.assets.find(asset => asset.info?.native_token?.['denom'] === Denom.LUNA).amount * +ulunaPrice * 2;
     const apr = astro_total_emit_per_year * +astroPrice / blunaLunaTvl;
     return {
@@ -156,4 +156,5 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
       apy: 0
     };
   }
+
 }

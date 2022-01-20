@@ -134,9 +134,9 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
 
   async getLPStat(poolResponse: PoolResponse) {
     const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
-    const alloc_point = 96075;
+    const alloc_point = 150000;
     const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
-    const astro_total_emit_per_year = astro_per_block / 7 * 60 * 60 * 24 * 365;
+    const astro_total_emit_per_year = astro_per_block / 6.5 * 60 * 60 * 24 * 365;
     const astroPoolUSTAmount = poolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? poolResponse.assets[1].amount : poolResponse.assets[0].amount;
     const astroPoolASTROAmount = poolResponse.assets[1]?.info?.token ? poolResponse.assets[1].amount : poolResponse.assets[0].amount;
     const astroPrice = +div(astroPoolUSTAmount, astroPoolASTROAmount);
@@ -146,7 +146,6 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
       apr
     };
   }
-
 
   async getGovStat() {
     return {
