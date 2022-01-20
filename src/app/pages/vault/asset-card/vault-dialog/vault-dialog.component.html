@@ -666,7 +666,18 @@
                 <i class="fas fa-flag"></i> {{vault.poolInfo.farm}} is being audited, please use your own discretion
                 before investing.
               </div>
-
+              <div *ngIf="vault.proxy_reward_not_yet_available" class="card card-blue mt-3 mb-3">
+                <div class="card-body">
+                  <div class="card-text small mb-1">
+                    <div class="bulk-name-container">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      <div class="name-detail">
+                        This farm has not started {{vault.rewardSymbol}} reward emission yet. Only ASTRO will be used to compound.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div *ngIf="depositType && depositType !== 'compound' && vault.poolInfo.farm !== 'Spectrum'"
                    class="card card-warning mt-3">
                 <div class="card-body">
@@ -882,19 +893,7 @@
                   </div>
                 </div>
               </div>
-              <div *ngIf="vault.proxy_reward_not_yet_available"
-                   class="card card-blue mt-3 mb-3">
-                <div class="card-body">
-                  <div class="card-text small mb-1">
-                    <div class="bulk-name-container">
-                      <i class="fas fa-exclamation-triangle"></i>
-                      <div class="name-detail">
-                        This farm has not started {{vault.rewardSymbol}} reward emission yet. Only ASTRO will be used to compound.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
 
               <button (click)="doWithdraw()" [disabled]="withdrawAmtCtl.invalid" class="btn btn-primary"
                       type="submit">Withdraw</button>
