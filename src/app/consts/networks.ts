@@ -68,6 +68,9 @@ export interface ISettings {
   astroportVkrUstFarm: string;
   astroportMineUstFarm: string;
   astroportApolloUstFarm: string;
+  astroportPsiUstFarm: string;
+  astroportNlunaPsiFarm: string;
+  astroportNethUstFarm: string;
   starterraToken: string;
   apolloToken: string;
   lcd: string;
@@ -153,6 +156,9 @@ export const networks: Record<string, ISettings> = {
     astroportVkrUstFarm: 'terra1yj34w2n24p4x7s69evjp7ukzz82ca5tvlzqa84',
     astroportMineUstFarm: 'terra1s9zqk5ksnwp8qywrmdwt2fq0a9l0zc2d2sw2an',
     astroportApolloUstFarm: 'terra1zngkjhqqearpfhym9x9hnutpklduz45e9uvp9u',
+    astroportPsiUstFarm: 'terra1jxh7hahwxlsy5cckkyhuz50a60mpn5tr0px6tq',
+    astroportNlunaPsiFarm: 'terra1zl3ud44lja3r8ld8nwzh3eukl6h97gp2xr4wq6',
+    astroportNethUstFarm: 'terra1xw3jzqwrql5fvddchzxycd2ygrep5kudsden5c',
     starterraToken: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n',
     apolloToken: 'terra100yeqvww74h4yaejj6h733thgcafdaukjtw397',
     lcd: 'https://lcd.terra.dev',
@@ -237,6 +243,9 @@ export const networks: Record<string, ISettings> = {
     astroportVkrUstFarm: '',
     astroportMineUstFarm: '',
     astroportApolloUstFarm: '',
+    astroportPsiUstFarm: '',
+    astroportNlunaPsiFarm: '',
+    astroportNethUstFarm: '',
     starterraToken: '',
     apolloToken: '',
     lcd: 'https://bombay-lcd.terra.dev',
