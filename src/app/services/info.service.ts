@@ -26,6 +26,7 @@ import {Denom} from '../consts/denom';
 import {WalletService} from './api/wallet.service';
 import {AstroportService} from './api/astroport.service';
 import {AstroportFactoryService} from './api/astroport-factory.service';
+import {Apollo, gql} from 'apollo-angular';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -82,6 +83,7 @@ export class InfoService {
     private lpBalancePipe: LpBalancePipe,
     private httpClient: HttpClient,
     private wallet: WalletService,
+    private apollo: Apollo
   ) {
     try {
       const infoSchemaVersion = localStorage.getItem('infoSchemaVersion');
@@ -338,12 +340,25 @@ export class InfoService {
     const vaultsTask = this.gov.vaults();
     await this.refreshPoolInfos();
     await this.refreshPoolResponses();
+    await this.ensureAstroportData();
+
     const vaults = await vaultsTask;
     const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
         .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos);
+        const keys = Object.keys(pairStats);
+        for (const key of keys){
+            if (farmInfo.dex === 'Astroport'){
+            // if (farmInfo.dex === 'Astroport' && pairStats[key].poolApy === 0){
+            const found = this.astroportData.pools.find(pool => pool.pool_address === this.pairInfos[key].contract_addr);
+            pairStats[key].poolApr = +found.protocol_rewards.apr;
+            pairStats[key].poolAstroApr = +found.astro_rewards.apr;
+            pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
+          }
+        }
+
         Object.assign(stat.pairs, pairStats);
       } catch (e) {
         console.error('queryPairStats error >> ', e);
@@ -691,4 +706,44 @@ export class InfoService {
       this.allVaults.push(vault);
     }
   }
+
+
+  lastRefreshAstroportData: number;
+  astroportData: any;
+
+  private async ensureAstroportData() {
+    if (!this.astroportData || !this.lastRefreshAstroportData || this.lastRefreshAstroportData + 10 * 60 * 1000 > Date.now()) {
+      const apollo = this.apollo.use('astroport');
+      this.astroportData = (await apollo.query<any>({
+        query: gql`query {
+                      pools {
+                        pool_address
+                        token_symbol
+                        trading_fees {
+                          apy
+                          apr
+                          day
+                        }
+                        astro_rewards {
+                          apy
+                          apr
+                          day
+                        }
+                        protocol_rewards {
+                          apy
+                          apr
+                          day
+                        }
+                        total_rewards {
+                          apy
+                          apr
+                          day
+                        }
+                      }
+                    }`
+      }).toPromise()).data;
+      this.lastRefreshAstroportData = Date.now();
+    }
+  }
+
 }

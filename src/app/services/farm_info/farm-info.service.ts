@@ -42,6 +42,7 @@ export type RewardInfoResponseItem = AstroportTokenUSTRewardInfoResponseItem | M
 export interface PairStat {
   tvl: string;
   poolApr: number;
+  poolAstroApr?: number;
   poolApy: number;
   farmApr: number;
   multiplier: number;
