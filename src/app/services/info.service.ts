@@ -686,7 +686,7 @@ export class InfoService {
         disabled,
         will_available_at_astroport,
         now_available_at_astroport,
-        proxy_reward_not_yet_available
+        proxy_reward_not_yet_available,
       };
       this.allVaults.push(vault);
     }

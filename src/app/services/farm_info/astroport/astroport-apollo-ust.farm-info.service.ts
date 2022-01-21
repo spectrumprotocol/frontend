@@ -10,14 +10,14 @@ import {
   PairStat,
   PoolInfo
 } from './../farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../../libs/base64';
 import {PoolResponse} from '../../api/terraswap_pair/pool_response';
 import {VaultsResponse} from '../../api/gov/vaults_response';
 import {Denom} from '../../../consts/denom';
 import {AstroportTokenUstFarmService} from '../../api/astroport-tokenust-farm.service';
 import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
+import { div } from '../../../libs/math';
+import { BalancePipe } from '../../../pipes/balance.pipe';
 
 @Injectable()
 export class AstroportApolloUstFarmInfoService implements FarmInfoService {
@@ -40,7 +40,8 @@ export class AstroportApolloUstFarmInfoService implements FarmInfoService {
   constructor(
     private farmService: AstroportTokenUstFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService
+    private wasm: WasmService,
+    private balancePipe: BalancePipe,
   ) {
   }
 
@@ -65,16 +66,16 @@ export class AstroportApolloUstFarmInfoService implements FarmInfoService {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${Denom.USD}`;
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
     const farmConfigTask = this.farmService.query(this.farmContract, { config: {} });
+    const astroPrice = this.balancePipe.transform('1', poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]);
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
-    const lpStat = await this.getLPStat(poolResponses[key]);
-    const astroportGovStat = await this.getGovStat();
+    const lpStatTask = this.getLPStat(poolResponses[key], +astroPrice);
     const pairs: Record<string, PairStat> = {};
 
-    const depositAmount = +(await depositAmountTask);
-    const farmConfig = await farmConfigTask;
+    const [lpStat, depositAmount, farmConfig] = await Promise.all([lpStatTask, depositAmountTask, farmConfigTask]);
+
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
@@ -100,7 +101,7 @@ export class AstroportApolloUstFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: +(astroportGovStat.apy || 0),
+        farmApr: +(0),
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
@@ -118,15 +119,59 @@ export class AstroportApolloUstFarmInfoService implements FarmInfoService {
     return rewardInfo.reward_infos;
   }
 
-  async getLPStat(poolResponse: PoolResponse) {
+  async getLPStat(poolResponse: PoolResponse, astroPrice: number) {
+    const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
+    const alloc_point = 18277;
+    const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
+    const astro_total_emit_per_year = astro_per_block / 6.5 * 60 * 60 * 24 * 365.25;
+    // const farmPoolUSTAmount = poolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? poolResponse.assets[1].amount : poolResponse.assets[0].amount;
+    const tvlStrategy38 = +(await this.wasm.query(this.terrajs.settings.apolloFactory, {
+      get_strategy_tvl: {
+        id: 38
+      }
+    })).tvl;
+    const farmUSTTvl = tvlStrategy38; // +farmPoolUSTAmount * 2;
+    // TODO not 100% same as Apollo FE
+    const astroApr = astro_total_emit_per_year * +astroPrice / farmUSTTvl;
+    const apr =  astroApr + await this.getApolloLPApr(poolResponse, tvlStrategy38);
     return {
-      apr: 0
+      apr
     };
   }
 
-  async getGovStat() {
-    return {
-      apy: 0
-    };
+  // TODO not 100% same as Apollo FE
+  async getApolloLPApr(apolloPoolResponse: PoolResponse, tvlStrategy38: number): Promise<number>{
+    const configTask = this.wasm.query(this.terrajs.settings.apolloFactory, {get_config: {}});
+    const heightTask = this.terrajs.getHeight();
+    const getStrategy38Task = this.wasm.query(this.terrajs.settings.apolloFactory, {
+      get_strategy: {
+        id: 38
+      }
+    });
+    const getTotalRewardWeightTask = this.wasm.query(this.terrajs.settings.apolloFactory, {
+      get_total_reward_weight: {}
+    });
+
+    // "apollo_reward_percentage": "0.2" ?
+    const apolloPoolUSTAmount = apolloPoolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? apolloPoolResponse.assets[1].amount : apolloPoolResponse.assets[0].amount;
+    const apolloPoolApolloAmount = apolloPoolResponse.assets[1]?.info?.token ? apolloPoolResponse.assets[1].amount : apolloPoolResponse.assets[0].amount;
+    const apolloPrice = div(apolloPoolUSTAmount, apolloPoolApolloAmount);
+    // const apolloPrice = 1.36;
+    const [config, height, strategy38, totalRewardWeight] = await Promise.all([configTask, heightTask, getStrategy38Task, getTotalRewardWeightTask]);
+    const current_distribution_schedule = (config.distribution_schedule as []).find(obj => height >= +obj[0] && height <= +obj[1]);
+    const totalMint = +current_distribution_schedule[2];
+    // const blockPerYears = 365 * 24 * 3600 / 6.5;
+    // const mintYearsDuration = (current_distribution_schedule[1] - current_distribution_schedule[0]) / blockPerYears;
+    // const mintPerYear = totalMint / mintYearsDuration;
+
+    const weight_ratio = new BigNumber(strategy38.reward_weight).dividedBy(totalRewardWeight.total_reward_weight);
+    const AnnualApolloReward = new BigNumber(totalMint).div(current_distribution_schedule[1] - current_distribution_schedule[0]).multipliedBy(31556952).toNumber();
+    const apolloAprInput = weight_ratio.multipliedBy(AnnualApolloReward).multipliedBy(apolloPrice).div(+tvlStrategy38).toNumber();
+
+    // const c = new BigNumber(apolloPoolUSTAmount).multipliedBy(2).div(apolloPoolResponse.total_share);
+    // const s = new BigNumber(strategy38.total_bond_amount).multipliedBy(c).multipliedBy(strategy38.reward_weight).dividedBy(totalRewardWeight.total_reward_weight);
+    // const apr = new BigNumber(mintPerYear).multipliedBy(apolloPrice).div(s);
+    // const test = apr.toNumber();
+    return apolloAprInput;
   }
 }

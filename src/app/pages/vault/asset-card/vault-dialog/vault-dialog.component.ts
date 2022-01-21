@@ -23,8 +23,8 @@ import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { TerraSwapRouterService } from '../../../../services/api/terraswap-router.service';
 import { StakerAstroportService } from '../../../../services/api/staker-astroport.service';
 import { AstroportService } from '../../../../services/api/astroport.service';
-import { SimulateZapToBondResponse } from 'src/app/services/api/staker/simulate_zap_to_bond_response';
-import { SimulationResponse } from 'src/app/services/api/terraswap_pair/simulation_response';
+import { SimulateZapToBondResponse } from '../../../../services/api/staker/simulate_zap_to_bond_response';
+import { SimulationResponse } from '../../../../services/api/terraswap_pair/simulation_response';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | 'ust_bdp';

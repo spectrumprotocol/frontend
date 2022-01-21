@@ -18,6 +18,7 @@ import {Denom} from '../../../consts/denom';
 import {AstroportTokenUstFarmService} from '../../api/astroport-tokenust-farm.service';
 import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
+import { BalancePipe } from '../../../pipes/balance.pipe';
 
 @Injectable()
 export class AstroportOrionUstFarmInfoService implements FarmInfoService {
@@ -40,7 +41,8 @@ export class AstroportOrionUstFarmInfoService implements FarmInfoService {
   constructor(
     private farmService: AstroportTokenUstFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService
+    private wasm: WasmService,
+    private balancePipe: BalancePipe,
   ) {
   }
 
@@ -65,16 +67,19 @@ export class AstroportOrionUstFarmInfoService implements FarmInfoService {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${Denom.USD}`;
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
     const farmConfigTask = this.farmService.query(this.farmContract, { config: {} });
+    // const orionLpStatTask = await axios.get<any>(`${this.terrajs.settings.orionAPI}/staking`); TODO Orion not migrate reward yet
+    const astroPrice = this.balancePipe.transform('1', poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]);
+    // const [orionLpStat] = await Promise.all([orionLpStatTask]);
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
-    const lpStat = await this.getLPStat(poolResponses[key]);
-    const astroportGovStat = await this.getGovStat();
     const pairs: Record<string, PairStat> = {};
 
-    const depositAmount = +(await depositAmountTask);
-    const farmConfig = await farmConfigTask;
+    // const lpStatTask = this.getLPStat(poolResponses[key], (+orionLpStat.data?.lp?.apr / 100 || 0), +astroPrice);
+    const lpStatTask = this.getLPStat(poolResponses[key], 0, +astroPrice);
+    const [lpStat, depositAmount, farmConfig] = await Promise.all([lpStatTask, depositAmountTask, farmConfigTask]);
+
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
@@ -100,7 +105,7 @@ export class AstroportOrionUstFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: +(astroportGovStat.apy || 0),
+        farmApr:  0,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
@@ -118,15 +123,16 @@ export class AstroportOrionUstFarmInfoService implements FarmInfoService {
     return rewardInfo.reward_infos;
   }
 
-  async getLPStat(poolResponse: PoolResponse) {
+  async getLPStat(poolResponse: PoolResponse, farmApr: number, astroPrice: number) {
+    const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
+    const alloc_point = 16723;
+    const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
+    const astro_total_emit_per_year = astro_per_block / 6.5 * 60 * 60 * 24 * 365;
+    const farmPoolUSTAmount = poolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? poolResponse.assets[1].amount : poolResponse.assets[0].amount;
+    const farmUSTTvl = +farmPoolUSTAmount * 2;
+    const apr = (astro_total_emit_per_year * +astroPrice / farmUSTTvl) + farmApr;
     return {
-      apr: 0
-    };
-  }
-
-  async getGovStat() {
-    return {
-      apy: 0
+      apr
     };
   }
 }
