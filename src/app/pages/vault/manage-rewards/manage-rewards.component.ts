@@ -50,7 +50,7 @@ export class ManageRewardsComponent implements OnInit {
     if (!isAstro) {
       for (const rewardInfo of Object.values(this.info.rewardInfos)) {
         const farmInfo = this.info.farmInfos.find(x => x.farmContract === rewardInfo.farmContract);
-        if (farmInfo.rewardTokenContract !== rewardTokenContract && (!isSpec || !isAstro)) {
+        if (farmInfo.rewardTokenContract !== rewardTokenContract && !isSpec) {
           continue;
         }
         let pendingReward = 0;
