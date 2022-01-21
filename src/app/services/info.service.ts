@@ -153,6 +153,10 @@ export class InfoService {
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST']);
   private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set(['Astroport|ORION|UST', 'Astroport|Psi|UST', 'Astroport|nLuna|Psi', 'Astroport|nETH|Psi']);
 
+  get ASTRO_KEY() {
+    return `Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`;
+  }
+
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
       return this.terrajs.network?.name === 'mainnet' || !farmInfo.mainnetOnly;
@@ -350,12 +354,17 @@ export class InfoService {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos);
         const keys = Object.keys(pairStats);
         for (const key of keys){
+            if (!pairStats[key].poolAstroApr) {
+              pairStats[key].poolAstroApr = 0;
+            }
             if (farmInfo.dex === 'Astroport'){
             // if (farmInfo.dex === 'Astroport' && pairStats[key].poolApy === 0){
             const found = this.astroportData.pools.find(pool => pool.pool_address === this.pairInfos[key].contract_addr);
             pairStats[key].poolApr = +found.protocol_rewards.apr;
             pairStats[key].poolAstroApr = +found.astro_rewards.apr;
             pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
+            this.poolInfos[key].commission = +found.trading_fees.apr;
+            console.log(this.poolInfos[key])
           }
         }
 
@@ -537,7 +546,7 @@ export class InfoService {
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
         const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardKey];
-        const astroTokenPoolResponse = this.poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`];
+        const astroTokenPoolResponse = this.ASTRO_KEY;
 
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
         if (farmInfo.dex === 'Astroport'){
@@ -638,6 +647,7 @@ export class InfoService {
       if (!this.poolInfos[key]) {
         continue;
       }
+      const poolInfo = this.poolInfos[key];
       const pairStat = this.stat?.pairs[key];
       const poolApr = pairStat?.poolApr || 0;
       const poolApy = pairStat?.poolApy || 0;
@@ -647,9 +657,9 @@ export class InfoService {
       const compoundApy = poolApy + specApy;
       const farmApr = pairStat?.farmApr || 0;
       const farmApy = poolApr + poolApr * farmApr / 2;
-      const stakeApy = farmApy + specApy;
+      const stakeApy = farmApy + specApy + (poolInfo.dex === 'Astroport' && poolInfo.auto_stake ? this.stat.pairs[this.ASTRO_KEY]?.farmApr : 0);
       const apy = Math.max(compoundApy, stakeApy);
-      const poolInfo = this.poolInfos[key];
+
 
       const baseToken = this.poolInfos[key].baseTokenContract;
       const denomToken = this.poolInfos[key].denomTokenContract;
