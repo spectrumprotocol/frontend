@@ -122,6 +122,10 @@ export class InfoService {
       }
     } catch (e) { }
   }
+
+  get ASTRO_KEY() {
+    return `Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`;
+  }
   userUstAmount: string;
   userSpecAmount: string;
   userSpecLpAmount: string;
@@ -153,9 +157,8 @@ export class InfoService {
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST']);
   private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set(['Astroport|Psi|UST', 'Astroport|nLuna|Psi', 'Astroport|nETH|Psi']);
 
-  get ASTRO_KEY() {
-    return `Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`;
-  }
+  lastRefreshAstroportData: number;
+  astroportData: any;
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
@@ -357,8 +360,9 @@ export class InfoService {
             if (!pairStats[key].poolAstroApr) {
               pairStats[key].poolAstroApr = 0;
             }
-            if (farmInfo.dex === 'Astroport'){
-            // if (farmInfo.dex === 'Astroport' && pairStats[key].poolApy === 0){
+            // if (farmInfo.dex === 'Astroport'){
+            // if farmInfo.queryPairStats return poolApr 0 and poolAstroApr 0, meaning that do not use calculation on Spectrum side but use Astroport API
+            if (farmInfo.dex === 'Astroport' && pairStats[key].poolApr === 0 && pairStats[key].poolAstroApr === 0){
             const found = this.astroportData.pools.find(pool => pool.pool_address === this.pairInfos[key].contract_addr);
             pairStats[key].poolApr = +found.protocol_rewards.apr;
             pairStats[key].poolAstroApr = +found.astro_rewards.apr;
@@ -718,9 +722,6 @@ export class InfoService {
       this.allVaults.push(vault);
     }
   }
-
-  lastRefreshAstroportData: number;
-  astroportData: any;
 
   private async ensureAstroportData() {
     if (!this.astroportData || !this.lastRefreshAstroportData || this.lastRefreshAstroportData + 10 * 60 * 1000 > Date.now()) {
