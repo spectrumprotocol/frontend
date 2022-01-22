@@ -546,7 +546,7 @@ export class InfoService {
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
         const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardKey];
-        const astroTokenPoolResponse = this.ASTRO_KEY;
+        const astroTokenPoolResponse = this.poolResponses[this.ASTRO_KEY];
 
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
         if (farmInfo.dex === 'Astroport'){
