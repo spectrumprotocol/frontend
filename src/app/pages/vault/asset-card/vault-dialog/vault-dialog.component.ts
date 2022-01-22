@@ -847,6 +847,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   autoCompoundChanged() {
+    // TODO bug use of this.auto_compound_percent_deposit previous value, slider is 0, but value is 1.
     const percent = this.auto_compound_percent_deposit / 100;
     this.vault['totalMixApy'] = this.vault.stakeApy * (1 - percent) + this.vault.compoundApy * percent;
     this.vault['mixApy'] = this.vault['totalMixApy'] - this.vault.specApy;
