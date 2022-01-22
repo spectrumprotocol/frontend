@@ -1,0 +1,24 @@
+.chart-wrapper { 
+    display: flex;
+    overflow: hidden; 
+}
+
+.bottom-right {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.chart-container {
+    height: 63%;
+}
+
+::ng-deep .advanced-pie-legend {
+    .total-value, .item-value, .total-label {
+        font-size: 20px !important;
+    }
+    .advanced-pie-legend {
+        width: 100% !important;
+    }
+    
+}

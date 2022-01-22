@@ -6,6 +6,7 @@ import { GovPollNewComponent } from './pages/gov-poll-new/gov-poll-new.component
 import { GovPollDetailComponent } from './pages/gov-poll-detail/gov-poll-detail.component';
 import {TradeComponent} from './pages/trade/trade.component';
 import {TxHistoryComponent} from './pages/tx-history/tx-history.component';
+import { DashboardCompoent } from './pages/dashboard/dashboard.component';
 
 const routes: Routes = [
   { path: 'vaults', component: VaultComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'gov', component: GovComponent },
   { path: 'gov/poll/new', component: GovPollNewComponent },
   { path: 'gov/poll/:id', component: GovPollDetailComponent },
+  { path: 'dashboard', component: DashboardCompoent },
   { path: '**', redirectTo: '/vaults' },
 ];
 

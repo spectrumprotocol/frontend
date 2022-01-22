@@ -1,0 +1,187 @@
+<main>
+    <div class="container py-5">
+      <div class="row">
+        <div class="col-12">
+          <h4>Dashboard</h4>
+          <span class="sub-topic">any text here</span>
+        </div>
+      </div>
+      <!-- <div class="row">
+        <div class="card card-red mt-3">
+            <div class="card-body">
+                <div class="card-text small mb-1">
+                  <div class="bulk-name-container">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="name-detail ps-2">
+                        Due to the Columbus-5 mainnet upgrade, we are reindexing data shown on the webapp.
+                        The values such as APR are subject to higher volatility and may be incorrect as there are less data samples.
+                        Values will smooth out and return to normal once the reindexing has been complete.
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+      </div> -->
+      <div class="row g-1 pt-3">
+            <div class="col-12">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3">
+                        <p class="card-text sub-topic">
+                            Total Value Locked
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ +this.displayData?.tvl?.total / UNIT || 0 | shortNum }}</span>
+                            <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
+                            mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
+                        </h3>
+                        <div class="chart-wrapper me-3">
+                            <ngx-charts-bar-horizontal-stacked
+                                (window:resize)="onResize($event)"
+                                [view]="view"
+                                [scheme]="colorScheme"
+                                [results]="tvlData"
+                                [legend]="showLegend"
+                                [legendPosition]="legendPosition">
+                            </ngx-charts-bar-horizontal-stacked>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3" style="min-height: 100px;">
+                        <div class="float-start">
+                            <p class="card-text sub-topic">
+                                Market Cap
+                            </p>
+                            <h3 class="card-title">
+                                <span>{{ +this.displayData?.spec?.marketCap / UNIT || 0 | shortNum }}</span>
+                            </h3>
+                        </div>
+                        <div class="float-end pe-2">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <img class="mt-4" src="../../../assets/Icon _ DropDown.svg" width="22">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="card-text sub-topic">
+                                        SPEC Price
+                                    </p>
+                                    <h3 class="card-title">
+                                        <span>{{ +this.displayData?.spec?.price || 0 | shortNum }} UST</span>
+                                        <a role="button" class="text-light small"
+                                        ><img class="mg-3" width="24" src="../../../assets/Icon _ ExitToApp.svg"></a>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3">
+                        <p class="card-text sub-topic">
+                            TVL Timeline
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ +this.displayData?.tvl?.total / UNIT || 0 | shortNum }}</span>
+                            <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
+                            mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
+                        </h3>
+                    </div>
+                    <ngx-charts-area-chart-stacked
+                        class="chart-container"
+                        [view]="viewArea"
+                        [timeline]="true"
+                        [scheme]="colorAreaChart"
+                        [xAxis]="xAxisArea"
+                        [yAxis]="yAxisArea"
+                        [timeline]="timelineArea"
+                        [results]="graphData"
+                        [gradient]="gradient">
+                    </ngx-charts-area-chart-stacked>
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="card card-grey box-left">
+                    <div class="card-body ps-3">
+                        <p class="card-text sub-topic">
+                            Spec Circulation
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ this.displayData?.spec?.circulation | number: '1.0-2' }}</span>
+                            <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
+                            mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
+                        </h3>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="d-flex align-items-start flex-column" style="height: 200px;">
+                                    <div class="mb-auto p-2"></div>
+                                    <div class="pb-2">
+                                        <p class="card-text sub-topic">
+                                            Staked
+                                        </p>
+                                        <h3 class="card-text">
+                                            <span>{{ this.displayData?.circulation?.gov | number: '1.0-2'  }} SPEC</span>
+                                        </h3>
+                                    </div>
+                                    <div class="pb-2">
+                                        <p class="card-text sub-topic">
+                                            LP
+                                        </p>
+                                        <h3 class="card-text">
+                                            <span>{{ this.displayData?.circulation?.lpVaults | number: '1.0-2' }} SPEC</span>
+                                        </h3>
+                                    </div>
+                                    <div class="pb-2">
+                                        <p class="card-text sub-topic">
+                                            Other
+                                        </p>
+                                        <h3 class="card-text">
+                                            <span>{{ this.displayData?.circulation?.others | number: '1.0-2' }} SPEC</span>
+                                        </h3>
+                                    </div>
+                                  </div>                                  
+                            </div>
+                            <div class="bottom-right">
+                                <ngx-charts-pie-chart [view]="[160, 160]" 
+                                [results]="specCirculationData" 
+                                [scheme]="colorScheme" 
+                                [gradient]="false"
+                                [legend]="false" 
+                                [labels]="false" 
+                                [doughnut]="true">
+                            </ngx-charts-pie-chart>
+                            </div>
+                       </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3">
+                        <p class="card-text sub-topic">
+                            Buyback APR
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ this.displayData?.stat?.total?.earning | number: '1.0-2' }}</span>
+                        </h3>
+                        <p class="card-text sub-topic mt-3">
+                            Spec buyback (72HR)
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ this.displayData?.stat?.last7?.earning | number: '1.0-2' }}</span>
+                        </h3>
+                        <p class="card-text sub-topic mt-3">
+                            Spec Buyback (Total)
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ this.displayData?.stat?.total?.totalBurn | number: '1.0-2' }}</span>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

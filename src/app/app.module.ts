@@ -79,6 +79,7 @@ import {AstroportAstroUstFarmInfoService} from './services/farm_info/astroport/a
 import {AstroportLunaUstFarmInfoService} from './services/farm_info/astroport/astroport-luna-ust-farm-info.service';
 import {AstroportBlunaLunaFarmInfoService} from './services/farm_info/astroport/astroport-bluna-luna.farm-info.service';
 import {MdbCheckboxModule} from 'mdb-angular-ui-kit/checkbox';
+import { DashboardCompoent } from './pages/dashboard/dashboard.component';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -129,6 +130,7 @@ registerLocaleData(locale, 'en');
     ManageRewardsComponent,
     VaultDialogComponent,
     LpEarningPipe,
+    DashboardCompoent
   ],
     imports: [
         AppRoutingModule,
