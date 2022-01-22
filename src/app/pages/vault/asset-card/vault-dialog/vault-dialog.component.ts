@@ -25,6 +25,7 @@ import { StakerAstroportService } from '../../../../services/api/staker-astropor
 import { AstroportService } from '../../../../services/api/astroport.service';
 import { SimulateZapToBondResponse } from '../../../../services/api/staker/simulate_zap_to_bond_response';
 import { SimulationResponse } from '../../../../services/api/terraswap_pair/simulation_response';
+import {PercentPipe} from '@angular/common';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | 'ust_bdp';
@@ -34,7 +35,7 @@ export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | '
   templateUrl: './vault-dialog.component.html',
   styleUrls: ['./vault-dialog.component.scss'],
   animations: [fade],
-  providers: [LpBalancePipe]
+  providers: [LpBalancePipe, PercentPipe]
 })
 export class VaultDialogComponent implements OnInit, OnDestroy {
   vault: Vault;
@@ -114,7 +115,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private stakerAstroport: StakerAstroportService,
     private terraSwap: TerraSwapService,
     private terraSwapRouter: TerraSwapRouterService,
-    private astroport: AstroportService
+    private astroport: AstroportService,
+    private percentPipe: PercentPipe
   ) { }
 
   ngOnInit() {
@@ -151,6 +153,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
     });
     this.refreshData();
+  }
+
+  getAPRTooltipHTML(){
+    let html = '';
+    if (this.vault.pairStat.poolApr > 0){
+      html += `${this.vault.rewardSymbol} Reward APR ${this.percentPipe.transform(this.vault.pairStat.poolApr)} <br>`;
+    }
+    if (this.vault.pairStat.poolAstroApr > 0){
+      html += `ASTRO Generator APR ${this.percentPipe.transform(this.vault.pairStat.poolAstroApr)} <br>`;
+    }
+    return html;
   }
 
   async refreshData() {

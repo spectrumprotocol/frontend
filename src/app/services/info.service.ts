@@ -363,8 +363,7 @@ export class InfoService {
             pairStats[key].poolApr = +found.protocol_rewards.apr;
             pairStats[key].poolAstroApr = +found.astro_rewards.apr;
             pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
-            this.poolInfos[key].commission = +found.trading_fees.apr;
-            console.log(this.poolInfos[key])
+            // this.poolInfos[key].tradeApr = +found.trading_fees.apr;
           }
         }
 
@@ -398,7 +397,7 @@ export class InfoService {
       * (1 - +config.warchest_ratio);
     for (const pair of Object.values(stat.pairs)) {
       pair.specApr = ustPerYear * pair.multiplier / totalWeight / +pair.tvl;
-      pair.dpr = (pair.poolApr + pair.specApr) / 365;
+      pair.dpr = (pair.poolApr + pair.poolAstroApr + pair.specApr) / 365;
       stat.vaultFee += pair.vaultFee;
       stat.tvl = plus(stat.tvl, pair.tvl);
     }
@@ -650,13 +649,15 @@ export class InfoService {
       const poolInfo = this.poolInfos[key];
       const pairStat = this.stat?.pairs[key];
       const poolApr = pairStat?.poolApr || 0;
+      const poolAstroApr = pairStat?.poolAstroApr || 0;
+      const poolAprTotal = poolApr + poolAstroApr;
       const poolApy = pairStat?.poolApy || 0;
       const specApr = pairStat?.specApr || 0;
       const govApr = this.stat?.govApr || 0;
       const specApy = specApr + specApr * govApr / 2;
       const compoundApy = poolApy + specApy;
       const farmApr = pairStat?.farmApr || 0;
-      const farmApy = poolApr + poolApr * farmApr / 2;
+      const farmApy = poolAprTotal + poolAprTotal * farmApr / 2;
       const stakeApy = farmApy + specApy + (poolInfo.dex === 'Astroport' && poolInfo.auto_stake ? this.stat.pairs[this.ASTRO_KEY]?.farmApr : 0);
       const apy = Math.max(compoundApy, stakeApy);
 
@@ -712,11 +713,11 @@ export class InfoService {
         will_available_at_astroport,
         now_available_at_astroport,
         proxy_reward_not_yet_available,
+        poolAprTotal
       };
       this.allVaults.push(vault);
     }
   }
-
 
   lastRefreshAstroportData: number;
   astroportData: any;
