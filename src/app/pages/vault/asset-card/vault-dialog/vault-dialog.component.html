@@ -595,7 +595,7 @@
                   <div class="col">ASTRO Reward APR</div>
                   <div class="col text-end">{{vault.pairStat?.poolAstroApr || 0 | percent }}</div>
                 </div>
-                <div class="row" *ngIf="vault.poolAprTotal > 0 && (vault.poolAprTotal !== vault.pairStat.poolApr || vault.poolAprTotal !== vault.pairStat.poolAstroApr)">
+                <div class="row" *ngIf="vault.pairStat?.poolApr > 0 && vault.pairStat?.poolAstroApr > 0">
                   <div class="col">Total Rewards APR</div>
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
@@ -624,7 +624,7 @@
                     <div class="col text-end">{{vault.pairStat?.poolAstroApr || 0 | percent }}</div>
                   </div>
                 </ng-container>
-                <div class="row" *ngIf="vault.poolAprTotal > 0 && (vault.poolAprTotal !== vault.pairStat.poolApr || vault.poolAprTotal !== vault.pairStat.poolAstroApr)">
+                <div class="row" *ngIf="vault.pairStat?.poolApr > 0 && vault.pairStat?.poolAstroApr > 0">
                   <div class="col">Total Rewards APR</div>
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
@@ -670,7 +670,7 @@
                   <div class="col">ASTRO Reward APR</div>
                   <div class="col text-end">{{vault.pairStat?.poolAstroApr || 0 | percent }}</div>
                 </div>
-                <div class="row" *ngIf="vault.poolAprTotal > 0 && (vault.poolAprTotal !== vault.pairStat.poolApr || vault.poolAprTotal !== vault.pairStat.poolAstroApr)">
+                <div class="row" *ngIf="vault.pairStat?.poolApr > 0 && vault.pairStat?.poolAstroApr > 0">
                   <div class="col">Total Rewards APR</div>
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
