@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { PoolItem } from '../../api/astroport_luna_ust_farm/pools_response';
-import { RewardInfoResponseItem } from '../../api/astroport_luna_ust_farm/reward_info_response';
+import { PoolItem } from '../../api/astroport_token_ust_farm/pools_response';
+import { RewardInfoResponseItem } from '../../api/astroport_token_ust_farm/reward_info_response';
 import { TerrajsService } from '../../terrajs.service';
 import {
   DEX,
@@ -15,67 +15,61 @@ import {toBase64} from '../../../libs/base64';
 import {PoolResponse} from '../../api/terraswap_pair/pool_response';
 import {VaultsResponse} from '../../api/gov/vaults_response';
 import {Denom} from '../../../consts/denom';
-import {times} from '../../../libs/math';
-import {AstroportBlunalunaFarmService} from '../../api/astroport-blunaluna-farm.service';
-import {PairInfo} from '../../api/terraswap_factory/pair_info';
+import {AstroportTokenUstFarmService} from '../../api/astroport-tokenust-farm.service';
 import {WasmService} from '../../api/wasm.service';
-import {BalancePipe} from '../../../pipes/balance.pipe';
-import { balance_transform } from '../../calc/balance_calc';
+import {PairInfo} from '../../api/terraswap_factory/pair_info';
 
 @Injectable()
-export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
-  farm = 'Astroport';
+export class AstroportSttUstFarmInfoService implements FarmInfoService {
+  farm = 'Starterra';
   autoCompound = true;
-  autoStake = true;
-  farmColor = '#463df6';
+  autoStake = false;
+  farmColor = '#ffee00';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
-  denomTokenContract = Denom.LUNA;
+  denomTokenContract = Denom.USD;
   highlight = true;
   mainnetOnly = true;
+  hasProxyReward = true;
 
   get defaultBaseTokenContract() {
-    return this.terrajs.settings.bLunaToken;
+    return this.terrajs.settings.starterraToken;
   }
 
   constructor(
-    private farmService: AstroportBlunalunaFarmService,
+    private farmService: AstroportTokenUstFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService,
-    private balancePipe: BalancePipe
+    private wasm: WasmService
   ) {
   }
 
   get farmContract() {
-    return this.terrajs.settings.astroportBlunaLunaFarm;
+    return this.terrajs.settings.astroportSttUstFarm;
   }
 
   get rewardTokenContract() {
-    return this.terrajs.settings.astroToken;
+    return this.terrajs.settings.starterraToken;
   }
 
   get farmGovContract() {
-    return this.terrajs.settings.astroportGov;
+    return null;
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.farmService.query({ pools: {} });
+    const pool = await this.farmService.query(this.farmContract, { pools: {} });
     return pool.pools;
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
-    const key = `${this.dex}|${this.terrajs.settings.bLunaToken}|${Denom.LUNA}`;
+    const key = `${this.dex}|${this.defaultBaseTokenContract}|${Denom.USD}`;
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
-    const farmConfigTask = this.farmService.query({ config: {} });
+    const farmConfigTask = this.farmService.query(this.farmContract, { config: {} });
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
-    const ulunaPrice = balance_transform('1', poolResponses[`${this.dex}|${Denom.LUNA}|${Denom.USD}`]);
-    const astroPrice = balance_transform('1', poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]);
-
-    const lpStat = await this.getLPStat(poolResponses[key], astroPrice, ulunaPrice);
+    const lpStat = await this.getLPStat(poolResponses[key]);
     const astroportGovStat = await this.getGovStat();
     const pairs: Record<string, PairStat> = {};
 
@@ -83,16 +77,15 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
     const farmConfig = await farmConfigTask;
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
-    const ulunaAsset = p.assets.find(a => a.info.native_token?.['denom'] === Denom.LUNA);
-    if (!ulunaAsset) {
+    const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
+    if (!uusd) {
       return;
     }
-    const totalUlunaValueUST = times(ulunaPrice, ulunaAsset.amount);
 
     const poolApr = +(lpStat.apr || 0);
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
-    pair.tvl = new BigNumber(totalUlunaValueUST)
+    pair.tvl = new BigNumber(uusd.amount)
       .times(depositAmount)
       .times(2)
       .div(p.total_share)
@@ -117,7 +110,7 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
   }
 
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const rewardInfo = await this.farmService.query({
+    const rewardInfo = await this.farmService.query(this.farmContract, {
       reward_info: {
         staker_addr: this.terrajs.address,
       }
@@ -125,29 +118,9 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
     return rewardInfo.reward_infos;
   }
 
-  getStakeGovMsg(amount: string): MsgExecuteContract {
-    return new MsgExecuteContract(
-      this.terrajs.address,
-      this.terrajs.settings.astroToken,
-      {
-        send: {
-          contract: this.terrajs.settings.astroportGov,
-          amount,
-          msg: toBase64({ enter: {} })
-        }
-      }
-    );
-  }
-
-  async getLPStat(poolResponse: PoolResponse, astroPrice: string, ulunaPrice: string) {
-    const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
-    const alloc_point = 250000;
-    const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
-    const astro_total_emit_per_year = astro_per_block / 6.5 * 60 * 60 * 24 * 365;
-    const blunaLunaTvl = +poolResponse.assets.find(asset => asset.info?.native_token?.['denom'] === Denom.LUNA).amount * +ulunaPrice * 2;
-    const apr = astro_total_emit_per_year * +astroPrice / blunaLunaTvl;
+  async getLPStat(poolResponse: PoolResponse) {
     return {
-      apr
+      apr: 0
     };
   }
 
@@ -156,5 +129,4 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
       apy: 0
     };
   }
-
 }

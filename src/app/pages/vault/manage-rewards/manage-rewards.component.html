@@ -64,23 +64,26 @@
         </div>
         <div class="col-12 col-md-6">
           <section class="row btn-group pe-2">
-            <ng-container *ngIf="token.key !== 'SPEC'">
-              <div class="col-12 col-md-6">
-                <button *ngIf="token.key !== 'SPEC' && getGovFarmInfo(token.value.rewardTokenContract).autoStake"
-                  class="btn btn-secondary f-12 w-100" (click)="moveToGov(token.value.rewardTokenContract)">Move to Gov</button>
+            <ng-container *ngIf="token.key !== 'SPEC' && token.key !== 'ASTRO'">
+              <div class="col-12 text-center">
+                <button *ngIf="getGovFarmInfo(token.value.rewardTokenContract).autoStake"
+                  class="btn btn-secondary f-12 w-50" (click)="moveToGov(token.value.rewardTokenContract)">Move to
+                  Gov</button>
               </div>
             </ng-container>
             <ng-container *ngIf="token.key === 'SPEC'">
-              <ng-container *ngFor="let day of availablePoolDays">
-                <div class="col-sm-12 col-md-6" *ngIf="day === 0">
-                  <button class="btn btn-secondary f-12 w-100" *ngIf="day === 0" (click)="moveToGov(token.value.rewardTokenContract)">Move to
-                    No Lock Gov</button>
-                </div>
-                <div class="col-sm-12 col-md-6" *ngIf="day !== 0">
-                  <button class="btn btn-secondary f-12 w-100" *ngIf="day !== 0"
-                    (click)="moveToGov(token.value.rewardTokenContract, day)">Move to {{day}}-Day Locked Gov</button>
-                </div>
-              </ng-container>
+              <div mdbDropdown class="dropdown col-12 text-center" #dropdown>
+                <button class="btn btn-secondary dropdown-toggle f-12 w-50" type="button" mdbDropdownToggle>
+                  Move to Gov
+                </button>
+                <ul mdbDropdownMenu class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                  <li *ngFor="let day of availablePoolDays">
+                    <button class="dropdown-item" type="button" (click)="moveToGov(token.value.rewardTokenContract, day)">
+                      {{ day === 0 ? 'No Lock' : day + '-Day Locked'}}
+                    </button>
+                  </li>
+                </ul>
+              </div>
             </ng-container>
           </section>
         </div>

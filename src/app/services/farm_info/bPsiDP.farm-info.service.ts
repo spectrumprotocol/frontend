@@ -17,7 +17,7 @@ import { WasmService } from '../api/wasm.service';
 import { VaultsResponse } from '../api/gov/vaults_response';
 import { div } from '../../libs/math';
 import { Apollo, gql } from 'apollo-angular';
-import { Denom } from 'src/app/consts/denom';
+import { Denom } from '../../consts/denom';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()

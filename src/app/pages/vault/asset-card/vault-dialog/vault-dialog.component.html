@@ -50,8 +50,10 @@
               APR
             </ng-container>
             <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-              APY <i class="fas fa-info-circle info-icon super"
-                     mdbTooltip="APY (Annual Percentage Yield) is the rate of return with compound interest in one year."></i>
+              APY <i class="fas fa-info-circle info-icon super" *ngIf="!vault.poolInfo.hasProxyReward"
+                     [mdbTooltip]="'APY (Annual Percentage Yield) is the rate of return with compound interest in one year from '+ vault.rewardSymbol + '.'"></i>
+                  <i class="fas fa-info-circle info-icon super" *ngIf="vault.poolInfo.hasProxyReward"
+                     [mdbTooltip]="'APY (Annual Percentage Yield) is the rate of return with compound interest in one year from '+ vault.rewardSymbol + ', ASTRO.'"></i>
             </ng-container>
           </p>
           <h3 class="card-title">
@@ -247,13 +249,12 @@
                       <span class="input-group-text f-12 igt-fixwidth fw-bold-600"><img [src]="'UST' | url:'icon'"
                                                                                         class="img-fluid rounded-circle me-1" height="24" width="24">UST</span>
                       <input #depositAmountUSTTokenUSTCtl="ngModel" [(ngModel)]="depositUSTAmountTokenUST"
-                             [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" [max]="+info.userUstAmount - this.bufferUST"
+                             [class.is-invalid]="depositUSTAmountTokenUST && depositAmountUSTTokenUSTCtl.invalid" [max]="+info.userUstAmount - bufferUST"
                              [min]="0.000001" [step]="0.000001" aria-describedby="USTLabel"
                              class="form-control fix-border" name="depositUSTAmountTokenUST" readonly
                              required type="number" />
                       <div *ngIf="depositAmountUSTTokenUSTCtl.errors?.max" class="invalid-feedback text-end">UST is not
-                        enough for
-                        this transaction</div>
+                        enough for this transaction</div>
                     </div>
                     <div class="text-end">
                       <span *ngIf="depositTokenAAmtTokenToken > +info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit"
@@ -399,6 +400,9 @@
                 <button (click)="setMaxDepositUST()" class="btn btn-max last" type="button">
                   Max
                 </button>
+                <div *ngIf="depositUSTAmtUSTCtl.errors?.max" class="invalid-feedback text-end">UST is not
+                  enough for
+                  this transaction</div>
               </div>
 
               <div *ngIf="depositUSTAmtUST" class="mt-3 pool-info">
@@ -508,6 +512,9 @@
                 <button (click)="setMaxDepositUSTForBDP()" class="btn btn-max last" type="button">
                   Max
                 </button>
+                <div *ngIf="depositBDPAmtUSTCtl.errors?.max" class="invalid-feedback text-end">UST is not
+                  enough for
+                  this transaction</div>
               </div>
 
               <div *ngIf="depositUSTAmtbDPToken" class="mt-3 pool-info">
@@ -659,7 +666,18 @@
                 <i class="fas fa-flag"></i> {{vault.poolInfo.farm}} is being audited, please use your own discretion
                 before investing.
               </div>
-
+              <div *ngIf="vault.proxy_reward_not_yet_available" class="card card-blue mt-3 mb-3">
+                <div class="card-body">
+                  <div class="card-text small mb-1">
+                    <div class="bulk-name-container">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      <div class="name-detail">
+                        This farm has not started {{vault.rewardSymbol}} reward emission yet. Only ASTRO will be used to compound.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div *ngIf="depositType && depositType !== 'compound' && vault.poolInfo.farm !== 'Spectrum'"
                    class="card card-warning mt-3">
                 <div class="card-body">
@@ -869,12 +887,13 @@
                     <div class="bulk-name-container">
                       <i class="fas fa-exclamation-triangle"></i>
                       <div class="name-detail">
-                        Please deposit to now available {{ vault.name }} Astroport vault instead.
+                        Please deposit to the new {{ vault.name }} Astroport vault instead.
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+
 
               <button (click)="doWithdraw()" [disabled]="withdrawAmtCtl.invalid" class="btn btn-primary"
                       type="submit">Withdraw</button>
@@ -890,7 +909,7 @@
             <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.auto_stake" class="row">
               <div class="col">
                 Staked ASTRO
-                <small class="text-primary">APR: {{ info.stat.astroApr | percent }}</small>
+                <small class="text-primary">APR: {{ info.stat.pairs[ASTRO_KEY]?.farmApr | percent }}</small>
               </div>
               <div class="col text-end">
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_farm_reward || 0 | unit : vault.baseDecimals }}

@@ -35,13 +35,11 @@ export interface Stat {
   govTvl: string;
   govApr: number;
   govPoolCount: number;
-  astroApr: number;
 }
 
 export type PendingReward = {
   pending_reward_token: number;
   pending_reward_ust: number;
-  pending_reward_astro: number;
 };
 
 export type PortfolioItem = {
@@ -148,9 +146,10 @@ export class InfoService {
 
   portfolio: Portfolio;
 
-  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST']);
-  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST']);
-  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['']);
+  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST']);
+  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MINE|UST']);
+  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST']);
+  private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set(['Astroport|Psi|UST', 'Astroport|nLuna|Psi', 'Astroport|nETH|Psi']);
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
@@ -335,7 +334,6 @@ export class InfoService {
       govTvl: '0',
       govApr: 0,
       govPoolCount: 1,
-      astroApr: 0, // TODO get astro apr
     };
     const vaultsTask = this.gov.vaults();
     await this.refreshPoolInfos();
@@ -489,13 +487,13 @@ export class InfoService {
     let tvl = 0;
     const portfolio: Portfolio = {
       total_reward_ust: 0,
-      gov: { pending_reward_token: 0, pending_reward_ust: 0, pending_reward_astro: 0 },
+      gov: { pending_reward_token: 0, pending_reward_ust: 0 },
       tokens: new Map(),
       farms: new Map(),
     };
     for (const farmInfo of this.farmInfos.filter(fi => this.shouldEnableFarmInfo(fi))) {
       if (this.tokenInfos[farmInfo.rewardTokenContract]?.symbol) {
-        portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { rewardTokenContract: farmInfo.rewardTokenContract, pending_reward_token: 0, pending_reward_ust: 0, pending_reward_astro: 0 });
+        portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { rewardTokenContract: farmInfo.rewardTokenContract, pending_reward_token: 0, pending_reward_ust: 0 });
         portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
       } else {
         console.error('updateMyTvl tokenInfos Symbol not found', farmInfo.rewardTokenContract);
@@ -523,15 +521,34 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        // TODO add ASTRO and handle farm1 farm2
         const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardKey];
-        const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
-        tvl += pending_farm_reward_ust;
+        const astroTokenPoolResponse = this.poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`];
+
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
-        portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
-        portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+        if (farmInfo.dex === 'Astroport'){
+          const pending_farm2_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm2_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
+          tvl += pending_farm2_reward_ust;
+          portfolio.tokens.get(rewardSymbol).pending_reward_token += rewardInfo.pending_farm2_reward ? +rewardInfo.pending_farm2_reward / CONFIG.UNIT : 0;
+          portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm2_reward_ust;
+
+          const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, astroTokenPoolResponse) / CONFIG.UNIT || 0;
+          tvl += pending_farm_reward_ust;
+          portfolio.tokens.get('ASTRO').pending_reward_token += rewardInfo.pending_farm_reward ? +rewardInfo.pending_farm_reward / CONFIG.UNIT : 0;
+          portfolio.tokens.get('ASTRO').pending_reward_ust += pending_farm_reward_ust;
+
+          portfolio.total_reward_ust += pending_farm_reward_ust;
+          portfolio.total_reward_ust += pending_farm2_reward_ust;
+        } else if (farmInfo.dex === 'Terraswap'){
+          const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
+          tvl += pending_farm_reward_ust;
+          portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
+          portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
+          portfolio.total_reward_ust += pending_farm_reward_ust;
+        }
         portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[vault.poolInfo.rewardKey]?.farmApr;
-        portfolio.total_reward_ust += pending_farm_reward_ust;
+        if (portfolio.tokens.get('ASTRO')){
+          portfolio.tokens.get('ASTRO').apr = this.stat?.pairs[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]?.farmApr || 0;
+        }
       }
     }
 
@@ -628,6 +645,7 @@ export class InfoService {
       const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
       const will_available_at_astroport = this.WILL_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const now_available_at_astroport = this.NOW_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
+      const proxy_reward_not_yet_available = this.PROXY_REWARD_NOT_YET_AVAILABLE.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
 
       const vault: Vault = {
         baseSymbol,
@@ -667,7 +685,8 @@ export class InfoService {
           : `${baseSymbol}-${denomSymbol} LP`,
         disabled,
         will_available_at_astroport,
-        now_available_at_astroport
+        now_available_at_astroport,
+        proxy_reward_not_yet_available,
       };
       this.allVaults.push(vault);
     }

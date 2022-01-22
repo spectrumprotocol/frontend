@@ -11,7 +11,7 @@ import { GovPoolDetail } from './gov-pool/gov-pool.component';
 import { div, gt, minus, plus, times } from '../../libs/math';
 import { BalanceResponse } from '../../services/api/gov/balance_response';
 import { StateInfo } from '../../services/api/gov/state_info';
-import { AnchorMarketService } from 'src/app/services/api/anchor-market.service';
+import { AnchorMarketService } from '../../services/api/anchor-market.service';
 import { HttpClient } from '@angular/common/http';
 
 const LIMIT = 10;
@@ -100,13 +100,14 @@ export class GovComponent implements OnInit, OnDestroy {
     const vaultFeeByPools = {};
     let lockedBalance = '0';
 
-    const vaultFeeSlice = this.info.stat.vaultFee / this.stateInfo.pools.length;
+    const vaultFeeSlice = this.info.stat.vaultFee / this.stateInfo.pool_weight;
     for (let n = 0; n < this.stateInfo.pools.length; n++) {
       const involvedPools = this.stateInfo.pools.slice(n);
       const sumTotalBalance = involvedPools.reduce((sum, pool) => sum + +pool.total_balance, 0);
+      const pivotPool = involvedPools[0];
 
       for (const pool of involvedPools) {
-        const poolVaultFee = +pool.total_balance / sumTotalBalance * vaultFeeSlice;
+        const poolVaultFee = +pool.total_balance / sumTotalBalance * vaultFeeSlice * pivotPool.weight;
         vaultFeeByPools[pool.days] = (vaultFeeByPools[pool.days] || 0) + poolVaultFee;
       }
     }

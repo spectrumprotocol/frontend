@@ -14,7 +14,7 @@ import { TerrajsService } from '../../services/terrajs.service';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
 import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
 import { MsgExecuteContract } from '@terra-money/terra.js';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-gov-poll-new',

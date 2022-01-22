@@ -30,6 +30,7 @@ export interface StateInfo {
   last_mint: number;
   poll_count: number;
   poll_deposit: Uint128;
+  pool_weight: number;
   pools?: StatePoolInfo[];
   prev_aust_balance?: Uint128 & string;
   prev_balance?: Uint128 & string;
@@ -44,5 +45,6 @@ export interface StatePoolInfo {
   days: number;
   total_balance: Uint128;
   total_share: Uint128;
+  weight: number;
   [k: string]: unknown;
 }

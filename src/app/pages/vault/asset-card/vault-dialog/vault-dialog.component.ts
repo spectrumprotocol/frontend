@@ -23,8 +23,8 @@ import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { TerraSwapRouterService } from '../../../../services/api/terraswap-router.service';
 import { StakerAstroportService } from '../../../../services/api/staker-astroport.service';
 import { AstroportService } from '../../../../services/api/astroport.service';
-import { SimulateZapToBondResponse } from 'src/app/services/api/staker/simulate_zap_to_bond_response';
-import { SimulationResponse } from 'src/app/services/api/terraswap_pair/simulation_response';
+import { SimulateZapToBondResponse } from '../../../../services/api/staker/simulate_zap_to_bond_response';
+import { SimulationResponse } from '../../../../services/api/terraswap_pair/simulation_response';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | 'ust_bdp';
@@ -109,7 +109,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
     public info: InfoService,
-    private lpBalancePipe: LpBalancePipe,
     private tokenService: TokenService,
     private staker: StakerService,
     private stakerAstroport: StakerAstroportService,
@@ -241,11 +240,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         amountBase.times(pool.total_share).div(assetBase.amount))
       : amountBase.times(amountDenom).sqrt();
     if (this.vault.pairStat) {
-      const depositTVL = new BigNumber(this.lpBalancePipe.transform(grossLp.toString(), this.info.poolResponses, this.vault.poolInfo.key));
-      const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
       const depositFee = this.vault.poolInfo.farm === 'Spectrum'
         ? new BigNumber('0')
-        : grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+        : grossLp.multipliedBy(DEPOSIT_FEE);
       this.netLpTokenToken = grossLp.minus(depositFee).toString();
       this.depositFeeTokenToken = depositFee.toString();
     }
@@ -854,10 +851,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.netLpLp = undefined;
     }
     const grossLp = new BigNumber(this.depositLPAmtLP);
-    const depositTVL = new BigNumber(this.lpBalancePipe.transform(times(this.depositLPAmtLP, CONFIG.UNIT) ?? '0', this.info.poolResponses, this.vault.poolInfo.key));
-    const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
-    const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
-      grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+    const depositFee = this.vault.poolInfo.farm === 'Spectrum'
+      ? new BigNumber('0')
+      : grossLp.multipliedBy(DEPOSIT_FEE);
     this.netLpLp = grossLp.minus(depositFee).toString();
     this.depositFeeLp = depositFee.toString();
   }
@@ -921,9 +917,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.basedTokenPrice = this.toUIPrice(res.belief_price_b, this.vault.baseDecimals, this.vault.baseDecimals);
     }
 
-    const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
-    const depositFee = this.vault.poolInfo.farm === 'Spectrum' ? new BigNumber('0') :
-      grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+    const depositFee = this.vault.poolInfo.farm === 'Spectrum'
+      ? new BigNumber('0')
+      : grossLp.multipliedBy(DEPOSIT_FEE);
     this.netLpUST = grossLp.minus(depositFee).toString();
     this.grossLpUST = grossLp.toString();
     this.depositFeeUST = depositFee.toString();
@@ -984,9 +980,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
 
     const grossLp = new BigNumber(this.depositbDPTokenAmtbDPToken);
-    const depositTVL = new BigNumber(this.depositbDPTokenAmtbDPToken).times(CONFIG.UNIT);
-    const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
-    const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+    const depositFee = grossLp.multipliedBy(DEPOSIT_FEE);
     this.netLpLp = grossLp.minus(depositFee).toString();
     this.depositFeeLp = depositFee.toString();
   }
@@ -1085,9 +1079,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else {
       this.lpFromDepositDP = undefined;
     }
-    const myTVL = depositTVL.plus(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount || '0');
     const grossLp = new BigNumber(this.lpFromSwapDP || 0).plus(this.lpFromDepositDP || 0);
-    const depositFee = grossLp.multipliedBy(new BigNumber('1').minus(myTVL.dividedBy(myTVL.plus(this.vault.pairStat.tvl))).multipliedBy(DEPOSIT_FEE));
+    const depositFee = grossLp.multipliedBy(DEPOSIT_FEE);
     this.grossLpUST = grossLp.toString();
     this.netLpUST = grossLp.minus(depositFee).toString();
     this.depositFeeUST = depositFee.toString();
