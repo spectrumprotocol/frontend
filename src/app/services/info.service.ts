@@ -657,10 +657,10 @@ export class InfoService {
       const specApy = specApr + specApr * govApr / 2;
       const compoundApy = poolApy + specApy;
       const farmApr = pairStat?.farmApr || 0;
-      const farmApy = poolAprTotal + poolAprTotal * farmApr / 2;
-      const stakeApy = farmApy + specApy + (poolInfo.dex === 'Astroport' && poolInfo.auto_stake ? this.stat.pairs[this.ASTRO_KEY]?.farmApr : 0);
+      const farmAndAstroApr = farmApr + this.stat.pairs[this.ASTRO_KEY].farmApr;
+      const farmApy = poolAprTotal + poolAprTotal * farmAndAstroApr / 2;
+      const stakeApy = farmApy + specApy;
       const apy = Math.max(compoundApy, stakeApy);
-
 
       const baseToken = this.poolInfos[key].baseTokenContract;
       const denomToken = this.poolInfos[key].denomTokenContract;

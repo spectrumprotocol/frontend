@@ -158,10 +158,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   getAPRTooltipHTML(){
     let html = '';
     if (this.vault.pairStat.poolApr > 0){
-      html += `${this.vault.rewardSymbol} Reward APR ${this.percentPipe.transform(this.vault.pairStat.poolApr)} <br>`;
+      html += `${this.vault.rewardSymbol} APR ${this.percentPipe.transform(this.vault.pairStat.poolApr)} <br>`;
     }
     if (this.vault.pairStat.poolAstroApr > 0){
-      html += `ASTRO Generator APR ${this.percentPipe.transform(this.vault.pairStat.poolAstroApr)} <br>`;
+      html += `ASTRO APR ${this.percentPipe.transform(this.vault.pairStat.poolAstroApr)} <br>`;
     }
     return html;
   }
