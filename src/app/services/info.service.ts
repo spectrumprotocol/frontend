@@ -724,7 +724,7 @@ export class InfoService {
   }
 
   private async ensureAstroportData() {
-    if (!this.astroportData || !this.lastRefreshAstroportData || this.lastRefreshAstroportData + 10 * 60 * 1000 > Date.now()) {
+    if (!this.astroportData || !this.lastRefreshAstroportData || this.lastRefreshAstroportData > Date.now() + 10 * 60 * 1000) {
       const apollo = this.apollo.use('astroport');
       this.astroportData = (await apollo.query<any>({
         query: gql`query {
