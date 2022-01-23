@@ -65,9 +65,9 @@
                 <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
               </ng-container>
               <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-              <span *ngIf="vault.apy > vault.pairStat?.poolApr">
+              <span *ngIf="vault.apy > vault.poolAprTotal">
                 <span class="sub-topic text-decoration-line-through text-primary">
-                  <span class="sub-topic">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
+                  <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>
                 </span>
               </span>
                 <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
@@ -177,9 +177,9 @@
                     <span class="text-primary"> {{vault.apy | percent}}</span>
                   </ng-container>
                   <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-                    <span *ngIf="vault.apy > vault.pairStat?.poolApr">
+                    <span *ngIf="vault.apy > vault.poolAprTotal">
                       <span class="sub-topic text-decoration-line-through text-primary">
-                        <span class="sub-topic">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
+                        <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>
                       </span>
                     </span>
                     <span class="text-primary"> {{vault.apy | percent}}</span>
