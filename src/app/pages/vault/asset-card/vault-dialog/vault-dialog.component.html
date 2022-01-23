@@ -645,7 +645,7 @@
               <div *ngIf="depositType === 'mixed'">
                 <div class="d-flex flex-row justify-content-between">
                   <div class="slider-compound-stake flex-grow-1 custom-slider">
-                    <ngx-slider (valueChange)="autoCompoundChanged()" [(value)]="auto_compound_percent_deposit"
+                    <ngx-slider (userChange)="autoCompoundChanged($event)" [(value)]="auto_compound_percent_deposit"
                                 [options]="ngx_slider_option"></ngx-slider>
                   </div>
                 </div>
