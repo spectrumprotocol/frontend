@@ -196,6 +196,7 @@ registerLocaleData(locale, 'en');
     UnitPipe,
     BalancePipe,
     LpBalancePipe,
+    ShortNumPipe,
     { provide: LOCALE_ID, useValue: 'en' },
   ],
   bootstrap: [AppComponent]

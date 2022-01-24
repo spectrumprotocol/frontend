@@ -3,7 +3,8 @@ import { fade } from '../../consts/animations';
 import { LegendPosition, ViewDimensions } from '@swimlane/ngx-charts';
 import { HttpClient } from '@angular/common/http';
 import { CONFIG } from 'src/app/consts/config';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { ShortNumPipe } from '../../pipes/short-num.pipe';
 
 export interface IChartData {
   name: string,
@@ -22,16 +23,14 @@ export interface ISerial {
   animations: [fade]
 })
 export class DashboardCompoent implements AfterViewInit {
-  displayData: any;
-  tvlData: IChartData[];
+  displayData: any = null;
+  tvlData;
   specCirculationData: ISerial[];
   graphData: IChartData[];
+  legendData;
   UNIT = CONFIG.UNIT;
-  view: any = [undefined, 40];
   viewDonut: any = [700, 300];
   viewArea: any = undefined;
-  showLegend: boolean = true;
-  legendPosition = LegendPosition.Below;
   legendArea: boolean = true;
   xAxisArea: boolean = false;
   yAxisArea: boolean = false;
@@ -42,17 +41,12 @@ export class DashboardCompoent implements AfterViewInit {
     domain: ['#fc5185', '#ff8dc1', '#d4295d']
   } as any;;
 
-  customColors = {
-    domain: ['#5AA454', '#E44D25']
-  } as any;
-
   colorAreaChart = {
     domain: ['#181d23']
   } as any;
 
   constructor(private http: HttpClient,
-              private num: DecimalPipe) {
-    this.view = [innerWidth / 1.35, 40];
+              private shortNumPipe: ShortNumPipe) {
     this.viewDonut = [innerWidth / 1.35, 400];
     this.viewArea = undefined;
   }
@@ -65,33 +59,35 @@ export class DashboardCompoent implements AfterViewInit {
       let geturl = "https://specapi.azurefd.net/api/data?type=dashboard";
       this.http.get<any>(geturl).subscribe(result => {
         this.displayData = result;
-        this.tvlData = [{
-          name: 'tvl',
-          series: [{
+        console.log(this.displayData);
+        this.tvlData = {
+          gov: {
             name: 'gov',
-            value: Math.round(result.tvl.gov)
-          }, {
+            shortValue: this.shortNumPipe.transform(Math.round(result.tvl.gov) / this.UNIT),
+            value: Math.round(result.tvl.gov),
+            percentage: this.relDiff(result.tvl.gov, result.tvl.lpVaults)
+          },
+          lpVaults: {
             name: 'lpVaults',
-            value: Math.round(result.tvl.lpVaults)
-          }]
-        }];
-        
+            shortValue: this.shortNumPipe.transform(Math.round(result.tvl.lpVaults) / this.UNIT),
+            value: Math.round(result.tvl.lpVaults),
+            percentage: this.relDiff(result.tvl.lpVaults, result.tvl.gov)
+          }
+        };
+        console.log(this.tvlData);
         this.specCirculationData = [{
-          name: 'gov',
+          name: 'Staked',
           value: result.circulation.gov
         }, {
-          name: 'lpVaults',
+          name: 'LP',
           value: result.circulation.lpVaults
         }, {
           name: 'others',
           value: result.circulation.others
-        } ,{
-          name: 'total',
-          value: result.circulation.total
         }]
 
         this.graphData = [{
-          name: 'test',
+          name: '',
           series: result.tvl.previousValues.map(it => {
             return {
               name: it.date,
@@ -102,7 +98,21 @@ export class DashboardCompoent implements AfterViewInit {
       });
   }
 
-  onResize(event) {
-    this.view = [event.target.innerWidth / 1.30, 40];
+  relDiff(a, b) {
+    const remainValue = Math.round(a);
+    const total = remainValue + Math.round(b);
+    return ((total - remainValue) / total) * 100
+   }
+
+  formatDataLabel(data) {
+    return  `${data.data.name}: ${data.value.toLocaleString()} SPEC`;
+  }
+
+  displayTimeLine(data) {
+    return data[0].name;
+  }
+
+  displayVal(data) {
+    return this.shortNumPipe.transform(Math.round(data[0].value) / this.UNIT);
   }
 }
