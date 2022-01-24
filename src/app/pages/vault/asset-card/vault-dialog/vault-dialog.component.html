@@ -628,7 +628,7 @@
                   <div class="col">Total Rewards APR</div>
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
-                <div class="row">
+                <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
                   <div class="col">APY from auto stake</div>
                   <div class="col text-end">{{vault.farmApy | percent }}</div>
                 </div>
@@ -636,7 +636,7 @@
                   <div class="col">SPEC Reward</div>
                   <div class="col text-end">{{vault.specApy | percent }}</div>
                 </div>
-                <div class="row">
+                <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
                   <div class="col">Total APY</div>
                   <div class="col text-end">{{vault.stakeApy | percent }}</div>
                 </div>
