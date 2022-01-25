@@ -81,7 +81,7 @@ export interface ISettings {
   astroportApolloUstFarm: string;
   astroportPsiUstFarm: string;
   astroportNlunaPsiFarm: string;
-  astroportNethUstFarm: string;
+  astroportNethPsiFarm: string;
   starterraToken: string;
   apolloToken: string;
   apolloFactory: string;
@@ -178,7 +178,7 @@ export const networks: Record<string, ISettings> = {
     astroportApolloUstFarm: 'terra1zngkjhqqearpfhym9x9hnutpklduz45e9uvp9u',
     astroportPsiUstFarm: 'terra1jxh7hahwxlsy5cckkyhuz50a60mpn5tr0px6tq',
     astroportNlunaPsiFarm: 'terra1zl3ud44lja3r8ld8nwzh3eukl6h97gp2xr4wq6',
-    astroportNethUstFarm: 'terra1xw3jzqwrql5fvddchzxycd2ygrep5kudsden5c',
+    astroportNethPsiFarm: 'terra1xw3jzqwrql5fvddchzxycd2ygrep5kudsden5c',
     starterraToken: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n',
     sttStaking: 'terra15p807wnm9q3dyw4rvfqsaukxqt6lkuqe62q3mp',
     lcd: 'https://lcd.terra.dev',
@@ -268,7 +268,7 @@ export const networks: Record<string, ISettings> = {
     astroportApolloUstFarm: '',
     astroportPsiUstFarm: '',
     astroportNlunaPsiFarm: '',
-    astroportNethUstFarm: '',
+    astroportNethPsiFarm: '',
     starterraToken: '',
     apolloToken: '',
     apolloFactory: '',

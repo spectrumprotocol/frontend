@@ -48,7 +48,7 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
   }
 
   get farmContract() {
-    return this.terrajs.settings.astroportNethUstFarm;
+    return this.terrajs.settings.astroportNethPsiFarm;
   }
 
   get rewardTokenContract() {
