@@ -183,7 +183,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportOrionUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
-    { provide: FARM_INFO_SERVICE, useClass: AstroportMineUstFarmInfoService, multi: true },
+    // { provide: FARM_INFO_SERVICE, useClass: AstroportMineUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportSttUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
