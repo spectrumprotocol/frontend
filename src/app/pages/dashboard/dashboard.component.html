@@ -3,13 +3,13 @@
       <div class="row">
         <div class="col-12">
           <h4>Dashboard</h4>
-          <span class="sub-topic">any text here</span>
+          <span class="sub-topic"></span>
         </div>
       </div>
-      <div *ngIf="!!!this.displayData" class="d-flex align-items-center justify-content-center pt-3">
+      <div *ngIf="!this.displayData" class="d-flex align-items-center justify-content-center pt-3">
         <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...
       </div>
-      <div class="row g-1 pt-3" *ngIf="!!this.displayData">
+      <div class="row g-1 pt-3" *ngIf="this.displayData">
             <div class="col-12">
                 <div class="card card-grey box-left h-100">
                     <div class="card-body ps-3">
@@ -23,12 +23,12 @@
                         </h3>
                         <div class="mt-2">
                             <div class="progress" style="height: 10px; border-radius: 6px;">
-                                <div class="progress-bar bg-gov" 
+                                <div class="progress-bar bg-gov"
                                     role="progressbar"
                                     [style.width.%]="this.tvlData.gov.percentage">
                                 </div>
                                 <div class="progress-bar bg-lpVaults"
-                                    role="progressbar" 
+                                    role="progressbar"
                                     [style.width.%]="this.tvlData.lpVaults.percentage">
                                 </div>
                             </div>
@@ -114,10 +114,10 @@
                 <div class="card card-grey box-left">
                     <div class="card-body ps-3">
                         <p class="card-text sub-topic">
-                            Spec Circulation
+                            SPEC Circulation
                         </p>
                         <h3 class="card-title">
-                            <span>{{ this.displayData?.spec?.circulation | number: '1.0-2' }}</span>
+                            <span>{{ this.displayData?.spec?.circulation | unit: 6: '1.0-2' }} SPEC</span>
                             <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
                             mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
                         </h3>
@@ -132,7 +132,7 @@
                                         <h3 class="card-text">
                                             <div class="sq-color bg-gov"></div>
                                             <span class="img-txt">
-                                                {{ this.displayData?.circulation?.gov | number: '1.0-2'  }} SPEC</span>
+                                                {{ this.displayData?.circulation?.gov | unit: 6: '1.0-2'  }} SPEC</span>
                                         </h3>
                                     </div>
                                     <div class="mb-3">
@@ -142,7 +142,7 @@
                                         <h3 class="card-text">
                                             <div class="sq-color bg-lpVaults"></div>
                                             <span class="img-txt">
-                                                {{ this.displayData?.circulation?.lpVaults | number: '1.0-2' }} SPEC</span>
+                                                {{ this.displayData?.circulation?.lpVaults | unit: 6: '1.0-2' }} SPEC</span>
                                         </h3>
                                     </div>
                                     <div class="mb-3">
@@ -152,19 +152,19 @@
                                         <h3 class="card-text">
                                             <div class="sq-color bg-other"></div>
                                             <span class="img-txt">
-                                                {{ this.displayData?.circulation?.others | number: '1.0-2' }} SPEC</span>
+                                                {{ this.displayData?.circulation?.others | unit: 6: '1.0-2' }} SPEC</span>
                                         </h3>
                                     </div>
-                                  </div>                                  
+                                  </div>
                             </div>
                             <div class="bottom-right">
-                                <ngx-charts-pie-chart [view]="[160, 160]" 
+                                <ngx-charts-pie-chart [view]="[160, 160]"
                                 [tooltipText]="formatDataLabel"
-                                [results]="specCirculationData" 
-                                [scheme]="colorScheme" 
+                                [results]="specCirculationData"
+                                [scheme]="colorScheme"
                                 [gradient]="false"
-                                [legend]="false" 
-                                [labels]="false" 
+                                [legend]="false"
+                                [labels]="false"
                                 [doughnut]="true">
                             </ngx-charts-pie-chart>
                             </div>
