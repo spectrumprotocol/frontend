@@ -87,6 +87,9 @@ import {AstroportMineUstFarmInfoService} from './services/farm_info/astroport/as
 import {AstroportOrionUstFarmInfoService} from './services/farm_info/astroport/astroport-orion-ust.farm-info.service';
 import {AstroportSttUstFarmInfoService} from './services/farm_info/astroport/astroport-stt-ust.farm-info.service';
 import {AstroportVkrUstFarmInfoService} from './services/farm_info/astroport/astroport-vkr-ust.farm-info.service';
+import {AstroportPsiUstFarmInfoService} from './services/farm_info/astroport/astroport-psi-ust.farm-info.service';
+import {AstroportNlunaPsiFarmInfoService} from './services/farm_info/astroport/astroport-nluna-psi.farm-info.service';
+import {AstroportNethPsiFarmInfoService} from './services/farm_info/astroport/astroport-neth-psi.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -182,12 +185,15 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportPsiUstFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportNlunaPsiFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportNethPsiFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportOrionUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
     // { provide: FARM_INFO_SERVICE, useClass: AstroportMineUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true },
-    // { provide: FARM_INFO_SERVICE, useClass: AstroportSttUstFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportSttUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportVkrUstFarmInfoService, multi: true },

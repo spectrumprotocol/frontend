@@ -38,6 +38,7 @@ export interface Vault {
   will_available_at_astroport: boolean;
   now_available_at_astroport: boolean;
   proxy_reward_not_yet_available: boolean;
+  poolAprTotal: number;
 }
 
 @Component({

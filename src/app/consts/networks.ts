@@ -79,6 +79,9 @@ export interface ISettings {
   astroportVkrUstFarm: string;
   astroportMineUstFarm: string;
   astroportApolloUstFarm: string;
+  astroportPsiUstFarm: string;
+  astroportNlunaPsiFarm: string;
+  astroportNethPsiFarm: string;
   starterraToken: string;
   apolloToken: string;
   apolloFactory: string;
@@ -92,8 +95,8 @@ export interface ISettings {
   // astroportAstroUstLP: string;
   // astroportLunaUstLP: string;
   // astroportBlunaLunaLP: string;
-  // burnVaultController: string;
-  // burnVault: string;
+  burnVaultController: string;
+  burnVault: string;
   // astroportAncUstLP: string;
   // astroportMirUstLP: string;
   // astroportOrionUstLP: string;
@@ -173,6 +176,9 @@ export const networks: Record<string, ISettings> = {
     astroportVkrUstFarm: 'terra1yj34w2n24p4x7s69evjp7ukzz82ca5tvlzqa84',
     astroportMineUstFarm: 'terra1s9zqk5ksnwp8qywrmdwt2fq0a9l0zc2d2sw2an',
     astroportApolloUstFarm: 'terra1zngkjhqqearpfhym9x9hnutpklduz45e9uvp9u',
+    astroportPsiUstFarm: 'terra1jxh7hahwxlsy5cckkyhuz50a60mpn5tr0px6tq',
+    astroportNlunaPsiFarm: 'terra1zl3ud44lja3r8ld8nwzh3eukl6h97gp2xr4wq6',
+    astroportNethPsiFarm: 'terra1xw3jzqwrql5fvddchzxycd2ygrep5kudsden5c',
     starterraToken: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n',
     sttStaking: 'terra15p807wnm9q3dyw4rvfqsaukxqt6lkuqe62q3mp',
     lcd: 'https://lcd.terra.dev',
@@ -189,6 +195,8 @@ export const networks: Record<string, ISettings> = {
     apolloToken: 'terra100yeqvww74h4yaejj6h733thgcafdaukjtw397',
     apolloFactory: 'terra1g7jjjkt5uvkjeyhp8ecdz4e4hvtn83sud3tmh2',
     mirrorFactory: 'terra1mzj9nsxx0lxlaxnekleqdy8xnyw2qrh3uz6h8p',
+    burnVaultController: 'terra12f4h5sk0mfmrvectgw3nns56rlp9za9z0hvvvv',
+    burnVault: 'terra1gyqyhjppy3k77wltnmqt29ms340mmayk7ank4e',
   },
   testnet: {
     specToken: 'terra1kvsxd94ue6f4rtchv2l6me5k07uh26s7637cza',
@@ -260,6 +268,9 @@ export const networks: Record<string, ISettings> = {
     astroportVkrUstFarm: '',
     astroportMineUstFarm: '',
     astroportApolloUstFarm: '',
+    astroportPsiUstFarm: '',
+    astroportNlunaPsiFarm: '',
+    astroportNethPsiFarm: '',
     starterraToken: '',
     apolloToken: '',
     apolloFactory: '',
@@ -276,5 +287,7 @@ export const networks: Record<string, ISettings> = {
     chainID: 'bombay-12',
     finder: 'finder.terra.money',
     mirrorFactory: 'terra10l9xc9eyrpxd5tqjgy6uxrw7dd9cv897cw8wdr',
+    burnVaultController: 'terra12f4h5sk0mfmrvectgw3nns56rlp9za9z0hvvvv',
+    burnVault: 'terra1l3g2yv5cqwdtrxeun4a76jkq45gwwm682usvs4'
   },
 };

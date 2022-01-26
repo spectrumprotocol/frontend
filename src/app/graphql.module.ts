@@ -39,6 +39,11 @@ export function createApollo(httpLink: HttpLink): Record<string, ApolloClientOpt
       cache: new InMemoryCache(),
       defaultOptions,
     },
+    astroport: {
+      link: httpLink.create({ uri: 'https://api.astroport.fi/graphql' }),
+      cache: new InMemoryCache(),
+      defaultOptions,
+    },
   };
 }
 
