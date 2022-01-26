@@ -497,8 +497,9 @@ export class InfoService {
   async refreshCirculation() {
     const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
     const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
-    const taskResult = await Promise.all([task1, task2]);
-    this.circulation = minus(minus(taskResult[0].total_supply, taskResult[1].staked_amount), taskResult[1].unstaked_amount);
+    const task3 = this.wallet.balance(this.terrajs.settings.burnVault, this.terrajs.settings.burnVaultController);
+    const taskResult = await Promise.all([task1, task2, task3]);
+    this.circulation = minus(minus(taskResult[0].total_supply, taskResult[1].locked_amount), taskResult[1].staked_amount);
   }
 
   async refreshMarketCap() {

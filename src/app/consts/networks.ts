@@ -92,8 +92,8 @@ export interface ISettings {
   // astroportAstroUstLP: string;
   // astroportLunaUstLP: string;
   // astroportBlunaLunaLP: string;
-  // burnVaultController: string;
-  // burnVault: string;
+  burnVaultController: string;
+  burnVault: string;
   // astroportAncUstLP: string;
   // astroportMirUstLP: string;
   // astroportOrionUstLP: string;
@@ -189,6 +189,8 @@ export const networks: Record<string, ISettings> = {
     apolloToken: 'terra100yeqvww74h4yaejj6h733thgcafdaukjtw397',
     apolloFactory: 'terra1g7jjjkt5uvkjeyhp8ecdz4e4hvtn83sud3tmh2',
     mirrorFactory: 'terra1mzj9nsxx0lxlaxnekleqdy8xnyw2qrh3uz6h8p',
+    burnVaultController: 'terra12f4h5sk0mfmrvectgw3nns56rlp9za9z0hvvvv',
+    burnVault: 'terra1gyqyhjppy3k77wltnmqt29ms340mmayk7ank4e',
   },
   testnet: {
     specToken: 'terra1kvsxd94ue6f4rtchv2l6me5k07uh26s7637cza',
@@ -276,5 +278,7 @@ export const networks: Record<string, ISettings> = {
     chainID: 'bombay-12',
     finder: 'finder.terra.money',
     mirrorFactory: 'terra10l9xc9eyrpxd5tqjgy6uxrw7dd9cv897cw8wdr',
+    burnVaultController: 'terra12f4h5sk0mfmrvectgw3nns56rlp9za9z0hvvvv',
+    burnVault: 'terra1l3g2yv5cqwdtrxeun4a76jkq45gwwm682usvs4'
   },
 };
