@@ -43,7 +43,7 @@ export class DashboardComponent implements AfterViewInit {
   } as any;
 
   colorAreaChart = {
-    domain: ['#181d23']
+    domain: ['#555965']
   } as any;
 
   constructor(private http: HttpClient,
