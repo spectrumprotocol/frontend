@@ -79,7 +79,7 @@ import {AstroportAstroUstFarmInfoService} from './services/farm_info/astroport/a
 import {AstroportLunaUstFarmInfoService} from './services/farm_info/astroport/astroport-luna-ust-farm-info.service';
 import {AstroportBlunaLunaFarmInfoService} from './services/farm_info/astroport/astroport-bluna-luna.farm-info.service';
 import {MdbCheckboxModule} from 'mdb-angular-ui-kit/checkbox';
-import { DashboardCompoent } from './pages/dashboard/dashboard.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import {AstroportAncUstFarmInfoService} from './services/farm_info/astroport/astroport-anc-ust.farm-info.service';
 import {AstroportMirUstFarmInfoService} from './services/farm_info/astroport/astroport-mir-ust.farm-info.service';
 import {AstroportApolloUstFarmInfoService} from './services/farm_info/astroport/astroport-apollo-ust.farm-info.service';
@@ -140,7 +140,7 @@ registerLocaleData(locale, 'en');
     ManageRewardsComponent,
     VaultDialogComponent,
     LpEarningPipe,
-    DashboardCompoent
+    DashboardComponent
   ],
     imports: [
         AppRoutingModule,

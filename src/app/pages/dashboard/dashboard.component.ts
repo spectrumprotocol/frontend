@@ -5,15 +5,16 @@ import { HttpClient } from '@angular/common/http';
 import { CONFIG } from 'src/app/consts/config';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { ShortNumPipe } from '../../pipes/short-num.pipe';
+import {TerrajsService} from '../../services/terrajs.service';
 
 export interface IChartData {
-  name: string,
-  series: ISerial[]
+  name: string;
+  series: ISerial[];
 }
 
 export interface ISerial {
-  name: string,
-  value: number
+  name: string;
+  value: number;
 }
 
 @Component({
@@ -22,7 +23,7 @@ export interface ISerial {
   styleUrls: ['./dashboard.component.scss'],
   animations: [fade]
 })
-export class DashboardCompoent implements AfterViewInit {
+export class DashboardComponent implements AfterViewInit {
   displayData: any = null;
   tvlData;
   specCirculationData: ISerial[];
@@ -31,33 +32,33 @@ export class DashboardCompoent implements AfterViewInit {
   UNIT = CONFIG.UNIT;
   viewDonut: any = [700, 300];
   viewArea: any = undefined;
-  legendArea: boolean = true;
-  xAxisArea: boolean = false;
-  yAxisArea: boolean = false;
-  timelineArea: boolean = true;
-  gradient: boolean = true;
+  legendArea = true;
+  xAxisArea = false;
+  yAxisArea = false;
+  timelineArea = true;
+  gradient = true;
 
   colorScheme = {
     domain: ['#fc5185', '#ff8dc1', '#d4295d']
-  } as any;;
+  } as any;
 
   colorAreaChart = {
     domain: ['#181d23']
   } as any;
 
   constructor(private http: HttpClient,
-              private shortNumPipe: ShortNumPipe) {
+              private shortNumPipe: ShortNumPipe,
+              private terrajs: TerrajsService) {
     this.viewDonut = [innerWidth / 1.35, 400];
     this.viewArea = undefined;
   }
 
   ngAfterViewInit() {
-    this.getMockData();
+    this.initializeDashboardData();
   }
 
-  getMockData() {
-      let geturl = "https://specapi.azurefd.net/api/data?type=dashboard";
-      this.http.get<any>(geturl).subscribe(result => {
+  initializeDashboardData() {
+      this.http.get<any>(this.terrajs.settings.specAPI + '/data?type=dashboard').subscribe(result => {
         this.displayData = result;
         console.log(this.displayData);
         this.tvlData = {
@@ -84,7 +85,7 @@ export class DashboardCompoent implements AfterViewInit {
         }, {
           name: 'others',
           value: result.circulation.others
-        }]
+        }];
 
         this.graphData = [{
           name: '',
@@ -101,7 +102,7 @@ export class DashboardCompoent implements AfterViewInit {
   relDiff(a, b) {
     const remainValue = Math.round(a);
     const total = remainValue + Math.round(b);
-    return ((total - remainValue) / total) * 100
+    return ((total - remainValue) / total) * 100;
    }
 
   formatDataLabel(data) {
