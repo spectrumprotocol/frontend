@@ -89,7 +89,7 @@ export class DashboardComponent implements AfterViewInit {
 
         this.graphData = [{
           name: '',
-          series: result.tvl.previousValues.map(it => {
+          series: result.tvl.previousValues.reverse().map(it => {
             return {
               name: it.date,
               value: it.total
