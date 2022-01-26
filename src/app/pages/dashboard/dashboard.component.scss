@@ -20,14 +20,14 @@
     color: #e14560;
 }
 
-.chart-container {
-    height: 63%;
-}
-
 .progress-bar {
     :hover {
         opacity: 0.3;
     }
+}
+
+.mh-50 {
+    max-height: 100px;
 }
 
 .img-txt {
@@ -68,3 +68,6 @@
     fill: #e14560 !important;
 }
 
+::ng-deep .ngx-charts {
+    height: 170px !important;
+}
