@@ -153,9 +153,9 @@ export class InfoService {
   portfolio: Portfolio;
 
   private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST']);
-  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MINE|UST']);
+  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST']);
-  private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set(['Astroport|Psi|UST', 'Astroport|nLuna|Psi', 'Astroport|nETH|Psi']);
+  private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
 
   lastRefreshAstroportData: number;
   astroportData: any;
@@ -368,7 +368,8 @@ export class InfoService {
             if (found){
               pairStats[key].poolApr = +found.protocol_rewards.apr;
               pairStats[key].poolAstroApr = +found.astro_rewards.apr;
-              pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
+              pairStats[key].poolApy = ((+found.protocol_rewards.apy + 1) * (+found.astro_rewards.apy + 1) * (+found.trading_fees.apy + 1)) - 1;
+              // pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
               // this.poolInfos[key].tradeApr = +found.trading_fees.apr;
             }
           }
@@ -497,8 +498,9 @@ export class InfoService {
   async refreshCirculation() {
     const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
     const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
-    const taskResult = await Promise.all([task1, task2]);
-    this.circulation = minus(minus(taskResult[0].total_supply, taskResult[1].staked_amount), taskResult[1].unstaked_amount);
+    const task3 = this.wallet.balance(this.terrajs.settings.burnVault, this.terrajs.settings.burnVaultController);
+    const taskResult = await Promise.all([task1, task2, task3]);
+    this.circulation = minus(minus(taskResult[0].total_supply, taskResult[1].locked_amount), taskResult[1].staked_amount);
   }
 
   async refreshMarketCap() {
