@@ -95,6 +95,7 @@
                     </div>
                     <ngx-charts-area-chart-stacked
                         class="chart-container"
+                        [tooltipDisabled]="false"
                         [view]="viewArea"
                         [timeline]="true"
                         [scheme]="colorAreaChart"
@@ -103,10 +104,13 @@
                         [timeline]="timelineArea"
                         [results]="graphData"
                         [gradient]="gradient">
-                        <ng-template #seriesTooltipTemplate let-model="model">
-                            <span class="text-red">{{ displayVal(model) }}</span><br>
-                            <span>{{ displayTimeLine(model) | date:'EEE, LLL d YYYY' }}</span>
-                        </ng-template>
+                      <ng-template #seriesTooltipTemplate let-model="model">
+                        <span class="text-red">{{ model[0].value / UNIT | shortNum }}</span><br>
+                        <span>{{ model[0].name | date:'EEE, LLL d YYYY' }}</span>
+                      </ng-template>
+<!--                      hack way to prevent tooltipTemplate from showing when cursor is at pink dot-->
+                      <ng-template #tooltipTemplate>
+                      </ng-template>
                     </ngx-charts-area-chart-stacked>
                 </div>
             </div>

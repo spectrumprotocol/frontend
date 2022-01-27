@@ -60,7 +60,6 @@ export class DashboardComponent implements AfterViewInit {
   initializeDashboardData() {
       this.http.get<any>(this.terrajs.settings.specAPI + '/data?type=dashboard').subscribe(result => {
         this.displayData = result;
-        console.log(this.displayData);
         this.tvlData = {
           gov: {
             name: 'gov',
@@ -75,7 +74,6 @@ export class DashboardComponent implements AfterViewInit {
             percentage: this.relDiff(result.tvl.lpVaults, result.tvl.gov)
           }
         };
-        console.log(this.tvlData);
         this.specCirculationData = [{
           name: 'Staked',
           value: result.circulation.gov
@@ -106,14 +104,7 @@ export class DashboardComponent implements AfterViewInit {
    }
 
   formatDataLabel(data) {
-    return  `${data.data.name}: ${data.value.toLocaleString()} SPEC`;
+    return `${data.data.name}: ${data.value.toLocaleString()} SPEC`;
   }
 
-  displayTimeLine(data) {
-    return data[0].name;
-  }
-
-  displayVal(data) {
-    return this.shortNumPipe.transform(Math.round(data[0].value) / this.UNIT);
-  }
 }
