@@ -20,6 +20,7 @@ import {AstroportTokenTokenFarmService} from '../../api/astroport-tokentoken-far
 import {Denom} from '../../../consts/denom';
 import {times} from '../../../libs/math';
 import {BalancePipe} from '../../../pipes/balance.pipe';
+import {Apollo, gql} from 'apollo-angular';
 
 @Injectable()
 export class AstroportNethPsiFarmInfoService implements FarmInfoService {
@@ -43,7 +44,8 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
     private farmService: AstroportTokenTokenFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService,
-    private balancePipe: BalancePipe
+    private balancePipe: BalancePipe,
+    private apollo: Apollo
   ) {
   }
 
@@ -68,33 +70,55 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${this.denomTokenContract}`;
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
     const farmConfigTask = this.farmService.query(this.farmContract, { config: {} });
+    const astroPrice = this.balancePipe.transform('1', poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]);
+    const psiPrice = this.balancePipe.transform('1', poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
+
+    const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    const nexusLPStatTask = apollo.query<any>({
+      query: gql`{
+        getLiquidityPoolAprV2 {
+          astroport {
+            psiNEthLpArp
+          }
+        }
+      }`
+    }).toPromise();
+
+    const nexusGovStatTask = apollo.query<any>({
+      query: gql`{
+        getGovStakingAprRecords(limit: 1, offset: 0) {
+          date
+          govStakingApr
+        }
+      }`
+    }).toPromise();
 
     // action
+    const nexusLpApr = +((await nexusLPStatTask).data.getLiquidityPoolAprV2.astroport.psiNEthLpArp);
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
-    const lpStatTask = this.getLPStat(poolResponses[key]);
-    const govStatTask = this.getGovStat();
+    const astroAprTask = this.getAstroAprTask(poolResponses[key], astroPrice, psiPrice);
     const pairs: Record<string, PairStat> = {};
 
-    const [depositAmount, farmConfig, lpStat, govStat] = await Promise.all([depositAmountTask, farmConfigTask, lpStatTask, govStatTask]);
+    const [depositAmount, farmConfig, astroApr, nexusGovStat] = await Promise.all([depositAmountTask, farmConfigTask, astroAprTask, nexusGovStatTask]);
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
     const psiAsset = p.assets.find(a => a.info.token?.['contract_addr'] === this.terrajs.settings.nexusToken);
     if (!psiAsset) {
       return;
     }
-    const psiPrice = this.balancePipe.transform('1', poolResponses[`${this.dex}|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
+
     const totalPsiValueUST = times(psiPrice, psiAsset.amount);
-    const nEthPsiTvl = new BigNumber(totalPsiValueUST)
+    const nLunaPsiTvl = new BigNumber(totalPsiValueUST)
       .times(depositAmount)
       .times(2)
       .div(p.total_share)
       .toString();
 
-    const poolApr = +(lpStat.apr || 0);
+    const poolApr = (+nexusLpApr / 100 || 0);
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
-    pair.tvl = nEthPsiTvl;
+    pair.tvl = nLunaPsiTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
@@ -104,8 +128,9 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
       const poolInfo = poolInfos[key];
       const stat: PairStat = {
         poolApr,
+        poolAstroApr: +(astroApr.apr || 0),
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: +(govStat.apy || 0),
+        farmApr: nexusGovStat.data.getGovStakingAprRecords[0].govStakingApr / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
@@ -137,15 +162,16 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
     );
   }
 
-  async getLPStat(poolResponse: PoolResponse) {
+  async getAstroAprTask(poolResponse: PoolResponse, astroPrice: string, psiPrice: string) {
+    const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
+    const alloc_point = 15666;
+    const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
+    const astro_total_emit_per_year = astro_per_block / 6.5 * 60 * 60 * 24 * 365;
+    const farmPoolPsiAmount = poolResponse.assets[1]?.info?.token?.['contract_addr'] === this.terrajs.settings.nexusToken ? poolResponse.assets[1].amount : poolResponse.assets[0].amount;
+    const farmUSTTvl = +farmPoolPsiAmount * +psiPrice * 2;
+    const apr = (astro_total_emit_per_year * +astroPrice / farmUSTTvl);
     return {
-      apr: 0
-    };
-  }
-
-  async getGovStat() {
-    return {
-      apy: 0
+      apr
     };
   }
 }
