@@ -153,8 +153,8 @@ export class InfoService {
   portfolio: Portfolio;
 
   private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST']);
-  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
-  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST']);
+  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
+  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
   private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
 
   lastRefreshAstroportData: number;
