@@ -57,25 +57,24 @@
             </ng-container>
           </p>
           <h3 class="card-title">
-            <ng-container *ngIf="vault.poolInfo.farm === 'Spectrum'">
+            <div *ngIf="vault.poolInfo.farm === 'Spectrum'">
               <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
-            </ng-container>
-            <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
+            </div>
+            <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" [html]="true" [mdbTooltip]="getAPRAPYTooltipHTML()">
               <span *ngIf="vault.apy > vault.poolAprTotal">
                 <span class="sub-topic text-decoration-line-through text-primary">
                   <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>
                 </span>
+                <i class="fas fa-info-circle info-icon super card-text sub-topic"></i>
               </span>
-              <i class="fas fa-info-circle info-icon super card-text sub-topic" [html]="true"
-                 [mdbTooltip]="getAPRTooltipHTML()"></i>
               <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
-            </ng-container>
+            </div>
           </h3>
-          <span class="card-text sub-topic" *ngIf="vault.poolInfo.tradeApr">
-            (+{{ vault.poolInfo.tradeApr || 0 | percent }} LP Income)
-            <i class="fas fa-info-circle info-icon super"
-               [mdbTooltip]="'Additional LP Commission APR income (7 days estimate) from trading fee of '+(vault.poolInfo.commission * 100)+'%'"></i>
-          </span>
+<!--          <span class="card-text sub-topic" *ngIf="vault.poolInfo.tradeApr">-->
+<!--            (+{{ vault.poolInfo.tradeApr || 0 | percent }} LP Income)-->
+<!--            <i class="fas fa-info-circle info-icon super"-->
+<!--               [mdbTooltip]="'Additional LP Commission APR income (7 days estimate) from trading fee of '+(vault.poolInfo.commission * 100)+'%'"></i>-->
+<!--          </span>-->
         </div>
       </div>
     </div>
