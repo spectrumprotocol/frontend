@@ -394,6 +394,11 @@ input[type="number"] {
   border: solid 1px $starterra;
 }
 
+.bg-XDEFI {
+  background: $xdefi-bg;
+  border: solid 1px $xdefi;
+}
+
 .bg-Kujira {
   background: $kujira;
   background: -webkit-linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);
