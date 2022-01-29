@@ -79,8 +79,13 @@ export interface ISettings {
   astroportVkrUstFarm: string;
   astroportMineUstFarm: string;
   astroportApolloUstFarm: string;
+  astroportPsiUstFarm: string;
+  astroportNlunaPsiFarm: string;
+  astroportNethPsiFarm: string;
+  astroportXdefiUstFarm: string;
   starterraToken: string;
   apolloToken: string;
+  xdefiToken: string;
   apolloFactory: string;
   mirrorFactory: string;
   sttStaking: string;
@@ -161,6 +166,7 @@ export const networks: Record<string, ISettings> = {
     psiDPToken: 'terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc',
     astroToken: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
     bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
+    xdefiToken: 'terra169edevav3pdrtjcx35j6pvzuv54aevewar4nlh',
     astroportGov: '',
     astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
     astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
@@ -173,6 +179,10 @@ export const networks: Record<string, ISettings> = {
     astroportVkrUstFarm: 'terra1yj34w2n24p4x7s69evjp7ukzz82ca5tvlzqa84',
     astroportMineUstFarm: 'terra1s9zqk5ksnwp8qywrmdwt2fq0a9l0zc2d2sw2an',
     astroportApolloUstFarm: 'terra1zngkjhqqearpfhym9x9hnutpklduz45e9uvp9u',
+    astroportPsiUstFarm: 'terra1jxh7hahwxlsy5cckkyhuz50a60mpn5tr0px6tq',
+    astroportNlunaPsiFarm: 'terra1zl3ud44lja3r8ld8nwzh3eukl6h97gp2xr4wq6',
+    astroportNethPsiFarm: 'terra1xw3jzqwrql5fvddchzxycd2ygrep5kudsden5c',
+    astroportXdefiUstFarm: 'terra1d9cufxz9a4px9zfzq8quqewlj24durtu6lhwfw',
     starterraToken: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n',
     sttStaking: 'terra15p807wnm9q3dyw4rvfqsaukxqt6lkuqe62q3mp',
     lcd: 'https://lcd.terra.dev',
@@ -250,6 +260,7 @@ export const networks: Record<string, ISettings> = {
     psiDPToken: 'terra1c6vsshlv5gqtwq48darkunnpxu5ustcv96e0qk',
     astroToken: 'terra1cc2up8erdqn2l7nz37qjgvnqy56sr38aj9vqry',
     bLunaToken: '',
+    xdefiToken: '',
     astroportGov: '',
     astroportGenerator: '',
     astroportAstroUstFarm: '',
@@ -262,6 +273,10 @@ export const networks: Record<string, ISettings> = {
     astroportVkrUstFarm: '',
     astroportMineUstFarm: '',
     astroportApolloUstFarm: '',
+    astroportPsiUstFarm: '',
+    astroportNlunaPsiFarm: '',
+    astroportNethPsiFarm: '',
+    astroportXdefiUstFarm: '',
     starterraToken: '',
     apolloToken: '',
     apolloFactory: '',
