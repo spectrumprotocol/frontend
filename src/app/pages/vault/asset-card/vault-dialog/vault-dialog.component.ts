@@ -155,13 +155,29 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.refreshData();
   }
 
-  getAPRTooltipHTML(){
+  getAPRAPYTooltipHTML(){
     let html = '';
+    let totalApr = 0;
     if (this.vault.pairStat?.poolApr > 0){
       html += `${this.vault.rewardSymbol} APR ${this.percentPipe.transform(this.vault.pairStat.poolApr)} <br>`;
+      html += `${this.vault.rewardSymbol} APY ${this.percentPipe.transform((this.vault.pairStat.poolApr / 365 + 1) ** 365 - 1)} <br>`;
+      totalApr += this.vault.pairStat.poolApr;
     }
     if (this.vault.pairStat?.poolAstroApr > 0){
       html += `ASTRO APR ${this.percentPipe.transform(this.vault.pairStat.poolAstroApr)} <br>`;
+      html += `ASTRO APY ${this.percentPipe.transform((this.vault.pairStat.poolAstroApr / 365 + 1) ** 365 - 1)} <br>`;
+      totalApr += this.vault.pairStat.poolAstroApr;
+    }
+    if (this.vault.poolInfo?.tradeApr > 0){
+      html += `Trade APR ${this.percentPipe.transform(this.vault.poolInfo.tradeApr)} <br>`;
+      html += `Trade APY ${this.percentPipe.transform((this.vault.poolInfo.tradeApr / 365 + 1) ** 365 - 1)} <br>`;
+      totalApr += this.vault.poolInfo.tradeApr;
+    }
+    if (totalApr > 0 && this.vault.poolInfo.dex === 'Astroport'){
+      html += `Total APR ${this.percentPipe.transform(totalApr)} <br>`;
+    }
+    if (this.vault.pairStat?.poolApy > 0 && this.vault.poolInfo.dex === 'Astroport'){
+      html += `Total APY ${this.percentPipe.transform(this.vault.pairStat?.poolApy)} <br>`;
     }
     return html;
   }
