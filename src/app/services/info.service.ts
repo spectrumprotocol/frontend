@@ -757,7 +757,8 @@ export class InfoService {
                           day
                         }
                       }
-                    }`
+                    }`,
+        errorPolicy: 'all'
       }).toPromise()).data;
       this.lastRefreshAstroportData = Date.now();
     }
