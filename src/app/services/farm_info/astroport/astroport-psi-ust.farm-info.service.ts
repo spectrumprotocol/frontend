@@ -18,6 +18,7 @@ import {Denom} from '../../../consts/denom';
 import {AstroportTokenUstFarmService} from '../../api/astroport-tokenust-farm.service';
 import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
+import { Apollo, gql } from 'apollo-angular';
 
 @Injectable()
 export class AstroportPsiUstFarmInfoService implements FarmInfoService {
@@ -40,7 +41,8 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
   constructor(
     private farmService: AstroportTokenUstFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService
+    private wasm: WasmService,
+    private apollo: Apollo,
   ) {
   }
 
@@ -65,6 +67,15 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${Denom.USD}`;
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
     const farmConfigTask = this.farmService.query(this.farmContract, { config: {} });
+    const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    const nexusGovStatTask = apollo.query<any>({
+      query: gql`{
+        getGovStakingAprRecords(limit: 1, offset: 0) {
+          date
+          govStakingApr
+        }
+      }`
+    }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
@@ -73,7 +84,7 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
     const govStatTask = this.getGovStat();
     const pairs: Record<string, PairStat> = {};
 
-    const [depositAmount, farmConfig, lpStat, govStat] = await Promise.all([depositAmountTask, farmConfigTask, lpStatTask, govStatTask]);
+    const [depositAmount, farmConfig, lpStat, nexusGovStat] = await Promise.all([depositAmountTask, farmConfigTask, lpStatTask, nexusGovStatTask]);
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
@@ -99,7 +110,7 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: +(govStat.apy || 0),
+        farmApr: nexusGovStat.data.getGovStakingAprRecords[0].govStakingApr / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,

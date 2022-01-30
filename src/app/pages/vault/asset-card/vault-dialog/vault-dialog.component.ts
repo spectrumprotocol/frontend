@@ -173,11 +173,14 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       html += `Trade APY ${this.percentPipe.transform((this.vault.poolInfo.tradeApr / 365 + 1) ** 365 - 1)} <br>`;
       totalApr += this.vault.poolInfo.tradeApr;
     }
-    if (totalApr > 0 && this.vault.poolInfo.dex === 'Astroport'){
+    if (totalApr > 0){
       html += `Total APR ${this.percentPipe.transform(totalApr)} <br>`;
     }
-    if (this.vault.pairStat?.poolApy > 0 && this.vault.poolInfo.dex === 'Astroport'){
-      html += `Total APY ${this.percentPipe.transform(this.vault.pairStat?.poolApy)} <br>`;
+    if (this.vault.pairStat?.poolApy > 0){
+      html += `Total APY ${this.percentPipe.transform(+this.vault.pairStat?.poolApy)} <br>`;
+    }
+    if (this.vault.specApy > 0){
+      html += `SPEC APR ${this.percentPipe.transform(this.vault.specApy)} <br>`;
     }
     return html;
   }
