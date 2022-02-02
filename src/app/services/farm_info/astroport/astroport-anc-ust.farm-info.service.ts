@@ -32,7 +32,7 @@ export class AstroportAncUstFarmInfoService implements FarmInfoService {
   dex: DEX = 'Astroport';
   denomTokenContract = Denom.USD;
   highlight = true;
-  mainnetOnly = true;
+  mainnetOnly = false;
   hasProxyReward = true;
 
   get defaultBaseTokenContract() {
