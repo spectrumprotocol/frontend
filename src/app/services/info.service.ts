@@ -357,13 +357,13 @@ export class InfoService {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos);
         const keys = Object.keys(pairStats);
         for (const key of keys){
-            if (!pairStats[key].poolAstroApr) {
-              pairStats[key].poolAstroApr = 0;
-            }
-            // if (farmInfo.dex === 'Astroport'){
-            // if farmInfo.queryPairStats return poolApr 0 and poolAstroApr 0, meaning that do not use calculation on Spectrum side but use Astroport API
-            if (farmInfo.dex === 'Astroport' && pairStats[key].poolApr === 0 && pairStats[key].poolAstroApr === 0){
-            const found = this.astroportData.pools.find(pool => pool.pool_address === this.pairInfos[key].contract_addr);
+          if (!pairStats[key].poolAstroApr) {
+            pairStats[key].poolAstroApr = 0;
+          }
+          // if (farmInfo.dex === 'Astroport'){
+          // if farmInfo.queryPairStats return poolApr 0 and poolAstroApr 0, meaning that do not use calculation on Spectrum side but use Astroport API
+          if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP' && pairStats[key].poolApr === 0 && pairStats[key].poolAstroApr === 0){
+            const found = this.astroportData.pools.find(pool => pool?.pool_address === this.pairInfos[key]?.contract_addr);
             // to prevent set pairStat undefined in case of no data available from Astroport api
             if (found){
               pairStats[key].poolApr = +found.protocol_rewards.apr;
@@ -372,6 +372,9 @@ export class InfoService {
               // pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
               // this.poolInfos[key].tradeApr = +found.trading_fees.apr;
             }
+          }
+          if (farmInfo.dex === 'Terraswap' && farmInfo.farmType === 'LP'){
+              // supported only in backend
           }
         }
 
