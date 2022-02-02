@@ -368,7 +368,8 @@ export class InfoService {
             if (found){
               pairStats[key].poolApr = +found.protocol_rewards.apr;
               pairStats[key].poolAstroApr = +found.astro_rewards.apr;
-              pairStats[key].poolApy = ((+found.protocol_rewards.apy + 1) * (+found.astro_rewards.apy + 1) * (+found.trading_fees.apy + 1)) - 1;
+              const proxyAndAstroApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
+              pairStats[key].poolApy = (proxyAndAstroApy + 1) * (+found.trading_fees.apy + 1) - 1;
               // pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
               // this.poolInfos[key].tradeApr = +found.trading_fees.apr;
             }
@@ -669,7 +670,7 @@ export class InfoService {
       const specApy = specApr + specApr * govApr / 2;
       const compoundApy = poolApy + specApy;
       const farmApr = pairStat?.farmApr || 0;
-      const farmAndAstroApr = farmApr + this.stat.pairs[this.ASTRO_KEY].farmApr;
+      const farmAndAstroApr = farmApr + (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
       const farmApy = poolAprTotal + poolAprTotal * farmAndAstroApr / 2;
       const stakeApy = farmApy + specApy;
       const apy = Math.max(compoundApy, stakeApy);
@@ -680,7 +681,7 @@ export class InfoService {
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
-      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
+      const score = poolInfo.farm === 'Spectrum' ? 2000000 : (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
       const will_available_at_astroport = this.WILL_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const now_available_at_astroport = this.NOW_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const proxy_reward_not_yet_available = this.PROXY_REWARD_NOT_YET_AVAILABLE.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);

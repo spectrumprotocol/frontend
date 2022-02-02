@@ -57,7 +57,7 @@
             </ng-container>
           </p>
           <h3 class="card-title">
-            <div *ngIf="vault.poolInfo.farm === 'Spectrum'">
+            <div *ngIf="vault.poolInfo.farm === 'Spectrum'" [html]="true" [mdbTooltip]="getAPRAPYTooltipHTML()">
               <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
             </div>
             <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" [html]="true" [mdbTooltip]="getAPRAPYTooltipHTML()">
@@ -594,10 +594,10 @@
                   <div class="col">ASTRO Reward APR</div>
                   <div class="col text-end">{{vault.pairStat?.poolAstroApr || 0 | percent }}</div>
                 </div>
-<!--                <div class="row" *ngIf="vault.pairStat?.poolApr > 0 && vault.pairStat?.poolAstroApr > 0">-->
-<!--                  <div class="col">Total Rewards APR</div>-->
-<!--                  <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>-->
-<!--                </div>-->
+                <div class="row" *ngIf="vault.pairStat?.poolApr > 0 && vault.pairStat?.poolAstroApr > 0">
+                  <div class="col">Total Rewards APR</div>
+                  <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
+                </div>
                 <div class="row">
                   <div class="col">APY from auto compound</div>
                   <div class="col text-end">{{vault.pairStat?.poolApy || 0 | percent }}</div>
@@ -623,10 +623,10 @@
                     <div class="col text-end">{{vault.pairStat?.poolAstroApr || 0 | percent }}</div>
                   </div>
                 </ng-container>
-<!--                <div class="row" *ngIf="vault.pairStat?.poolApr > 0 && vault.pairStat?.poolAstroApr > 0">-->
-<!--                  <div class="col">Total Rewards APR</div>-->
-<!--                  <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>-->
-<!--                </div>-->
+                <div class="row" *ngIf="vault.pairStat?.poolApr > 0 && vault.pairStat?.poolAstroApr > 0">
+                  <div class="col">Total Rewards APR</div>
+                  <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
+                </div>
                 <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
                   <div class="col">APY from auto stake</div>
                   <div class="col text-end">{{vault.farmApy | percent }}</div>

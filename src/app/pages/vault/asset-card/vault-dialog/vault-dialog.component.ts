@@ -160,21 +160,20 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     let totalApr = 0;
     if (this.vault.pairStat?.poolApr > 0){
       html += `${this.vault.rewardSymbol} APR ${this.percentPipe.transform(this.vault.pairStat.poolApr)} <br>`;
-      html += `${this.vault.rewardSymbol} APY ${this.percentPipe.transform((this.vault.pairStat.poolApr / 365 + 1) ** 365 - 1)} <br>`;
+      // html += `${this.vault.rewardSymbol} APY ${this.percentPipe.transform((this.vault.pairStat.poolApr / 365 + 1) ** 365 - 1)} <br>`;
       totalApr += this.vault.pairStat.poolApr;
     }
     if (this.vault.pairStat?.poolAstroApr > 0){
       html += `ASTRO APR ${this.percentPipe.transform(this.vault.pairStat.poolAstroApr)} <br>`;
-      html += `ASTRO APY ${this.percentPipe.transform((this.vault.pairStat.poolAstroApr / 365 + 1) ** 365 - 1)} <br>`;
+      // html += `ASTRO APY ${this.percentPipe.transform((this.vault.pairStat.poolAstroApr / 365 + 1) ** 365 - 1)} <br>`;
       totalApr += this.vault.pairStat.poolAstroApr;
+    }
+    if (totalApr > 0){
+      html += `Rewards APR ${this.percentPipe.transform(totalApr)} <br>`;
     }
     if (this.vault.poolInfo?.tradeApr > 0){
       html += `Trade APR ${this.percentPipe.transform(this.vault.poolInfo.tradeApr)} <br>`;
-      html += `Trade APY ${this.percentPipe.transform((this.vault.poolInfo.tradeApr / 365 + 1) ** 365 - 1)} <br>`;
-      totalApr += this.vault.poolInfo.tradeApr;
-    }
-    if (totalApr > 0){
-      html += `Total APR ${this.percentPipe.transform(totalApr)} <br>`;
+      // html += `Trade APY ${this.percentPipe.transform((this.vault.poolInfo.tradeApr / 365 + 1) ** 365 - 1)} <br>`;
     }
     if (this.vault.pairStat?.poolApy > 0){
       html += `Auto-compound APY ${this.percentPipe.transform(this.vault.pairStat?.poolApy)} <br>`;
@@ -184,12 +183,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
     if (this.vault.specApy > 0){
       html += `SPEC APR ${this.percentPipe.transform(this.vault.specApy)} <br><br>`;
-    }
-    if (this.vault.pairStat?.poolApy > 0){
-      html += `Auto-compound APY+SPEC <br>${this.percentPipe.transform(+this.vault.pairStat?.poolApy + +this.vault.specApy)} <br>`;
-    }
-    if (this.vault.farmApy > 0 && this.vault.poolInfo.auto_stake){
-      html += `Auto-stake APY+SPEC <br>${this.percentPipe.transform(+this.vault.farmApy + +this.vault.specApy)} <br>`;
     }
     html += '</div>';
     return html;
