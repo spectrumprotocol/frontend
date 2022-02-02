@@ -369,7 +369,7 @@ export class InfoService {
               pairStats[key].poolApr = +found.protocol_rewards.apr;
               pairStats[key].poolAstroApr = +found.astro_rewards.apr;
               const proxyAndAstroApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
-              pairStats[key].poolApy = (proxyAndAstroApy + 1) * (+found.trading_fees.apy + 1) - 1;
+              pairStats[key].poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (+found.trading_fees.apy + 1) - 1 : 0;
               // pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
               // this.poolInfos[key].tradeApr = +found.trading_fees.apr;
             }
