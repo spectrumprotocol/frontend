@@ -65,19 +65,19 @@
                 <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
               </ng-container>
               <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-              <span *ngIf="vault.apy > vault.pairStat?.poolApr">
+              <span *ngIf="vault.apy > vault.poolAprTotal">
                 <span class="sub-topic text-decoration-line-through text-primary">
-                  <span class="sub-topic">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
+                  <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>
                 </span>
               </span>
                 <span class="fs-6 fw-bold text-primary"> {{vault.apy | percent}}</span>
               </ng-container>
-              <span class="card-text sub-topic" *ngIf="vault.poolInfo.tradeApr">
-                <br>
-                (+{{ vault.poolInfo.tradeApr || 0 | percent }} LP Income)
-                <i class="fas fa-info-circle info-icon super"
-                   [mdbTooltip]="'Additional LP Commission APR income (7 days estimate) from trading fee of '+(vault.poolInfo.commission * 100)+'%'"></i>
-              </span>
+<!--              <span class="card-text sub-topic" *ngIf="vault.poolInfo.tradeApr">-->
+<!--                <br>-->
+<!--                (+{{ vault.poolInfo.tradeApr || 0 | percent }} LP Income)-->
+<!--                <i class="fas fa-info-circle info-icon super"-->
+<!--                   [mdbTooltip]="'Additional LP Commission APR income (7 days estimate) from trading fee of '+(vault.poolInfo.commission * 100)+'%'"></i>-->
+<!--              </span>-->
             </div>
           </div>
           <div class="col-12 col-sm-3 mt-1">
@@ -177,9 +177,9 @@
                     <span class="text-primary"> {{vault.apy | percent}}</span>
                   </ng-container>
                   <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-                    <span *ngIf="vault.apy > vault.pairStat?.poolApr">
+                    <span *ngIf="vault.apy > vault.poolAprTotal">
                       <span class="sub-topic text-decoration-line-through text-primary">
-                        <span class="sub-topic">{{ vault.pairStat?.poolApr || 0 | percent }}</span>
+                        <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>
                       </span>
                     </span>
                     <span class="text-primary"> {{vault.apy | percent}}</span>
@@ -187,18 +187,18 @@
                 </div>
               </div>
             </div>
-            <div class="d-flex justify-content-between" *ngIf="vault.poolInfo.tradeApr">
-              <div>
-                <div class="f-12 sub-topic">LP Income</div>
-              </div>
-              <div>
-                <div class="f-14 fw-bold">+{{ vault.poolInfo.tradeApr || 0 | percent }}
-                  <i class="fas fa-info-circle info-icon super"
-                     [mdbTooltip]="'Additional LP Commission APR income (7 days estimate) from trading fee of '+(vault.poolInfo.commission * 100)+'%'">
-                  </i>
-                </div>
-              </div>
-            </div>
+<!--            <div class="d-flex justify-content-between" *ngIf="vault.poolInfo.tradeApr">-->
+<!--              <div>-->
+<!--                <div class="f-12 sub-topic">LP Income</div>-->
+<!--              </div>-->
+<!--              <div>-->
+<!--                <div class="f-14 fw-bold">+{{ vault.poolInfo.tradeApr || 0 | percent }}-->
+<!--                  <i class="fas fa-info-circle info-icon super"-->
+<!--                     [mdbTooltip]="'Additional LP Commission APR income (7 days estimate) from trading fee of '+(vault.poolInfo.commission * 100)+'%'">-->
+<!--                  </i>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
             <div class="d-flex justify-content-between">
               <div>
                 <div class="f-12 sub-topic">Daily</div>

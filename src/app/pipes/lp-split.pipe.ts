@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { CONFIG } from '../consts/config';
 import { PoolResponse } from '../services/api/terraswap_pair/pool_response';
 import { UnitPipe } from './unit.pipe';
+import {TerrajsService} from '../services/terrajs.service';
 
 @Pipe({
   name: 'lpSplit'
@@ -10,7 +11,8 @@ import { UnitPipe } from './unit.pipe';
 export class LpSplitPipe implements PipeTransform {
 
   constructor(
-    private unitPipe: UnitPipe
+    private unitPipe: UnitPipe,
+    private terrajs: TerrajsService
   ) { }
 
   transform(lp: number, poolResponse: PoolResponse, baseSymbol: string, denomSymbol: string, decimals?: number, digitsInfo?: string): string {
@@ -27,6 +29,9 @@ export class LpSplitPipe implements PipeTransform {
       .div(poolResponse.total_share)
       .toString();
     if (poolResponse.assets[0].info.native_token) {
+      return `${this.unitPipe.transform(amount2, decimals, digitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount1, 6, digitsInfo)} ${denomSymbol}`;
+    } else if (poolResponse.assets[0].info.token['contract_addr'] === this.terrajs.settings.nexusToken && poolResponse.assets[1].info.token) {
+      // handle Astroport Psi-nAsset case
       return `${this.unitPipe.transform(amount2, decimals, digitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount1, 6, digitsInfo)} ${denomSymbol}`;
     } else {
       return `${this.unitPipe.transform(amount1, decimals, digitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount2, 6, digitsInfo)} ${denomSymbol}`;

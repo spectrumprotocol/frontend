@@ -69,11 +69,11 @@ export class PylonFarmInfoService implements FarmInfoService {
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.pylonFarm)?.weight || 0;
-    const pylonLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/liquidity/v1/overview`));
+    // const pylonLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/liquidity/v1/overview`));
     // const pylonGovStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.pylonAPI}/api/governance/v1/overview`));
     const pairs: Record<string, PairStat> = {};
 
-    const poolApr = +(pylonLPStat.apy || 0);
+    const poolApr = 0;
     const key = `${this.dex}|${this.terrajs.settings.pylonToken}|${Denom.USD}`;
 
     pairs[key] = createPairStat(poolApr, key);

@@ -37,6 +37,8 @@ export interface Vault {
   disabled: boolean;
   will_available_at_astroport: boolean;
   now_available_at_astroport: boolean;
+  proxy_reward_not_yet_available: boolean;
+  poolAprTotal: number;
 }
 
 @Component({
@@ -176,7 +178,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
     }
     if (this.search) {
-      vaults = vaults.filter(it => it.baseSymbol.toLowerCase().includes(this.search.toLowerCase()));
+      vaults = vaults.filter(it => `${it.baseSymbol}${it.denomSymbol}`.toLowerCase().includes(this.search.replace(/-/g, '').toLowerCase()));
     }
     this.vaults = vaults;
     this.dropdownFarmFilter.hide();

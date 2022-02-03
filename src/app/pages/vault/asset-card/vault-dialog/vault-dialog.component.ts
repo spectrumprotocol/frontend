@@ -12,7 +12,7 @@ import { InfoService } from '../../../../services/info.service';
 import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
 import { debounce } from 'utils-decorators';
-import { Options as NgxSliderOptions } from '@angular-slider/ngx-slider';
+import {ChangeContext, Options as NgxSliderOptions} from '@angular-slider/ngx-slider';
 import { LpBalancePipe } from '../../../../pipes/lp-balance.pipe';
 import { TokenService } from '../../../../services/api/token.service';
 import { TerraSwapService } from '../../../../services/api/terraswap.service';
@@ -23,8 +23,9 @@ import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { TerraSwapRouterService } from '../../../../services/api/terraswap-router.service';
 import { StakerAstroportService } from '../../../../services/api/staker-astroport.service';
 import { AstroportService } from '../../../../services/api/astroport.service';
-import { SimulateZapToBondResponse } from 'src/app/services/api/staker/simulate_zap_to_bond_response';
-import { SimulationResponse } from 'src/app/services/api/terraswap_pair/simulation_response';
+import { SimulateZapToBondResponse } from '../../../../services/api/staker/simulate_zap_to_bond_response';
+import { SimulationResponse } from '../../../../services/api/terraswap_pair/simulation_response';
+import {PercentPipe} from '@angular/common';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | 'ust_bdp';
@@ -34,7 +35,7 @@ export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | '
   templateUrl: './vault-dialog.component.html',
   styleUrls: ['./vault-dialog.component.scss'],
   animations: [fade],
-  providers: [LpBalancePipe]
+  providers: [LpBalancePipe, PercentPipe]
 })
 export class VaultDialogComponent implements OnInit, OnDestroy {
   vault: Vault;
@@ -114,7 +115,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private stakerAstroport: StakerAstroportService,
     private terraSwap: TerraSwapService,
     private terraSwapRouter: TerraSwapRouterService,
-    private astroport: AstroportService
+    private astroport: AstroportService,
+    private percentPipe: PercentPipe
   ) { }
 
   ngOnInit() {
@@ -151,6 +153,39 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
     });
     this.refreshData();
+  }
+
+  getAPRAPYTooltipHTML(){
+    let html = '<div class="apyapr-tooltip">';
+    let totalApr = 0;
+    if (this.vault.pairStat?.poolApr > 0){
+      html += `${this.vault.rewardSymbol} APR ${this.percentPipe.transform(this.vault.pairStat.poolApr)} <br>`;
+      // html += `${this.vault.rewardSymbol} APY ${this.percentPipe.transform((this.vault.pairStat.poolApr / 365 + 1) ** 365 - 1)} <br>`;
+      totalApr += this.vault.pairStat.poolApr;
+    }
+    if (this.vault.pairStat?.poolAstroApr > 0){
+      html += `ASTRO APR ${this.percentPipe.transform(this.vault.pairStat.poolAstroApr)} <br>`;
+      // html += `ASTRO APY ${this.percentPipe.transform((this.vault.pairStat.poolAstroApr / 365 + 1) ** 365 - 1)} <br>`;
+      totalApr += this.vault.pairStat.poolAstroApr;
+    }
+    if (totalApr > 0){
+      html += `Rewards APR ${this.percentPipe.transform(totalApr)} <br>`;
+    }
+    if (this.vault.poolInfo?.tradeApr > 0){
+      html += `Trade APR ${this.percentPipe.transform(this.vault.poolInfo.tradeApr)} <br>`;
+      // html += `Trade APY ${this.percentPipe.transform((this.vault.poolInfo.tradeApr / 365 + 1) ** 365 - 1)} <br>`;
+    }
+    if (this.vault.pairStat?.poolApy > 0){
+      html += `Auto-compound APY ${this.percentPipe.transform(this.vault.pairStat?.poolApy)} <br>`;
+    }
+    if (this.vault.farmApy > 0 && this.vault.poolInfo.auto_stake){
+      html += `Auto-stake APY ${this.percentPipe.transform(+this.vault.farmApy)} <br>`;
+    }
+    if (this.vault.specApy > 0){
+      html += `SPEC APR ${this.percentPipe.transform(this.vault.specApy)} <br><br>`;
+    }
+    html += '</div>';
+    return html;
   }
 
   async refreshData() {
@@ -833,7 +868,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  autoCompoundChanged() {
+  autoCompoundChanged(changeContext?: ChangeContext) {
     const percent = this.auto_compound_percent_deposit / 100;
     this.vault['totalMixApy'] = this.vault.stakeApy * (1 - percent) + this.vault.compoundApy * percent;
     this.vault['mixApy'] = this.vault['totalMixApy'] - this.vault.specApy;

@@ -50,7 +50,7 @@ export class ManageRewardsComponent implements OnInit {
     if (!isAstro) {
       for (const rewardInfo of Object.values(this.info.rewardInfos)) {
         const farmInfo = this.info.farmInfos.find(x => x.farmContract === rewardInfo.farmContract);
-        if (farmInfo.rewardTokenContract !== rewardTokenContract && (!isSpec || !isAstro)) {
+        if (farmInfo.rewardTokenContract !== rewardTokenContract && !isSpec) {
           continue;
         }
         let pendingReward = 0;
@@ -89,20 +89,21 @@ export class ManageRewardsComponent implements OnInit {
             spec_amount: '0',
           },
         });
-      } else if (withdrawAmounts[farmContract].dex === 'Astroport' && !isAstro) {
-        return new MsgExecuteContract(this.terrajs.address, farmContract, {
-          withdraw: {
-            farm_amount: '0',
-            farm2_amount: withdrawAmounts[farmContract].amount,
-            spec_amount: '0',
-          },
-        });
       } else if (withdrawAmounts[farmContract].dex === 'Astroport' && isSpec) {
         return new MsgExecuteContract(this.terrajs.address, farmContract, {
           withdraw: {
             farm_amount: '0',
             farm2_amount: '0',
             spec_amount: withdrawAmounts[farmContract].amount,
+          },
+        });
+      } 
+      else if (withdrawAmounts[farmContract].dex === 'Astroport' && !isAstro) {
+        return new MsgExecuteContract(this.terrajs.address, farmContract, {
+          withdraw: {
+            farm_amount: '0',
+            farm2_amount: withdrawAmounts[farmContract].amount,
+            spec_amount: '0',
           },
         });
       } else {
