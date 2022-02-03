@@ -90,6 +90,7 @@ import {AstroportVkrUstFarmInfoService} from './services/farm_info/astroport/ast
 import {AstroportPsiUstFarmInfoService} from './services/farm_info/astroport/astroport-psi-ust.farm-info.service';
 import {AstroportNlunaPsiFarmInfoService} from './services/farm_info/astroport/astroport-nluna-psi.farm-info.service';
 import {AstroportNethPsiFarmInfoService} from './services/farm_info/astroport/astroport-neth-psi.farm-info.service';
+import {AstroportXdefiUstFarmInfoService} from './services/farm_info/astroport/astroport-xdefi-ust.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -197,6 +198,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportVkrUstFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportXdefiUstFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

@@ -1,4 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import {InfoService} from '../services/info.service';
+import {TerrajsService} from '../services/terrajs.service';
 
 const MIRROR_ICON_URL = 'https://whitelist.mirror.finance/images';
 
@@ -6,6 +8,10 @@ const MIRROR_ICON_URL = 'https://whitelist.mirror.finance/images';
   name: 'url'
 })
 export class UrlPipe implements PipeTransform {
+
+  constructor(
+    private terrajs: TerrajsService,
+  ) { }
 
   transform(symbol: string, type: string, dex?: string) {
     if (!symbol) {
@@ -50,6 +56,7 @@ export class UrlPipe implements PipeTransform {
           case 'APOLLO': return 'https://finder.extraterrestrial.money/images/APOLLO60.png';
           case 'STT': return 'https://starterra.io/assets/100x100_starterra.png';
           case 'Starterra': return 'https://starterra.io/assets/100x100_starterra.png';
+          case 'XDEFI': return 'https://github.com/sushiswap/assets/blob/master/blockchains/ethereum/assets/0x72B886d09C117654aB7dA13A14d603001dE0B777/logo.png?raw=true';
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -76,6 +83,7 @@ export class UrlPipe implements PipeTransform {
           case 'ASTRO': return `https://app.astroport.fi/swap?from=uusd&to=terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3`;
           case 'APOLLO': return `https://app.astroport.fi/swap?from=uusd&to=terra100yeqvww74h4yaejj6h733thgcafdaukjtw397`;
           case 'STT': return `https://app.astroport.fi/swap?from=uusd&to=terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n`;
+          case 'XDEFI': return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.xdefiToken}`;
           default: {
             if (dex === 'Astroport') {
               return 'https://app.astroport.fi/swap';

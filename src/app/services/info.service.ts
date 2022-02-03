@@ -152,9 +152,9 @@ export class InfoService {
 
   portfolio: Portfolio;
 
-  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST']);
-  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
-  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST']);
+  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
+  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
+  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
   private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
 
   lastRefreshAstroportData: number;
@@ -357,21 +357,25 @@ export class InfoService {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos);
         const keys = Object.keys(pairStats);
         for (const key of keys){
-            if (!pairStats[key].poolAstroApr) {
-              pairStats[key].poolAstroApr = 0;
-            }
-            // if (farmInfo.dex === 'Astroport'){
-            // if farmInfo.queryPairStats return poolApr 0 and poolAstroApr 0, meaning that do not use calculation on Spectrum side but use Astroport API
-            if (farmInfo.dex === 'Astroport' && pairStats[key].poolApr === 0 && pairStats[key].poolAstroApr === 0){
-            const found = this.astroportData.pools.find(pool => pool.pool_address === this.pairInfos[key].contract_addr);
+          if (!pairStats[key].poolAstroApr) {
+            pairStats[key].poolAstroApr = 0;
+          }
+          // if (farmInfo.dex === 'Astroport'){
+          // if farmInfo.queryPairStats return poolApr 0 and poolAstroApr 0, meaning that do not use calculation on Spectrum side but use Astroport API
+          if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP' && pairStats[key].poolApr === 0 && pairStats[key].poolAstroApr === 0){
+            const found = this.astroportData.pools.find(pool => pool?.pool_address === this.pairInfos[key]?.contract_addr);
             // to prevent set pairStat undefined in case of no data available from Astroport api
             if (found){
               pairStats[key].poolApr = +found.protocol_rewards.apr;
               pairStats[key].poolAstroApr = +found.astro_rewards.apr;
-              pairStats[key].poolApy = ((+found.protocol_rewards.apy + 1) * (+found.astro_rewards.apy + 1) * (+found.trading_fees.apy + 1)) - 1;
+              const proxyAndAstroApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
+              pairStats[key].poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (+found.trading_fees.apy + 1) - 1 : 0;
               // pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
               // this.poolInfos[key].tradeApr = +found.trading_fees.apr;
             }
+          }
+          if (farmInfo.dex === 'Terraswap' && farmInfo.farmType === 'LP'){
+              // supported only in backend
           }
         }
 
@@ -496,11 +500,19 @@ export class InfoService {
   }
 
   async refreshCirculation() {
-    const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
-    const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
-    const task3 = this.wallet.balance(this.terrajs.settings.burnVault, this.terrajs.settings.burnVaultController);
-    const taskResult = await Promise.all([task1, task2, task3]);
-    this.circulation = minus(minus(taskResult[0].total_supply, taskResult[1].locked_amount), taskResult[1].staked_amount);
+    if (this.terrajs.network?.name === 'testnet'){
+      const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
+      const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
+      const taskResult = await Promise.all([task1, task2]);
+      this.circulation = minus(taskResult[0].total_supply, taskResult[1].locked_amount);
+      return;
+    } else {
+      const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
+      const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
+      const task3 = this.wallet.balance(this.terrajs.settings.burnVault, this.terrajs.settings.burnVaultController);
+      const taskResult = await Promise.all([task1, task2, task3]);
+      this.circulation = minus(minus(taskResult[0].total_supply, taskResult[1].locked_amount), taskResult[2].staked_amount);
+    }
   }
 
   async refreshMarketCap() {
@@ -666,7 +678,7 @@ export class InfoService {
       const specApy = specApr + specApr * govApr / 2;
       const compoundApy = poolApy + specApy;
       const farmApr = pairStat?.farmApr || 0;
-      const farmAndAstroApr = farmApr + this.stat.pairs[this.ASTRO_KEY].farmApr;
+      const farmAndAstroApr = farmApr + (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
       const farmApy = poolAprTotal + poolAprTotal * farmAndAstroApr / 2;
       const stakeApy = farmApy + specApy;
       const apy = Math.max(compoundApy, stakeApy);
@@ -677,7 +689,7 @@ export class InfoService {
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
-      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
+      const score = poolInfo.farm === 'Spectrum' ? 2000000 : (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
       const will_available_at_astroport = this.WILL_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const now_available_at_astroport = this.NOW_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const proxy_reward_not_yet_available = this.PROXY_REWARD_NOT_YET_AVAILABLE.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
@@ -757,7 +769,8 @@ export class InfoService {
                           day
                         }
                       }
-                    }`
+                    }`,
+        errorPolicy: 'all'
       }).toPromise()).data;
       this.lastRefreshAstroportData = Date.now();
     }
