@@ -178,7 +178,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
     }
     if (this.search) {
-      vaults = vaults.filter(it => it.baseSymbol.toLowerCase().includes(this.search.toLowerCase()));
+      vaults = vaults.filter(it => `${it.baseSymbol}${it.denomSymbol}`.toLowerCase().includes(this.search.replace(/-/g, '').toLowerCase()));
     }
     this.vaults = vaults;
     this.dropdownFarmFilter.hide();
