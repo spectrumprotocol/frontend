@@ -292,7 +292,7 @@ export const networks: Record<string, ISettings> = {
     terraNameServiceGov: 'terra1hdps6vdnknhr72vn99uqqvmmsn9c43en6vq26z',
     terraNameServiceStaking: 'terra1g9s3az3ra8uayvpm0zgj5mpx927et9mlqwfjfu', // tns pool terra12l4yfytser4hkezsq4g23st2a0ntgletukwxpw
     terraNameServiceToken: 'terra16qrvv9wukzzq0d7wxhkxrh5vv6m7lt770r0xts', // tns lp terra1cxt4rrstqhldhnwyzuk03jswx584e9w2xw896z
-    terraNameServiceFarm: '',
+    terraNameServiceFarm: 'terra1ecd37frx3lan5evf7680h3nckjxynhfpz4edkc',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
