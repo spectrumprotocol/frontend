@@ -399,6 +399,11 @@ input[type="number"] {
   border: solid 1px $xdefi;
 }
 
+.bg-TNS {
+  background: $tns-bg;
+  border: solid 1px $tns;
+}
+
 .bg-Kujira {
   background: $kujira;
   background: -webkit-linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);
