@@ -139,16 +139,17 @@ export class TerraNameServiceFarmInfoService implements FarmInfoService {
   async getterraNameServiceLPStat(tnsPoolResponse: PoolResponse) {
     const height = await this.terrajs.getHeight();
     const configTask = this.wasm.query(this.terrajs.settings.terraNameServiceStaking, { config: {} });
-    const stateTask = this.wasm.query(this.terrajs.settings.terraNameServiceStaking, { state: { block_height: height } });
-    const [config, state] = await Promise.all([configTask, stateTask]);
+    const stakingContractLpBalanceTask = this.wasm.query(this.terrajs.settings.terraNameServiceLp, { balance: { address: this.terrajs.settings.terraNameServiceStaking } });
+    const [config, stakingContractLpBalance] = await Promise.all([configTask, stakingContractLpBalanceTask]);
     const poolUSTAmount = tnsPoolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? tnsPoolResponse.assets[1].amount : tnsPoolResponse.assets[0].amount;
-    const poolTWDAmount = tnsPoolResponse.assets[1]?.info?.token ? tnsPoolResponse.assets[1].amount : tnsPoolResponse.assets[0].amount;
-    const twdPrice = div(poolUSTAmount, poolTWDAmount);
+    const poolTNSAmount = tnsPoolResponse.assets[1]?.info?.token ? tnsPoolResponse.assets[1].amount : tnsPoolResponse.assets[0].amount;
+    const tnsPrice = div(poolUSTAmount, poolTNSAmount);
     const current_distribution_schedule = (config.distribution_schedule as []).find(obj => height >= +obj[0] && height <= +obj[1]);
     const totalMint = +current_distribution_schedule[2];
-    const c = new BigNumber(poolUSTAmount).multipliedBy(2).div(tnsPoolResponse.total_share);
-    const s = new BigNumber(state.total_bond_amount).multipliedBy(c);
-    const apr = new BigNumber(totalMint).multipliedBy(twdPrice).div(s);
+
+    const r = new BigNumber(poolUSTAmount).multipliedBy(2).div(tnsPoolResponse.total_share);
+    const s = new BigNumber(stakingContractLpBalance.balance).times(r);
+    const apr = new BigNumber(totalMint).div(1e6).div(6).times(tnsPrice).times(31536e3).div(s);
     return {
       apr,
     };
