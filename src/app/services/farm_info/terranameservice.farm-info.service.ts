@@ -155,15 +155,10 @@ export class TerraNameServiceFarmInfoService implements FarmInfoService {
   }
 
   async getterraNameServiceGovStat() {
-    // const height = await this.terrajs.getHeight();
-    // const configTask = this.wasm.query(this.terrajs.settings.terraNameServiceGov, { config: {} });
-    // const stateTask = this.wasm.query(this.terrajs.settings.terraNameServiceGov, { state: { block_height: height } });
-    // const [config, state] = await Promise.all([configTask, stateTask]);
-    // const current_distribution_schedule = (config.distribution_schedule as []).find(obj => height >= +obj[0] && height <= +obj[1]);
-    // const totalMint = +current_distribution_schedule[2];
-    // const apr = new BigNumber(totalMint).div(state.total_bond_amount);
-    // const apy = (+apr / 8760 + 1) ** 8760 - 1; // pending compound calc
-    let apy = 0;
+    const fixAmount = new BigNumber(3e12);
+    const govBalanceTask = this.wasm.query(this.terrajs.settings.terraNameServiceToken, { balance: { address: this.terrajs.settings.terraNameServiceGov } });
+    const [govBalance] = await Promise.all([govBalanceTask]);
+    const apy = fixAmount.div(govBalance.balance).div(2).toNumber();
     return {
       apy,
     };
