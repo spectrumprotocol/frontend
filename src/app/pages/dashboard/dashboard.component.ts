@@ -65,24 +65,24 @@ export class DashboardComponent implements AfterViewInit {
             name: 'gov',
             shortValue: this.shortNumPipe.transform(Math.round(result.tvl.gov) / this.UNIT),
             value: Math.round(result.tvl.gov),
-            percentage: this.relDiff(result.tvl.gov, result.tvl.lpVaults)
+            percentage: result.tvl.gov / result.tvl.total * 100
           },
           lpVaults: {
             name: 'lpVaults',
             shortValue: this.shortNumPipe.transform(Math.round(result.tvl.lpVaults) / this.UNIT),
             value: Math.round(result.tvl.lpVaults),
-            percentage: this.relDiff(result.tvl.lpVaults, result.tvl.gov)
+            percentage: result.tvl.lpVaults / result.tvl.total * 100
           }
         };
         this.specCirculationData = [{
           name: 'Staked',
-          value: result.circulation.gov
+          value: result.circulation.gov / this.UNIT
         }, {
           name: 'LP',
-          value: result.circulation.lpVaults
+          value: result.circulation.lpVaults / this.UNIT
         }, {
-          name: 'others',
-          value: result.circulation.others
+          name: 'Others',
+          value: result.circulation.others / this.UNIT
         }];
 
         this.graphData = [{
@@ -96,12 +96,6 @@ export class DashboardComponent implements AfterViewInit {
         }];
       });
   }
-
-  relDiff(a, b) {
-    const remainValue = Math.round(a);
-    const total = remainValue + Math.round(b);
-    return ((total - remainValue) / total) * 100;
-   }
 
   formatDataLabel(data) {
     return `${data.data.name}: ${data.value.toLocaleString()} SPEC`;
