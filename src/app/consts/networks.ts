@@ -97,8 +97,9 @@ export interface ISettings {
   glowPool: string;
   glowToken: string;
   glowLp: string;
-  glowStaker: string;
+  glowStaking: string;
   glowGov: string;
+  glowFarm: string;
   // // batch only
   // lcdPost: string;
   // controller: string;
@@ -203,8 +204,9 @@ export const networks: Record<string, ISettings> = {
     glowPool: 'terra1p44kn7l233p7gcj0v3mzury8k7cwf4zt6gsxs5',
     glowToken: 'terra13zx49nk8wjavedjzu8xkk95r3t0ta43c9ptul7',
     glowLp: 'terra1khm4az2cjlzl76885x2n7re48l9ygckjuye0mt',
-    glowStaker: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
+    glowStaking: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
     glowGov: 'terra1xxp34xk4rjexwlu0xfdhyn0zr3qsgare04yll0',
+    glowFarm: 'terra1r3675psl7s2fe0sfh0vut5z4hrywgyyfdrzg95', // use another address for now to test farm info
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -309,8 +311,9 @@ export const networks: Record<string, ISettings> = {
     glowPool: '',
     glowToken: '',
     glowLp: '',
-    glowStaker: '',
+    glowStaking: '',
     glowGov: '',
+    glowFarm: '',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',

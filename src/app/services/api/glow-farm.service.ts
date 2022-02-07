@@ -23,10 +23,10 @@ export class GlowFarmService {
   query(msg: Extract<QueryMsg, { reward_info: unknown }>): Promise<RewardInfoResponse>;
   query(msg: Extract<QueryMsg, { state: unknown }>): Promise<StateInfo>;
   query(msg: QueryMsg): Promise<any> {
-    return this.wasm.query(this.terrajs.settings.terraNameServiceFarm, msg);
+    return this.wasm.query(this.terrajs.settings.glowFarm, msg);
   }
 
   handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
-    return this.wasm.execute(this.terrajs.settings.terraNameServiceFarm, msg, opts);
+    return this.wasm.execute(this.terrajs.settings.glowFarm, msg, opts);
   }
 }
