@@ -85,4 +85,8 @@ export class YourTvlComponent implements OnInit, OnDestroy {
   closeModal() {
     this.modalRef.close();
   }
+
+  trackChartData(_: unknown, chartData: ChartData) {
+    return chartData.name;
+  }
 }
