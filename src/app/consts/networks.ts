@@ -94,6 +94,11 @@ export interface ISettings {
   terraNameServiceToken: string;
   terraNameServiceFarm: string;
   terraNameServiceLp: string;
+  glowPool: string;
+  glowToken: string;
+  glowLp: string;
+  glowStaker: string;
+  glowGov: string;
   // // batch only
   // lcdPost: string;
   // controller: string;
@@ -195,6 +200,11 @@ export const networks: Record<string, ISettings> = {
     terraNameServiceToken: 'terra14vz4v8adanzph278xyeggll4tfww7teh0xtw2y', // tns lp terra1kg9vmu4e43d3pz0dfsdg9vzwgnnuf6uf3z9jwj
     terraNameServiceFarm: '',
     terraNameServiceLp: 'terra1kg9vmu4e43d3pz0dfsdg9vzwgnnuf6uf3z9jwj',
+    glowPool: 'terra1p44kn7l233p7gcj0v3mzury8k7cwf4zt6gsxs5',
+    glowToken: 'terra13zx49nk8wjavedjzu8xkk95r3t0ta43c9ptul7',
+    glowLp: 'terra1khm4az2cjlzl76885x2n7re48l9ygckjuye0mt',
+    glowStaker: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
+    glowGov: 'terra1xxp34xk4rjexwlu0xfdhyn0zr3qsgare04yll0',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -296,6 +306,11 @@ export const networks: Record<string, ISettings> = {
     terraNameServiceToken: 'terra16qrvv9wukzzq0d7wxhkxrh5vv6m7lt770r0xts', // tns lp terra1cxt4rrstqhldhnwyzuk03jswx584e9w2xw896z
     terraNameServiceFarm: 'terra1ecd37frx3lan5evf7680h3nckjxynhfpz4edkc',
     terraNameServiceLp: 'terra1cxt4rrstqhldhnwyzuk03jswx584e9w2xw896z',
+    glowPool: '',
+    glowToken: '',
+    glowLp: '',
+    glowStaker: '',
+    glowGov: '',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
