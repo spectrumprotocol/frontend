@@ -725,7 +725,7 @@ export class InfoService {
           : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
         shortUnitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
-          : `${poolInfo.dex} LP`,
+          : `LP`,
         score,
         fullName: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
