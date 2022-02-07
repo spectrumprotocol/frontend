@@ -39,7 +39,7 @@ export class DashboardComponent implements AfterViewInit {
   gradient = true;
 
   colorScheme = {
-    domain: ['#fc5185', '#ff8dc1', '#d4295d']
+    domain: ['#ff8dc1', '#fc5185', '#d4295d']
   } as any;
 
   colorAreaChart = {
