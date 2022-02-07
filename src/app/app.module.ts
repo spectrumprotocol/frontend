@@ -90,6 +90,7 @@ import {AstroportPsiUstFarmInfoService} from './services/farm_info/astroport/ast
 import {AstroportNlunaPsiFarmInfoService} from './services/farm_info/astroport/astroport-nluna-psi.farm-info.service';
 import {AstroportNethPsiFarmInfoService} from './services/farm_info/astroport/astroport-neth-psi.farm-info.service';
 import {AstroportXdefiUstFarmInfoService} from './services/farm_info/astroport/astroport-xdefi-ust.farm-info.service';
+import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
