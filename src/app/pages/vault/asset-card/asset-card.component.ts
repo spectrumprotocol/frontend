@@ -38,5 +38,4 @@ export class AssetCardComponent implements OnInit {
         vault: this.vault
     }});
   }
-
 }
