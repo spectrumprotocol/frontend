@@ -3,9 +3,9 @@
     <a class="navbar-brand" routerLink="/"><img src="/assets/spec_logo.svg" class="logo" /></a>
     <!-- Left links -->
     <ul class="navbar-nav d-none d-md-flex">
-      <!--        <li class="nav-item">-->
-      <!--          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>-->
-      <!--        </li>-->
+      <li class="nav-item">
+        <a class="nav-link text-center" routerLink="/dashboard" routerLinkActive="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      </li>
       <li class="nav-item">
         <a class="nav-link text-center" routerLink="/vaults" routerLinkActive="active"><i class="fas fa-shield-alt"></i> Vaults</a>
       </li>
@@ -70,6 +70,9 @@
 <div mdbCollapse #mobileMenu="mdbCollapse" class="collapse navbar-collapse d-md-none" id="navbarToggleMobileMenu">
   <div class="container-fluid justify-content-center">
     <ul class="navbar-nav">
+      <li class="nav-item ms-1 me-1">
+        <a class="nav-link" routerLink="/dashboard" routerLinkActive="active" (click)="mobileMenu.hide()"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      </li>
       <li class="nav-item ms-1 me-1">
         <a class="nav-link" routerLink="/vaults" routerLinkActive="active" (click)="mobileMenu.hide()"><i class="fas fa-shield-alt"></i> Vaults</a>
       </li>

@@ -533,6 +533,30 @@ input[type="number"] {
   }
 }
 
+.card-red {
+  background-color: $card-red-bg;
+  border: solid 1px $card-red-border;
+  .card-body {
+      padding: 0.5em 0.5em;
+      .bulk-name-container {
+          display: flex;
+          align-items: center;
+      }
+  }
+}
+
+.card-warning {
+  background-color: $card-warning-bg;
+  border: solid 1px $card-warning-border;
+  .card-body {
+      padding: 0.5em 0.5em;
+      .bulk-name-container {
+          display: flex;
+          align-items: center;
+      }
+  }
+}
+
 .card-deposit {
   margin: 7.5px 0 0;
   border-radius: 4px;
