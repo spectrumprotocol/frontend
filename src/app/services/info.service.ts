@@ -157,7 +157,6 @@ export class InfoService {
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
   private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
 
-  lastRefreshAstroportData: number;
   astroportData: any;
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
@@ -744,40 +743,38 @@ export class InfoService {
     }
   }
 
+  @memoize(30000)
   private async ensureAstroportData() {
-    if (!this.astroportData || !this.lastRefreshAstroportData || this.lastRefreshAstroportData > Date.now() + 10 * 60 * 1000) {
-      const apollo = this.apollo.use('astroport');
-      this.astroportData = (await apollo.query<any>({
-        query: gql`query {
-                      pools {
-                        pool_address
-                        token_symbol
-                        trading_fees {
-                          apy
-                          apr
-                          day
-                        }
-                        astro_rewards {
-                          apy
-                          apr
-                          day
-                        }
-                        protocol_rewards {
-                          apy
-                          apr
-                          day
-                        }
-                        total_rewards {
-                          apy
-                          apr
-                          day
-                        }
+    const apollo = this.apollo.use('astroport');
+    this.astroportData = (await apollo.query<any>({
+      query: gql`query {
+                    pools {
+                      pool_address
+                      token_symbol
+                      trading_fees {
+                        apy
+                        apr
+                        day
                       }
-                    }`,
-        errorPolicy: 'all'
-      }).toPromise()).data;
-      this.lastRefreshAstroportData = Date.now();
-    }
+                      astro_rewards {
+                        apy
+                        apr
+                        day
+                      }
+                      protocol_rewards {
+                        apy
+                        apr
+                        day
+                      }
+                      total_rewards {
+                        apy
+                        apr
+                        day
+                      }
+                    }
+                  }`,
+      errorPolicy: 'all'
+    }).toPromise()).data;
   }
 
 }
