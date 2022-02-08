@@ -139,7 +139,7 @@ export const networks: Record<string, ISettings> = {
     astroportFactory: 'terra1fnywlw4edny3vw44x04xd67uzkdqluymgreu7g',
     staker: 'terra1fxwelge6mf5l6z0rjpylzcfq9w9tw2q7tewaf5',
     stakerSingleAsset: 'terra12kzevdnqe4k82cg5f07dywgj4lvkshhhwh4gnc',
-    stakerAstroport: 'terra10u9342cdwwqpe4wz9mf2c00ytlcr847wpe0xh4',
+    stakerAstroport: 'terra1w9d33yf2j05m2h6f3k7sjuhgrdrznqmncjrwhq',
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
     anchorStaking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
     anchorToken: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
@@ -199,14 +199,14 @@ export const networks: Record<string, ISettings> = {
     terraNameServiceGov: 'terra1a5thpf2gdrrneewjkutyz5q6zr2kn8ymg0cxn9',
     terraNameServiceStaking: 'terra1u94zwrreyz3t0jx25nl7800pxsrk6e6dwjqpsx', // tns pool terra1hqnk9expq3k4la2ruzdnyapgndntec4fztdyln
     terraNameServiceToken: 'terra14vz4v8adanzph278xyeggll4tfww7teh0xtw2y', // tns lp terra1kg9vmu4e43d3pz0dfsdg9vzwgnnuf6uf3z9jwj
-    terraNameServiceFarm: '',
+    terraNameServiceFarm: 'terra1qanglh8qpeqltp60ktwmkl938lm9etz5s4hkh6',
     terraNameServiceLp: 'terra1kg9vmu4e43d3pz0dfsdg9vzwgnnuf6uf3z9jwj',
     glowPool: 'terra1p44kn7l233p7gcj0v3mzury8k7cwf4zt6gsxs5',
     glowToken: 'terra13zx49nk8wjavedjzu8xkk95r3t0ta43c9ptul7',
     glowLp: 'terra1khm4az2cjlzl76885x2n7re48l9ygckjuye0mt',
     glowStaking: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
     glowGov: 'terra1xxp34xk4rjexwlu0xfdhyn0zr3qsgare04yll0',
-    glowFarm: 'terra1r3675psl7s2fe0sfh0vut5z4hrywgyyfdrzg95', // use another address for now to test farm info
+    glowFarm: 'terra1u6f5vnux869rnextxypjdyrvnvcaux68nr6nne', // use another address for now to test farm info
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
