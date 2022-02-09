@@ -71,13 +71,7 @@ export class TerraNameServiceFarmInfoService implements FarmInfoService {
     const terraNameServiceGovTask = this.getterraNameServiceGovStat();
     const pairs: Record<string, PairStat> = {};
 
-    // lp gov to be continued
     const [terraNameServiceLPStat, terraNameServiceGovStat, rewardInfo, farmConfig] = await Promise.all([terraNameServiceLPTask, terraNameServiceGovTask, rewardInfoTask, farmConfigTask]);
-    console.log(rewardInfo)
-    const test = await this.terraNameServiceFarmService.query({
-      pools: {}
-    });
-    console.log(test.pools[0])
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
@@ -139,8 +133,9 @@ export class TerraNameServiceFarmInfoService implements FarmInfoService {
   async getterraNameServiceLPStat(tnsPoolResponse: PoolResponse) {
     const height = await this.terrajs.getHeight();
     const configTask = this.wasm.query(this.terrajs.settings.terraNameServiceStaking, { config: {} });
-    const stakingContractLpBalanceTask = this.wasm.query(this.terrajs.settings.terraNameServiceLp, { balance: { address: this.terrajs.settings.terraNameServiceStaking } });
-    const [config, stakingContractLpBalance] = await Promise.all([configTask, stakingContractLpBalanceTask]);
+    const stateTask = this.wasm.query(this.terrajs.settings.terraNameServiceStaking, { state: { block_height: height } });
+    // const stakingContractLpBalanceTask = this.wasm.query(this.terrajs.settings.terraNameServiceLp, { balance: { address: this.terrajs.settings.terraNameServiceStaking } });
+    const [config, state] = await Promise.all([configTask, stateTask]);
     const poolUSTAmount = tnsPoolResponse.assets[1]?.info?.native_token?.['denom'] === Denom.USD ? tnsPoolResponse.assets[1].amount : tnsPoolResponse.assets[0].amount;
     const poolTNSAmount = tnsPoolResponse.assets[1]?.info?.token ? tnsPoolResponse.assets[1].amount : tnsPoolResponse.assets[0].amount;
     const tnsPrice = div(poolUSTAmount, poolTNSAmount);
@@ -148,8 +143,11 @@ export class TerraNameServiceFarmInfoService implements FarmInfoService {
     const totalMint = +current_distribution_schedule[2];
 
     const r = new BigNumber(poolUSTAmount).multipliedBy(2).div(tnsPoolResponse.total_share);
-    const s = new BigNumber(stakingContractLpBalance.balance).times(r);
-    const apr = new BigNumber(totalMint).div(1e6).div(6).times(tnsPrice).times(31536e3).div(s);
+    // testnet formula
+    // const s = new BigNumber(stakingContractLpBalance.balance).times(r);
+    // const apr = new BigNumber(totalMint).div(1e6).div(6).times(tnsPrice).times(31536e3).div(s);
+    const s = new BigNumber(state.total_bond_amount).multipliedBy(r);
+    const apr = new BigNumber(totalMint).multipliedBy(tnsPrice).div(s);
     return {
       apr,
     };
