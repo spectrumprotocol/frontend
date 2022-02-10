@@ -57,21 +57,7 @@ export class GlowFarmInfoService implements FarmInfoService {
 
   async queryPoolItems(): Promise<PoolItem[]> {
     const pool = await this.glowFarmService.query({pools: {}});
-    // return pool.pools;
-    // @ts-ignore
-    return [{
-      asset_token: this.terrajs.settings.glowToken,
-      auto_spec_share_index: '0',
-      farm_share: '0',
-      farm_share_index: 0,
-      stake_spec_share_index: 0,
-      staking_token: this.terrajs.settings.glowLp,
-      state_spec_share_index: '0',
-      total_auto_bond_share: '0',
-      total_stake_bond_amount: '0',
-      total_stake_bond_share: '0',
-      weight: 0
-    }];
+    return pool.pools;
   }
 
 
@@ -159,21 +145,24 @@ export class GlowFarmInfoService implements FarmInfoService {
     const glowPrice = div(glowPoolUSTAmount, glowPoolGlowAmount);
     const current_distribution_schedule = (config.distribution_schedule as []).find(obj => height >= +obj[0] && height <= +obj[1]);
     const totalMint = +current_distribution_schedule[2];
-    const c = new BigNumber(glowPoolUSTAmount).multipliedBy(2).div(glowPoolResponse.total_share);
-    const s = new BigNumber(state.total_bond_amount).multipliedBy(c);
-    const apr = new BigNumber(totalMint).multipliedBy(glowPrice).div(s);
+    // const c = new BigNumber(glowPoolUSTAmount).multipliedBy(2).div(glowPoolResponse.total_share);
+    // const s = new BigNumber(state.total_bond_amount).multipliedBy(c);
+    // const apr = new BigNumber(totalMint).multipliedBy(glowPrice).div(s);
+    const h = 4656810;
+    const a = new BigNumber(totalMint).div(9313620).multipliedBy(glowPrice).div(1e6);
+    const c = new BigNumber(a).multipliedBy(h);
+
+    const o = new BigNumber(glowPoolUSTAmount).multipliedBy(2).div(glowPoolResponse.total_share);
+    const e = state.total_bond_amount / 1e6;
+    const i = new BigNumber(e).multipliedBy(o);
+    const apr = new BigNumber(c).div(i);
     return {
       apr,
     };
   }
 
-  // TODO
   async getGlowGovStat() {
-    // const fixAmount = new BigNumber(3e12);
-    // const govBalanceTask = this.wasm.query(this.terrajs.settings.glowToken, { balance: { address: this.terrajs.settings.glowGov } });
-    // const [govBalance] = await Promise.all([govBalanceTask]);
-    // const apy = fixAmount.div(govBalance.balance).div(2).toNumber();
-    const apy = 0;
+    const apy = 0.15;
     return {
       apy,
     };
