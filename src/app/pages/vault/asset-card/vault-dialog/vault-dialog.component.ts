@@ -169,7 +169,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       totalApr += this.vault.pairStat.poolAstroApr;
     }
     if (this.vault.poolInfo.dex === 'Astroport'){
-      html += `(APR data from Astroport) <br>`;
+      html += `(APR data from original farm website) <br>`;
     }
     if (totalApr > 0){
       html += `Rewards APR ${this.percentPipe.transform(totalApr)} <br>`;
