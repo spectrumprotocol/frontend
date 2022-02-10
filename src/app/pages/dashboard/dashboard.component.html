@@ -23,11 +23,11 @@
                         </h3>
                         <div class="mt-2">
                             <div class="progress" style="height: 10px; border-radius: 6px;">
-                                <div class="progress-bar bg-lpVaults"
+                                <div class="progress-bar bg-top-card-lpVaults"
                                 role="progressbar"
                                 [style.width.%]="this.tvlData.lpVaults.percentage">
                                 </div>
-                                <div class="progress-bar bg-gov"
+                                <div class="progress-bar bg-top-card-gov"
                                     role="progressbar"
                                     [style.width.%]="this.tvlData.gov.percentage">
                                 </div>
@@ -36,12 +36,12 @@
                                 <div class="grid-container">
                                     <div class="legend">
                                         <p class="card-text sub-topic">LP Vaults</p>
-                                        <div class="sq-color bg-lpVaults"></div>
+                                        <div class="sq-color bg-top-card-lpVaults"></div>
                                         <span class="card-text sub-topic img-txt">{{ this.tvlData?.lpVaults.shortValue }} UST</span>
                                     </div>
                                     <div class="legend">
                                         <p class="card-text sub-topic">Gov</p>
-                                        <div class="sq-color bg-gov"></div>
+                                        <div class="sq-color bg-top-card-gov"></div>
                                         <span class="card-text sub-topic img-txt">{{ this.tvlData?.gov.shortValue }} UST</span>
                                     </div>
                                   </div>
@@ -118,14 +118,30 @@
             <div class="col-12 col-md-6">
                 <div class="card card-grey box-left">
                     <div class="card-body ps-3">
-                        <p class="card-text sub-topic">
-                            SPEC Circulation
-                        </p>
-                        <h3 class="card-title">
-                            <span>{{ this.displayData?.spec?.circulation | unit: 6: '1.0-2' }}</span><span class="cur-title"> SPEC</span>
-                            <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
-                            mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
-                        </h3>
+                      <p class="card-text sub-topic">
+                          Max SPEC Supply
+                      </p>
+                      <h3 class="card-title mb-1">
+                          <span>{{ this.displayData?.spec?.maxSupply | unit: 6: '1.0-2' }}</span><span class="cur-title"> SPEC</span>
+                          <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
+                          mdbTooltip="Total max possible SPEC quantity"></i>
+                      </h3>
+                      <p class="card-text sub-topic">
+                        Total SPEC Supply
+                      </p>
+                      <h3 class="card-title mb-1">
+                        <span>{{ this.displayData?.spec?.totalSupply | unit: 6: '1.0-2' }}</span><span class="cur-title"> SPEC</span>
+                        <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
+                           mdbTooltip="Total quantity of SPEC minted including locked development fund"></i>
+                      </h3>
+                      <p class="card-text sub-topic">
+                        SPEC Circulation
+                      </p>
+                      <h3 class="card-title mb-1">
+                        <span>{{ this.displayData?.spec?.circulation | unit: 6: '1.0-2' }}</span><span class="cur-title"> SPEC</span>
+                        <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
+                           mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
+                      </h3>
                         <div class="d-flex justify-content-between">
                             <div>
                                 <div class="d-flex align-items-start flex-column" style="height: 200px;">
