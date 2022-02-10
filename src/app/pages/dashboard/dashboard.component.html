@@ -23,11 +23,11 @@
                         </h3>
                         <div class="mt-2">
                             <div class="progress" style="height: 10px; border-radius: 6px;">
-                                <div class="progress-bar bg-lpVaults"
+                                <div class="progress-bar bg-top-card-lpVaults"
                                 role="progressbar"
                                 [style.width.%]="this.tvlData.lpVaults.percentage">
                                 </div>
-                                <div class="progress-bar bg-gov"
+                                <div class="progress-bar bg-top-card-gov"
                                     role="progressbar"
                                     [style.width.%]="this.tvlData.gov.percentage">
                                 </div>
@@ -36,12 +36,12 @@
                                 <div class="grid-container">
                                     <div class="legend">
                                         <p class="card-text sub-topic">LP Vaults</p>
-                                        <div class="sq-color bg-lpVaults"></div>
+                                        <div class="sq-color bg-top-card-lpVaults"></div>
                                         <span class="card-text sub-topic img-txt">{{ this.tvlData?.lpVaults.shortValue }} UST</span>
                                     </div>
                                     <div class="legend">
                                         <p class="card-text sub-topic">Gov</p>
-                                        <div class="sq-color bg-gov"></div>
+                                        <div class="sq-color bg-top-card-gov"></div>
                                         <span class="card-text sub-topic img-txt">{{ this.tvlData?.gov.shortValue }} UST</span>
                                     </div>
                                   </div>

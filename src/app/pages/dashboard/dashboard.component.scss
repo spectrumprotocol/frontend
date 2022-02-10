@@ -4,9 +4,17 @@
     right: 0;
 }
 
+.bg-top-card-gov {
+  background-color: #5e9bfc;
+}
+
+.bg-top-card-lpVaults {
+  background-color: #194dec;
+}
+
 .bg-gov {
     background-color: #ff8dc1;
-} 
+}
 
 .bg-lpVaults {
     background-color: #fc5185;
@@ -53,7 +61,7 @@
     border-radius: 1px;
     position: absolute;
   }
-  
+
 ::ng-deep .advanced-pie-legend {
     .total-value, .item-value, .total-label {
         font-size: 20px !important;
@@ -61,7 +69,7 @@
     .advanced-pie-legend {
         width: 100% !important;
     }
-    
+
 }
 
 ::ng-deep circle {
