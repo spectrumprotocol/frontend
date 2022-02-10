@@ -404,6 +404,11 @@ input[type="number"] {
   border: solid 1px $tns;
 }
 
+.bg-Glow {
+  background: $glow-bg;
+  border: solid 1px $glow;
+}
+
 .bg-Kujira {
   background: $kujira;
   background: -webkit-linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);

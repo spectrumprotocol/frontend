@@ -58,6 +58,8 @@ export class UrlPipe implements PipeTransform {
           case 'Starterra': return 'https://starterra.io/assets/100x100_starterra.png';
           case 'XDEFI': return 'https://github.com/sushiswap/assets/blob/master/blockchains/ethereum/assets/0x72B886d09C117654aB7dA13A14d603001dE0B777/logo.png?raw=true';
           case 'TNS': return `https://tns.money/static/images/tns.png`;
+          case 'GLOW': return `https://glowyield.com/assets/img/icons/glow.png`;
+          case 'Glow': return `https://glowyield.com/assets/img/icons/glow.png`;
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -86,6 +88,7 @@ export class UrlPipe implements PipeTransform {
           case 'STT': return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.starterraToken}`;
           case 'XDEFI': return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.xdefiToken}`;
           case 'TNS': return `https://tns.money/trade`;
+          case 'Glow': return `https://gov.glowyield.com/`;
           default: {
             if (dex === 'Astroport') {
               return 'https://app.astroport.fi/swap';

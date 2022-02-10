@@ -134,7 +134,6 @@ export class GlowFarmInfoService implements FarmInfoService {
     );
   }
 
-  //TODO
   async getGlowLPStat(glowPoolResponse: PoolResponse) {
     const height = await this.terrajs.getHeight();
     const configTask = this.wasm.query(this.terrajs.settings.glowStaking, { config: {} });
