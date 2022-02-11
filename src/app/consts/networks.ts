@@ -206,7 +206,7 @@ export const networks: Record<string, ISettings> = {
     glowLp: 'terra1khm4az2cjlzl76885x2n7re48l9ygckjuye0mt',
     glowStaking: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
     glowGov: 'terra1xxp34xk4rjexwlu0xfdhyn0zr3qsgare04yll0',
-    glowFarm: 'terra1u6f5vnux869rnextxypjdyrvnvcaux68nr6nne', // use another address for now to test farm info
+    glowFarm: 'terra1u6f5vnux869rnextxypjdyrvnvcaux68nr6nne',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
