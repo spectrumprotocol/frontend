@@ -61,15 +61,6 @@ export interface ISettings {
   astroportAstroUstFarm: string;
   astroportLunaUstFarm: string;
   astroportBlunaLunaFarm: string;
-  astroportAncUstFarm: string;
-  astroportMirUstFarm: string;
-  astroportOrionUstFarm: string;
-  astroportSttUstFarm: string;
-  astroportVkrUstFarm: string;
-  astroportMineUstFarm: string;
-  astroportApolloUstFarm: string;
-  starterraToken: string;
-  apolloToken: string;
   lcd: string;
   fcd: string;
   mirrorGraph: string;
@@ -81,6 +72,51 @@ export interface ISettings {
   nexusGraph: string;
   chainID: string;
   finder: string;
+  astroportAncUstFarm: string;
+  astroportMirUstFarm: string;
+  astroportOrionUstFarm: string;
+  astroportSttUstFarm: string;
+  astroportVkrUstFarm: string;
+  astroportMineUstFarm: string;
+  astroportApolloUstFarm: string;
+  astroportPsiUstFarm: string;
+  astroportNlunaPsiFarm: string;
+  astroportNethPsiFarm: string;
+  astroportXdefiUstFarm: string;
+  starterraToken: string;
+  apolloToken: string;
+  xdefiToken: string;
+  apolloFactory: string;
+  mirrorFactory: string;
+  sttStaking: string;
+  terraNameServiceGov: string;
+  terraNameServiceStaking: string;
+  terraNameServiceToken: string;
+  terraNameServiceFarm: string;
+  terraNameServiceLp: string;
+  glowPool: string;
+  glowToken: string;
+  glowLp: string;
+  glowStaking: string;
+  glowGov: string;
+  glowFarm: string;
+  // // batch only
+  // lcdPost: string;
+  // controller: string;
+  // gql_mirror: string;
+  // gql_nexus: string;
+  // astroportAstroUstLP: string;
+  // astroportLunaUstLP: string;
+  // astroportBlunaLunaLP: string;
+  burnVaultController: string;
+  burnVault: string;
+  // astroportAncUstLP: string;
+  // astroportMirUstLP: string;
+  // astroportOrionUstLP: string;
+  // astroportSttUstLP: string;
+  // astroportVkrUstLP: string;
+  // astroportMineUstLP: string;
+  // astroportApolloUstLP: string;
 }
 export const networks: Record<string, ISettings> = {
   mainnet: {
@@ -103,7 +139,7 @@ export const networks: Record<string, ISettings> = {
     astroportFactory: 'terra1fnywlw4edny3vw44x04xd67uzkdqluymgreu7g',
     staker: 'terra1fxwelge6mf5l6z0rjpylzcfq9w9tw2q7tewaf5',
     stakerSingleAsset: 'terra12kzevdnqe4k82cg5f07dywgj4lvkshhhwh4gnc',
-    stakerAstroport: 'terra10u9342cdwwqpe4wz9mf2c00ytlcr847wpe0xh4',
+    stakerAstroport: 'terra1w9d33yf2j05m2h6f3k7sjuhgrdrznqmncjrwhq',
     anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
     anchorStaking: 'terra1897an2xux840p9lrh6py3ryankc6mspw49xse3',
     anchorToken: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
@@ -141,6 +177,7 @@ export const networks: Record<string, ISettings> = {
     psiDPToken: 'terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc',
     astroToken: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
     bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
+    xdefiToken: 'terra169edevav3pdrtjcx35j6pvzuv54aevewar4nlh',
     astroportGov: 'terra1nq4aszdm82wujstxwpjxtvckg7ghu63mqkey33',
     astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
     astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
@@ -153,8 +190,23 @@ export const networks: Record<string, ISettings> = {
     astroportVkrUstFarm: 'terra1yj34w2n24p4x7s69evjp7ukzz82ca5tvlzqa84',
     astroportMineUstFarm: 'terra1s9zqk5ksnwp8qywrmdwt2fq0a9l0zc2d2sw2an',
     astroportApolloUstFarm: 'terra1zngkjhqqearpfhym9x9hnutpklduz45e9uvp9u',
+    astroportPsiUstFarm: 'terra1jxh7hahwxlsy5cckkyhuz50a60mpn5tr0px6tq',
+    astroportNlunaPsiFarm: 'terra1zl3ud44lja3r8ld8nwzh3eukl6h97gp2xr4wq6',
+    astroportNethPsiFarm: 'terra1xw3jzqwrql5fvddchzxycd2ygrep5kudsden5c',
+    astroportXdefiUstFarm: 'terra1d9cufxz9a4px9zfzq8quqewlj24durtu6lhwfw',
     starterraToken: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n',
-    apolloToken: 'terra100yeqvww74h4yaejj6h733thgcafdaukjtw397',
+    sttStaking: 'terra15p807wnm9q3dyw4rvfqsaukxqt6lkuqe62q3mp',
+    terraNameServiceGov: 'terra1a5thpf2gdrrneewjkutyz5q6zr2kn8ymg0cxn9',
+    terraNameServiceStaking: 'terra1u94zwrreyz3t0jx25nl7800pxsrk6e6dwjqpsx', // tns pool terra1hqnk9expq3k4la2ruzdnyapgndntec4fztdyln
+    terraNameServiceToken: 'terra14vz4v8adanzph278xyeggll4tfww7teh0xtw2y', // tns lp terra1kg9vmu4e43d3pz0dfsdg9vzwgnnuf6uf3z9jwj
+    terraNameServiceFarm: 'terra1qanglh8qpeqltp60ktwmkl938lm9etz5s4hkh6',
+    terraNameServiceLp: 'terra1kg9vmu4e43d3pz0dfsdg9vzwgnnuf6uf3z9jwj',
+    glowPool: 'terra1p44kn7l233p7gcj0v3mzury8k7cwf4zt6gsxs5',
+    glowToken: 'terra13zx49nk8wjavedjzu8xkk95r3t0ta43c9ptul7',
+    glowLp: 'terra1khm4az2cjlzl76885x2n7re48l9ygckjuye0mt',
+    glowStaking: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
+    glowGov: 'terra1xxp34xk4rjexwlu0xfdhyn0zr3qsgare04yll0',
+    glowFarm: 'terra1u6f5vnux869rnextxypjdyrvnvcaux68nr6nne',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -166,6 +218,11 @@ export const networks: Record<string, ISettings> = {
     nexusGraph: 'nexus',
     chainID: 'columbus-5',
     finder: 'finder.extraterrestrial.money',
+    apolloToken: 'terra100yeqvww74h4yaejj6h733thgcafdaukjtw397',
+    apolloFactory: 'terra1g7jjjkt5uvkjeyhp8ecdz4e4hvtn83sud3tmh2',
+    mirrorFactory: 'terra1mzj9nsxx0lxlaxnekleqdy8xnyw2qrh3uz6h8p',
+    burnVaultController: 'terra12f4h5sk0mfmrvectgw3nns56rlp9za9z0hvvvv',
+    burnVault: 'terra1gyqyhjppy3k77wltnmqt29ms340mmayk7ank4e',
   },
   testnet: {
     specToken: 'terra1kvsxd94ue6f4rtchv2l6me5k07uh26s7637cza',
@@ -184,10 +241,10 @@ export const networks: Record<string, ISettings> = {
     specFarm: 'terra1cedx8gpvu7c4vzfadwmf3pewg2030fqgw4q3dl',
     terraSwapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
     terraSwapRouter: 'terra14z80rwpd0alzj4xdtgqdmcqt9wd9xj5ffd60wp',
-    astroportFactory: 'terra1xkuxfhxa2jmjercq3ryplnj65huhlxl5mv3d6x',
+    astroportFactory: 'terra15jsahkaf9p0qu8ye873p0u5z6g07wdad0tdq43',
     staker: 'terra15nwqmmmza9y643apneg0ddwt0ekk38qdevnnjt',
     stakerSingleAsset: 'terra1xt7p5a5dezj4d5h4rhry6mr6khhfhgnszem08s',
-    stakerAstroport: '',
+    stakerAstroport: 'terra14lezmh3d449pu8hfhwpxu5wu694l4tzg3lhru5',
     anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
     anchorStaking: 'terra19nxz35c8f7t3ghdxrxherym20tux8eccar0c3k',
     anchorToken: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
@@ -223,22 +280,40 @@ export const networks: Record<string, ISettings> = {
     bPsiDPToken: 'terra1ex8ss7xhwcf8x6n47dn656hf8t0cw97myjr35a',
     psiDPGatewayPool: 'terra1zd8q7wltywdd90x2skvexh06p6r8mwljfqx4eu',
     psiDPToken: 'terra1c6vsshlv5gqtwq48darkunnpxu5ustcv96e0qk',
-    astroToken: 'terra1cc2up8erdqn2l7nz37qjgvnqy56sr38aj9vqry',
-    bLunaToken: 'bLunaToken',
-    astroportGov: '',
-    astroportGenerator: '',
-    astroportAstroUstFarm: 'astroportAstroUstFarm',
-    astroportLunaUstFarm: 'astroportLunaUstFarm',
-    astroportBlunaLunaFarm: 'astroportLunaBlunaFarm',
-    astroportAncUstFarm: '',
+    astroToken: 'terra1jqcw39c42mf7ngq4drgggakk3ymljgd3r5c3r5', // xAstro terra1afev5mg7k6gpyn96sv45ql3r35tyknlr72qc3y
+    bLunaToken: '',
+    xdefiToken: '',
+    astroportGov: 'terra1ym46q3cv0vnu6sg7hwch9ewdpnvwdaauxwqg7q',
+    astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
+    astroportAstroUstFarm: 'terra19x7u7d837p9x6rzwesnk65n3aml0p3apytz4d2',
+    astroportLunaUstFarm: '',
+    astroportBlunaLunaFarm: '',
+    astroportAncUstFarm: 'terra1salzgw4879x45rduugn88j8x2mv6hzjdvwfmzh',
     astroportMirUstFarm: '',
     astroportOrionUstFarm: '',
     astroportSttUstFarm: '',
     astroportVkrUstFarm: '',
     astroportMineUstFarm: '',
     astroportApolloUstFarm: '',
+    astroportPsiUstFarm: '',
+    astroportNlunaPsiFarm: '',
+    astroportNethPsiFarm: '',
+    astroportXdefiUstFarm: '',
     starterraToken: '',
     apolloToken: '',
+    apolloFactory: '',
+    sttStaking: '',
+    terraNameServiceGov: 'terra1hdps6vdnknhr72vn99uqqvmmsn9c43en6vq26z',
+    terraNameServiceStaking: 'terra1g9s3az3ra8uayvpm0zgj5mpx927et9mlqwfjfu', // tns pool terra12l4yfytser4hkezsq4g23st2a0ntgletukwxpw
+    terraNameServiceToken: 'terra16qrvv9wukzzq0d7wxhkxrh5vv6m7lt770r0xts', // tns lp terra1cxt4rrstqhldhnwyzuk03jswx584e9w2xw896z
+    terraNameServiceFarm: 'terra1ecd37frx3lan5evf7680h3nckjxynhfpz4edkc',
+    terraNameServiceLp: 'terra1cxt4rrstqhldhnwyzuk03jswx584e9w2xw896z',
+    glowPool: '',
+    glowToken: '',
+    glowLp: '',
+    glowStaking: '',
+    glowGov: '',
+    glowFarm: '',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
@@ -246,9 +321,12 @@ export const networks: Record<string, ISettings> = {
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.dev.pylon.rocks',
     valkyrieAPI: 'https://api.testnet.valkyrieprotocol.com',
-    orionAPI: 'https://api.stage.orion.money/v1/terra',
+    orionAPI: 'https://api.orion.money/v1/terra', // orionAPI: 'https://api.stage.orion.money/v1/terra',
     nexusGraph: 'nexus',
     chainID: 'bombay-12',
     finder: 'finder.terra.money',
+    mirrorFactory: 'terra10l9xc9eyrpxd5tqjgy6uxrw7dd9cv897cw8wdr',
+    burnVaultController: 'terra12f4h5sk0mfmrvectgw3nns56rlp9za9z0hvvvv',
+    burnVault: 'terra1l3g2yv5cqwdtrxeun4a76jkq45gwwm682usvs4'
   },
 };

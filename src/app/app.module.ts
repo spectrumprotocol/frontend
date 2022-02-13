@@ -59,7 +59,7 @@ import { PylonFarmInfoService } from './services/farm_info/pylon.farm-info.servi
 import { GovPoolComponent } from './pages/gov/gov-pool/gov-pool.component';
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
 import { FloorPipe } from './pipes/floor.pipe';
-import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
+import {TerraNameServiceFarmInfoService} from './services/farm_info/terranameservice.farm-info.service';
 import { ValkyrieFarmInfoService } from './services/farm_info/valkyrie.farm-info.service';
 import {NexusFarmInfoService} from './services/farm_info/nexus.farm-info.service';
 import {OrionFarmInfoService} from './services/farm_info/orion.farm-info.service';
@@ -79,6 +79,7 @@ import {AstroportAstroUstFarmInfoService} from './services/farm_info/astroport/a
 import {AstroportLunaUstFarmInfoService} from './services/farm_info/astroport/astroport-luna-ust-farm-info.service';
 import {AstroportBlunaLunaFarmInfoService} from './services/farm_info/astroport/astroport-bluna-luna.farm-info.service';
 import {MdbCheckboxModule} from 'mdb-angular-ui-kit/checkbox';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import {AstroportAncUstFarmInfoService} from './services/farm_info/astroport/astroport-anc-ust.farm-info.service';
 import {AstroportMirUstFarmInfoService} from './services/farm_info/astroport/astroport-mir-ust.farm-info.service';
 import {AstroportApolloUstFarmInfoService} from './services/farm_info/astroport/astroport-apollo-ust.farm-info.service';
@@ -86,6 +87,12 @@ import {AstroportMineUstFarmInfoService} from './services/farm_info/astroport/as
 import {AstroportOrionUstFarmInfoService} from './services/farm_info/astroport/astroport-orion-ust.farm-info.service';
 import {AstroportSttUstFarmInfoService} from './services/farm_info/astroport/astroport-stt-ust.farm-info.service';
 import {AstroportVkrUstFarmInfoService} from './services/farm_info/astroport/astroport-vkr-ust.farm-info.service';
+import {AstroportPsiUstFarmInfoService} from './services/farm_info/astroport/astroport-psi-ust.farm-info.service';
+import {AstroportNlunaPsiFarmInfoService} from './services/farm_info/astroport/astroport-nluna-psi.farm-info.service';
+import {AstroportNethPsiFarmInfoService} from './services/farm_info/astroport/astroport-neth-psi.farm-info.service';
+import {AstroportXdefiUstFarmInfoService} from './services/farm_info/astroport/astroport-xdefi-ust.farm-info.service';
+import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
+import {GlowFarmInfoService} from './services/farm_info/glow.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -136,6 +143,7 @@ registerLocaleData(locale, 'en');
     ManageRewardsComponent,
     VaultDialogComponent,
     LpEarningPipe,
+    DashboardComponent
   ],
     imports: [
         AppRoutingModule,
@@ -175,11 +183,15 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AstroportBlunaLunaFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportAncUstFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: GlowFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportMirUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportPsiUstFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportNlunaPsiFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportNethPsiFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportOrionUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },
@@ -189,11 +201,14 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportVkrUstFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: AstroportXdefiUstFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: TerraNameServiceFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,
     BalancePipe,
     LpBalancePipe,
+    ShortNumPipe,
     { provide: LOCALE_ID, useValue: 'en' },
   ],
   bootstrap: [AppComponent]

@@ -1,0 +1,238 @@
+<main>
+    <div class="container py-5">
+      <div class="row">
+        <div class="col-12">
+          <h4>Dashboard</h4>
+          <span class="sub-topic"></span>
+        </div>
+      </div>
+      <div *ngIf="!this.displayData" class="d-flex align-items-center justify-content-center pt-3">
+        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...
+      </div>
+      <div class="row g-1 pt-3" *ngIf="this.displayData">
+            <div class="col-12">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3">
+                        <p class="card-text sub-topic">
+                            Total Value Locked
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ +this.displayData?.tvl?.total || 0 | unit: 6: '1.0-2' }}</span><span class="cur-title"> UST</span>
+                            <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
+                            mdbTooltip="Total value of provided liquidity and staked SPEC"></i>
+                        </h3>
+                        <div class="mt-2">
+                            <div class="progress" style="height: 10px; border-radius: 6px;">
+                                <div class="progress-bar bg-top-card-lpVaults"
+                                role="progressbar"
+                                [style.width.%]="this.tvlData.lpVaults.percentage">
+                                </div>
+                                <div class="progress-bar bg-top-card-gov"
+                                    role="progressbar"
+                                    [style.width.%]="this.tvlData.gov.percentage">
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="grid-container">
+                                    <div class="legend">
+                                        <p class="card-text sub-topic">LP Vaults</p>
+                                        <div class="sq-color bg-top-card-lpVaults"></div>
+                                        <span class="card-text sub-topic img-txt">{{ this.tvlData?.lpVaults.shortValue }} UST</span>
+                                    </div>
+                                    <div class="legend">
+                                        <p class="card-text sub-topic">Gov</p>
+                                        <div class="sq-color bg-top-card-gov"></div>
+                                        <span class="card-text sub-topic img-txt">{{ this.tvlData?.gov.shortValue }} UST</span>
+                                    </div>
+                                  </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3" style="min-height: 100px;">
+                        <div class="float-start">
+                            <p class="card-text sub-topic">
+                                Market Cap
+                            </p>
+                            <h3 class="card-title">
+                                <span>{{ +this.displayData?.spec?.marketCap || 0 | unit: 6: '1.0-2' }}</span><span class="cur-title"> UST</span>
+                            </h3>
+                        </div>
+                        <div class="float-end pe-2">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <i *ngIf="+this.displayData?.spec?.price - +this.displayData?.spec?.previousPrice >= 0" class="fas fa-caret-up text-success mt-4">&nbsp;</i>
+                                    <i *ngIf="+this.displayData?.spec?.price - +this.displayData?.spec?.previousPrice < 0" class="fas fa-caret-down text-danger mt-4">&nbsp;</i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="card-text sub-topic">
+                                        SPEC Price
+                                    </p>
+                                    <h3 class="card-title">
+                                        <span>{{ +this.displayData?.spec?.price || 0 | shortNum }}</span><span class="cur-title"> UST</span>
+                                        <a class="text-light small"
+                                        href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" alt="SPEC price chart" title="SPEC price chart" target="_blank">
+                                        <img class="mg-3" src="../../../assets/Icon_Chart.svg">
+                                      </a>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3 mh-50">
+                        <p class="card-text sub-topic">
+                            TVL Timeline
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ +this.displayData?.tvl?.total / UNIT || 0 | shortNum }}</span>
+                        </h3>
+                    </div>
+                    <ngx-charts-area-chart-stacked
+                        class="chart-container"
+                        [tooltipDisabled]="false"
+                        [view]="viewArea"
+                        [timeline]="true"
+                        [scheme]="colorAreaChart"
+                        [xAxis]="xAxisArea"
+                        [yAxis]="yAxisArea"
+                        [timeline]="timelineArea"
+                        [results]="graphData"
+                        [gradient]="gradient">
+                      <ng-template #seriesTooltipTemplate let-model="model">
+                        <span class="text-red">{{ model[0].value / UNIT | shortNum }}</span><br>
+                        <span>{{ model[0].name | date:'EEE, LLL d YYYY' }}</span>
+                      </ng-template>
+<!--                      hack way to prevent tooltipTemplate from showing when cursor is at pink dot-->
+                      <ng-template #tooltipTemplate>
+                      </ng-template>
+                    </ngx-charts-area-chart-stacked>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="card card-grey box-left">
+                    <div class="card-body ps-3">
+                      <p class="card-text sub-topic">
+                          Max SPEC Supply
+                      </p>
+                      <h3 class="card-title mb-1">
+                          <span>{{ this.displayData?.spec?.maxSupply | unit: 6: '1.0-2' }}</span><span class="cur-title"> SPEC</span>
+                          <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
+                          mdbTooltip="Total max possible SPEC quantity"></i>
+                      </h3>
+                      <p class="card-text sub-topic">
+                        SPEC Circulation
+                      </p>
+                      <h3 class="card-title mb-1">
+                        <span>{{ this.displayData?.spec?.circulation | unit: 6: '1.0-2' }}</span><span class="cur-title"> SPEC</span>
+                        <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-18 sub-topic"
+                           mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
+                      </h3>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="d-flex align-items-start flex-column" style="height: 200px;">
+                                    <div class="mb-auto p-2"></div>
+                                    <div class="mb-3">
+                                        <p class="card-text sub-topic">
+                                            Staked
+                                        </p>
+                                        <h3 class="card-text">
+                                            <div class="sq-color bg-gov"></div>
+                                            <span class="img-txt">
+                                                {{ this.displayData?.circulation?.gov / UNIT | shortNum  }} SPEC</span>
+                                        </h3>
+                                    </div>
+                                    <div class="mb-3">
+                                        <p class="card-text sub-topic">
+                                            LP
+                                        </p>
+                                        <h3 class="card-text">
+                                            <div class="sq-color bg-lpVaults"></div>
+                                            <span class="img-txt">
+                                                {{ this.displayData?.circulation?.lpVaults / UNIT | shortNum }} SPEC</span>
+                                        </h3>
+                                    </div>
+                                    <div class="mb-3">
+                                        <p class="card-text sub-topic">
+                                            Others
+                                        </p>
+                                        <h3 class="card-text">
+                                            <div class="sq-color bg-other"></div>
+                                            <span class="img-txt">
+                                                {{ this.displayData?.circulation?.others / UNIT | shortNum }} SPEC</span>
+                                        </h3>
+                                    </div>
+                                  </div>
+                            </div>
+                            <div class="bottom-right">
+                                <ngx-charts-pie-chart [view]="[160, 160]"
+                                [tooltipText]="formatDataLabel"
+                                [results]="specCirculationData"
+                                [scheme]="colorScheme"
+                                [gradient]="false"
+                                [legend]="false"
+                                [labels]="false"
+                                [doughnut]="true">
+                            </ngx-charts-pie-chart>
+                            </div>
+                       </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3">
+                        <p class="card-text sub-topic">
+                            Earning
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ this.displayData?.stat?.total?.earning | unit: 6: '1.0-2' }}</span><span class="cur-title"> UST</span>
+                        </h3>
+                        <p class="card-text sub-topic mt-3">
+                            Buyback
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ this.displayData?.stat?.total?.buybackSpec | unit: 6: '1.0-2' }}</span><span class="cur-title"> SPEC</span>
+                        </h3>
+                        <p class="card-text sub-topic mt-3">
+                            Total Burn
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ this.displayData?.stat?.total?.totalBurn | unit: 6: '1.0-2' }}</span><span class="cur-title"> SPEC</span>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3">
+                        <p class="card-text sub-topic">
+                            Earning (7d)
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ this.displayData?.stat?.last7?.earning | unit: 6: '1.0-2' }}</span><span class="cur-title"> UST</span>
+                        </h3>
+                        <p class="card-text sub-topic mt-3">
+                            Buyback (7d)
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ this.displayData?.stat?.last7?.buybackSpec | unit: 6: '1.0-2' }}</span><span class="cur-title"> SPEC</span>
+                        </h3>
+                        <p class="card-text sub-topic mt-3">
+                            Total Burn (7d)
+                        </p>
+                        <h3 class="card-title">
+                            <span>{{ this.displayData?.stat?.last7?.totalBurn | unit: 6: '1.0-2' }}</span><span class="cur-title"> SPEC</span>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

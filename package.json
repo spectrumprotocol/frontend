@@ -24,7 +24,7 @@
     "@apollo/client": "^3.5.5",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@pedrouid/iso-crypto": "^1.1.0",
-    "@swimlane/ngx-charts": "^19.1.0",
+    "@swimlane/ngx-charts": "^19.2.0",
     "@terra-money/terra.js": "~3.0.4",
     "@terra-money/wallet-provider": "~3.7.1",
     "@types/chart.js": "^2.9.34",

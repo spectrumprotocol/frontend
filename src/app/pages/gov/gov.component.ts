@@ -11,7 +11,7 @@ import { GovPoolDetail } from './gov-pool/gov-pool.component';
 import { div, gt, minus, plus, times } from '../../libs/math';
 import { BalanceResponse } from '../../services/api/gov/balance_response';
 import { StateInfo } from '../../services/api/gov/state_info';
-import { AnchorMarketService } from 'src/app/services/api/anchor-market.service';
+import { AnchorMarketService } from '../../services/api/anchor-market.service';
 import { HttpClient } from '@angular/common/http';
 
 const LIMIT = 10;

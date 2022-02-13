@@ -13,11 +13,14 @@ npx json2ts -i ../contracts/contracts/farms/spectrum_orion_farm/schema/ -o ./src
 npx json2ts -i ../contracts/contracts/farms/spectrum_nexus_farm/schema/ -o ./src/app/services/api/nexus_farm
 npx json2ts -i ../contracts/contracts/farms/spectrum_nexus_nasset_psi_farm/schema/ -o ./src/app/services/api/nexus_nassets_psi_farm
 npx json2ts -i ../contracts/contracts/farms/spectrum_pylon_liquid_farm/schema/ -o ./src/app/services/api/pylon_liquid_farm
+npx json2ts -i ../contracts/contracts/farms/spectrum_terra_name_service_farm/schema/ -o ./src/app/services/api/terra_name_service_farm
+npx json2ts -i ../contracts/contracts/farms/spectrum_glow_farm/schema/ -o ./src/app/services/api/glow_farm
 
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_farm/schema/ -o ./src/app/services/api/astroport_farm
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_luna_ust_farm/schema/ -o ./src/app/services/api/astroport_luna_ust_farm
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_token_luna_farm/schema/ -o ./src/app/services/api/astroport_token_luna_farm
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_token_ust_farm/schema/ -o ./src/app/services/api/astroport_token_ust_farm
+npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_token_token_farm/schema/ -o ./src/app/services/api/astroport_token_token_farm
 
 
 npx json2ts -i ../astroport/astroport/contracts/factory/schema/ -o ./src/app/services/api/astroport_factory

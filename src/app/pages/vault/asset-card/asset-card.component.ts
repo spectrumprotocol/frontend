@@ -6,7 +6,7 @@ import { InfoService } from '../../../services/info.service';
 import { LpBalancePipe } from '../../../pipes/lp-balance.pipe';
 import { VaultDialogComponent } from './vault-dialog/vault-dialog.component';
 import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
-import { CONFIG } from 'src/app/consts/config';
+import { CONFIG } from '../../../consts/config';
 
 @Component({
   selector: 'app-asset-card',
@@ -38,5 +38,4 @@ export class AssetCardComponent implements OnInit {
         vault: this.vault
     }});
   }
-
 }

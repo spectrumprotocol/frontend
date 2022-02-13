@@ -1,13 +1,13 @@
-import {Inject, Injectable} from '@angular/core';
-import {BLOCK_TIME, TerrajsService} from './terrajs.service';
-import {TokenService} from './api/token.service';
-import {BankService} from './api/bank.service';
-import {TerraSwapService} from './api/terraswap.service';
-import {PoolResponse} from './api/terraswap_pair/pool_response';
-import {div, minus, plus, times} from '../libs/math';
-import {CONFIG} from '../consts/config';
-import {TerraSwapFactoryService} from './api/terraswap-factory.service';
-import {GovService} from './api/gov.service';
+import { Inject, Injectable } from '@angular/core';
+import { BLOCK_TIME, TerrajsService } from './terrajs.service';
+import { TokenService } from './api/token.service';
+import { BankService } from './api/bank.service';
+import { TerraSwapService } from './api/terraswap.service';
+import { PoolResponse } from './api/terraswap_pair/pool_response';
+import { div, minus, plus, times } from '../libs/math';
+import { CONFIG } from '../consts/config';
+import { TerraSwapFactoryService } from './api/terraswap-factory.service';
+import { GovService } from './api/gov.service';
 import {
   FARM_INFO_SERVICE,
   FarmInfoService,
@@ -15,17 +15,18 @@ import {
   PoolInfo,
   RewardInfoResponseItem
 } from './farm_info/farm-info.service';
-import {fromEntries} from '../libs/core';
-import {PairInfo} from './api/terraswap_factory/pair_info';
-import {BalancePipe} from '../pipes/balance.pipe';
-import {LpBalancePipe} from '../pipes/lp-balance.pipe';
-import {Vault} from '../pages/vault/vault.component';
-import {HttpClient} from '@angular/common/http';
-import {memoize} from 'utils-decorators';
-import {Denom} from '../consts/denom';
-import {WalletService} from './api/wallet.service';
-import {AstroportService} from './api/astroport.service';
-import {AstroportFactoryService} from './api/astroport-factory.service';
+import { fromEntries } from '../libs/core';
+import { PairInfo } from './api/terraswap_factory/pair_info';
+import { BalancePipe } from '../pipes/balance.pipe';
+import { LpBalancePipe } from '../pipes/lp-balance.pipe';
+import { Vault } from '../pages/vault/vault.component';
+import { HttpClient } from '@angular/common/http';
+import { memoize } from 'utils-decorators';
+import { Denom } from '../consts/denom';
+import { WalletService } from './api/wallet.service';
+import { AstroportService } from './api/astroport.service';
+import { AstroportFactoryService } from './api/astroport-factory.service';
+import { Apollo, gql } from 'apollo-angular';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -82,6 +83,7 @@ export class InfoService {
     private lpBalancePipe: LpBalancePipe,
     private httpClient: HttpClient,
     private wallet: WalletService,
+    private apollo: Apollo
   ) {
     try {
       const infoSchemaVersion = localStorage.getItem('infoSchemaVersion');
@@ -120,6 +122,10 @@ export class InfoService {
       }
     } catch (e) { }
   }
+
+  get ASTRO_KEY() {
+    return `Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`;
+  }
   userUstAmount: string;
   userSpecAmount: string;
   userSpecLpAmount: string;
@@ -146,9 +152,12 @@ export class InfoService {
 
   portfolio: Portfolio;
 
-  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST']);
-  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST']);
-  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['']);
+  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
+  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
+  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
+  private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
+
+  astroportData: any;
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
@@ -336,13 +345,43 @@ export class InfoService {
     };
     const vaultsTask = this.gov.vaults();
     await this.refreshPoolInfos();
-    await this.refreshPoolResponses();
+    await Promise.all([
+      this.refreshPoolResponses(),
+      this.ensureAstroportData().catch(_ => {}),
+    ]);
+
     const vaults = await vaultsTask;
     const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
         .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos);
+        const keys = Object.keys(pairStats);
+        for (const key of keys) {
+          if (!pairStats[key].poolAstroApr) {
+            pairStats[key].poolAstroApr = 0;
+          }
+          // if (farmInfo.dex === 'Astroport'){
+          // if farmInfo.queryPairStats return poolApr 0 and poolAstroApr 0, meaning that do not use calculation on Spectrum side but use Astroport API
+          if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP') {
+            const found = this.astroportData.pools.find(pool => pool?.pool_address === this.pairInfos[key]?.contract_addr);
+            // to prevent set pairStat undefined in case of no data available from Astroport api
+            if (found) {
+              const pair = pairStats[key];
+              pair.poolApr = +found.protocol_rewards.apr;
+              pair.poolAstroApr = +found.astro_rewards.apr;
+              const proxyAndAstroApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
+              pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (+found.trading_fees.apr + 1) - 1 : 0;
+              pair.vaultFee = +pair.tvl * (pair.poolApr + pair.poolAstroApr) * 0.06;
+              // pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
+              // this.poolInfos[key].tradeApr = +found.trading_fees.apr;
+            }
+          }
+          if (farmInfo.dex === 'Terraswap' && farmInfo.farmType === 'LP') {
+            // supported only in backend
+          }
+        }
+
         Object.assign(stat.pairs, pairStats);
       } catch (e) {
         console.error('queryPairStats error >> ', e);
@@ -373,7 +412,7 @@ export class InfoService {
       * (1 - +config.warchest_ratio);
     for (const pair of Object.values(stat.pairs)) {
       pair.specApr = ustPerYear * pair.multiplier / totalWeight / +pair.tvl;
-      pair.dpr = (pair.poolApr + pair.specApr) / 365;
+      pair.dpr = (pair.poolApr + pair.poolAstroApr + pair.specApr) / 365;
       stat.vaultFee += pair.vaultFee;
       stat.tvl = plus(stat.tvl, pair.tvl);
     }
@@ -464,10 +503,19 @@ export class InfoService {
   }
 
   async refreshCirculation() {
-    const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
-    const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
-    const taskResult = await Promise.all([task1, task2]);
-    this.circulation = minus(minus(taskResult[0].total_supply, taskResult[1].staked_amount), taskResult[1].unstaked_amount);
+    if (this.terrajs.network?.name === 'testnet') {
+      const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
+      const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
+      const taskResult = await Promise.all([task1, task2]);
+      this.circulation = minus(taskResult[0].total_supply, taskResult[1].locked_amount);
+      return;
+    } else {
+      const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
+      const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
+      const task3 = this.wallet.balance(this.terrajs.settings.burnVault, this.terrajs.settings.burnVaultController);
+      const taskResult = await Promise.all([task1, task2, task3]);
+      this.circulation = minus(minus(taskResult[0].total_supply, taskResult[1].locked_amount), taskResult[2].staked_amount);
+    }
   }
 
   async refreshMarketCap() {
@@ -521,10 +569,10 @@ export class InfoService {
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
         const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardKey];
-        const astroTokenPoolResponse = this.poolResponses[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`];
+        const astroTokenPoolResponse = this.poolResponses[this.ASTRO_KEY];
 
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
-        if (farmInfo.dex === 'Astroport'){
+        if (farmInfo.dex === 'Astroport') {
           const pending_farm2_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm2_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
           tvl += pending_farm2_reward_ust;
           portfolio.tokens.get(rewardSymbol).pending_reward_token += rewardInfo.pending_farm2_reward ? +rewardInfo.pending_farm2_reward / CONFIG.UNIT : 0;
@@ -537,7 +585,7 @@ export class InfoService {
 
           portfolio.total_reward_ust += pending_farm_reward_ust;
           portfolio.total_reward_ust += pending_farm2_reward_ust;
-        } else if (farmInfo.dex === 'Terraswap'){
+        } else if (farmInfo.dex === 'Terraswap') {
           const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
           tvl += pending_farm_reward_ust;
           portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
@@ -545,7 +593,7 @@ export class InfoService {
           portfolio.total_reward_ust += pending_farm_reward_ust;
         }
         portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[vault.poolInfo.rewardKey]?.farmApr;
-        if (portfolio.tokens.get('ASTRO')){
+        if (portfolio.tokens.get('ASTRO')) {
           portfolio.tokens.get('ASTRO').apr = this.stat?.pairs[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]?.farmApr || 0;
         }
       }
@@ -622,18 +670,21 @@ export class InfoService {
       if (!this.poolInfos[key]) {
         continue;
       }
+      const poolInfo = this.poolInfos[key];
       const pairStat = this.stat?.pairs[key];
       const poolApr = pairStat?.poolApr || 0;
+      const poolAstroApr = pairStat?.poolAstroApr || 0;
+      const poolAprTotal = poolApr + poolAstroApr;
       const poolApy = pairStat?.poolApy || 0;
       const specApr = pairStat?.specApr || 0;
       const govApr = this.stat?.govApr || 0;
       const specApy = specApr + specApr * govApr / 2;
       const compoundApy = poolApy + specApy;
       const farmApr = pairStat?.farmApr || 0;
-      const farmApy = poolApr + poolApr * farmApr / 2;
+      const farmAndAstroApr = farmApr + (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
+      const farmApy = poolAprTotal + poolAprTotal * farmAndAstroApr / 2;
       const stakeApy = farmApy + specApy;
       const apy = Math.max(compoundApy, stakeApy);
-      const poolInfo = this.poolInfos[key];
 
       const baseToken = this.poolInfos[key].baseTokenContract;
       const denomToken = this.poolInfos[key].denomTokenContract;
@@ -641,9 +692,10 @@ export class InfoService {
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
-      const score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
+      const score = poolInfo.farm === 'Spectrum' ? 2000000 : (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
       const will_available_at_astroport = this.WILL_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const now_available_at_astroport = this.NOW_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
+      const proxy_reward_not_yet_available = this.PROXY_REWARD_NOT_YET_AVAILABLE.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
 
       const vault: Vault = {
         baseSymbol,
@@ -676,16 +728,53 @@ export class InfoService {
           : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
         shortUnitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
-          : `${poolInfo.dex} LP`,
+          : `LP`,
         score,
         fullName: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
         disabled,
         will_available_at_astroport,
-        now_available_at_astroport
+        now_available_at_astroport,
+        proxy_reward_not_yet_available,
+        poolAprTotal
       };
       this.allVaults.push(vault);
     }
   }
+
+  @memoize(30000)
+  private async ensureAstroportData() {
+    const apollo = this.apollo.use('astroport');
+    this.astroportData = (await apollo.query<any>({
+      query: gql`query {
+                    pools {
+                      pool_address
+                      token_symbol
+                      trading_fees {
+                        apy
+                        apr
+                        day
+                      }
+                      astro_rewards {
+                        apy
+                        apr
+                        day
+                      }
+                      protocol_rewards {
+                        apy
+                        apr
+                        day
+                      }
+                      total_rewards {
+                        apy
+                        apr
+                        day
+                      }
+                    }
+                  }`,
+      errorPolicy: 'all'
+    }).toPromise()).data;
+  }
+
 }

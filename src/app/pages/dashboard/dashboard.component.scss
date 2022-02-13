@@ -1,0 +1,81 @@
+.bottom-right {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.bg-top-card-gov {
+  background-color: #5e9bfc;
+}
+
+.bg-top-card-lpVaults {
+  background-color: #194dec;
+}
+
+.bg-gov {
+    background-color: #ff8dc1;
+}
+
+.bg-lpVaults {
+    background-color: #fc5185;
+}
+
+.bg-other {
+    background-color: #d4295d;
+}
+
+.text-red {
+    color: #e14560;
+}
+
+.progress-bar {
+    :hover {
+        opacity: 0.3;
+    }
+}
+
+.mh-50 {
+    max-height: 100px;
+}
+
+.img-txt {
+    position: absolute;
+    padding-left: 17px;
+    line-height: 12px;
+}
+
+.grid-container {
+    display: flex;
+    min-height: 40px;
+    .legend {
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: 100px;
+    }
+}
+
+.sq-color {
+    width: 10px;
+    height: 10px;
+    flex-grow: 0;
+    border-radius: 1px;
+    position: absolute;
+  }
+
+::ng-deep .advanced-pie-legend {
+    .total-value, .item-value, .total-label {
+        font-size: 20px !important;
+    }
+    .advanced-pie-legend {
+        width: 100% !important;
+    }
+
+}
+
+::ng-deep circle {
+    fill: #e14560 !important;
+}
+
+::ng-deep .ngx-charts {
+    height: 170px !important;
+}
