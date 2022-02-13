@@ -132,7 +132,6 @@ export class TerrajsService implements OnDestroy {
     } else {
       const installTypes = await firstValueFrom(this.walletController.availableInstallTypes());
       const types = connectTypes.concat(installTypes);
-      console.log(types)
       const modal = await import('./connect-options/connect-options.component');
       const ref = this.modalService.open(modal.ConnectOptionsComponent, {
         data: { types }
@@ -150,14 +149,12 @@ export class TerrajsService implements OnDestroy {
       throw new Error('Cannot connect to wallet');
     }
     if (connectCallbackData && !(connectCallbackData.type === 'WALLETCONNECT' && auto)) {
-      console.log(connectCallbackData)
       await this.walletController.connect(connectCallbackData.type, connectCallbackData.identifier);
     }
     const state: ConnectedState = await firstValueFrom(this.walletController.states()
       .pipe(filter((it: WalletStates) => it.status === WalletStatus.WALLET_CONNECTED)));
 
     let wallet: WalletInfo;
-    console.log(state);
     if (state.wallets.length === 0) {
 
       this.modal.alert('No wallet, please setup wallet first', { iconType: 'danger' });
