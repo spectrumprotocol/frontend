@@ -30,6 +30,7 @@ export class TerraNameServiceFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
   denomTokenContract = Denom.USD;
+  highlight = true;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.terraNameServiceToken;
