@@ -91,7 +91,7 @@ export class GovPollNewComponent implements OnInit, OnDestroy {
           poll_start: {
             title: this.title,
             description: this.description,
-            link: this.link,
+            link: this.link.length > 0 ? this.link.trim() : undefined,
             execute_msgs: this.executeMsgs.map(it => ({
               execute: {
                 contract: it.execute.contract,
