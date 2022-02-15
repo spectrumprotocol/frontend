@@ -32,7 +32,7 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
   denomTokenContract = Denom.LUNA;
-  highlight = true;
+  highlight = false;
   mainnetOnly = true;
 
   get defaultBaseTokenContract() {
