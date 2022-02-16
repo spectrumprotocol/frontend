@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {MdbModalRef} from 'mdb-angular-ui-kit/modal';
+const MobileDetect = require('mobile-detect');
 
 @Component({
   selector: 'app-connect-options',
@@ -29,12 +30,15 @@ export class ConnectOptionsComponent {
       installUrl: 'https://chrome.google.com/webstore/detail/xdefi-wallet/hmeobnfnfcmdkdcmlblgagmfpfboieaf'
     }
   ];
+  isPhoneOrTablet: boolean;
 
   constructor(
     private modalRef: MdbModalRef<ConnectOptionsComponent>
   ) {
     // @ts-ignore
     this.walletExtensions = window.terraWallets ?? [];
+    const md = new MobileDetect(window.navigator.userAgent);
+    this.isPhoneOrTablet = md.phone() || md.tablet();
   }
 
   connect(type: string, identifier: string) {

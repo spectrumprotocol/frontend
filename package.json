@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 7200",
+    "start": "ng serve --port 7200 --host 0.0.0.0",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -38,6 +38,7 @@
     "graphql": "^15.7.2",
     "hammerjs": "^2.0.8",
     "mdb-angular-ui-kit": "^1.5.1",
+    "mobile-detect": "^1.4.5",
     "ngx-google-analytics": "^11.2.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
