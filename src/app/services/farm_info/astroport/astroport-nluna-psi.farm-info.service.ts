@@ -32,7 +32,7 @@ export class AstroportNlunaPsiFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
   denomTokenContract = this.terrajs.settings.nexusToken;
-  highlight = true;
+  highlight = false;
   mainnetOnly = true;
   hasProxyReward = true;
 

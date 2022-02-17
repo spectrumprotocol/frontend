@@ -57,6 +57,9 @@ export class UrlPipe implements PipeTransform {
           case 'STT': return 'https://starterra.io/assets/100x100_starterra.png';
           case 'Starterra': return 'https://starterra.io/assets/100x100_starterra.png';
           case 'XDEFI': return 'https://github.com/sushiswap/assets/blob/master/blockchains/ethereum/assets/0x72B886d09C117654aB7dA13A14d603001dE0B777/logo.png?raw=true';
+          case 'TNS': return `https://tns.money/static/images/tns.png`;
+          case 'GLOW': return `https://glowyield.com/assets/img/icons/glow.png`;
+          case 'Glow': return `https://glowyield.com/assets/img/icons/glow.png`;
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -78,12 +81,14 @@ export class UrlPipe implements PipeTransform {
           case 'ORNb': return `https://terra.orion.money/`;
           case 'KUJI': return `https://blue.kujira.app/`;
           case 'bPsiDP-24m': return 'https://app.terraswap.io/#Swap';
-          case 'bLUNA': return `https://app.astroport.fi/swap?from=uluna&to=terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp`;
+          case 'bLUNA': return `https://app.astroport.fi/swap?from=uluna&to=${this.terrajs.settings.bLunaToken}`;
           case 'LUNA': return `https://app.astroport.fi/swap?from=uusd&to=uluna`;
-          case 'ASTRO': return `https://app.astroport.fi/swap?from=uusd&to=terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3`;
-          case 'APOLLO': return `https://app.astroport.fi/swap?from=uusd&to=terra100yeqvww74h4yaejj6h733thgcafdaukjtw397`;
-          case 'STT': return `https://app.astroport.fi/swap?from=uusd&to=terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n`;
+          case 'ASTRO': return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.astroToken}`;
+          case 'APOLLO': return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.apolloToken}`;
+          case 'STT': return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.starterraToken}`;
           case 'XDEFI': return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.xdefiToken}`;
+          case 'TNS': return `https://tns.money/trade`;
+          case 'Glow': return `https://gov.glowyield.com/`;
           default: {
             if (dex === 'Astroport') {
               return 'https://app.astroport.fi/swap';
@@ -94,12 +99,9 @@ export class UrlPipe implements PipeTransform {
         }
       case 'provideLP':
         switch (symbol) {
-          case 'bLUNA': return `https://app.astroport.fi/pools/terra1j66jatn3k50hjtg2xemnjm8s7y8dws9xqa5y8w`;
-          case 'LUNA': return `https://app.astroport.fi/pools/terra1m6ywlgn6wrjuagcmmezzz2a029gtldhey5k552`;
-          case 'ASTRO': return `https://app.astroport.fi/pools/terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7`;
           default: {
             if (dex === 'Astroport') {
-              return 'https://app.astroport.fi/pools';
+              return 'https://app.astroport.fi/pools/';
             } else {
               return 'https://app.terraswap.io/#Provide';
             }

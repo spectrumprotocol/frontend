@@ -30,7 +30,7 @@ export class AstroportOrionUstFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
   denomTokenContract = Denom.USD;
-  highlight = true;
+  highlight = false;
   mainnetOnly = true;
   hasProxyReward = true;
 

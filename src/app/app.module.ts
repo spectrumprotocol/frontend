@@ -59,7 +59,7 @@ import { PylonFarmInfoService } from './services/farm_info/pylon.farm-info.servi
 import { GovPoolComponent } from './pages/gov/gov-pool/gov-pool.component';
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
 import { FloorPipe } from './pipes/floor.pipe';
-import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
+import {TerraNameServiceFarmInfoService} from './services/farm_info/terranameservice.farm-info.service';
 import { ValkyrieFarmInfoService } from './services/farm_info/valkyrie.farm-info.service';
 import {NexusFarmInfoService} from './services/farm_info/nexus.farm-info.service';
 import {OrionFarmInfoService} from './services/farm_info/orion.farm-info.service';
@@ -91,6 +91,8 @@ import {AstroportPsiUstFarmInfoService} from './services/farm_info/astroport/ast
 import {AstroportNlunaPsiFarmInfoService} from './services/farm_info/astroport/astroport-nluna-psi.farm-info.service';
 import {AstroportNethPsiFarmInfoService} from './services/farm_info/astroport/astroport-neth-psi.farm-info.service';
 import {AstroportXdefiUstFarmInfoService} from './services/farm_info/astroport/astroport-xdefi-ust.farm-info.service';
+import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
+import {GlowFarmInfoService} from './services/farm_info/glow.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -181,6 +183,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AstroportBlunaLunaFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AnchorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportAncUstFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: GlowFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportMirUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true },
@@ -199,6 +202,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportVkrUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportXdefiUstFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: TerraNameServiceFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,
