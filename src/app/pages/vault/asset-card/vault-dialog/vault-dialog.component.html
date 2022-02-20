@@ -261,9 +261,13 @@
                         enough for this transaction</div>
                     </div>
                     <div class="text-end">
-                      <span *ngIf="depositTokenAAmtTokenToken > +info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit"
+                      <span *ngIf="depositTokenAAmtTokenToken > +info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit && +info.tokenBalances[vault.poolInfo.baseTokenContract] > 0"
                             class="invalid-feedback-custom">
-                        Amount must be between 0 and {{info.tokenBalances[vault.poolInfo.baseTokenContract] | unit : vault.baseDecimals }}
+                        {{ vault.baseSymbol }} amount must be between 0 and {{info.tokenBalances[vault.poolInfo.baseTokenContract] | unit : vault.baseDecimals }}
+                      </span>
+                      <span *ngIf="depositTokenAAmtTokenToken > 0 && (!info.tokenBalances[vault.poolInfo.baseTokenContract] || +info.tokenBalances[vault.poolInfo.baseTokenContract] === 0)"
+                            class="invalid-feedback-custom">
+                        You do not have any {{ vault.baseSymbol }}
                       </span>
                       <span *ngIf="depositTokenAAmtTokenTokenCtl.errors?.pattern" class="invalid-feedback-custom">
                         Amount must be within {{vault.baseDecimals}} decimal points
@@ -882,10 +886,11 @@
                 Max
               </button>
             </div>
-            <span *ngIf="withdrawAmt > +info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT"
-                  class="invalid-feedback-custom">Amount
-              must
-              be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_amount | unit }}
+            <span *ngIf="withdrawAmt > +info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)" class="invalid-feedback-custom">
+              Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_amount | unit }}
+            </span>
+            <span *ngIf="withdrawAmt > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)" class="invalid-feedback-custom">
+              You do not have any {{ vault.unitDisplay }} deposited
             </span>
             <span *ngIf="withdrawAmtCtl.errors?.pattern" class="invalid-feedback-custom">
               Amount must be within 6 decimal points
