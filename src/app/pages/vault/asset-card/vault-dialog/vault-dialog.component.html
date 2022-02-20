@@ -1043,7 +1043,7 @@
         <button (click)="depositMode = 'tokentoken'; changeDepositMode('tokentoken')" [ngClass]="depositMode === 'tokentoken' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }} + {{ vault.denomSymbol }}</button>
         <button (click)="depositMode = 'lp'; changeDepositMode('lp')" [ngClass]="depositMode === 'lp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
-          {{ vault.unitDisplay}}
+          {{ vault.unitDisplay }}
         </button>
         <button (click)="depositMode = 'ust'; changeDepositMode('ust')" [ngClass]="depositMode === 'ust' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           UST

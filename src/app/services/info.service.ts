@@ -696,6 +696,7 @@ export class InfoService {
       const will_available_at_astroport = this.WILL_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const now_available_at_astroport = this.NOW_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const proxy_reward_not_yet_available = this.PROXY_REWARD_NOT_YET_AVAILABLE.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
+      const abbreviatedDex = poolInfo.dex === 'Astroport' ? 'Astro' : poolInfo.dex === 'Terraswap' ? 'TS' : poolInfo.dex;
 
       const vault: Vault = {
         baseSymbol,
@@ -726,6 +727,9 @@ export class InfoService {
         unitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
+        unitDisplayDexAbbreviated: poolInfo.farmType === 'PYLON_LIQUID'
+          ? baseSymbol
+          : `${baseSymbol}-${denomSymbol} ${abbreviatedDex} LP`,
         shortUnitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
           ? baseSymbol
           : `LP`,
