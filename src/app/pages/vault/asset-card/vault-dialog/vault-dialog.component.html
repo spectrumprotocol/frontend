@@ -193,7 +193,7 @@
       <mdb-tabs [justified]="true">
         <mdb-tab *ngIf="!vault.disabled" title="Deposit">
           <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
-            <ng-container *ngTemplateOutlet="depositModeSection" class="mb-1"></ng-container>
+            <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
             <div *ngIf="depositMode === 'tokentoken'" class="mt-3">
               <div class="card card-green">
                 <div class="card-body">
@@ -1037,7 +1037,8 @@
   </div>
 
   <ng-template #depositModeSection>
-    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
+    <div class="auto-container mb-1">
+      <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
       <span class="btn-group w-100">
         <button (click)="depositMode = 'tokentoken'; changeDepositMode('tokentoken')" [ngClass]="depositMode === 'tokentoken' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }} + {{ vault.denomSymbol }}</button>
@@ -1048,8 +1049,8 @@
           UST
         </button>
       </span>
-    </ng-container>
-    <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+      </ng-container>
+      <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
       <span class="btn-group w-100">
         <button (click)="depositMode = 'bdp'; changeDepositMode('bdp')" [ngClass]="depositMode === 'bdp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}</button>
@@ -1057,7 +1058,8 @@
           UST
         </button>
       </span>
-    </ng-container>
+      </ng-container>
+    </div>
   </ng-template>
 
   <ng-template #withdrawModeSection>
