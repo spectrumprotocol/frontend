@@ -13,8 +13,8 @@ import { TokenService } from '../../services/api/token.service';
 import { TerrajsService } from '../../services/terrajs.service';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
 import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { environment } from '../../../environments/environment';
+import {MsgExecuteContract, SignerOptions} from '@terra-money/terra.js';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-gov-poll-new',
@@ -91,7 +91,7 @@ export class GovPollNewComponent implements OnInit, OnDestroy {
           poll_start: {
             title: this.title,
             description: this.description,
-            link: this.link,
+            link: this.link.length > 0 ? this.link.trim() : undefined,
             execute_msgs: this.executeMsgs.map(it => ({
               execute: {
                 contract: it.execute.contract,
@@ -168,8 +168,9 @@ export class GovPollNewComponent implements OnInit, OnDestroy {
       ));
     }
     try {
+      const singerOptions: SignerOptions[] = [{address: this.terrajs.settings.gov}];
       await this.terrajs.lcdClient.tx.create(
-        this.terrajs.settings.gov,
+        singerOptions,
         {
           msgs,
           feeDenoms: ['uusd']

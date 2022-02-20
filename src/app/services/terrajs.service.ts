@@ -1,11 +1,10 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult } from '@terra-money/terra.js';
+import {Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult, Wallet} from '@terra-money/terra.js';
 import { ISettings, networks } from '../consts/networks';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 import { filter, startWith } from 'rxjs/operators';
 import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus, getChainOptions } from '@terra-money/wallet-provider';
-import { checkAvailableExtension } from '@terra-money/wallet-provider/utils/checkAvailableExtension';
 import { ModalService } from './modal.service';
 import { throttleAsync } from 'utils-decorators';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
@@ -89,7 +88,6 @@ export class TerrajsService implements OnDestroy {
   }
 
   async checkInstalled() {
-    await checkAvailableExtension(1500, true);
     const types = await firstValueFrom((await this.getWalletController()).availableInstallTypes());
     return types.length === 0;
   }
@@ -107,60 +105,58 @@ export class TerrajsService implements OnDestroy {
   }
 
   async connect(auto?: boolean): Promise<void> {
+    let connectCallbackData;
     if (this.isConnected) {
       return;
     }
-    let type: string;
+    let terra_extension_router_session: any;
     let address: string;
     const connectTypes = await this.getConnectTypes();
     if (auto) {
-      type = localStorage.getItem('connect');
-      if (!type) {
+      const terra_extension_router_session_raw = localStorage.getItem('__terra_extension_router_session__');
+      const connect = localStorage.getItem('connect');
+      if (!connect) {
         return;
       }
-
-      // migrate from previous version
-      if (type === 'true') {
-        type = 'CHROME_EXTENSION';
+      if (connect === 'WALLETCONNECT'){
+        connectCallbackData = {
+          type: connect,
+          identifier: null
+        };
+      } else{
+        terra_extension_router_session = JSON.parse(terra_extension_router_session_raw);
+        connectCallbackData = terra_extension_router_session;
+        connectCallbackData.type = connect;
       }
       address = localStorage.getItem('address');
     } else {
       const installTypes = await firstValueFrom(this.walletController.availableInstallTypes());
       const types = connectTypes.concat(installTypes);
-      if (types.length === 0) {
-        this.modal.alert('No connection option', { iconType: 'danger' });
-        throw new Error('No connection option');
-      } else if (types.length === 1) {
-        type = types[0];
-      } else {
-        const modal = await import('./connect-options/connect-options.component');
-        const ref = this.modalService.open(modal.ConnectOptionsComponent, {
-          data: { types }
-        });
-        type = await ref.onClose.toPromise();
-      }
-      if (!type) {
+      const modal = await import('./connect-options/connect-options.component');
+      const ref = this.modalService.open(modal.ConnectOptionsComponent, {
+        data: { types }
+      });
+      connectCallbackData = await ref.onClose.toPromise();
+      if (!connectCallbackData.type) {
         throw new Error('Nothing selected');
       }
-      if (installTypes.includes(type as ConnectType)) {
-        this.walletController.install(type as ConnectType);
-        return;
-      }
     }
-    if (!connectTypes.includes(type as ConnectType)) {
+
+    if (!connectTypes.includes(connectCallbackData.type as ConnectType)) {
       if (auto) {
         return;
       }
       throw new Error('Cannot connect to wallet');
     }
-    if (!auto || type !== 'WALLETCONNECT') {
-      this.walletController.connect(type as ConnectType);
+    if (connectCallbackData && !(connectCallbackData.type === 'WALLETCONNECT' && auto)) {
+      await this.walletController.connect(connectCallbackData.type, connectCallbackData.identifier);
     }
     const state: ConnectedState = await firstValueFrom(this.walletController.states()
       .pipe(filter((it: WalletStates) => it.status === WalletStatus.WALLET_CONNECTED)));
 
     let wallet: WalletInfo;
     if (state.wallets.length === 0) {
+
       this.modal.alert('No wallet, please setup wallet first', { iconType: 'danger' });
       throw new Error('No wallet');
     } else if (state.wallets.length === 1) {
@@ -192,7 +188,7 @@ export class TerrajsService implements OnDestroy {
 
     this.isConnected = true;
     this.connected.next(true);
-    localStorage.setItem('connect', type);
+    localStorage.setItem('connect', connectCallbackData.type);
     localStorage.setItem('address', this.address);
   }
 
