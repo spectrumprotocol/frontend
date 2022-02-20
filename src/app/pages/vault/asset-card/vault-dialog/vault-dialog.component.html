@@ -1078,7 +1078,7 @@
         <button (click)="withdrawMode = 'bdp'" [ngClass]="withdrawMode === 'bdp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}
         </button>
-        <button (click)="withdrawMode = 'ust_bdp'" [ngClass]="withdrawMode === 'ust_bdp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+        <button (click)="withdrawMode = 'ust_bdp'; withdrawAmtChanged()" [ngClass]="withdrawMode === 'ust_bdp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           UST
         </button>
       </span>
@@ -1091,7 +1091,7 @@
         <button (click)="withdrawMode = 'lp'" [ngClass]="withdrawMode === 'lp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.unitDisplay }}
         </button>
-        <button *ngIf="vault.poolInfo.farm != 'Spectrum'" (click)="withdrawMode = 'ust'" [ngClass]="withdrawMode === 'ust' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+        <button *ngIf="vault.poolInfo.farm != 'Spectrum'" (click)="withdrawMode = 'ust'; withdrawAmtChanged()" [ngClass]="withdrawMode === 'ust' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           UST
         </button>
       </span>
