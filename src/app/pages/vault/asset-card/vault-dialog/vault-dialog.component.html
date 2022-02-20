@@ -1091,7 +1091,7 @@
         <button (click)="withdrawMode = 'lp'" [ngClass]="withdrawMode === 'lp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.unitDisplay }}
         </button>
-        <button (click)="withdrawMode = 'ust'" [ngClass]="withdrawMode === 'ust' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+        <button *ngIf="vault.poolInfo.farm != 'Spectrum'" (click)="withdrawMode = 'ust'" [ngClass]="withdrawMode === 'ust' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           UST
         </button>
       </span>
