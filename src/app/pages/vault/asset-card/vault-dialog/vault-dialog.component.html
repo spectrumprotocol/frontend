@@ -344,7 +344,7 @@
               <div class="text-end small mt-3 mb-1 fw-bold-600">
                 <span class="sub-topic">Balance: </span>
                 <span class="text-white">
-                  {{vault.unitDisplay}}
+                  {{+info.lpTokenBalances[vault.lpToken] | unit}} {{ vault.unitDisplay }}
                 </span>
               </div>
               <div class="input-group">
