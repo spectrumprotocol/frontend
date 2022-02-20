@@ -31,6 +31,7 @@ export interface Vault {
   apy: number;
   name: string;
   unitDisplay: string;
+  unitDisplayDexAbbreviated: string;
   shortUnitDisplay: string;
   score: number;
   fullName: string;
