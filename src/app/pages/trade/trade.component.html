@@ -21,10 +21,10 @@
                     <span class="sub-topic">Balance: </span>
                     <span class="text-white">{{ infoService.userUstAmount || 0 | number }} UST</span>
                   </div>
-                </div> 
+                </div>
                 <div class="input-group">
                   <span class="input-group-text f-12 igt-fixwidth fw-bold-600" id="USTLabel" [ngClass]="{'is-invalid': (formBuySPEC.submitted || amountBuyUSTCtl.touched) && amountBuyUSTCtl.invalid }">
-                    <img width="24" height="24" class="me-2" src="/assets/UST.png">  
+                    <img width="24" height="24" class="me-2" src="/assets/UST.png">
                     UST
                   </span>
                   <input type="number" class="form-control fix-border" name="inputBuyUST"
@@ -53,9 +53,9 @@
                   </div>
                   <div class="text-end small margin-18 mb-1 mt-3 fw-bold">
                     <span class="sub-topic">Balance: </span>
-                    <span class="text-white">{{ infoService.userSpecAmount || 0 | number }} UST</span>
+                    <span class="text-white">{{ infoService.userSpecAmount || 0 | number }} SPEC</span>
                   </div>
-                </div> 
+                </div>
                 <div class="input-group">
                   <span class="input-group-text f-12 igt-fixwidth fw-bold-600" id="SPECLabel" [ngClass]="{'is-invalid': amountBuySPECCtl.touched && amountBuySPECCtl.invalid}">
                     <img width="24" height="24" class="me-2" src="/assets/SPEC.png">SPEC
@@ -93,7 +93,7 @@
                       <span class="sub-topic">Balance: </span>
                       <span class="text-white">{{ infoService.userSpecAmount || 0 | number }} SPEC</span>
                   </div>
-                </div> 
+                </div>
                 <div class="input-group">
                   <span class="input-group-text f-12 igt-fixwidth fw-bold-600" id="SPECSellLabel" [ngClass]="{'is-invalid': amountSellSPECCtl.touched && amountSellSPECCtl.invalid }">
                     <img width="24" height="24" class="me-2" src="/assets/SPEC.png">
@@ -127,10 +127,10 @@
                     <span class="sub-topic">Balance: </span>
                     <span class="text-white">{{ infoService.userUstAmount || 0 | number }} UST</span>
                   </div>
-                </div> 
+                </div>
                 <div class="input-group">
                   <span class="input-group-text f-12 igt-fixwidth fw-bold-600" id="USTSellLabel" [ngClass]="{'is-invalid': (formSellSPEC.submitted || amountSellUSTCtl.touched) && amountSellUSTCtl.invalid }">
-                    <img width="24" height="24" class="me-2" src="/assets/UST.png">  
+                    <img width="24" height="24" class="me-2" src="/assets/UST.png">
                     UST</span>
                   <input type="number" class="form-control fix-border" name="amountSellUST" [(ngModel)]="amountSellUST"
                     aria-describedby="USTSellLabel" id="inputSellUST" name="inputSellUST" #inputSellUST [min]="0.000001"
@@ -168,7 +168,7 @@
         <div class="pt-2">
           <span class="f-16-500">Set Slippage Tolerance</span>
         </div>
-        <div> 
+        <div>
           <form class="needs-validation slip-page" novalidate #slippageInputForm="ngForm">
             <div class="small d-flex flex-row justify-content-end">
               <button type="button" class="btn me-1 p-10" [ngClass]="slippagePercentage === 0.1 ? 'btn-primary' : 'btn-outline-light'"
