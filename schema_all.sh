@@ -23,6 +23,8 @@ npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_token_ust_f
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_token_token_farm/schema/ -o ./src/app/services/api/astroport_token_token_farm
 
 npx json2ts -i ../alpha-contract/contracts/borrowed-farm/schema/ -o ./src/app/services/api/borrowed-farm
+npx json2ts -i ../alpha-contract/contracts/leveraged-farm/schema/ -o ./src/app/services/api/leveraged-farm
+
 
 npx json2ts -i ../astroport/astroport/contracts/factory/schema/ -o ./src/app/services/api/astroport_factory
 npx json2ts -i ../astroport/astroport/contracts/pair/schema/ -o ./src/app/services/api/astroport_pair

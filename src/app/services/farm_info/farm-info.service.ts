@@ -15,7 +15,7 @@ import { VaultsResponse } from '../api/gov/vaults_response';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem | PylonLiquidPoolItem | AstroportTokenUSTPoolItem;
-export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID';
+export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID' | 'BORROWED_FARM';
 export type DEX = 'Terraswap' | 'Astroport';
 export type PoolInfo = PoolItem & {
   key: string;
