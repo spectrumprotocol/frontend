@@ -24,6 +24,19 @@
         <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
       </div>
     </div>
+    <div *ngIf="vault.poolInfo.farmType === 'BORROWED_FARM'" class="p-2 p-l-0 bulk-name-container">
+      <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
+      <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start token-denom">
+      <i class="fa-solid fa-hand-holding-dollar"></i>
+      <div class="name-detail">
+        <h6 class="m-0"> {{vault.fullName}}
+          <img *ngIf="vault.poolInfo.dex === 'Astroport'" src="./assets/logo-astroport.svg" class="dex-logo" alt="Astroport DEX">
+          <img *ngIf="vault.poolInfo.dex === 'Terraswap'" src="./assets/logo-terraswap.svg" class="dex-logo" alt="Terraswap DEX">
+        </h6>
+        <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
+      </div>
+    </div>
+
   </div>
   <i (click)="modalRef.close()" class="margin-left-auto margin-top-close-button fas fa-times fa-lg pe-2"
      role="button"></i>

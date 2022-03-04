@@ -2,11 +2,12 @@ import { PoolItem as SpecPoolItem } from '../api/spec_farm/pools_response';
 import { PoolItem as MirrorPoolItem } from '../api/mirror_farm/pools_response';
 import { PoolItem as nAssetPsiPoolItem } from '../api/nexus_nassets_psi_farm/pools_response';
 import { PoolItem as PylonLiquidPoolItem } from '../api/pylon_liquid_farm/pools_response';
-import { PoolItem as AstroportTokenUSTPoolItem } from '../api/astroport_token_ust_farm/pools_response';
+import {Decimal, PoolItem as AstroportTokenUSTPoolItem, Uint128} from '../api/astroport_token_ust_farm/pools_response';
 
 import { RewardInfoResponseItem as MirrorRewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
 import { RewardInfoResponseItem as SpecRewardInfoResponseItem } from '../api/spec_farm/reward_info_response';
 import { RewardInfoResponseItem as AstroportTokenUSTRewardInfoResponseItem } from '../api/astroport_token_ust_farm/reward_info_response';
+import { RewardInfoResponseItem as BorrowedFarmRewardInfoResponseItem } from '../api/borrowed-farm/reward_info_response';
 
 import { InjectionToken } from '@angular/core';
 import { MsgExecuteContract } from '@terra-money/terra.js';
@@ -14,7 +15,7 @@ import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { VaultsResponse } from '../api/gov/vaults_response';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 
-export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem | PylonLiquidPoolItem | AstroportTokenUSTPoolItem;
+export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem | PylonLiquidPoolItem | AstroportTokenUSTPoolItem | PoolBorrowedFarmItem;
 export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID' | 'BORROWED_FARM';
 export type DEX = 'Terraswap' | 'Astroport';
 export type PoolInfo = PoolItem & {
@@ -37,7 +38,7 @@ export type PoolInfo = PoolItem & {
   tradeApr?: number;
   commission?: number;
 };
-export type RewardInfoResponseItem = AstroportTokenUSTRewardInfoResponseItem | MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
+export type RewardInfoResponseItem = AstroportTokenUSTRewardInfoResponseItem | MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem | BorrowedFarmRewardInfoResponseItem;
 
 export interface PairStat {
   tvl: string;
@@ -49,6 +50,13 @@ export interface PairStat {
   vaultFee: number;
   specApr?: number;
   dpr?: number;
+}
+
+export interface PoolBorrowedFarmItem {
+  asset_token: string;
+  staking_token: string;
+  weight: number;
+  [k: string]: unknown;
 }
 
 export const FARM_INFO_SERVICE = new InjectionToken('FARM_INFO_SERVICE');

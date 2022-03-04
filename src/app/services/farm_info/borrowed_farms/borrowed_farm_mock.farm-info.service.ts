@@ -7,7 +7,7 @@ import {
   FarmInfoService,
   FARM_TYPE_ENUM,
   PairStat,
-  PoolInfo
+  PoolInfo, PoolBorrowedFarmItem
 } from './../farm-info.service';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../../libs/base64';
@@ -20,18 +20,10 @@ import { BalancePipe } from '../../../pipes/balance.pipe';
 import { HttpClient } from '@angular/common/http';
 import {BorrowedFarmService} from '../../api/borrowed-farm.service';
 import {LeveragedFarmService} from '../../api/leveraged-farm.service';
+import {AnchorFarmService} from '../../api/anchor-farm.service';
 
 @Injectable()
-export class BorrowedFarmMockFarmInfoService { // TODO implements BorrowedFarmInfo
-  farm = 'Anchor';
-  farmColor = '#3bac3b';
-  auditWarning = false;
-  farmType: FARM_TYPE_ENUM = 'BORROWED_FARM';
-  dex: DEX = 'Astroport';
-  denomTokenContract = Denom.USD;
-  highlight = false;
-  mainnetOnly = false;
-  hasProxyReward = false;
+export class BorrowedFarmMockFarmInfoService implements FarmInfoService { // TODO implements BorrowedFarmInfo
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.anchorToken;
@@ -40,6 +32,7 @@ export class BorrowedFarmMockFarmInfoService { // TODO implements BorrowedFarmIn
   constructor(
     private borrowedFarmService: BorrowedFarmService,
     private leverageFarmService: LeveragedFarmService,
+    private farmService: AnchorFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService,
     private httpClient: HttpClient,
@@ -58,6 +51,18 @@ export class BorrowedFarmMockFarmInfoService { // TODO implements BorrowedFarmIn
   get farmGovContract() {
     return this.terrajs.settings.anchorGov;
   }
+  farm = 'Anchor';
+  farmColor = '#3bac3b';
+  auditWarning = false;
+  farmType: FARM_TYPE_ENUM = 'BORROWED_FARM';
+  dex: DEX = 'Astroport';
+  denomTokenContract = Denom.USD;
+  highlight = false;
+  mainnetOnly = false;
+  hasProxyReward = false;
+
+  readonly autoCompound = true;
+  readonly autoStake = false;
 
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
@@ -65,14 +70,14 @@ export class BorrowedFarmMockFarmInfoService { // TODO implements BorrowedFarmIn
     const positionInfoTask = this.leverageFarmService.query(this.terrajs.settings.leveragedFarmA, { position: {
         user: this.farmContract
       } });
-    const farmConfigTask = this.borrowedFarmService.query(this.farmContract, { config: {} });
+    const borrowedFarmConfigTask = this.borrowedFarmService.query(this.farmContract, { config: {} });
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
     const pairs: Record<string, PairStat> = {};
 
-    const [positionInfo, farmConfig] = await Promise.all([positionInfoTask, farmConfigTask]);
+    const [positionInfo, farmConfig] = await Promise.all([positionInfoTask, borrowedFarmConfigTask]);
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
@@ -143,6 +148,10 @@ export class BorrowedFarmMockFarmInfoService { // TODO implements BorrowedFarmIn
     return {
       apr
     };
+  }
+
+  queryPoolItems(): Promise<PoolBorrowedFarmItem[]> {
+    return Promise.resolve([]);
   }
 
 }
