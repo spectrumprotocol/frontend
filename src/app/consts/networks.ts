@@ -100,6 +100,10 @@ export interface ISettings {
   glowStaking: string;
   glowGov: string;
   glowFarm: string;
+  nLunaRewards: string;
+  nETHRewards: string;
+  nLunaFarm: string;
+  nETHFarm: string;
   // // batch only
   // lcdPost: string;
   // controller: string;
@@ -207,6 +211,10 @@ export const networks: Record<string, ISettings> = {
     glowStaking: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
     glowGov: 'terra1xxp34xk4rjexwlu0xfdhyn0zr3qsgare04yll0',
     glowFarm: 'terra1u6f5vnux869rnextxypjdyrvnvcaux68nr6nne',
+    nLunaRewards: '',
+    nETHRewards: '',
+    nLunaFarm: '',
+    nETHFarm: '',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -314,6 +322,10 @@ export const networks: Record<string, ISettings> = {
     glowStaking: '',
     glowGov: '',
     glowFarm: '',
+    nLunaRewards: 'terra17mr0kt7rzey0ycp2eypxnmtv9fjn7e3rc0yfuz',
+    nETHRewards: 'terra1wf3tx75j2jg4ut7fa90rgze5etweqxgqlgq5su',
+    nLunaFarm: '',
+    nETHFarm: '',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
