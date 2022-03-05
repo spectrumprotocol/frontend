@@ -12,7 +12,7 @@ import { InfoService } from '../../../../services/info.service';
 import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
 import { debounce } from 'utils-decorators';
-import {ChangeContext, Options as NgxSliderOptions} from '@angular-slider/ngx-slider';
+import { ChangeContext, Options as NgxSliderOptions } from '@angular-slider/ngx-slider';
 import { LpBalancePipe } from '../../../../pipes/lp-balance.pipe';
 import { TokenService } from '../../../../services/api/token.service';
 import { TerraSwapService } from '../../../../services/api/terraswap.service';
@@ -25,7 +25,9 @@ import { StakerAstroportService } from '../../../../services/api/staker-astropor
 import { AstroportService } from '../../../../services/api/astroport.service';
 import { SimulateZapToBondResponse } from '../../../../services/api/staker/simulate_zap_to_bond_response';
 import { SimulationResponse } from '../../../../services/api/terraswap_pair/simulation_response';
-import {PercentPipe} from '@angular/common';
+import { PercentPipe } from '@angular/common';
+import { RewardInfoPipe } from 'src/app/pipes/reward-info.pipe';
+import { LpSplitPipe } from 'src/app/pipes/lp-split.pipe';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | 'ust_bdp';
@@ -35,7 +37,7 @@ export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | '
   templateUrl: './vault-dialog.component.html',
   styleUrls: ['./vault-dialog.component.scss'],
   animations: [fade],
-  providers: [LpBalancePipe, PercentPipe]
+  providers: [LpBalancePipe, PercentPipe, RewardInfoPipe, LpSplitPipe]
 })
 export class VaultDialogComponent implements OnInit, OnDestroy {
   vault: Vault;
@@ -61,6 +63,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositUSTAmtbDPToken: number;
 
   tokenAToBeStatic = true;
+  lpBalanceInfo: string;
 
   depositType: 'compound' | 'stake' | 'mixed';
   depositMode: DEPOSIT_WITHDRAW_MODE_ENUM;
@@ -116,7 +119,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private terraSwap: TerraSwapService,
     private terraSwapRouter: TerraSwapRouterService,
     private astroport: AstroportService,
-    private percentPipe: PercentPipe
+    private percentPipe: PercentPipe,
+    private rewardInfoPipe: RewardInfoPipe,
+    private lpSplitPipe: LpSplitPipe,
   ) { }
 
   ngOnInit() {
@@ -150,41 +155,42 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             this.depositUSTForBDPChanged(true);
           }
         }
+        this.refreshLpBalanceInfo();
       }
     });
     this.refreshData();
   }
 
-  getAPRAPYTooltipHTML(){
+  getAPRAPYTooltipHTML() {
     let html = '<div class="apyapr-tooltip">';
     let totalApr = 0;
-    if (this.vault.pairStat?.poolApr > 0){
+    if (this.vault.pairStat?.poolApr > 0) {
       html += `${this.vault.rewardSymbol} APR ${this.percentPipe.transform(this.vault.pairStat.poolApr)} <br>`;
       // html += `${this.vault.rewardSymbol} APY ${this.percentPipe.transform((this.vault.pairStat.poolApr / 365 + 1) ** 365 - 1)} <br>`;
       totalApr += this.vault.pairStat.poolApr;
     }
-    if (this.vault.pairStat?.poolAstroApr > 0){
+    if (this.vault.pairStat?.poolAstroApr > 0) {
       html += `ASTRO APR ${this.percentPipe.transform(this.vault.pairStat.poolAstroApr)} <br>`;
       // html += `ASTRO APY ${this.percentPipe.transform((this.vault.pairStat.poolAstroApr / 365 + 1) ** 365 - 1)} <br>`;
       totalApr += this.vault.pairStat.poolAstroApr;
     }
-    if (totalApr > 0){
+    if (totalApr > 0) {
       html += `Rewards APR ${this.percentPipe.transform(totalApr)} <br>`;
     }
-    if (this.vault.poolInfo?.tradeApr > 0){
+    if (this.vault.poolInfo?.tradeApr > 0) {
       html += `Trade APR ${this.percentPipe.transform(this.vault.poolInfo.tradeApr)} <br>`;
       // html += `Trade APY ${this.percentPipe.transform((this.vault.poolInfo.tradeApr / 365 + 1) ** 365 - 1)} <br>`;
     }
-    if (this.vault.poolInfo.dex === 'Astroport'){
+    if (this.vault.poolInfo.dex === 'Astroport') {
       html += `(APR from Astroport data) <br>`;
     }
-    if (this.vault.pairStat?.poolApy > 0){
+    if (this.vault.pairStat?.poolApy > 0) {
       html += `Auto-compound APY ${this.percentPipe.transform(this.vault.pairStat?.poolApy)} <br>`;
     }
-    if (this.vault.farmApy > 0 && this.vault.poolInfo.auto_stake){
+    if (this.vault.farmApy > 0 && this.vault.poolInfo.auto_stake) {
       html += `Auto-stake APY ${this.percentPipe.transform(+this.vault.farmApy)} <br>`;
     }
-    if (this.vault.specApy > 0){
+    if (this.vault.specApy > 0) {
       html += `SPEC APR ${this.percentPipe.transform(this.vault.specApy)} <br><br>`;
     }
     html += '</div>';
@@ -198,6 +204,19 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.vault.poolInfo.forceDepositType) {
       this.depositType = this.vault.poolInfo.forceDepositType as any;
     }
+    this.refreshLpBalanceInfo();
+  }
+
+  async refreshLpBalanceInfo() {
+    this.lpBalanceInfo = '';
+    if (this.vault.poolInfo.key !== this.SPEC_KEY) {
+      this.lpBalanceInfo += `${this.rewardInfoPipe.transform(this.info.rewardInfos[this.vault.poolInfo.key])}\n`;
+    }
+    const lpSplitText = this.lpSplitPipe.transform(+this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount / this.UNIT,
+                                                    this.info.poolResponses[this.vault.poolInfo.key], this.vault.baseSymbol,
+                                                    this.vault.denomSymbol, this.vault.baseDecimals, '1.0-2'
+                                                  );
+    this.lpBalanceInfo += `(${lpSplitText})`;
   }
 
   ngOnDestroy() {

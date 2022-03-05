@@ -102,7 +102,7 @@
             <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
               info.poolResponses : vault.poolInfo.key | unit: 6: '1.0-2' }})
-              <i *ngIf="vault.poolInfo.key !== SPEC_KEY" [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo"
+              <i [mdbTooltip]="lpBalanceInfo"
                  class="fas fa-info-circle info-icon super"></i>
             </span>
           </h3>
