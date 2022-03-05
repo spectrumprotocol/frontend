@@ -61,7 +61,7 @@ export class TxPostComponent implements OnInit {
     } catch (e) {
       console.error(e);
       this.failed = true;
-      this.failMsg = e.response?.data?.error || e.message || 'Error occurred';
+      this.failMsg = e.response?.data?.message || e.message || 'Error occurred';
       this.$gaService.exception('Simulating:' + (e.response?.data?.error || e.message), false);
     } finally {
       this.loading = false;
