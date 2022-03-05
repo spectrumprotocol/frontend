@@ -18,15 +18,15 @@ export class NassetFarmService {
     private wasm: WasmService,
   ) { }
 
-  query(msg: Extract<QueryMsg, { config: unknown }>): Promise<ConfigInfo>;
-  query(msg: Extract<QueryMsg, { pools: unknown }>): Promise<PoolsResponse>;
-  query(msg: Extract<QueryMsg, { reward_info: unknown }>): Promise<RewardInfoResponse>;
-  query(msg: Extract<QueryMsg, { state: unknown }>): Promise<StateInfo>;
-  query(msg: QueryMsg): Promise<any> {
-    return this.wasm.query(this.terrajs.settings.bPsiDPFarm, msg);
+  query(contract: string, msg: Extract<QueryMsg, { config: unknown }>): Promise<ConfigInfo>;
+  query(contract: string, msg: Extract<QueryMsg, { pools: unknown }>): Promise<PoolsResponse>;
+  query(contract: string, msg: Extract<QueryMsg, { reward_info: unknown }>): Promise<RewardInfoResponse>;
+  query(contract: string, msg: Extract<QueryMsg, { state: unknown }>): Promise<StateInfo>;
+  query(contract: string, msg: QueryMsg): Promise<any> {
+    return this.wasm.query(contract, msg);
   }
 
-  handle(msg: ExecuteMsg, opts?: ExecuteOptions) {
-    return this.wasm.execute(this.terrajs.settings.bPsiDPFarm, msg, opts);
+  handle(contract: string, msg: ExecuteMsg, opts?: ExecuteOptions) {
+    return this.wasm.execute(contract, msg, opts);
   }
 }
