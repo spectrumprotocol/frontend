@@ -4,7 +4,7 @@ import { TokenService } from './api/token.service';
 import { BankService } from './api/bank.service';
 import { TerraSwapService } from './api/terraswap.service';
 import { PoolResponse } from './api/terraswap_pair/pool_response';
-import { div, minus, plus, times } from '../libs/math';
+import { div, gt, minus, plus, times } from '../libs/math';
 import { CONFIG } from '../consts/config';
 import { TerraSwapFactoryService } from './api/terraswap-factory.service';
 import { GovService } from './api/gov.service';
@@ -27,6 +27,9 @@ import { WalletService } from './api/wallet.service';
 import { AstroportService } from './api/astroport.service';
 import { AstroportFactoryService } from './api/astroport-factory.service';
 import { Apollo, gql } from 'apollo-angular';
+import { AnchorMarketService } from './api/anchor-market.service';
+import { BalanceResponse } from './api/gov/balance_response';
+import { StateInfo } from './api/gov/state_info';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -53,7 +56,23 @@ export type Portfolio = {
   avg_tokens_apr?: number;
   tokens: Map<string, PendingReward & { rewardTokenContract: string, apr?: number }>;
   farms: Map<string, PortfolioItem>;
+  totalGovRewardUST: number;
+  stakedInGovAPR: number;
+  austAPR: number;
 };
+
+export interface GovPoolDetail {
+  days: number;
+  balance: string;
+  apr: number;
+  userBalance: string;
+  userAUst: string;
+  userProfit: string;
+  austApr: number;
+  userAvailableBalance: string;
+  unlockAt: Date | null;
+  moveOptions: { days: number; userBalance: string; unlockAt: Date | null }[];
+}
 
 export type TokenInfo = {
   name: string;
@@ -83,7 +102,8 @@ export class InfoService {
     private lpBalancePipe: LpBalancePipe,
     private httpClient: HttpClient,
     private wallet: WalletService,
-    private apollo: Apollo
+    private apollo: Apollo,
+    private anchorMarket: AnchorMarketService,
   ) {
     try {
       const infoSchemaVersion = localStorage.getItem('infoSchemaVersion');
@@ -146,6 +166,10 @@ export class InfoService {
   tokenBalances: Record<string, string> = {};
   lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
+
+  govBalanceResponse: BalanceResponse;
+  govStateInfo: StateInfo;
+  poolDetails: GovPoolDetail[] = [];
 
   myTvl = 0;
   allVaults: Vault[] = [];
@@ -537,6 +561,9 @@ export class InfoService {
       gov: { pending_reward_token: 0, pending_reward_ust: 0 },
       tokens: new Map(),
       farms: new Map(),
+      totalGovRewardUST: 0,
+      stakedInGovAPR: 0,
+      austAPR: 0,
     };
     for (const farmInfo of this.farmInfos.filter(fi => this.shouldEnableFarmInfo(fi))) {
       if (this.tokenInfos[farmInfo.rewardTokenContract]?.symbol) {
@@ -604,12 +631,28 @@ export class InfoService {
     portfolio.gov.pending_reward_ust += gov_spec_staked_ust;
     portfolio.gov.pending_reward_token += +specGovStaked / CONFIG.UNIT;
     tvl += gov_spec_staked_ust;
-    this.myTvl = tvl;
+    
 
     const pendingTokenRewards = [...portfolio.tokens.values()].filter(value => value.pending_reward_token > 0);
     portfolio.avg_tokens_apr = pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token * (pr.apr || 0), 0) /
       pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token, 0);
 
+    let sumGovAPR = 0;
+    let totalStaked = 0;
+    for (const pool of this.poolDetails) {
+          sumGovAPR += +pool.userBalance * pool.apr;
+          totalStaked += +pool.userBalance;
+          portfolio.totalGovRewardUST += +pool.userProfit;
+          portfolio.austAPR = +pool.austApr;
+    }
+    portfolio.stakedInGovAPR = sumGovAPR / totalStaked;
+
+    portfolio.avg_tokens_apr = (portfolio.avg_tokens_apr * portfolio.total_reward_ust + portfolio.austAPR  * portfolio.totalGovRewardUST) 
+                                / (portfolio.total_reward_ust + portfolio.totalGovRewardUST);
+    portfolio.total_reward_ust += portfolio.totalGovRewardUST;
+    tvl += portfolio.totalGovRewardUST;
+    
+    this.myTvl = tvl;
     this.portfolio = portfolio;
   }
 
@@ -622,6 +665,7 @@ export class InfoService {
 
     await Promise.all(tasks);
     this.updateVaults();
+    await this.fetchPoolDetails();
     await this.updateMyTvl();
   }
 
@@ -779,6 +823,84 @@ export class InfoService {
                   }`,
       errorPolicy: 'all'
     }).toPromise()).data;
+  }
+
+  async fetchPoolDetails() {
+
+    const [state, rates] = await Promise.all([
+      this.anchorMarket.query({ epoch_state: {} }),
+      this.httpClient.get<any>(this.terrajs.settings.anchorAPI + '/deposit-rate').toPromise().catch(_ => undefined),
+      this.gov.state().then(it => this.govStateInfo = it),
+      this.terrajs.isConnected
+        ? this.gov.balance().then(it => this.govBalanceResponse = it)
+        : Promise.resolve(null as BalanceResponse),
+      this.refreshPool(),
+    ]);
+
+    const anchorRatePerBlock = rates?.[0]?.deposit_rate ?? '0.000000041729682765';
+    const anchorRatePerYear = times(anchorRatePerBlock, 4656810);
+
+    const vaultFeeByPools = {};
+    let lockedBalance = '0';
+
+    const vaultFeeSlice = this.stat.vaultFee / this.govStateInfo.pool_weight;
+    for (let n = 0; n < this.govStateInfo.pools.length; n++) {
+      const involvedPools = this.govStateInfo.pools.slice(n);
+      const sumTotalBalance = involvedPools.reduce((sum, pool) => sum + +pool.total_balance, 0);
+      const pivotPool = involvedPools[0];
+
+      for (const pool of involvedPools) {
+        const poolVaultFee = +pool.total_balance / sumTotalBalance * vaultFeeSlice * pivotPool.weight;
+        vaultFeeByPools[pool.days] = (vaultFeeByPools[pool.days] || 0) + poolVaultFee;
+      }
+    }
+
+    if (this.govBalanceResponse) {
+      const mostLockedBalance = this.govBalanceResponse.locked_balance.reduce((c, [_, { balance }]) => Math.max(c, +balance), 0);
+      lockedBalance = div(mostLockedBalance, CONFIG.UNIT);
+    }
+
+    this.poolDetails = this.govStateInfo.pools
+      .map((pool) => {
+        const balanceInfo = this.govBalanceResponse?.pools.find(p => p.days === pool.days);
+        const userBalance = div(balanceInfo?.balance ?? 0, CONFIG.UNIT);
+        const userAUst = div(balanceInfo?.pending_aust ?? 0, CONFIG.UNIT);
+        const userProfit = times(userAUst, state.exchange_rate);
+        const unlockAt = balanceInfo?.unlock ? new Date(balanceInfo.unlock * 1000) : null;
+        const poolTvl = +pool.total_balance * +this.specPrice;
+        const apr = vaultFeeByPools[pool.days] / poolTvl;
+        const austApr = +anchorRatePerYear;
+        return {
+          userBalance,
+          userAUst,
+          userProfit,
+          austApr,
+          unlockAt,
+          days: pool.days,
+          apr: apr + apr * +anchorRatePerYear / 2,
+          balance: div(pool.total_balance, CONFIG.UNIT),
+          userAvailableBalance: '0', // populate after this mapping
+          moveOptions: [], // populate after this mapping
+        };
+      })
+      .map((current, _, poolDetails) => {
+        const sumOtherPoolsBalance = poolDetails.filter(d => d.days !== current.days)
+          .reduce((sum, d) => plus(sum, d.userBalance), '0');
+
+        const unreservedBalance = minus(lockedBalance, sumOtherPoolsBalance);
+        const userAvailableBalance = gt(unreservedBalance, 0)
+          ? minus(current.userBalance, unreservedBalance)
+          : current.userBalance;
+
+        const moveOptions = poolDetails.filter(d => d.days > current.days)
+          .map(({ days, userBalance, unlockAt }) => ({ days, userBalance, unlockAt }));
+
+        return {
+          ...current,
+          userAvailableBalance,
+          moveOptions,
+        };
+      });
   }
 
 }

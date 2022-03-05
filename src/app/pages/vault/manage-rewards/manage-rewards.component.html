@@ -89,4 +89,28 @@
         </div>
       </div>
     </ng-container>
+    <!-- Spec Gov -->
+    <div *ngIf="info.portfolio.totalGovRewardUST > 0" class="row switch-grey mb-3 p-3">
+      <div class="col-12 col-md-2 text-center">
+        <img [src]="'SPEC'| url:'icon'" height="32" class="rounded-circle"> SPEC Gov
+      </div>
+      <div class="col-12 col-md-2 text-center">
+        {{ info.portfolio.austAPR | percent }}
+      </div>
+      <div class="col-12 col-md-2 text-primary text-center">
+        ${{info.portfolio.totalGovRewardUST | number: '1.0-2'}}
+      </div>
+      <div class="col-12 col-md-6">
+        <section class="row btn-group pe-2">
+          <ng-container>
+            <div mdbDropdown class="dropdown col-12 text-center" #dropdown>
+              <button class="btn btn-secondary f-12 w-50" type="button" (click)="modalRef.close(); false" routerLink="/gov" routerLinkActive="active" >
+                Go to Gov
+              </button>
+            </div>
+          </ng-container>
+        </section>
+      </div>
+    </div>
+
   </div>
