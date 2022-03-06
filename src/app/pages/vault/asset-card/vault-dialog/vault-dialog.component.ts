@@ -210,7 +210,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   async refreshLpBalanceInfo() {
     this.lpBalanceInfo = '';
     if (this.vault.poolInfo.key !== this.SPEC_KEY) {
-      this.lpBalanceInfo += `${this.rewardInfoPipe.transform(this.info.rewardInfos[this.vault.poolInfo.key])}\n`;
+      this.lpBalanceInfo += `${this.rewardInfoPipe.transform(this.info.rewardInfos[this.vault.poolInfo.key])} `;
     }
     const lpSplitText = this.lpSplitPipe.transform(+this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount / this.UNIT,
                                                     this.info.poolResponses[this.vault.poolInfo.key], this.vault.baseSymbol,
