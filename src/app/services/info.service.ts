@@ -30,6 +30,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { AnchorMarketService } from './api/anchor-market.service';
 import { BalanceResponse } from './api/gov/balance_response';
 import { StateInfo } from './api/gov/state_info';
+import { state } from '@angular/animations';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -441,6 +442,13 @@ export class InfoService {
       stat.tvl = plus(stat.tvl, pair.tvl);
     }
     stat.govApr = 0; // stat.vaultFee / stat.govPoolCount / +stat.govTvl;
+
+    // aUST in Gov
+    const anchorState = await this.anchorMarket.query({ epoch_state: {} });
+    const austBalance = await this.token.balance(this.terrajs.settings.austToken, this.terrajs.settings.gov);
+    const austValue = times(austBalance.balance, anchorState.exchange_rate);
+    stat.tvl = plus(stat.tvl, austValue);
+
     this.stat = stat;
     localStorage.setItem('stat', JSON.stringify(stat));
   }
