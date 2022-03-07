@@ -1,32 +1,33 @@
-import { Inject, Injectable } from '@angular/core';
-import { BLOCK_TIME, TerrajsService } from './terrajs.service';
-import { TokenService } from './api/token.service';
-import { BankService } from './api/bank.service';
-import { TerraSwapService } from './api/terraswap.service';
-import { PoolResponse } from './api/terraswap_pair/pool_response';
-import { div, minus, plus, times } from '../libs/math';
-import { CONFIG } from '../consts/config';
-import { TerraSwapFactoryService } from './api/terraswap-factory.service';
-import { GovService } from './api/gov.service';
+import {Inject, Injectable} from '@angular/core';
+import {BLOCK_TIME, TerrajsService} from './terrajs.service';
+import {TokenService} from './api/token.service';
+import {BankService} from './api/bank.service';
+import {TerraSwapService} from './api/terraswap.service';
+import {PoolResponse} from './api/terraswap_pair/pool_response';
+import {div, minus, plus, times} from '../libs/math';
+import {CONFIG} from '../consts/config';
+import {TerraSwapFactoryService} from './api/terraswap-factory.service';
+import {GovService} from './api/gov.service';
 import {
   FARM_INFO_SERVICE,
   FarmInfoService,
   PairStat,
   PoolInfo,
-  RewardInfoResponseItem
+  RewardInfoResponseItem,
+  SINGLE_ASSET
 } from './farm_info/farm-info.service';
-import { fromEntries } from '../libs/core';
-import { PairInfo } from './api/terraswap_factory/pair_info';
-import { BalancePipe } from '../pipes/balance.pipe';
-import { LpBalancePipe } from '../pipes/lp-balance.pipe';
-import { Vault } from '../pages/vault/vault.component';
-import { HttpClient } from '@angular/common/http';
-import { memoize } from 'utils-decorators';
-import { Denom } from '../consts/denom';
-import { WalletService } from './api/wallet.service';
-import { AstroportService } from './api/astroport.service';
-import { AstroportFactoryService } from './api/astroport-factory.service';
-import { Apollo, gql } from 'apollo-angular';
+import {fromEntries} from '../libs/core';
+import {PairInfo} from './api/terraswap_factory/pair_info';
+import {BalancePipe} from '../pipes/balance.pipe';
+import {LpBalancePipe} from '../pipes/lp-balance.pipe';
+import {Vault} from '../pages/vault/vault.component';
+import {HttpClient} from '@angular/common/http';
+import {memoize} from 'utils-decorators';
+import {Denom} from '../consts/denom';
+import {WalletService} from './api/wallet.service';
+import {AstroportService} from './api/astroport.service';
+import {AstroportFactoryService} from './api/astroport-factory.service';
+import {Apollo, gql} from 'apollo-angular';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -222,7 +223,7 @@ export class InfoService {
       }
       const pools = await farmInfo.queryPoolItems();
       for (const pool of pools) {
-        const key = `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}`;
+        const key = farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}` : `${pool.asset_token}`;
         poolInfos[key] = Object.assign(pool,
           {
             key,
@@ -231,7 +232,7 @@ export class InfoService {
             baseTokenContract: pool.asset_token,
             denomTokenContract: farmInfo.denomTokenContract,
             rewardTokenContract: farmInfo.rewardTokenContract,
-            rewardKey: `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}`,
+            rewardKey: farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}` : `Astroport|${farmInfo.rewardTokenContract}|${Denom.USD}`,
             auto_compound: farmInfo.autoCompound,
             auto_stake: farmInfo.autoStake,
             govLock: farmInfo.govLock,
@@ -438,7 +439,11 @@ export class InfoService {
     const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const rewards = await farmInfo.queryRewards();
       for (const reward of rewards) {
-        rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+        if (farmInfo.farmType === 'LP'){
+          rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+        } else if (SINGLE_ASSET.has(farmInfo.farmType)){
+          rewardInfos[`${reward.asset_token}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+        }
       }
     });
     await Promise.all(tasks);
@@ -553,7 +558,7 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = (vault.poolInfo.farmType === 'PYLON_LIQUID'
+      const bond_amount = (SINGLE_ASSET.has(vault.poolInfo.farmType)
         ? +rewardInfo.bond_amount
         : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.key))
         / CONFIG.UNIT || 0;
@@ -721,20 +726,20 @@ export class InfoService {
         compoundApy,
         stakeApy,
         apy,
-        name: poolInfo.farmType === 'PYLON_LIQUID'
+        name: SINGLE_ASSET.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
-        unitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
+        unitDisplay: SINGLE_ASSET.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
-        unitDisplayDexAbbreviated: poolInfo.farmType === 'PYLON_LIQUID'
+        unitDisplayDexAbbreviated: SINGLE_ASSET.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${abbreviatedDex} LP`,
-        shortUnitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
+        shortUnitDisplay: SINGLE_ASSET.has(poolInfo.farmType)
           ? baseSymbol
           : `LP`,
         score,
-        fullName: poolInfo.farmType === 'PYLON_LIQUID'
+        fullName: SINGLE_ASSET.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
         disabled,

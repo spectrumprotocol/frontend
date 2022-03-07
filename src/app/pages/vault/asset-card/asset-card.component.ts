@@ -7,6 +7,9 @@ import { LpBalancePipe } from '../../../pipes/lp-balance.pipe';
 import { VaultDialogComponent } from './vault-dialog/vault-dialog.component';
 import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
 import { CONFIG } from '../../../consts/config';
+import {SINGLE_ASSET} from '../../../services/farm_info/farm-info.service';
+import {Denom} from '../../../consts/denom';
+import {TerrajsService} from '../../../services/terrajs.service';
 
 @Component({
   selector: 'app-asset-card',
@@ -20,11 +23,21 @@ export class AssetCardComponent implements OnInit {
   @Input() vault: Vault;
 
   UNIT = CONFIG.UNIT;
+  SINGLE_ASSET = SINGLE_ASSET;
+
+  get NASSET_PSI_KEY() {
+    return `${this.vault.poolInfo.dex}|${this.vault.poolInfo.baseTokenContract}|${this.terrajs.settings.nexusToken}`;
+  }
+
+  get PSI_UST_KEY() {
+    return `Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`;
+  }
 
   modalRef: MdbModalRef<VaultDialogComponent>;
   constructor(
     protected $gaService: GoogleAnalyticsService,
     public info: InfoService,
+    private terrajs: TerrajsService,
     private modalService: MdbModalService
   ) { }
 

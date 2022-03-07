@@ -12,27 +12,29 @@ import {
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { toBase64 } from '../../libs/base64';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { BPsiDpFarmService } from '../api/bpsidp-farm.service';
 import { WasmService } from '../api/wasm.service';
 import { VaultsResponse } from '../api/gov/vaults_response';
-import { div } from '../../libs/math';
+import {div, times} from '../../libs/math';
 import { Apollo, gql } from 'apollo-angular';
 import { Denom } from '../../consts/denom';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
+import {NassetFarmService} from '../api/nasset-farm.service';
+import {BalancePipe} from '../../pipes/balance.pipe';
+import {TokenService} from '../api/token.service';
 
 @Injectable()
-export class BPsiDPFarmInfoService implements FarmInfoService {
-  farm = 'Pylon';
+export class NethFarmInfoService implements FarmInfoService {
+  farm = 'Nexus';
   autoCompound = true;
   autoStake = true;
-  farmColor = '#00cfda';
-  farmType: FARM_TYPE_ENUM = 'PYLON_LIQUID';
+  farmColor = '#F4B6C7';
+  farmType: FARM_TYPE_ENUM = 'NASSET';
   auditWarning = false;
-  dex: DEX = 'Terraswap';
-  mainnetOnly = true;
+  dex: DEX = 'Astroport';
+  mainnetOnly = false;
 
   get defaultBaseTokenContract() {
-    return this.terrajs.settings.bPsiDPToken;
+    return this.terrajs.settings.nEthToken;
   }
 
   // not actually denom, but has trade pair
@@ -41,14 +43,16 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   }
 
   constructor(
-    private bPsiDpFarmService: BPsiDpFarmService,
+    private nassetFarmService: NassetFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService,
     private apollo: Apollo,
+    private balancePipe: BalancePipe,
+    private tokenService: TokenService
   ) { }
 
   get farmContract() {
-    return this.terrajs.settings.bPsiDPFarm;
+    return this.terrajs.settings.nETHFarm;
   }
 
   get rewardTokenContract() {
@@ -59,23 +63,14 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.nexusGov;
   }
 
-  get pylonLiquidInfo() {
-    return {
-      dpPool: this.terrajs.settings.psiDPGatewayPool,
-      dpToken: this.terrajs.settings.psiDPToken,
-      bdpPool: this.terrajs.settings.bPsiDPGatewayPool,
-      bdpToken: this.terrajs.settings.bPsiDPToken,
-    };
-  }
-
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.bPsiDpFarmService.query({ pools: {} });
+    const pool = await this.nassetFarmService.query(this.farmContract, { pools: {} });
     return pool.pools;
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
-    const farmConfigTask = this.bPsiDpFarmService.query({ config: {} });
-    const balanceOfTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { balance_of: { owner: this.terrajs.settings.bPsiDPFarm } });
+    const farmConfigTask = this.nassetFarmService.query(this.farmContract, { config: {} });
+    const nAssetBalanceTask = this.tokenService.balance(this.defaultBaseTokenContract, this.farmContract);
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
     const nexusGovStatTask = apollo.query<any>({
       query: gql`{
@@ -85,22 +80,40 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
         }
       }`
     }).toPromise();
+    // query: gql`{
+    //     getBAssetVaultAprRecords(limit: 7, offset: 0) {
+    //       date
+    //       bEthVaultApr
+    //       bEthVaultManualApr
+    //       bLunaVaultApr
+    //       bLunaVaultManualApr
+    //      }`
+    const nexusNAssetStatTask = apollo.query<any>({
+      query: gql`{
+        getBAssetVaultAprRecords(limit: 1, offset: 0) {
+          bEthVaultApr
+         }
+        }`
+    }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
-    const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.bPsiDPFarm)?.weight || 0;
-    const bPsiDPStat = await this.getBPsiDPStat(poolResponses);
+    const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
     const pairs: Record<string, PairStat> = {};
 
-    const [farmConfig, nexusGovStat] = await Promise.all([farmConfigTask, nexusGovStatTask]);
+    const [farmConfig, nexusGovStat, nexusNAssetStat, nAssetBalance] = await Promise.all([farmConfigTask, nexusGovStatTask, nexusNAssetStatTask, nAssetBalanceTask]);
     const communityFeeRate = +farmConfig.community_fee;
-    const specbPsiDPTvl = (await balanceOfTask)?.amount || '0';
+    const psiPrice = this.balancePipe.transform('1', poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
+    const poolnAssetPsi = poolResponses[`Astroport|${this.defaultBaseTokenContract}|${this.terrajs.settings.nexusToken}`];
+    const nAssetPricePerPsi = div(poolnAssetPsi.assets.find(asset => asset?.info?.token['contract_addr'] === this.terrajs.settings.nexusToken).amount,
+                            poolnAssetPsi.assets.find(asset => asset?.info?.token['contract_addr'] === this.defaultBaseTokenContract).amount);
+    const nAssetPricePerUST = times(nAssetPricePerPsi, psiPrice);
 
-    const poolApr = +(bPsiDPStat.apr || 0);
+    const poolApr = +(nexusNAssetStat.data?.getBAssetVaultAprRecords[0]?.bEthVaultApr || 0) / 100;
     const key = `${this.defaultBaseTokenContract}`;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
-    pair.tvl = specbPsiDPTvl;
+    pair.tvl = times(nAssetPricePerUST, nAssetBalance.balance);
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
@@ -115,32 +128,16 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
+        poolAstroApr: 0,
+        specApr: 0
       };
       return stat;
     }
   }
 
-  async getBPsiDPStat(poolResponses: Record<string, PoolResponse>) {
-    const configInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { config: {} });
-    const rewardInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { reward: {} });
-    const [configInfo, rewardInfo] = await Promise.all([configInfoTask, rewardInfoTask]);
-
-    const psiPool = poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`];
-    const [psi, ust] = psiPool.assets[0].info.token?.['contract_addr'] === this.terrajs.settings.nexusToken
-      ? [psiPool.assets[0].amount, psiPool.assets[1].amount]
-      : [psiPool.assets[1].amount, psiPool.assets[0].amount];
-    const psiPrice = div(ust, psi);
-
-    const rewardRate = Number(div(configInfo.distribution_config.reward_rate, 1000000)).toFixed(15);
-    const totalDeposit = div(+rewardInfo.total_deposit, 1000000);
-    const apr = 365 * (+rewardRate * +psiPrice * 86400 / +totalDeposit);
-    return {
-      apr,
-    };
-  }
 
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const rewardInfo = await this.bPsiDpFarmService.query({
+    const rewardInfo = await this.nassetFarmService.query(this.farmContract, {
       reward_info: {
         staker_addr: this.terrajs.address,
       }
