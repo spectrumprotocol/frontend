@@ -7,7 +7,7 @@ import { LpBalancePipe } from '../../../pipes/lp-balance.pipe';
 import { VaultDialogComponent } from './vault-dialog/vault-dialog.component';
 import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
 import { CONFIG } from '../../../consts/config';
-import {SINGLE_ASSET} from '../../../services/farm_info/farm-info.service';
+import {FARM_TYPE_SINGLE_ASSET} from '../../../services/farm_info/farm-info.service';
 import {Denom} from '../../../consts/denom';
 import {TerrajsService} from '../../../services/terrajs.service';
 
@@ -23,7 +23,7 @@ export class AssetCardComponent implements OnInit {
   @Input() vault: Vault;
 
   UNIT = CONFIG.UNIT;
-  SINGLE_ASSET = SINGLE_ASSET;
+  FARM_TYPE_SINGLE_ASSET = FARM_TYPE_SINGLE_ASSET;
 
   get NASSET_PSI_KEY() {
     return `${this.vault.poolInfo.dex}|${this.vault.poolInfo.baseTokenContract}|${this.terrajs.settings.nexusToken}`;

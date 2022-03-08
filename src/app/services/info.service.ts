@@ -14,7 +14,7 @@ import {
   PairStat,
   PoolInfo,
   RewardInfoResponseItem,
-  SINGLE_ASSET
+  FARM_TYPE_SINGLE_ASSET
 } from './farm_info/farm-info.service';
 import {fromEntries} from '../libs/core';
 import {PairInfo} from './api/terraswap_factory/pair_info';
@@ -441,7 +441,7 @@ export class InfoService {
       for (const reward of rewards) {
         if (farmInfo.farmType === 'LP'){
           rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
-        } else if (SINGLE_ASSET.has(farmInfo.farmType)){
+        } else if (FARM_TYPE_SINGLE_ASSET.has(farmInfo.farmType)){
           rewardInfos[`${reward.asset_token}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
         }
       }
@@ -558,7 +558,7 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = (SINGLE_ASSET.has(vault.poolInfo.farmType)
+      const bond_amount = (FARM_TYPE_SINGLE_ASSET.has(vault.poolInfo.farmType)
         ? +rewardInfo.bond_amount
         : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.key))
         / CONFIG.UNIT || 0;
@@ -726,20 +726,20 @@ export class InfoService {
         compoundApy,
         stakeApy,
         apy,
-        name: SINGLE_ASSET.has(poolInfo.farmType)
+        name: FARM_TYPE_SINGLE_ASSET.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
-        unitDisplay: SINGLE_ASSET.has(poolInfo.farmType)
+        unitDisplay: FARM_TYPE_SINGLE_ASSET.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
-        unitDisplayDexAbbreviated: SINGLE_ASSET.has(poolInfo.farmType)
+        unitDisplayDexAbbreviated: FARM_TYPE_SINGLE_ASSET.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${abbreviatedDex} LP`,
-        shortUnitDisplay: SINGLE_ASSET.has(poolInfo.farmType)
+        shortUnitDisplay: FARM_TYPE_SINGLE_ASSET.has(poolInfo.farmType)
           ? baseSymbol
           : `LP`,
         score,
-        fullName: SINGLE_ASSET.has(poolInfo.farmType)
+        fullName: FARM_TYPE_SINGLE_ASSET.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
         disabled,

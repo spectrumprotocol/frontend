@@ -18,7 +18,7 @@ import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem | PylonLiquidPoolItem | AstroportTokenUSTPoolItem;
 export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID' | 'NASSET';
-export const SINGLE_ASSET: Set<string> = new Set(['PYLON_LIQUD', 'NASSET']);
+export const FARM_TYPE_SINGLE_ASSET: Set<string> = new Set(['PYLON_LIQUID', 'NASSET']);
 
 export type DEX = 'Terraswap' | 'Astroport';
 export type PoolInfo = PoolItem & {
