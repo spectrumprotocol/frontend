@@ -14,7 +14,7 @@ import {
   PairStat,
   PoolInfo,
   RewardInfoResponseItem,
-  FARM_TYPE_SINGLE_ASSET
+  FARM_TYPE_SINGLE_TOKEN
 } from './farm_info/farm-info.service';
 import {fromEntries} from '../libs/core';
 import {PairInfo} from './api/terraswap_factory/pair_info';
@@ -232,7 +232,7 @@ export class InfoService {
             baseTokenContract: pool.asset_token,
             denomTokenContract: farmInfo.denomTokenContract,
             rewardTokenContract: farmInfo.rewardTokenContract,
-            rewardKey: farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}` : `Astroport|${farmInfo.rewardTokenContract}|${Denom.USD}`,
+            rewardKey: farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}` : `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}`,
             auto_compound: farmInfo.autoCompound,
             auto_stake: farmInfo.autoStake,
             govLock: farmInfo.govLock,
@@ -259,14 +259,20 @@ export class InfoService {
     const tasks = Object.keys(this.poolInfos)
       .filter(key => !this.pairInfos[key])
       .map(async key => {
+        let pairInfoKey;
         const baseTokenContract = this.poolInfos[key].baseTokenContract;
+        const denomTokenContract = this.poolInfos[key].denomTokenContract;
+        if (this.poolInfos[key].farmType === 'LP'){
+          pairInfoKey = key;
+        } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)){
+          pairInfoKey = `${this.poolInfos[key].dex}|${baseTokenContract}|${denomTokenContract}`;
+        }
         const tokenA = baseTokenContract.startsWith('u') ?
           { native_token: { denom: baseTokenContract } } : { token: { contract_addr: baseTokenContract } };
-        const denomTokenContract = this.poolInfos[key].denomTokenContract;
         const tokenB = denomTokenContract.startsWith('u') ?
           { native_token: { denom: denomTokenContract } } : { token: { contract_addr: denomTokenContract } };
         if (this.poolInfos[key].dex === 'Terraswap') {
-          this.pairInfos[key] = await this.terraSwapFactory.query({
+          this.pairInfos[pairInfoKey] = await this.terraSwapFactory.query({
             pair: {
               asset_infos: [
                 tokenA, tokenB
@@ -274,7 +280,7 @@ export class InfoService {
             }
           });
         } else if (this.poolInfos[key].dex === 'Astroport') {
-          this.pairInfos[key] = await this.astroportFactory.query({
+          this.pairInfos[pairInfoKey] = await this.astroportFactory.query({
             pair: {
               asset_infos: [
                 tokenA, tokenB
@@ -441,7 +447,7 @@ export class InfoService {
       for (const reward of rewards) {
         if (farmInfo.farmType === 'LP'){
           rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
-        } else if (FARM_TYPE_SINGLE_ASSET.has(farmInfo.farmType)){
+        } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)){
           rewardInfos[`${reward.asset_token}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
         }
       }
@@ -494,12 +500,20 @@ export class InfoService {
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
       const pairInfo = this.pairInfos[key];
-      if (key.split('|')[0] === 'Terraswap' && pairInfo?.contract_addr) {
+      let poolResponseKey;
+      if (this.poolInfos[key].farmType === 'LP'){
+        poolResponseKey = key;
+      } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)){
+        const baseTokenContract = this.poolInfos[key].baseTokenContract;
+        const denomTokenContract = this.poolInfos[key].denomTokenContract;
+        poolResponseKey = `${this.poolInfos[key].dex}|${baseTokenContract}|${denomTokenContract}`;
+      }
+      if (this.poolInfos[key].dex === 'Terraswap' && pairInfo?.contract_addr) {
         poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-          .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses Terraswap error: ', error)));
-      } else if (key.split('|')[0] === 'Astroport' && pairInfo?.contract_addr) {
+          .then(it => poolResponses[poolResponseKey] = it).catch(error => console.error('refreshPoolResponses Terraswap error: ', error)));
+      } else if (this.poolInfos[key].dex === 'Astroport' && pairInfo?.contract_addr) {
         poolTasks.push(this.astroport.query(pairInfo.contract_addr, { pool: {} })
-          .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses Astroport error: ', error)));
+          .then(it => poolResponses[poolResponseKey] = it).catch(error => console.error('refreshPoolResponses Astroport error: ', error)));
       }
     }
     await Promise.all(poolTasks);
@@ -558,7 +572,7 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = (FARM_TYPE_SINGLE_ASSET.has(vault.poolInfo.farmType)
+      const bond_amount = (FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)
         ? +rewardInfo.bond_amount
         : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this.poolResponses, vault.poolInfo.key))
         / CONFIG.UNIT || 0;
@@ -726,20 +740,20 @@ export class InfoService {
         compoundApy,
         stakeApy,
         apy,
-        name: FARM_TYPE_SINGLE_ASSET.has(poolInfo.farmType)
+        name: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
-        unitDisplay: FARM_TYPE_SINGLE_ASSET.has(poolInfo.farmType)
+        unitDisplay: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
-        unitDisplayDexAbbreviated: FARM_TYPE_SINGLE_ASSET.has(poolInfo.farmType)
+        unitDisplayDexAbbreviated: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${abbreviatedDex} LP`,
-        shortUnitDisplay: FARM_TYPE_SINGLE_ASSET.has(poolInfo.farmType)
+        shortUnitDisplay: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `LP`,
         score,
-        fullName: FARM_TYPE_SINGLE_ASSET.has(poolInfo.farmType)
+        fullName: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
         disabled,

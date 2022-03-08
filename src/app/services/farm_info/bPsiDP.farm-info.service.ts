@@ -35,7 +35,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.bPsiDPToken;
   }
 
-  // not actually denom, but has trade pair
+  // not actually denom, but for construct trade pair
   get denomTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
