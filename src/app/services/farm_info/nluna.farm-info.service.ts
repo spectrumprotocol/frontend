@@ -103,17 +103,13 @@ export class NlunaFarmInfoService implements FarmInfoService {
 
     const [farmConfig, nexusGovStat, nexusNAssetStat, nAssetBalance] = await Promise.all([farmConfigTask, nexusGovStatTask, nexusNAssetStatTask, nAssetBalanceTask]);
     const communityFeeRate = +farmConfig.community_fee;
-    const psiPrice = this.balancePipe.transform('1', poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`]); // TODO use balance pipe
-    const poolnAssetPsi = poolResponses[`Astroport|${this.defaultBaseTokenContract}|${this.terrajs.settings.nexusToken}`];
-    const nAssetPricePerPsi = div(poolnAssetPsi.assets.find(asset => asset?.info?.token['contract_addr'] === this.terrajs.settings.nexusToken).amount,
-                            poolnAssetPsi.assets.find(asset => asset?.info?.token['contract_addr'] === this.defaultBaseTokenContract).amount);
-    const nAssetPricePerUST = times(nAssetPricePerPsi, psiPrice);
+    const nAssetTvl = this.balancePipe.transform(nAssetBalance.balance, poolResponses[`Astroport|${this.defaultBaseTokenContract}|${this.terrajs.settings.nexusToken}`], poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
 
     const poolApr = +(nexusNAssetStat.data?.getBAssetVaultAprRecords[0]?.bLunaVaultApr || 0) / 100;
     const key = `${this.defaultBaseTokenContract}`;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
-    pair.tvl = times(nAssetPricePerUST, nAssetBalance.balance);
+    pair.tvl = nAssetTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;

@@ -30,11 +30,16 @@ export class BalancePipe implements PipeTransform {
         .div(poolResponse.assets[0].amount)
         .toString();
     } else if (poolResponse.assets[0].info.token && poolResponse.assets[1].info.token){
-      const psiPrice = this.transform('1', poolResponseB);
-      const nAssetPricePerPsi = div(poolResponse.assets.find(asset => asset?.info?.token['contract_addr'] === this.terrajs.settings.nexusToken).amount,
-        poolResponse.assets.find(asset => new Set([this.terrajs.settings.nLunaToken, this.terrajs.settings.nEthToken]).has(asset?.info?.token['contract_addr'])).amount);
-      const nAssetPricePerUST = times(nAssetPricePerPsi, psiPrice);
-      return new BigNumber(value).times(nAssetPricePerUST).toString();
+      const nAssetContracts = new Set([this.terrajs.settings.nLunaToken, this.terrajs.settings.nEthToken]);
+      const psiAsset = poolResponse.assets.find(asset => asset?.info?.token['contract_addr'] === this.terrajs.settings.nexusToken);
+      const nAssetAsset = poolResponse.assets.find(asset => nAssetContracts.has(asset?.info?.token['contract_addr']));
+      if (psiAsset && nAssetAsset){
+        const psiPrice = this.transform('1', poolResponseB);
+        const nAssetPricePerPsi = div(psiAsset.amount, nAssetAsset.amount);
+        const nAssetPricePerUST = times(nAssetPricePerPsi, psiPrice);
+        return new BigNumber(value).times(nAssetPricePerUST).toString();
+      }
+      return null;
     } else {
       return null;
     }
