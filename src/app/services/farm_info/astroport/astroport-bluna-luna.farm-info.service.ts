@@ -21,6 +21,7 @@ import {PairInfo} from '../../api/terraswap_factory/pair_info';
 import {WasmService} from '../../api/wasm.service';
 import {BalancePipe} from '../../../pipes/balance.pipe';
 import { balance_transform } from '../../calc/balance_calc';
+import { getStablePrice } from 'src/app/libs/stable';
 
 @Injectable()
 export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
@@ -64,7 +65,7 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  //Spectrum calculation
+  // Spectrum calculation
   // async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
   //   const key = `${this.dex}|${this.terrajs.settings.bLunaToken}|${Denom.LUNA}`;
   //   const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
@@ -134,19 +135,27 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
     const p = poolResponses[key];
     const ulunaPrice = balance_transform('1', poolResponses[`${this.dex}|${Denom.LUNA}|${Denom.USD}`]);
 
-    const ulunaAsset = p.assets.find(a => a.info.native_token?.['denom'] === Denom.LUNA);
+    const [ulunaAsset, blunaAsset] = p.assets[0].info.native_token?.['denom'] === Denom.LUNA
+      ? [p.assets[0], p.assets[1]]
+      : [p.assets[1], p.assets[0]];
     if (!ulunaAsset) {
       return;
     }
-    const totalUlunaValueUST = times(ulunaPrice, ulunaAsset.amount);
+    const bLunaPrice = getStablePrice(+blunaAsset.amount, +ulunaAsset.amount);
+    const bLunaSwap = new BigNumber(depositAmount)
+      .times(blunaAsset.amount)
+      .div(p.total_share)
+      .times(bLunaPrice)
+      .integerValue(BigNumber.ROUND_DOWN);
 
     const poolApr = 0;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
-    pair.tvl = new BigNumber(totalUlunaValueUST)
-      .times(depositAmount)
-      .times(2)
+    pair.tvl = new BigNumber(depositAmount)
+      .times(ulunaAsset.amount)
       .div(p.total_share)
+      .plus(bLunaSwap)
+      .times(ulunaPrice)
       .toString();
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 

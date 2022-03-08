@@ -12,7 +12,7 @@ import { InfoService } from '../../../../services/info.service';
 import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
 import { debounce } from 'utils-decorators';
-import {ChangeContext, Options as NgxSliderOptions} from '@angular-slider/ngx-slider';
+import { ChangeContext, Options as NgxSliderOptions } from '@angular-slider/ngx-slider';
 import { LpBalancePipe } from '../../../../pipes/lp-balance.pipe';
 import { TokenService } from '../../../../services/api/token.service';
 import { TerraSwapService } from '../../../../services/api/terraswap.service';
@@ -25,7 +25,7 @@ import { StakerAstroportService } from '../../../../services/api/staker-astropor
 import { AstroportService } from '../../../../services/api/astroport.service';
 import { SimulateZapToBondResponse } from '../../../../services/api/staker/simulate_zap_to_bond_response';
 import { SimulationResponse } from '../../../../services/api/terraswap_pair/simulation_response';
-import {PercentPipe} from '@angular/common';
+import { PercentPipe } from '@angular/common';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | 'ust_bdp';
@@ -155,36 +155,36 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.refreshData();
   }
 
-  getAPRAPYTooltipHTML(){
+  getAPRAPYTooltipHTML() {
     let html = '<div class="apyapr-tooltip">';
     let totalApr = 0;
-    if (this.vault.pairStat?.poolApr > 0){
+    if (this.vault.pairStat?.poolApr > 0) {
       html += `${this.vault.rewardSymbol} APR ${this.percentPipe.transform(this.vault.pairStat.poolApr)} <br>`;
       // html += `${this.vault.rewardSymbol} APY ${this.percentPipe.transform((this.vault.pairStat.poolApr / 365 + 1) ** 365 - 1)} <br>`;
       totalApr += this.vault.pairStat.poolApr;
     }
-    if (this.vault.pairStat?.poolAstroApr > 0){
+    if (this.vault.pairStat?.poolAstroApr > 0) {
       html += `ASTRO APR ${this.percentPipe.transform(this.vault.pairStat.poolAstroApr)} <br>`;
       // html += `ASTRO APY ${this.percentPipe.transform((this.vault.pairStat.poolAstroApr / 365 + 1) ** 365 - 1)} <br>`;
       totalApr += this.vault.pairStat.poolAstroApr;
     }
-    if (totalApr > 0){
+    if (totalApr > 0) {
       html += `Rewards APR ${this.percentPipe.transform(totalApr)} <br>`;
     }
-    if (this.vault.poolInfo?.tradeApr > 0){
+    if (this.vault.poolInfo?.tradeApr > 0) {
       html += `Trade APR ${this.percentPipe.transform(this.vault.poolInfo.tradeApr)} <br>`;
       // html += `Trade APY ${this.percentPipe.transform((this.vault.poolInfo.tradeApr / 365 + 1) ** 365 - 1)} <br>`;
     }
-    if (this.vault.poolInfo.dex === 'Astroport'){
+    if (this.vault.poolInfo.dex === 'Astroport') {
       html += `(APR from Astroport data) <br>`;
     }
-    if (this.vault.pairStat?.poolApy > 0){
+    if (this.vault.pairStat?.poolApy > 0) {
       html += `Auto-compound APY ${this.percentPipe.transform(this.vault.pairStat?.poolApy)} <br>`;
     }
-    if (this.vault.farmApy > 0 && this.vault.poolInfo.auto_stake){
+    if (this.vault.farmApy > 0 && this.vault.poolInfo.auto_stake) {
       html += `Auto-stake APY ${this.percentPipe.transform(+this.vault.farmApy)} <br>`;
     }
-    if (this.vault.specApy > 0){
+    if (this.vault.specApy > 0) {
       html += `SPEC APR ${this.percentPipe.transform(this.vault.specApy)} <br><br>`;
     }
     html += '</div>';
@@ -584,10 +584,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       return;
     }
     let commission = 0;
+    const pairInfo = this.info.pairInfos[this.vault.poolInfo.key];
     if (this.vault.poolInfo.dex === 'Astroport') {
-      if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['stable']) {
+      if (pairInfo.pair_type?.['stable']) {
         commission = +CONFIG.ASTROPORT_STABLE_COMMISSION_TOTAL;
-      } else if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['xyk']) {
+      } else if (pairInfo?.pair_type?.['xyk']) {
         commission = +CONFIG.ASTROPORT_XYK_COMMISSION_TOTAL;
       }
     } else if (this.vault.poolInfo.dex === 'Terraswap') {
@@ -666,18 +667,34 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const tokenBAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
         .times(tokenB.amount).div(poolResponse.total_share).integerValue().toString();
 
-      const tokenAPool2 = new BigNumber(tokenA.amount).minus(tokenAAmt);
-      const tokenBPool2 = new BigNumber(tokenB.amount).minus(tokenBAmt);
-      const returnAmt = tokenAPool2.minus(tokenAPool2.times(tokenBPool2).div(tokenB.amount))
-        .times(1 - +commission)
-        .integerValue()
-        .toString();
+      let returnAmt: string;
+      // stable swap use simulation
+      if (pairInfo.pair_type?.['stable']) {
+        const simulation_msg = {
+          simulation: {
+            offer_asset: {
+              info: tokenB.info,
+              amount: tokenBAmt,
+            }
+          }
+        };
+        const simulate = await this.astroport.query(pairInfo.contract_addr, simulation_msg);
+        returnAmt = simulate.return_amount;
+      } else {
+        // calculate return amount after withdraw
+        const tokenAPool2 = new BigNumber(tokenA.amount).minus(tokenAAmt);
+        const tokenBPool2 = new BigNumber(tokenB.amount).minus(tokenBAmt);
+        returnAmt = tokenAPool2.minus(tokenAPool2.times(tokenBPool2).div(tokenB.amount))
+          .times(1 - +commission)
+          .integerValue()
+          .toString();
+      }
 
       this.withdrawBaseTokenPrice = floor18Decimal(div(tokenBAmt, returnAmt));
       const withdrawA = tokenAAmt.plus(returnAmt);
       const withdrawMinA = tokenAAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE));
 
-      const simulation_msg = {
+      const simulation2_msg = {
         simulation: {
           offer_asset: {
             info: tokenA.info,
@@ -688,9 +705,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       let simulate2: SimulationResponse;
       const tokenAContractAddrOrDenom = tokenA.info.token?.['contract_addr'] || tokenA.info.native_token?.['denom'];
       if (this.vault.poolInfo.dex === 'Astroport') {
-        simulate2 = await this.astroport.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${Denom.USD}`].contract_addr, simulation_msg);
+        simulate2 = await this.astroport.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${Denom.USD}`].contract_addr, simulation2_msg);
       } else if (this.vault.poolInfo.dex === 'Terraswap') {
-        simulate2 = await this.terraSwap.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${Denom.USD}`].contract_addr, simulation_msg);
+        simulate2 = await this.terraSwap.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${Denom.USD}`].contract_addr, simulation2_msg);
       }
       this.withdrawTokenPrice = floor18Decimal(div(withdrawA, simulate2.return_amount));
       this.withdrawUST = simulate2.return_amount;
