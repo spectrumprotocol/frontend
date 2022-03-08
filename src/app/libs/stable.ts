@@ -4,7 +4,11 @@ export function getStablePrice(offerPool: number, askPool: number) {
     const d = computeD(leverage, offerPool, askPool);
     const newOfferPool = computeNewBalance(leverage, newAskPool, d);
     const offerAmt = newOfferPool - offerPool;
-    return 1000000 / offerAmt;
+    if (isFinite(offerAmt)) {
+        return 1000000 / offerAmt;
+    } else {
+        return 0.98;    // fallback if calculation error
+    }
 }
 
 function computeD(leverage: number, amountA: number, amountB: number) {
