@@ -46,7 +46,7 @@ export class AssetCardComponent implements OnInit {
 
   async openModal() {
     this.modalRef = this.modalService.open(VaultDialogComponent, {
-      modalClass: 'modal-lg modal-dialog',
+      modalClass: 'modal-vault-dialog modal-dialog',
       data: {
         vault: this.vault
     }});
