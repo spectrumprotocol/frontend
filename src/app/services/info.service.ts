@@ -232,7 +232,7 @@ export class InfoService {
             baseTokenContract: pool.asset_token,
             denomTokenContract: farmInfo.denomTokenContract,
             rewardTokenContract: farmInfo.rewardTokenContract,
-            rewardKey: farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}` : `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}`,
+            rewardKey: `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}`,
             auto_compound: farmInfo.autoCompound,
             auto_stake: farmInfo.autoStake,
             govLock: farmInfo.govLock,

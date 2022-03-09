@@ -93,11 +93,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   netLpUST: string;
 
   tokenPrice: string;
+  tokenPriceNonUSTDenomInUST: string;
   basedTokenPrice: string;
 
-  ustForSwapSingleAsset: string;
+  ustForSwapSingleToken: string;
   ustForDepositbDP: string;
-  tokenFromSwapbDP: string;
+  tokenFromSwapSingleToken: string;
   tokenFromDepositbDP: string;
 
   private heightChanged: Subscription;
@@ -132,7 +133,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.vault.poolInfo.farmType === 'LP') {
       this.depositMode = 'tokentoken';
       this.withdrawMode = 'tokentoken';
-    } else if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
+    } else if (FARM_TYPE_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
       this.depositMode = 'single_token';
       this.withdrawMode = 'single_token';
     }
@@ -473,7 +474,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       await this.tokenService.handle(this.vault.poolInfo.baseTokenContract, msg);
     } else if (this.depositMode === 'ust_single_token') {
       const msgs: MsgExecuteContract[] = [];
-      if (+this.ustForSwapSingleAsset) {
+      if (+this.ustForSwapSingleToken) {
         msgs.push(new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.stakerSingleAsset, {
           zap_to_bond: {
             contract: this.vault.poolInfo.farmContract,
@@ -483,7 +484,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
                   denom: Denom.USD
                 }
               },
-              amount: this.ustForSwapSingleAsset
+              amount: this.ustForSwapSingleToken
             },
             swap_operations: [
               {
@@ -508,7 +509,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             max_spread: CONFIG.SLIPPAGE_TOLERANCE,
             compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
           }
-        }, [new Coin(Denom.USD, this.ustForSwapSingleAsset)]));
+        }, [new Coin(Denom.USD, this.ustForSwapSingleToken)]));
       }
 
       if (+this.ustForDepositbDP) {
@@ -587,13 +588,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   @debounce(250)
   async withdrawAmtChanged() {
-    if (this.withdrawAmt <= 0 || (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_single_token')) {
+    if (!this.withdrawAmt || (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_single_token')) {
       return;
     }
     let commission = 0;
     const pairInfo = this.info.pairInfos[this.vault.poolInfo.key];
     if (this.vault.poolInfo.dex === 'Astroport') {
-      if (pairInfo.pair_type?.['stable']) {
+      if (pairInfo?.pair_type?.['stable']) {
         commission = +CONFIG.ASTROPORT_STABLE_COMMISSION_TOTAL;
       } else if (pairInfo?.pair_type?.['xyk']) {
         commission = +CONFIG.ASTROPORT_XYK_COMMISSION_TOTAL;
@@ -662,7 +663,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.withdrawUST = ustAmt.plus(returnAmt).toString();
       this.withdrawMinUST = ustAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
     } else {
-      const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
+      const key = this.vault.poolInfo.farmType === 'NASSET' ? this.keySingleToken_Denom : this.vault.poolInfo.key;
+      const poolResponse = this.info.poolResponses[key];
       const asset0Token: string = poolResponse.assets[0].info.token
         ? poolResponse.assets[0].info.token?.['contract_addr']
         : poolResponse.assets[0].info.native_token?.['denom'];
@@ -936,6 +938,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.grossLpUST = undefined;
       this.depositFeeUST = undefined;
       this.netLpUST = undefined;
+      this.tokenPriceNonUSTDenomInUST = undefined;
     }
     let grossLp: BigNumber;
     const depositTVL = new BigNumber(this.depositUSTAmtUST).times(CONFIG.UNIT);
@@ -977,6 +980,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
       this.tokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.denomDecimals);
       this.basedTokenPrice = this.toUIPrice(res.belief_price_b, this.vault.baseDecimals, this.vault.baseDecimals);
+      this.tokenPriceNonUSTDenomInUST = floor18Decimal(times(this.tokenPrice, this.basedTokenPrice));
     }
 
     const depositFee = this.vault.poolInfo.farm === 'Spectrum'
@@ -1071,10 +1075,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (!this.depositUSTAmtSingleToken) {
       this.depositTokenAmtSingleToken = undefined;
       this.ustForDepositbDP = undefined;
-      this.ustForSwapSingleAsset = undefined;
+      this.ustForSwapSingleToken = undefined;
       this.tokenPrice = undefined;
+      this.tokenPriceNonUSTDenomInUST = undefined;
       this.basedTokenPrice = undefined;
-      this.tokenFromSwapbDP = undefined;
+      this.tokenFromSwapSingleToken = undefined;
       this.tokenFromDepositbDP = undefined;
       this.grossLpUST = undefined;
       this.depositFeeUST = undefined;
@@ -1106,33 +1111,33 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           maxUst = new BigNumber(0);
         }
         if (maxUst.isGreaterThanOrEqualTo(depositTVL)) {
-          this.ustForSwapSingleAsset = depositTVL.toString();
+          this.ustForSwapSingleToken = depositTVL.toString();
           this.ustForDepositbDP = '0';
         } else {
           const maxUstBuffer = maxUst;
-          this.ustForSwapSingleAsset = maxUstBuffer.toString();
+          this.ustForSwapSingleToken = maxUstBuffer.toString();
           this.ustForDepositbDP = depositTVL.minus(maxUstBuffer).toString();
         }
       } else {
-        this.ustForSwapSingleAsset = '0';
+        this.ustForSwapSingleToken = '0';
         this.ustForDepositbDP = depositTVL.toString();
       }
     }
 
     if (this.vault.poolInfo.farmType === 'NASSET'){
-      this.ustForSwapSingleAsset = this.depositUSTAmtSingleToken.toString();
+      this.ustForSwapSingleToken = times(this.depositUSTAmtSingleToken, CONFIG.UNIT);
     }
 
-    if (+this.ustForSwapSingleAsset) {
+    if (+this.ustForSwapSingleToken) {
       const simulate1 = await this.terraSwap.query(this.info.pairInfos[this.vault.poolInfo.rewardKey].contract_addr, {
         simulation: {
           offer_asset: {
             info: { native_token: { denom: Denom.USD } },
-            amount: this.ustForSwapSingleAsset,
+            amount: this.ustForSwapSingleToken,
           }
         }
       });
-      this.basedTokenPrice = floor18Decimal(div(this.ustForSwapSingleAsset, simulate1.return_amount));
+      this.basedTokenPrice = floor18Decimal(div(this.ustForSwapSingleToken, simulate1.return_amount));
       const simulate2 = await this.terraSwap.query(this.info.pairInfos[this.keySingleToken_Denom].contract_addr, {
         simulation: {
           offer_asset: {
@@ -1142,16 +1147,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         }
       });
       this.tokenPrice = floor18Decimal(div(simulate1.return_amount, simulate2.return_amount));
-      this.tokenFromSwapbDP = simulate2.return_amount;
+      this.tokenPriceNonUSTDenomInUST = floor18Decimal(times(this.tokenPrice, this.basedTokenPrice));
+      this.tokenFromSwapSingleToken = simulate2.return_amount;
     } else {
-      this.tokenFromSwapbDP = undefined;
+      this.tokenFromSwapSingleToken = undefined;
     }
     if (+this.ustForDepositbDP) {
       this.tokenFromDepositbDP = await this.terrajs.deductTax(Denom.USD, this.ustForDepositbDP);
     } else {
       this.tokenFromDepositbDP = undefined;
     }
-    const grossLp = new BigNumber(this.tokenFromSwapbDP || 0).plus(this.tokenFromDepositbDP || 0);
+    const grossLp = new BigNumber(this.tokenFromSwapSingleToken || 0).plus(this.tokenFromDepositbDP || 0);
     const depositFee = grossLp.multipliedBy(DEPOSIT_FEE);
     this.grossLpUST = grossLp.toString();
     this.netLpUST = grossLp.minus(depositFee).toString();
