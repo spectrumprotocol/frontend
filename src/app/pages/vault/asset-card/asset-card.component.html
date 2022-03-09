@@ -96,7 +96,7 @@
                 [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo" class="fas fa-info-circle info-icon"></i> -->
               <span class="small text-muted">
                 (${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
-                info.poolResponses : vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
+                info : vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
             </div>
             <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount < 10">
               <div class="f-14">-</div>
@@ -223,7 +223,7 @@
                       <span class="f-12 text-muted small"
                         *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10">
                         (${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
-                        info.poolResponses : vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
+                        info : vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
                     </div>
                     <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount < 10">
                       <div class="f-14">-</div>
