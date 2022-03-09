@@ -150,7 +150,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           if (this.withdrawAmt) {
             this.withdrawAmtChanged();
           }
-        } else if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
+        } else if (FARM_TYPE_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
           const tasks: Promise<any>[] = [];
           tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.baseTokenContract)); // AssetToken-Farm
           tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.denomTokenContract)); // Farm-UST
@@ -496,7 +496,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
                 belief_price: this.basedTokenPrice,
               },
               {
-                pair_contract: this.info.pairInfos[this.vault.poolInfo.key].contract_addr,
+                pair_contract: this.info.pairInfos[this.keySingleToken_Denom].contract_addr,
                 asset_info: {
                   token: {
                     contract_addr: this.vault.poolInfo.baseTokenContract,
@@ -1058,6 +1058,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositUSTForSingleToken(true);
   }
 
+  get keySingleToken_Denom(){
+    return `${this.vault.poolInfo.dex}|${this.vault.poolInfo.baseTokenContract}|${this.vault.poolInfo.denomTokenContract}`;
+  }
+
   @debounce(250)
   async depositUSTForSingleToken(forced: boolean, event?: any) {
     if (!forced && !event) {
@@ -1080,12 +1084,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.vault.poolInfo.farmType === 'PYLON_LIQUID'){
       const depositTVL = new BigNumber(this.depositUSTAmtSingleToken).times(CONFIG.UNIT);
       const poolResponse1 = this.info.poolResponses[this.vault.poolInfo.rewardKey]; // Farm-UST
-      console.log(poolResponse1);
       const [ustPool, farmPool1] = poolResponse1.assets[0].info.native_token
         ? [poolResponse1.assets[0].amount, poolResponse1.assets[1].amount]
         : [poolResponse1.assets[1].amount, poolResponse1.assets[0].amount];
-      const poolResponse2 = this.info.poolResponses[`${this.vault.poolInfo.dex}|${this.vault.poolInfo.baseTokenContract}|${this.vault.poolInfo.denomTokenContract}`]; // bDP-Farm
-      console.log(poolResponse2);
+      const poolResponse2 = this.info.poolResponses[this.keySingleToken_Denom]; // bDP-Farm
       const [farmPool2, bDpPool] = poolResponse2.assets[1].info.token['contract_addr'] === this.vault.poolInfo.baseTokenContract
         ? [poolResponse2.assets[0].amount, poolResponse2.assets[1].amount]
         : [poolResponse2.assets[1].amount, poolResponse2.assets[0].amount];
@@ -1131,7 +1133,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         }
       });
       this.basedTokenPrice = floor18Decimal(div(this.ustForSwapSingleAsset, simulate1.return_amount));
-      const simulate2 = await this.terraSwap.query(this.info.pairInfos[this.vault.poolInfo.key].contract_addr, {
+      const simulate2 = await this.terraSwap.query(this.info.pairInfos[this.keySingleToken_Denom].contract_addr, {
         simulation: {
           offer_asset: {
             info: { token: { contract_addr: this.vault.poolInfo.rewardTokenContract } },
