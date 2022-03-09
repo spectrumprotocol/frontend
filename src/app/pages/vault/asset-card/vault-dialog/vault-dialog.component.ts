@@ -580,7 +580,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   @debounce(250)
   async withdrawAmtChanged() {
-    if (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_bdp') {
+    if (this.withdrawAmt <= 0 || (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_bdp')) {
       return;
     }
     let commission = 0;
