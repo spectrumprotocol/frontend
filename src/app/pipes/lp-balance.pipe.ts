@@ -40,7 +40,7 @@ export class LpBalancePipe implements PipeTransform {
         : poolResponse.assets[0].info.native_token?.['denom'];
       const token0Price = this.balancePipe.transform('1', info.poolResponses[`${dex}|${asset0Token}|${Denom.USD}`]);
       if (token0Price) {
-        if (info.pairInfos[key].pair_type['stable']) {
+        if (info.pairInfos[key].pair_type?.['stable']) {
           const asset1Price = getStablePrice(+poolResponse.assets[1].amount, +poolResponse.assets[0].amount);
           const asset1Swap = new BigNumber(lp)
             .times(poolResponse.assets[1].amount)
@@ -67,7 +67,7 @@ export class LpBalancePipe implements PipeTransform {
         : poolResponse.assets[1].info.native_token?.['denom'];
       const token1Price = this.balancePipe.transform('1', info.poolResponses[`${dex}|${asset1Token}|${Denom.USD}`]);
       if (token1Price) {
-        if (info.pairInfos[key].pair_type['stable']) {
+        if (info.pairInfos[key].pair_type?.['stable']) {
           const asset0Price = getStablePrice(+poolResponse.assets[0].amount, +poolResponse.assets[1].amount);
           const asset0Swap = new BigNumber(lp)
             .times(poolResponse.assets[0].amount)
