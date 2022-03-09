@@ -608,19 +608,19 @@
                   </div>
                 </div>
               </div>
-              <div *ngIf="+depositFeeTokenToken" class="row">
+              <div *ngIf="+depositFeeUST" class="row">
                 <div class="col">Deposit Fee (0.1%)</div>
-                <div *ngIf="+depositFeeTokenToken > 0" class="col text-end">{{depositFeeTokenToken | number }} {{vault.baseSymbol}}</div>
-                <div *ngIf="!(+depositFeeTokenToken > 0)" class="col text-end">
+                <div *ngIf="+depositFeeUST > 0" class="col text-end">{{depositFeeUST | unit: vault.baseDecimals }} {{vault.baseSymbol}}</div>
+                <div *ngIf="!(+depositFeeUST > 0)" class="col text-end">
                   <div class="spinner-grow spinner-small" role="status">
                     <span class="visually-hidden">Loading...</span>
                   </div>
                 </div>
               </div>
-              <div *ngIf="+depositFeeTokenToken" class="row">
+              <div *ngIf="+depositFeeUST" class="row">
                 <div class="col">Net {{vault.baseSymbol}}</div>
-                <div *ngIf="+netLpLp > 0" class="col text-end">{{netLpLp | number }} {{vault.baseSymbol}}</div>
-                <div *ngIf="!(+netLpLp > 0)" class="col text-end">
+                <div *ngIf="+netLpUST > 0" class="col text-end">{{netLpUST | unit: vault.baseDecimals }} {{vault.baseSymbol}}</div>
+                <div *ngIf="!(+netLpUST > 0)" class="col text-end">
                   <div class="spinner-grow spinner-small" role="status">
                     <span class="visually-hidden">Loading...</span>
                   </div>
