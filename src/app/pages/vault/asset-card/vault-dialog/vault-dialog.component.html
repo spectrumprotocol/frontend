@@ -473,11 +473,20 @@
               <div class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
-                    <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}?
-                    <a [href]="vault.baseSymbol | url:'deposit_pylon_gateway'" target="_blank">Deposit via Pylon Gateway</a>
-                    or <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
-                    {{ vault.baseSymbol }} to farm
-                    with.
+                    <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+                      <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}?
+                      <a [href]="vault.baseSymbol | url:'deposit_pylon_gateway'" target="_blank">Deposit via Pylon Gateway</a>
+                      or <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
+                      {{ vault.baseSymbol }} to farm
+                      with.
+                    </ng-container>
+                    <ng-container *ngIf="vault.poolInfo.farmType === 'NASSET'">
+                      <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}?
+                      <a [href]="vault.baseSymbol | url:'nexus_vault'" target="_blank">Deposit via Nexus Vault</a>
+                      or <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
+                      {{ vault.baseSymbol }} to farm
+                      with.
+                    </ng-container>
                   </div>
                 </div>
               </div>
@@ -927,7 +936,7 @@
                 <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
                 {{ vault.unitDisplay }}
               </span>
-              <span *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
+              <span *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)" class="input-group-text f-12 igt-fixwidth fw-bold-600">
                 <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
                 {{ vault.baseSymbol }}
               </span>

@@ -27,6 +27,7 @@ import { SimulateZapToBondResponse } from '../../../../services/api/staker/simul
 import { SimulationResponse } from '../../../../services/api/terraswap_pair/simulation_response';
 import { PercentPipe } from '@angular/common';
 import { FARM_TYPE_SINGLE_TOKEN } from 'src/app/services/farm_info/farm-info.service';
+import {AstroportRouterService} from '../../../../services/api/astroport-router.service';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'single_token' | 'ust_single_token';
@@ -126,7 +127,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private terraSwap: TerraSwapService,
     private terraSwapRouter: TerraSwapRouterService,
     private astroport: AstroportService,
-    private percentPipe: PercentPipe
+    private percentPipe: PercentPipe,
+    private astroportRouter: AstroportRouterService,
   ) { }
 
   ngOnInit() {
@@ -602,43 +604,83 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else if (this.vault.poolInfo.dex === 'Terraswap') {
       commission = +CONFIG.TERRASWAP_COMMISSION;
     }
-    if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
+    if (this.FARM_TYPE_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
       const offer_amount = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT).toString();
-      const simulateSwapOperationRes = await this.terraSwapRouter.query({
-        simulate_swap_operations: {
-          offer_amount,
-          operations: [
-            {
-              terra_swap: {
-                offer_asset_info: {
-                  token: {
-                    contract_addr: this.vault.poolInfo.baseTokenContract
+      let simulateSwapOperationRes;
+      if (this.vault.poolInfo.dex === 'Terraswap'){
+        simulateSwapOperationRes = await this.terraSwapRouter.query({
+          simulate_swap_operations: {
+            offer_amount,
+            operations: [
+              {
+                terra_swap: {
+                  offer_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.baseTokenContract
+                    }
+                  },
+                  ask_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.denomTokenContract
+                    }
                   }
-                },
-                ask_asset_info: {
-                  token: {
-                    contract_addr: this.vault.poolInfo.denomTokenContract
+                }
+              },
+              {
+                terra_swap: {
+                  offer_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.denomTokenContract
+                    }
+                  },
+                  ask_asset_info: {
+                    native_token: {
+                      denom: Denom.USD
+                    }
                   }
                 }
               }
-            },
-            {
-              terra_swap: {
-                offer_asset_info: {
-                  token: {
-                    contract_addr: this.vault.poolInfo.denomTokenContract
+            ]
+          }
+        });
+      } else if (this.vault.poolInfo.dex === 'Astroport'){
+        simulateSwapOperationRes = await this.astroportRouter.query({
+          simulate_swap_operations: {
+            offer_amount,
+            operations: [
+              {
+                astro_swap: {
+                  offer_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.baseTokenContract
+                    }
+                  },
+                  ask_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.denomTokenContract
+                    }
                   }
-                },
-                ask_asset_info: {
-                  native_token: {
-                    denom: Denom.USD
+                }
+              },
+              {
+                astro_swap: {
+                  offer_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.denomTokenContract
+                    }
+                  },
+                  ask_asset_info: {
+                    native_token: {
+                      denom: Denom.USD
+                    }
                   }
                 }
               }
-            }
-          ]
-        }
-      });
+            ]
+          }
+        });
+      }
+
       this.withdrawUST = simulateSwapOperationRes.amount;
       this.withdrawMinUST = new BigNumber(this.withdrawUST)
         .times(1 - +this.SLIPPAGE)
@@ -663,8 +705,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.withdrawUST = ustAmt.plus(returnAmt).toString();
       this.withdrawMinUST = ustAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
     } else {
-      const key = this.vault.poolInfo.farmType === 'NASSET' ? this.keySingleToken_Denom : this.vault.poolInfo.key;
-      const poolResponse = this.info.poolResponses[key];
+      const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
       const asset0Token: string = poolResponse.assets[0].info.token
         ? poolResponse.assets[0].info.token?.['contract_addr']
         : poolResponse.assets[0].info.native_token?.['denom'];
@@ -794,55 +835,101 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       );
       await this.terrajs.post([unbond, withdrawUst]);
     } else if (this.withdrawMode === 'ust_single_token') {
-      const msg = {
-        execute_swap_operations: {
-          minimum_receive: this.withdrawMinUST,
-          operations: [
-            {
-              terra_swap: {
-                offer_asset_info: {
-                  token: {
-                    contract_addr: this.vault.poolInfo.baseTokenContract
+      let msg;
+      if (this.vault.poolInfo.dex === 'Terraswap'){
+        msg = {
+          execute_swap_operations: {
+            minimum_receive: this.withdrawMinUST,
+            operations: [
+              {
+                terra_swap: {
+                  offer_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.baseTokenContract
+                    }
+                  },
+                  ask_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.denomTokenContract
+                    }
                   }
-                },
-                ask_asset_info: {
-                  token: {
-                    contract_addr: this.vault.poolInfo.denomTokenContract
+                }
+              },
+              {
+                terra_swap: {
+                  offer_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.denomTokenContract
+                    }
+                  },
+                  ask_asset_info: {
+                    native_token: {
+                      denom: Denom.USD
+                    }
                   }
                 }
               }
-            },
-            {
-              terra_swap: {
-                offer_asset_info: {
-                  token: {
-                    contract_addr: this.vault.poolInfo.denomTokenContract
+            ]
+          }
+        };
+      } else if (this.vault.poolInfo.dex === 'Astroport'){
+        msg = {
+          execute_swap_operations: {
+            minimum_receive: this.withdrawMinUST,
+            operations: [
+              {
+                astro_swap: {
+                  offer_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.baseTokenContract
+                    }
+                  },
+                  ask_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.denomTokenContract
+                    }
                   }
-                },
-                ask_asset_info: {
-                  native_token: {
-                    denom: Denom.USD
+                }
+              },
+              {
+                astro_swap: {
+                  offer_asset_info: {
+                    token: {
+                      contract_addr: this.vault.poolInfo.denomTokenContract
+                    }
+                  },
+                  ask_asset_info: {
+                    native_token: {
+                      denom: Denom.USD
+                    }
                   }
                 }
               }
-            }
-          ]
-        }
-      };
+            ]
+          }
+        };
+      }
+      const routerContract = this.vault.poolInfo.dex === 'Terraswap' ? this.terrajs.settings.terraSwapRouter : this.terrajs.settings.astroportRouter;
       const withdrawUst = new MsgExecuteContract(
         this.terrajs.address,
         this.vault.poolInfo.baseTokenContract,
         {
           send: {
             amount: times(this.withdrawAmt, CONFIG.UNIT),
-            contract: this.terrajs.settings.terraSwapRouter,
+            contract: routerContract,
             msg: toBase64(msg),
           },
         }
       );
-      const lossPercent = (((+this.withdrawAmt * CONFIG.UNIT - +this.withdrawUST) / (+this.withdrawAmt * CONFIG.UNIT)) * 100).toFixed(2);
-      const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.baseSymbol} at about ${lossPercent}% discount.` : undefined;
-      await this.terrajs.post([unbond, withdrawUst], confirmMsg);
+
+      if (this.vault.poolInfo.farmType === 'PYLON_LIQUID'){
+        const lossPercent = (((+this.withdrawAmt * CONFIG.UNIT - +this.withdrawUST) / (+this.withdrawAmt * CONFIG.UNIT)) * 100).toFixed(2);
+        const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.baseSymbol} at about ${lossPercent}% discount.` : undefined;
+        await this.terrajs.post([unbond, withdrawUst], confirmMsg);
+      } else if (this.vault.poolInfo.farmType === 'NASSET') {
+        await this.terrajs.post([unbond, withdrawUst]);
+      }
+
     }
     this.withdrawAmt = undefined;
     this.withdrawUST = undefined;
@@ -1128,8 +1215,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.ustForSwapSingleToken = times(this.depositUSTAmtSingleToken, CONFIG.UNIT);
     }
 
+    const dexService = this.vault.poolInfo.dex === 'Terraswap' ? this.terraSwap : this.astroport;
     if (+this.ustForSwapSingleToken) {
-      const simulate1 = await this.terraSwap.query(this.info.pairInfos[this.vault.poolInfo.rewardKey].contract_addr, {
+      const simulate1 = await dexService.query(this.info.pairInfos[this.vault.poolInfo.rewardKey].contract_addr, {
         simulation: {
           offer_asset: {
             info: { native_token: { denom: Denom.USD } },
@@ -1138,7 +1226,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         }
       });
       this.basedTokenPrice = floor18Decimal(div(this.ustForSwapSingleToken, simulate1.return_amount));
-      const simulate2 = await this.terraSwap.query(this.info.pairInfos[this.keySingleToken_Denom].contract_addr, {
+      const simulate2 = await dexService.query(this.info.pairInfos[this.keySingleToken_Denom].contract_addr, {
         simulation: {
           offer_asset: {
             info: { token: { contract_addr: this.vault.poolInfo.rewardTokenContract } },
