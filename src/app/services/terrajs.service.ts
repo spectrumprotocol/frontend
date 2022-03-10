@@ -22,8 +22,7 @@ export interface PostResponse {
   error?: { code: number; message?: string; };
 }
 export interface GetResponse {
-  height: number;
-  result: object;
+  query_result: object;
 }
 export interface NetworkInfo {
   name: string;
@@ -99,7 +98,12 @@ export class TerrajsService implements OnDestroy {
 
   async getHeight(force?: boolean): Promise<number> {
     if (this.height <= 1 || force) {
-      await this.get('wasm/parameters'); // call something to get height
+      // wait for loading
+      if (!this.lcdClient) {
+        return this.height;
+      }
+      const blockInfo = await this.lcdClient.tendermint.blockInfo();
+      this.height = +blockInfo.block.header.height;
     }
     return this.height;
   }
@@ -205,8 +209,7 @@ export class TerrajsService implements OnDestroy {
       params,
       headers,
     }).toPromise();
-    this.height = +res.height;
-    return res.result as any;
+    return res.query_result as any;
   }
 
   async getFCD(path: string, params?: Record<string, string>, headers?: Record<string, string>) {
