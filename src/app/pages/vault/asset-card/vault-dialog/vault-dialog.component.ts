@@ -468,6 +468,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           contract: farmContract,
           msg: toBase64({
             bond: {
+              asset_token: this.vault.poolInfo.asset_token, // not needed for contract, but for tx-history
               compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
             }
           })
@@ -542,6 +543,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               contract: this.vault.poolInfo.farmContract,
               msg: toBase64({
                 bond: {
+                  asset_token: this.vault.poolInfo.asset_token, // not needed for contract, but for tx-history
                   compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
                 }
               })
