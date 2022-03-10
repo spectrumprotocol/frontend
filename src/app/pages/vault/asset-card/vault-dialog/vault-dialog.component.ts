@@ -183,11 +183,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (totalApr > 0) {
       html += `Rewards APR ${this.percentPipe.transform(totalApr)} <br>`;
     }
-    if (this.vault.poolInfo?.tradeApr > 0) {
+    if (this.vault.poolInfo?.tradeApr > 0 && this.vault.poolInfo.farmType === 'LP') {
       html += `Trade APR ${this.percentPipe.transform(this.vault.poolInfo.tradeApr)} <br>`;
       // html += `Trade APY ${this.percentPipe.transform((this.vault.poolInfo.tradeApr / 365 + 1) ** 365 - 1)} <br>`;
     }
-    if (this.vault.poolInfo.dex === 'Astroport') {
+    if (this.vault.poolInfo.dex === 'Astroport' && this.vault.poolInfo.farmType === 'LP') {
       html += `(APR from Astroport data) <br>`;
     }
     if (this.vault.pairStat?.poolApy > 0) {

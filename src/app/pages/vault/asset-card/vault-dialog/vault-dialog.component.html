@@ -678,7 +678,7 @@
                   <div class="col">Total Rewards APR</div>
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
-                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport'">
+                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farmType === 'LP'">
                   <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
                 </div>
@@ -711,7 +711,7 @@
                   <div class="col">Total Rewards APR</div>
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
-                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport'">
+                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farmType === 'LP'">
                   <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
                 </div>
@@ -761,7 +761,7 @@
                   <div class="col">Total Rewards APR</div>
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
-                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport'">
+                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farmType === 'LP'">
                   <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
                 </div>
@@ -1035,7 +1035,7 @@
             </div>
             <div class="row mt-3">
             </div>
-            <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.auto_stake" class="row">
+            <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.auto_stake && vault.poolInfo.farmType === 'LP'" class="row">
               <div class="col">
                 Staked ASTRO
                 <small class="text-primary">APR: {{ info.stat.pairs[ASTRO_KEY]?.farmApr | percent }}</small>
@@ -1049,7 +1049,8 @@
                 </small>
               </div>
             </div>
-            <div *ngIf="vault.poolInfo.dex === 'Terraswap' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="row">
+            <div *ngIf="(vault.poolInfo.farmType === 'NASSET' && vault.poolInfo.auto_stake) ||
+            (vault.poolInfo.dex === 'Terraswap' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake)" class="row">
               <div class="col">
                 <ng-container *ngIf="!vault.poolInfo.govLock">Staked</ng-container> {{ vault.rewardSymbol }}
                 <small class="text-primary" *ngIf="!vault.poolInfo.govLock">APR: {{ vault.pairStat?.farmApr | percent }}</small>
