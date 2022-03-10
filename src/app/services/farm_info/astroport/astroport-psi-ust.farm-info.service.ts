@@ -31,7 +31,7 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
   dex: DEX = 'Astroport';
   denomTokenContract = Denom.USD;
   highlight = false;
-  mainnetOnly = true;
+  mainnetOnly = false;
   hasProxyReward = true;
 
   get defaultBaseTokenContract() {

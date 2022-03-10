@@ -33,7 +33,7 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
   dex: DEX = 'Astroport';
   denomTokenContract = this.terrajs.settings.nexusToken;
   highlight = false;
-  mainnetOnly = true;
+  mainnetOnly = false;
   hasProxyReward = true;
 
   get defaultBaseTokenContract() {
