@@ -2,7 +2,7 @@
   <h5 class="modal-title margin-auto">Manage Rewards <i class="fas fa-info-circle info-icon super"
       mdbTooltip="Manage your staked rewards in vaults such as move rewards to respective Gov under your address"></i>
   </h5>
-  <a href="#" class="text-white" (click)="modalRef.close(); false">
+  <a href="#" class="text-white" (click)="modalRef.close();">
     <i class="fas fa-times fa-lg"></i>
   </a>
 </div>
@@ -96,7 +96,7 @@
         <img [src]="'SPEC'| url:'icon'" height="32" class="rounded-circle"> SPEC Gov
       </div>
       <div class="col-12 col-md-2 text-center">
-        {{ info.portfolio.austAPR | percent }}
+        Anchor Earn {{ info.portfolio.austAPR | percent }}
       </div>
       <div class="col-12 col-md-2 text-primary text-center">
         ${{info.portfolio.totalGovRewardUST | number: '1.0-2'}}
@@ -105,7 +105,7 @@
         <section class="row btn-group pe-2">
           <ng-container>
             <div mdbDropdown class="dropdown col-12 text-center" #dropdown>
-              <button class="btn btn-secondary f-12 w-50" type="button" (click)="modalRef.close(); false" routerLink="/gov" routerLinkActive="active" >
+              <button class="btn btn-secondary f-12 w-50" type="button" (click)="modalRef.close();" routerLink="/gov" routerLinkActive="active" >
                 Go to Gov
               </button>
             </div>
@@ -113,5 +113,4 @@
         </section>
       </div>
     </div>
-
   </div>
