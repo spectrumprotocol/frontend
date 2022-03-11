@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PoolItem } from '../api/pylon_liquid_farm/pools_response';
+import { PoolItem } from '../api/nasset_farm/pools_response';
 import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
 import { TerrajsService } from '../terrajs.service';
 import {
