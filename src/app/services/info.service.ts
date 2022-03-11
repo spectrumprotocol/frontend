@@ -500,7 +500,6 @@ export class InfoService {
     const pairInfo = this.pairInfos[key];
     const [dex, base, denom] = key.split('|');
     const tasks: Promise<any>[] = [];
-    console.log([dex, base, denom]);
     if (!base.startsWith('u')) {
       tasks.push(this.token.balance(base)
         .then(it => this.tokenBalances[base] = it.balance));
@@ -706,38 +705,36 @@ export class InfoService {
     await this.updateMyTvl();
   }
 
-  // TODO apply gov aust tvl
-  // TODO add force refresh schema version 3
   async retrieveCachedStat(skipPoolResponses = false) {
-    // try {
-    //   const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-    //   if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
-    //     throw (data);
-    //   }
-    //   this.tokenInfos = data.tokenInfos;
-    //   this.stat = data.stat;
-    //   this.pairInfos = data.pairInfos;
-    //   this.poolInfos = data.poolInfos;
-    //   this.circulation = data.circulation;
-    //   this.marketCap = data.marketCap;
-    //   localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-    //   localStorage.setItem('stat', JSON.stringify(this.stat));
-    //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-    //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-    //   localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-    //   if (skipPoolResponses) {
-    //     this.poolResponses = data.poolResponses;
-    //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-    //   }
-    // } catch (ex) {
-    //   // fallback if api die
-    //   console.error('Error in retrieveCachedStat: fallback local info service data init');
-    //   console.error(ex);
+    try {
+      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
+        throw (data);
+      }
+      this.tokenInfos = data.tokenInfos;
+      this.stat = data.stat;
+      this.pairInfos = data.pairInfos;
+      this.poolInfos = data.poolInfos;
+      this.circulation = data.circulation;
+      this.marketCap = data.marketCap;
+      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+      localStorage.setItem('stat', JSON.stringify(this.stat));
+      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+      localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
+      if (skipPoolResponses) {
+        this.poolResponses = data.poolResponses;
+        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+      }
+    } catch (ex) {
+      // fallback if api die
+      console.error('Error in retrieveCachedStat: fallback local info service data init');
+      console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
       localStorage.setItem('infoSchemaVersion', '2');
-    // } finally {
+    } finally {
       this.loadedNetwork = this.terrajs.settings.chainID;
-    // }
+    }
   }
 
   updateVaults() {
