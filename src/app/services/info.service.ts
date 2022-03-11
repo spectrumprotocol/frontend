@@ -731,7 +731,7 @@ export class InfoService {
       console.error('Error in retrieveCachedStat: fallback local info service data init');
       console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
-      localStorage.setItem('infoSchemaVersion', '2');
+      localStorage.setItem('infoSchemaVersion', '3');
     } finally {
       this.loadedNetwork = this.terrajs.settings.chainID;
     }
