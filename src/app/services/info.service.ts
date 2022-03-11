@@ -575,10 +575,18 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = (FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)
-        ? +rewardInfo.bond_amount
-        : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this, vault.poolInfo.key))
-        / CONFIG.UNIT || 0;
+      let bond_amount;
+      if (vault.poolInfo.farmType === 'PYLON_LIQUID'){
+        bond_amount = +rewardInfo.bond_amount;
+      } else if ((vault.poolInfo.farmType === 'NASSET')){
+        bond_amount = +this.balancePipe.transform(rewardInfo.bond_amount,
+          this.poolResponses[`${vault.poolInfo.dex}|${vault.poolInfo.baseTokenContract}|${this.terrajs.settings.nexusToken}`],
+          this.poolResponses[vault.poolInfo.rewardKey]);
+      } else {
+        bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this, vault.poolInfo.key);
+      }
+      bond_amount = bond_amount / CONFIG.UNIT || 0;
+
       const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.poolInfo.key].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
@@ -594,7 +602,7 @@ export class InfoService {
         const astroTokenPoolResponse = this.poolResponses[this.ASTRO_KEY];
 
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
-        if (farmInfo.dex === 'Astroport') {
+        if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP') {
           const pending_farm2_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm2_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
           tvl += pending_farm2_reward_ust;
           portfolio.tokens.get(rewardSymbol).pending_reward_token += rewardInfo.pending_farm2_reward ? +rewardInfo.pending_farm2_reward / CONFIG.UNIT : 0;
@@ -607,7 +615,7 @@ export class InfoService {
 
           portfolio.total_reward_ust += pending_farm_reward_ust;
           portfolio.total_reward_ust += pending_farm2_reward_ust;
-        } else if (farmInfo.dex === 'Terraswap') {
+        } else if (farmInfo.dex === 'Terraswap' || FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
           const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
           tvl += pending_farm_reward_ust;
           portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
