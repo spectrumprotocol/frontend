@@ -482,7 +482,10 @@
                     </ng-container>
                     <ng-container *ngIf="vault.poolInfo.farmType === 'NASSET'">
                       <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}?
-                      <a [href]="vault.baseSymbol | url:'nexus_vault'" target="_blank">Deposit via Nexus Vault</a>
+                      <a [href]="vault.baseSymbol | url:'nexus_vault'" target="_blank">Deposit
+                        <ng-container *ngIf="vault.baseSymbol === 'nLuna'">bLuna</ng-container>
+                        <ng-container *ngIf="vault.baseSymbol === 'nETH'">bETH</ng-container>
+                        via Nexus Vault</a>
                       or <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
                       {{ vault.baseSymbol }} to farm
                       with.
@@ -533,6 +536,13 @@
               </div>
             </div>
             <div *ngIf="depositMode === 'ust_single_token'" class="mt-3">
+              <div class="card card-green" *ngIf="vault.poolInfo.farmType === 'NASSET'">
+                <div class="card-body">
+                  <div class="small p-2">
+                    <i class="fas fa-info-circle info-icon"></i> Use UST to buy {{ vault.baseSymbol }} and deposit to vault.
+                  </div>
+                </div>
+              </div>
               <div class="text-end small mt-3 mb-1 text-muted fw-bold-600">
                 <span class="sub-topic">Balance: </span>
                 <span class="text-white">{{ info.userUstAmount | number }} UST</span>
