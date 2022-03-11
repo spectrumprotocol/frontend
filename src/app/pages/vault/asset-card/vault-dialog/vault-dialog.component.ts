@@ -599,14 +599,15 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   @debounce(250)
   async withdrawAmtChanged() {
-    if (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_bdp') {
+    if (this.withdrawAmt <= 0 || (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_bdp')) {
       return;
     }
     let commission = 0;
+    const pairInfo = this.info.pairInfos[this.vault.poolInfo.key];
     if (this.vault.poolInfo.dex === 'Astroport') {
-      if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['stable']) {
+      if (pairInfo.pair_type?.['stable']) {
         commission = +CONFIG.ASTROPORT_STABLE_COMMISSION_TOTAL;
-      } else if (this.info.pairInfos[this.vault.poolInfo.key]?.pair_type?.['xyk']) {
+      } else if (pairInfo?.pair_type?.['xyk']) {
         commission = +CONFIG.ASTROPORT_XYK_COMMISSION_TOTAL;
       }
     } else if (this.vault.poolInfo.dex === 'Terraswap') {
@@ -685,18 +686,34 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const tokenBAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
         .times(tokenB.amount).div(poolResponse.total_share).integerValue().toString();
 
-      const tokenAPool2 = new BigNumber(tokenA.amount).minus(tokenAAmt);
-      const tokenBPool2 = new BigNumber(tokenB.amount).minus(tokenBAmt);
-      const returnAmt = tokenAPool2.minus(tokenAPool2.times(tokenBPool2).div(tokenB.amount))
-        .times(1 - +commission)
-        .integerValue()
-        .toString();
+      let returnAmt: string;
+      // stable swap use simulation
+      if (pairInfo.pair_type?.['stable']) {
+        const simulation_msg = {
+          simulation: {
+            offer_asset: {
+              info: tokenB.info,
+              amount: tokenBAmt,
+            }
+          }
+        };
+        const simulate = await this.astroport.query(pairInfo.contract_addr, simulation_msg);
+        returnAmt = simulate.return_amount;
+      } else {
+        // calculate return amount after withdraw
+        const tokenAPool2 = new BigNumber(tokenA.amount).minus(tokenAAmt);
+        const tokenBPool2 = new BigNumber(tokenB.amount).minus(tokenBAmt);
+        returnAmt = tokenAPool2.minus(tokenAPool2.times(tokenBPool2).div(tokenB.amount))
+          .times(1 - +commission)
+          .integerValue()
+          .toString();
+      }
 
       this.withdrawBaseTokenPrice = floor18Decimal(div(tokenBAmt, returnAmt));
       const withdrawA = tokenAAmt.plus(returnAmt);
       const withdrawMinA = tokenAAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE));
 
-      const simulation_msg = {
+      const simulation2_msg = {
         simulation: {
           offer_asset: {
             info: tokenA.info,
@@ -707,9 +724,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       let simulate2: SimulationResponse;
       const tokenAContractAddrOrDenom = tokenA.info.token?.['contract_addr'] || tokenA.info.native_token?.['denom'];
       if (this.vault.poolInfo.dex === 'Astroport') {
-        simulate2 = await this.astroport.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${Denom.USD}`].contract_addr, simulation_msg);
+        simulate2 = await this.astroport.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${Denom.USD}`].contract_addr, simulation2_msg);
       } else if (this.vault.poolInfo.dex === 'Terraswap') {
-        simulate2 = await this.terraSwap.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${Denom.USD}`].contract_addr, simulation_msg);
+        simulate2 = await this.terraSwap.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${Denom.USD}`].contract_addr, simulation2_msg);
       }
       this.withdrawTokenPrice = floor18Decimal(div(withdrawA, simulate2.return_amount));
       this.withdrawUST = simulate2.return_amount;

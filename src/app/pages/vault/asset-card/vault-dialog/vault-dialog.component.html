@@ -100,8 +100,7 @@
           <h3 class="card-title text-primary" *ngIf="vault.poolInfo.farmType !== 'PYLON_LIQUID'">
             {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
             <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
-              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
-              info.poolResponses : vault.poolInfo.key | unit: 6: '1.0-2' }})
+              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: info : vault.poolInfo.key | unit: 6: '1.0-2' }})
               <i [mdbTooltip]="lpBalanceInfo"
                  class="fas fa-info-circle info-icon super"></i>
             </span>
