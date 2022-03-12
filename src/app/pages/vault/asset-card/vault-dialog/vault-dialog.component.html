@@ -744,8 +744,9 @@
                         be staked to earn only Gov APR not Airdrop rewards or
                         other staking incentives. Please unstake your {{vault.rewardSymbol}} and stake directly
                         to
-                        {{vault.poolInfo.farm}} Gov
+                        {{vault.poolInfo.baseTokenContract === terrajs.settings.bPsiDPToken ? 'Nexus' : vault.poolInfo.farm}} Gov
                         under your address to earn the benefits.
+<!--                        TODO once more pylon liquid pool available, do proper gov auto-stake mapping-->
                       </div>
                     </div>
                   </div>
