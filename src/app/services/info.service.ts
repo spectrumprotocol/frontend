@@ -683,6 +683,15 @@ export class InfoService {
       if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
         throw (data);
       }
+      // TODO this does not present in nAsset deployment
+      if (+data.infoSchemaVersion > 2) {
+        if (!localStorage.getItem('reload')) {
+          localStorage.setItem('reload', 'true');
+          location.reload();
+        }
+        throw new Error('reload required');
+      }
+      localStorage.removeItem('reload');
       this.tokenInfos = data.tokenInfos;
       this.stat = data.stat;
       this.pairInfos = data.pairInfos;
