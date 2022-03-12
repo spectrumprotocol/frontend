@@ -28,7 +28,7 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
   farm = 'Mirror';
   autoCompound = true;
   autoStake = true;
-  farmColor = '#3bac3b';
+  farmColor = '#232C45';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';

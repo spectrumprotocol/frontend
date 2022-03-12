@@ -26,6 +26,8 @@ import { AstroportService } from '../../../../services/api/astroport.service';
 import { SimulateZapToBondResponse } from '../../../../services/api/staker/simulate_zap_to_bond_response';
 import { SimulationResponse } from '../../../../services/api/terraswap_pair/simulation_response';
 import { PercentPipe } from '@angular/common';
+import { RewardInfoPipe } from 'src/app/pipes/reward-info.pipe';
+import { LpSplitPipe } from 'src/app/pipes/lp-split.pipe';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | 'ust_bdp';
@@ -35,7 +37,7 @@ export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'bdp' | '
   templateUrl: './vault-dialog.component.html',
   styleUrls: ['./vault-dialog.component.scss'],
   animations: [fade],
-  providers: [LpBalancePipe, PercentPipe]
+  providers: [LpBalancePipe, PercentPipe, RewardInfoPipe, LpSplitPipe]
 })
 export class VaultDialogComponent implements OnInit, OnDestroy {
   vault: Vault;
@@ -61,6 +63,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositUSTAmtbDPToken: number;
 
   tokenAToBeStatic = true;
+  lpBalanceInfo: string;
 
   depositType: 'compound' | 'stake' | 'mixed';
   depositMode: DEPOSIT_WITHDRAW_MODE_ENUM;
@@ -116,7 +119,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private terraSwap: TerraSwapService,
     private terraSwapRouter: TerraSwapRouterService,
     private astroport: AstroportService,
-    private percentPipe: PercentPipe
+    private percentPipe: PercentPipe,
+    private rewardInfoPipe: RewardInfoPipe,
+    private lpSplitPipe: LpSplitPipe,
   ) { }
 
   ngOnInit() {
@@ -150,6 +155,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             this.depositUSTForBDPChanged(true);
           }
         }
+        this.refreshLpBalanceInfo();
       }
     });
     this.refreshData();
@@ -198,6 +204,19 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.vault.poolInfo.forceDepositType) {
       this.depositType = this.vault.poolInfo.forceDepositType as any;
     }
+    this.refreshLpBalanceInfo();
+  }
+
+  async refreshLpBalanceInfo() {
+    this.lpBalanceInfo = '';
+    if (this.vault.poolInfo.key !== this.SPEC_KEY) {
+      this.lpBalanceInfo += `${this.rewardInfoPipe.transform(this.info.rewardInfos[this.vault.poolInfo.key])} `;
+    }
+    const lpSplitText = this.lpSplitPipe.transform(+this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount / this.UNIT,
+                                                    this.info.poolResponses[this.vault.poolInfo.key], this.vault.baseSymbol,
+                                                    this.vault.denomSymbol, this.vault.baseDecimals, '1.0-2'
+                                                  );
+    this.lpBalanceInfo += `(${lpSplitText})`;
   }
 
   ngOnDestroy() {

@@ -74,9 +74,9 @@
               Staked in Gov
               
             </p>
-            <p *ngIf="+myBalance?.balance" class="small text-primary mb-0 float-end mg-10">{{stakedInGovAPR | percent}} APR</p>
+            <p *ngIf="+info.govBalanceResponse?.balance" class="small text-primary mb-0 float-end mg-10">{{info.portfolio.stakedInGovAPR | percent}} APR</p>
             <h3 class="card-title">
-              <app-digit [value]="+myBalance?.balance / UNIT"></app-digit>
+              <app-digit [value]="+info.govBalanceResponse?.balance / UNIT"></app-digit>
               <span class="cur-title"> SPEC</span>
             </h3>
           </div>
@@ -97,14 +97,14 @@
       </div>
     </div>
 
-    <div *ngIf="!poolDetails.length" class="d-flex align-items-center justify-content-center pt-3">
+    <div *ngIf="!info.poolDetails.length" class="d-flex align-items-center justify-content-center pt-3">
       <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...
     </div>
 
     <div class="row gy-3 pt-3">
-      <div *ngFor="let detail of poolDetails; trackBy: trackPoolDetails" class="col-12">
+      <div *ngFor="let detail of info.poolDetails; trackBy: trackPoolDetails" class="col-12">
         <app-gov-pool [detail]="detail" [walletBalance]="info.userSpecAmount || '0'"
-          (transactionComplete)="fetchPoolDetails()">
+          (transactionComplete)="info.fetchPoolDetails()">
         </app-gov-pool>
       </div>
     </div>
