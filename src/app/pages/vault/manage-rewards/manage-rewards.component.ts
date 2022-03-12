@@ -39,7 +39,6 @@ export class ManageRewardsComponent implements OnInit {
     return this.info.farmInfos.find(x => x.rewardTokenContract === rewardTokenContract);
   }
 
-  //TODO add support for single asset, fix my tvl
   async moveToGov(rewardTokenContract: string, days?: number) {
     const isSpec = rewardTokenContract === this.terrajs.settings.specToken;
     const isAstro = rewardTokenContract === this.terrajs.settings.astroToken;

@@ -186,7 +186,6 @@
           </p>
           <h3 class="card-title text-primary">
             {{info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || 0 | unit }}
-<!--            TODO this spec pool response have to be changed once migrated to astroport-->
             <span class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || '0' | balance:
               info.poolResponses[SPEC_KEY] |
@@ -524,7 +523,7 @@
                   </div>
                 </div>
                 <div *ngIf="+depositFeeLp" class="row">
-                  <div class="col">Net bDP Token</div>
+                  <div class="col">Net Deposit</div>
                   <div *ngIf="+netLpLp > 0" class="col text-end">{{netLpLp | number }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+netLpLp > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">

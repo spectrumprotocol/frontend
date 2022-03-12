@@ -27,7 +27,7 @@ import { SimulateZapToBondResponse } from '../../../../services/api/staker/simul
 import { SimulationResponse } from '../../../../services/api/terraswap_pair/simulation_response';
 import { PercentPipe } from '@angular/common';
 import { FARM_TYPE_SINGLE_TOKEN } from 'src/app/services/farm_info/farm-info.service';
-import {AstroportRouterService} from '../../../../services/api/astroport-router.service';
+import { AstroportRouterService } from '../../../../services/api/astroport-router.service';
 import { RewardInfoPipe } from 'src/app/pipes/reward-info.pipe';
 import { LpSplitPipe } from 'src/app/pipes/lp-split.pipe';
 
@@ -186,7 +186,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       // html += `ASTRO APY ${this.percentPipe.transform((this.vault.pairStat.poolAstroApr / 365 + 1) ** 365 - 1)} <br>`;
       totalApr += this.vault.pairStat.poolAstroApr;
     }
-    if (totalApr > 0) {
+    if (this.vault.pairStat?.poolApr > 0 && this.vault.pairStat?.poolAstroApr > 0) {
       html += `Rewards APR ${this.percentPipe.transform(totalApr)} <br>`;
     }
     if (this.vault.poolInfo?.tradeApr > 0 && this.vault.poolInfo.farmType === 'LP') {
@@ -225,9 +225,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.lpBalanceInfo += `${this.rewardInfoPipe.transform(this.info.rewardInfos[this.vault.poolInfo.key])} `;
     }
     const lpSplitText = this.lpSplitPipe.transform(+this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount / this.UNIT,
-                                                    this.info.poolResponses[this.vault.poolInfo.key], this.vault.baseSymbol,
-                                                    this.vault.denomSymbol, this.vault.baseDecimals, '1.0-2'
-                                                  );
+      this.info.poolResponses[this.vault.poolInfo.key], this.vault.baseSymbol,
+      this.vault.denomSymbol, this.vault.baseDecimals, '1.0-2'
+    );
     this.lpBalanceInfo += `(${lpSplitText})`;
   }
 
@@ -628,7 +628,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.FARM_TYPE_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
       const offer_amount = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT).toString();
       let simulateSwapOperationRes;
-      if (this.vault.poolInfo.dex === 'Terraswap'){
+      if (this.vault.poolInfo.dex === 'Terraswap') {
         simulateSwapOperationRes = await this.terraSwapRouter.query({
           simulate_swap_operations: {
             offer_amount,
@@ -664,7 +664,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             ]
           }
         });
-      } else if (this.vault.poolInfo.dex === 'Astroport'){
+      } else if (this.vault.poolInfo.dex === 'Astroport') {
         simulateSwapOperationRes = await this.astroportRouter.query({
           simulate_swap_operations: {
             offer_amount,
@@ -857,7 +857,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       await this.terrajs.post([unbond, withdrawUst]);
     } else if (this.withdrawMode === 'ust_single_token') {
       let msg;
-      if (this.vault.poolInfo.dex === 'Terraswap'){
+      if (this.vault.poolInfo.dex === 'Terraswap') {
         msg = {
           execute_swap_operations: {
             minimum_receive: this.withdrawMinUST,
@@ -893,7 +893,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             ]
           }
         };
-      } else if (this.vault.poolInfo.dex === 'Astroport'){
+      } else if (this.vault.poolInfo.dex === 'Astroport') {
         msg = {
           execute_swap_operations: {
             minimum_receive: this.withdrawMinUST,
@@ -943,7 +943,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         }
       );
 
-      if (this.vault.poolInfo.farmType === 'PYLON_LIQUID'){
+      if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
         const lossPercent = (((+this.withdrawAmt * CONFIG.UNIT - +this.withdrawUST) / (+this.withdrawAmt * CONFIG.UNIT)) * 100).toFixed(2);
         const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.baseSymbol} at about ${lossPercent}% discount.` : undefined;
         await this.terrajs.post([unbond, withdrawUst], confirmMsg);
@@ -1170,7 +1170,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositUSTForSingleToken(true);
   }
 
-  get keySingleToken_Denom(){
+  get keySingleToken_Denom() {
     return `${this.vault.poolInfo.dex}|${this.vault.poolInfo.baseTokenContract}|${this.vault.poolInfo.denomTokenContract}`;
   }
 
@@ -1194,7 +1194,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.netLpUST = undefined;
     }
 
-    if (this.vault.poolInfo.farmType === 'PYLON_LIQUID'){
+    if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
       const depositTVL = new BigNumber(this.depositUSTAmtSingleToken).times(CONFIG.UNIT);
       const poolResponse1 = this.info.poolResponses[this.vault.poolInfo.rewardKey]; // Farm-UST
       const [ustPool, farmPool1] = poolResponse1.assets[0].info.native_token
@@ -1232,7 +1232,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (this.vault.poolInfo.farmType === 'NASSET'){
+    if (this.vault.poolInfo.farmType === 'NASSET') {
       this.ustForSwapSingleToken = times(this.depositUSTAmtSingleToken, CONFIG.UNIT);
     }
 

@@ -1,13 +1,13 @@
-import {Inject, Injectable} from '@angular/core';
-import {BLOCK_TIME, TerrajsService} from './terrajs.service';
-import {TokenService} from './api/token.service';
-import {BankService} from './api/bank.service';
-import {TerraSwapService} from './api/terraswap.service';
-import {PoolResponse} from './api/terraswap_pair/pool_response';
-import {div, gt, minus, plus, times} from '../libs/math';
-import {CONFIG} from '../consts/config';
-import {TerraSwapFactoryService} from './api/terraswap-factory.service';
-import {GovService} from './api/gov.service';
+import { Inject, Injectable } from '@angular/core';
+import { BLOCK_TIME, TerrajsService } from './terrajs.service';
+import { TokenService } from './api/token.service';
+import { BankService } from './api/bank.service';
+import { TerraSwapService } from './api/terraswap.service';
+import { PoolResponse } from './api/terraswap_pair/pool_response';
+import { div, gt, minus, plus, times } from '../libs/math';
+import { CONFIG } from '../consts/config';
+import { TerraSwapFactoryService } from './api/terraswap-factory.service';
+import { GovService } from './api/gov.service';
 import {
   FARM_INFO_SERVICE,
   FarmInfoService,
@@ -16,18 +16,18 @@ import {
   RewardInfoResponseItem,
   FARM_TYPE_SINGLE_TOKEN
 } from './farm_info/farm-info.service';
-import {fromEntries} from '../libs/core';
-import {PairInfo} from './api/terraswap_factory/pair_info';
-import {BalancePipe} from '../pipes/balance.pipe';
-import {LpBalancePipe} from '../pipes/lp-balance.pipe';
-import {Vault} from '../pages/vault/vault.component';
-import {HttpClient} from '@angular/common/http';
-import {memoize} from 'utils-decorators';
-import {Denom} from '../consts/denom';
-import {WalletService} from './api/wallet.service';
-import {AstroportService} from './api/astroport.service';
-import {AstroportFactoryService} from './api/astroport-factory.service';
-import {Apollo, gql} from 'apollo-angular';
+import { fromEntries } from '../libs/core';
+import { PairInfo } from './api/terraswap_factory/pair_info';
+import { BalancePipe } from '../pipes/balance.pipe';
+import { LpBalancePipe } from '../pipes/lp-balance.pipe';
+import { Vault } from '../pages/vault/vault.component';
+import { HttpClient } from '@angular/common/http';
+import { memoize } from 'utils-decorators';
+import { Denom } from '../consts/denom';
+import { WalletService } from './api/wallet.service';
+import { AstroportService } from './api/astroport.service';
+import { AstroportFactoryService } from './api/astroport-factory.service';
+import { Apollo, gql } from 'apollo-angular';
 import { AnchorMarketService } from './api/anchor-market.service';
 import { BalanceResponse } from './api/gov/balance_response';
 import { StateInfo } from './api/gov/state_info';
@@ -286,9 +286,9 @@ export class InfoService {
         let pairInfoKey;
         const baseTokenContract = this.poolInfos[key].baseTokenContract;
         const denomTokenContract = this.poolInfos[key].denomTokenContract;
-        if (this.poolInfos[key].farmType === 'LP'){
+        if (this.poolInfos[key].farmType === 'LP') {
           pairInfoKey = key;
-        } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)){
+        } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
           pairInfoKey = `${this.poolInfos[key].dex}|${baseTokenContract}|${denomTokenContract}`;
         }
         const tokenA = baseTokenContract.startsWith('u') ?
@@ -378,7 +378,7 @@ export class InfoService {
     await this.refreshPoolInfos();
     await Promise.all([
       this.refreshPoolResponses(),
-      this.ensureAstroportData().catch(_ => {}),
+      this.ensureAstroportData().catch(_ => { }),
     ]);
 
     const vaults = await vaultsTask;
@@ -476,9 +476,9 @@ export class InfoService {
     const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const rewards = await farmInfo.queryRewards();
       for (const reward of rewards) {
-        if (farmInfo.farmType === 'LP'){
+        if (farmInfo.farmType === 'LP') {
           rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
-        } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)){
+        } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
           rewardInfos[`${reward.asset_token}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
         }
       }
@@ -532,9 +532,9 @@ export class InfoService {
     for (const key of Object.keys(this.poolInfos)) {
       let poolResponseKey;
       const dex = this.poolInfos[key].dex;
-      if (this.poolInfos[key].farmType === 'LP'){
+      if (this.poolInfos[key].farmType === 'LP') {
         poolResponseKey = key;
-      } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)){
+      } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
         const baseTokenContract = this.poolInfos[key].baseTokenContract;
         const denomTokenContract = this.poolInfos[key].denomTokenContract;
         poolResponseKey = `${dex}|${baseTokenContract}|${denomTokenContract}`;
@@ -609,9 +609,9 @@ export class InfoService {
         continue;
       }
       let bond_amount;
-      if (vault.poolInfo.farmType === 'PYLON_LIQUID'){
+      if (vault.poolInfo.farmType === 'PYLON_LIQUID') {
         bond_amount = +rewardInfo.bond_amount;
-      } else if ((vault.poolInfo.farmType === 'NASSET')){
+      } else if ((vault.poolInfo.farmType === 'NASSET')) {
         bond_amount = +this.balancePipe.transform(rewardInfo.bond_amount,
           this.poolResponses[`${vault.poolInfo.dex}|${vault.poolInfo.baseTokenContract}|${this.terrajs.settings.nexusToken}`],
           this.poolResponses[vault.poolInfo.rewardKey]);
@@ -676,15 +676,13 @@ export class InfoService {
     let sumGovAPR = 0;
     let totalStaked = 0;
     for (const pool of this.poolDetails) {
-          sumGovAPR += +pool.userBalance * pool.apr;
-          totalStaked += +pool.userBalance;
-          portfolio.totalGovRewardUST += +pool.userProfit;
-          portfolio.austAPR = +pool.austApr;
+      sumGovAPR += +pool.userBalance * pool.apr;
+      totalStaked += +pool.userBalance;
+      portfolio.totalGovRewardUST += +pool.userProfit;
+      portfolio.austAPR = +pool.austApr;
     }
     portfolio.stakedInGovAPR = sumGovAPR / totalStaked;
 
-    portfolio.avg_tokens_apr = (portfolio.avg_tokens_apr * portfolio.total_reward_ust + portfolio.austAPR * portfolio.totalGovRewardUST)
-                                / (portfolio.total_reward_ust + portfolio.totalGovRewardUST);
     tvl += portfolio.totalGovRewardUST;
 
     this.myTvl = tvl;
