@@ -12,9 +12,9 @@ interface ChartData {
 }
 
 
-const specStakedInGov = 'SPEC staked in Gov';
-const ustFromSPECGov = 'UST from SPEC Gov stake';
-const totalStakedInVaults = 'Total staked in vaults';
+const specStakedInGov = 'Staked SPEC in Gov';
+const ustFromSPECGov = 'Profit from Staked SPEC';
+const totalStakedInVaults = 'Total rewards';
 
 @Component({
   selector: 'app-your-tvl',
@@ -77,9 +77,9 @@ export class YourTvlComponent implements OnInit, OnDestroy {
       });
     }
 
+    chartDataListTemp.push({ name: totalStakedInVaults, value: this.info.portfolio?.total_reward_ust });
     chartDataListTemp.push({ name: specStakedInGov, value: this.info.portfolio?.gov.pending_reward_ust });
     chartDataListTemp.push({ name: ustFromSPECGov, value: this.info.portfolio?.totalGovRewardUST });
-    chartDataListTemp.push({ name: totalStakedInVaults, value: this.info.portfolio?.total_reward_ust });
     this.chartDataList = chartDataListTemp;
   }
 

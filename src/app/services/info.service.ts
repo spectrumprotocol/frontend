@@ -683,9 +683,8 @@ export class InfoService {
     }
     portfolio.stakedInGovAPR = sumGovAPR / totalStaked;
 
-    portfolio.avg_tokens_apr = (portfolio.avg_tokens_apr * portfolio.total_reward_ust + portfolio.austAPR  * portfolio.totalGovRewardUST)
+    portfolio.avg_tokens_apr = (portfolio.avg_tokens_apr * portfolio.total_reward_ust + portfolio.austAPR * portfolio.totalGovRewardUST)
                                 / (portfolio.total_reward_ust + portfolio.totalGovRewardUST);
-    portfolio.total_reward_ust += portfolio.totalGovRewardUST;
     tvl += portfolio.totalGovRewardUST;
 
     this.myTvl = tvl;
