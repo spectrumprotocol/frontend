@@ -30,7 +30,6 @@ import { Apollo, gql } from 'apollo-angular';
 import { AnchorMarketService } from './api/anchor-market.service';
 import { BalanceResponse } from './api/gov/balance_response';
 import { StateInfo } from './api/gov/state_info';
-import { state } from '@angular/animations';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -372,7 +371,7 @@ export class InfoService {
     await this.refreshPoolInfos();
     await Promise.all([
       this.refreshPoolResponses(),
-      this.ensureAstroportData().catch(_ => {}),
+      this.ensureAstroportData().catch(_ => { }),
     ]);
 
     const vaults = await vaultsTask;
@@ -639,7 +638,7 @@ export class InfoService {
     portfolio.gov.pending_reward_ust += gov_spec_staked_ust;
     portfolio.gov.pending_reward_token += +specGovStaked / CONFIG.UNIT;
     tvl += gov_spec_staked_ust;
-    
+
 
     const pendingTokenRewards = [...portfolio.tokens.values()].filter(value => value.pending_reward_token > 0);
     portfolio.avg_tokens_apr = pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token * (pr.apr || 0), 0) /
@@ -648,18 +647,17 @@ export class InfoService {
     let sumGovAPR = 0;
     let totalStaked = 0;
     for (const pool of this.poolDetails) {
-          sumGovAPR += +pool.userBalance * pool.apr;
-          totalStaked += +pool.userBalance;
-          portfolio.totalGovRewardUST += +pool.userProfit;
-          portfolio.austAPR = +pool.austApr;
+      sumGovAPR += +pool.userBalance * pool.apr;
+      totalStaked += +pool.userBalance;
+      portfolio.totalGovRewardUST += +pool.userProfit;
+      portfolio.austAPR = +pool.austApr;
     }
     portfolio.stakedInGovAPR = sumGovAPR / totalStaked;
 
-    portfolio.avg_tokens_apr = (portfolio.avg_tokens_apr * portfolio.total_reward_ust + portfolio.austAPR  * portfolio.totalGovRewardUST) 
-                                / (portfolio.total_reward_ust + portfolio.totalGovRewardUST);
-    portfolio.total_reward_ust += portfolio.totalGovRewardUST;
+    portfolio.avg_tokens_apr = (portfolio.avg_tokens_apr * portfolio.total_reward_ust + portfolio.austAPR * portfolio.totalGovRewardUST)
+      / (portfolio.total_reward_ust + portfolio.totalGovRewardUST);
     tvl += portfolio.totalGovRewardUST;
-    
+
     this.myTvl = tvl;
     this.portfolio = portfolio;
   }
