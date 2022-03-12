@@ -1161,6 +1161,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   setMaxDepositSingleToken() {
     this.depositTokenAmtSingleToken = +this.info.tokenBalances?.[this.vault.poolInfo.baseTokenContract] / +this.vault.baseUnit;
+    this.depositSingleTokenChanged(true);
   }
 
   setMaxDepositUSTForSingleToken() {
