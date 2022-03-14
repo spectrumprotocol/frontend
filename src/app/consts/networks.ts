@@ -100,6 +100,11 @@ export interface ISettings {
   glowStaking: string;
   glowGov: string;
   glowFarm: string;
+  nLunaRewards: string;
+  nETHRewards: string;
+  nLunaFarm: string;
+  nETHFarm: string;
+  astroportRouter: string;
   // // batch only
   // lcdPost: string;
   // controller: string;
@@ -207,6 +212,11 @@ export const networks: Record<string, ISettings> = {
     glowStaking: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
     glowGov: 'terra1xxp34xk4rjexwlu0xfdhyn0zr3qsgare04yll0',
     glowFarm: 'terra1u6f5vnux869rnextxypjdyrvnvcaux68nr6nne',
+    nLunaRewards: 'terra1hjv3quqsrw3jy7pulgutj0tgxrcrnw2zs2j0k7',
+    nETHRewards: 'terra1fhqsu40s0lk3p308mcakzjecj6ts6j2guepfr4',
+    nLunaFarm: 'terra16usjvptlpdrj7hcmy7mvdap5tttzcya7ch0can',
+    nETHFarm: 'terra1gvlll4hytc9s34dskw5ym86erx3hx2j6sa8zhy',
+    astroportRouter: 'terra16t7dpwwgx9n3lq6l6te3753lsjqwhxwpday9zx',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -295,9 +305,9 @@ export const networks: Record<string, ISettings> = {
     astroportVkrUstFarm: '',
     astroportMineUstFarm: '',
     astroportApolloUstFarm: '',
-    astroportPsiUstFarm: '',
-    astroportNlunaPsiFarm: '',
-    astroportNethPsiFarm: '',
+    astroportPsiUstFarm: 'terra1ghglcu2cvh67dgfrx0v36vmw6c3zlj4ve20ct7',
+    astroportNlunaPsiFarm: 'terra1hawqk9fx5y95qhc3s6p6crklwpnas56dss08cy',
+    astroportNethPsiFarm: 'terra1zjp0gkz8gqan8ftjmvrtzzertuwywwj3z7yrwv',
     astroportXdefiUstFarm: '',
     starterraToken: '',
     apolloToken: '',
@@ -314,6 +324,11 @@ export const networks: Record<string, ISettings> = {
     glowStaking: '',
     glowGov: '',
     glowFarm: '',
+    nLunaRewards: 'terra17mr0kt7rzey0ycp2eypxnmtv9fjn7e3rc0yfuz',
+    nETHRewards: 'terra1wf3tx75j2jg4ut7fa90rgze5etweqxgqlgq5su',
+    nLunaFarm: 'terra1qrzu4zls2ep8drfmx2ul4fu9fu5qular9jlktl',
+    nETHFarm: 'terra1zhdxsmpzpakrxcns00kyegpd8gsj4qvrahwj26',
+    astroportRouter: 'terra13wf295fj9u209nknz2cgqmmna7ry3d3j5kv7t4',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',
@@ -324,7 +339,7 @@ export const networks: Record<string, ISettings> = {
     orionAPI: 'https://api.orion.money/v1/terra', // orionAPI: 'https://api.stage.orion.money/v1/terra',
     nexusGraph: 'nexus',
     chainID: 'bombay-12',
-    finder: 'finder.terra.money',
+    finder: 'finder.extraterrestrial.money',
     mirrorFactory: 'terra10l9xc9eyrpxd5tqjgy6uxrw7dd9cv897cw8wdr',
     burnVaultController: 'terra12f4h5sk0mfmrvectgw3nns56rlp9za9z0hvvvv',
     burnVault: 'terra1l3g2yv5cqwdtrxeun4a76jkq45gwwm682usvs4'

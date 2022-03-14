@@ -15,6 +15,7 @@ npx json2ts -i ../contracts/contracts/farms/spectrum_nexus_nasset_psi_farm/schem
 npx json2ts -i ../contracts/contracts/farms/spectrum_pylon_liquid_farm/schema/ -o ./src/app/services/api/pylon_liquid_farm
 npx json2ts -i ../contracts/contracts/farms/spectrum_terra_name_service_farm/schema/ -o ./src/app/services/api/terra_name_service_farm
 npx json2ts -i ../contracts/contracts/farms/spectrum_glow_farm/schema/ -o ./src/app/services/api/glow_farm
+npx json2ts -i ../contracts/contracts/farms/spectrum_nasset_farm/schema/ -o ./src/app/services/api/nasset_farm
 
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_farm/schema/ -o ./src/app/services/api/astroport_farm
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_luna_ust_farm/schema/ -o ./src/app/services/api/astroport_luna_ust_farm

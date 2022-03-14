@@ -35,7 +35,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.bPsiDPToken;
   }
 
-  // not actually denom, but has trade pair
+  // not actually denom, but for construct trade pair
   get denomTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
@@ -97,7 +97,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     const specbPsiDPTvl = (await balanceOfTask)?.amount || '0';
 
     const poolApr = +(bPsiDPStat.apr || 0);
-    const key = `${this.dex}|${this.terrajs.settings.bPsiDPToken}|${this.denomTokenContract}`;
+    const key = `${this.defaultBaseTokenContract}`;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
     pair.tvl = specbPsiDPTvl;
@@ -125,8 +125,8 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     const rewardInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { reward: {} });
     const [configInfo, rewardInfo] = await Promise.all([configInfoTask, rewardInfoTask]);
 
-    const psiPool = poolResponses[`${this.dex}|${this.denomTokenContract}|${Denom.USD}`];
-    const [psi, ust] = psiPool.assets[0].info.token?.['contract_addr'] === this.denomTokenContract
+    const psiPool = poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`];
+    const [psi, ust] = psiPool.assets[0].info.token?.['contract_addr'] === this.terrajs.settings.nexusToken
       ? [psiPool.assets[0].amount, psiPool.assets[1].amount]
       : [psiPool.assets[1].amount, psiPool.assets[0].amount];
     const psiPrice = div(ust, psi);

@@ -44,13 +44,21 @@ export class DigitComponent implements AfterContentInit, OnChanges {
 
   ngAfterContentInit() {
     if (this.value) {
-      this.counterFunc(this.value, this.duration);
+      if (document.hidden){
+        this.runningValue = this.value;
+      } else {
+        this.counterFunc(this.value, this.duration);
+      }
     }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['value']) {
-      this.counterFunc(this.value, this.duration);
+      if (document.hidden){
+        this.runningValue = this.value;
+      } else {
+        this.counterFunc(this.value, this.duration);
+      }
     }
   }
 }

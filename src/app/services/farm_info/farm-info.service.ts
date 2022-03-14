@@ -1,21 +1,25 @@
-import { PoolItem as SpecPoolItem } from '../api/spec_farm/pools_response';
-import { PoolItem as MirrorPoolItem } from '../api/mirror_farm/pools_response';
-import { PoolItem as nAssetPsiPoolItem } from '../api/nexus_nassets_psi_farm/pools_response';
-import { PoolItem as PylonLiquidPoolItem } from '../api/pylon_liquid_farm/pools_response';
-import { PoolItem as AstroportTokenUSTPoolItem } from '../api/astroport_token_ust_farm/pools_response';
+import {PoolItem as SpecPoolItem} from '../api/spec_farm/pools_response';
+import {PoolItem as MirrorPoolItem} from '../api/mirror_farm/pools_response';
+import {PoolItem as nAssetPsiPoolItem} from '../api/nexus_nassets_psi_farm/pools_response';
+import {PoolItem as PylonLiquidPoolItem} from '../api/pylon_liquid_farm/pools_response';
+import {PoolItem as AstroportTokenUSTPoolItem} from '../api/astroport_token_ust_farm/pools_response';
 
-import { RewardInfoResponseItem as MirrorRewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
-import { RewardInfoResponseItem as SpecRewardInfoResponseItem } from '../api/spec_farm/reward_info_response';
-import { RewardInfoResponseItem as AstroportTokenUSTRewardInfoResponseItem } from '../api/astroport_token_ust_farm/reward_info_response';
+import {RewardInfoResponseItem as MirrorRewardInfoResponseItem} from '../api/mirror_farm/reward_info_response';
+import {RewardInfoResponseItem as SpecRewardInfoResponseItem} from '../api/spec_farm/reward_info_response';
+import {
+  RewardInfoResponseItem as AstroportTokenUSTRewardInfoResponseItem
+} from '../api/astroport_token_ust_farm/reward_info_response';
 
-import { InjectionToken } from '@angular/core';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { VaultsResponse } from '../api/gov/vaults_response';
+import {InjectionToken} from '@angular/core';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {VaultsResponse} from '../api/gov/vaults_response';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem | PylonLiquidPoolItem | AstroportTokenUSTPoolItem;
-export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID';
+export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID' | 'NASSET';
+export const FARM_TYPE_SINGLE_TOKEN: Set<string> = new Set(['PYLON_LIQUID', 'NASSET']);
+
 export type DEX = 'Terraswap' | 'Astroport';
 export type PoolInfo = PoolItem & {
   key: string;
@@ -88,3 +92,4 @@ export interface FarmInfoService {
   queryRewards(): Promise<RewardInfoResponseItem[]>;
   getStakeGovMsg?(amount: string, additionalData?: object): MsgExecuteContract;
 }
+
