@@ -1112,8 +1112,8 @@
                  class="d-grid mt-3 mb-3">
               <button (click)="doClaimReward()" class="btn btn-primary" type="submit">
                 <ng-container *ngIf="vault.poolInfo.auto_stake">Claim
-                  <ng-container *ngIf="vault.poolInfo.dex === 'Astroport'">ASTRO + </ng-container>
-                  <ng-container *ngIf="(vault.poolInfo.dex === 'Astroport' && vault.poolInfo.hasProxyReward) || vault.poolInfo.dex === 'Terraswap'">{{vault.rewardSymbol}} + </ng-container>
+                  <ng-container *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farmType === 'LP' ">ASTRO + </ng-container>
+                  <ng-container *ngIf="(vault.poolInfo.dex === 'Astroport' && vault.poolInfo.hasProxyReward) || vault.poolInfo.dex === 'Terraswap' || vault.poolInfo.farmType === 'NASSET'">{{vault.rewardSymbol}} + </ng-container>
                 </ng-container>
                 SPEC</button>
             </div>
