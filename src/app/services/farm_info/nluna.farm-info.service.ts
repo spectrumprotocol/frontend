@@ -32,6 +32,7 @@ export class NlunaFarmInfoService implements FarmInfoService {
   auditWarning = false;
   dex: DEX = 'Astroport';
   mainnetOnly = false;
+  highlight = true;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.nLunaToken;

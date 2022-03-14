@@ -32,6 +32,7 @@ export class NethFarmInfoService implements FarmInfoService {
   auditWarning = false;
   dex: DEX = 'Astroport';
   mainnetOnly = false;
+  highlight = true;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.nEthToken;

@@ -32,7 +32,7 @@ export class GlowFarmInfoService implements FarmInfoService {
   dex: DEX = 'Terraswap';
   denomTokenContract = Denom.USD;
   mainnetOnly = true;
-  highlight = true;
+  highlight = false;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.glowToken;
