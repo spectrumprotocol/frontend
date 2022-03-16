@@ -7,6 +7,7 @@ import { InfoService, Portfolio } from '../../../services/info.service';
 import { TerrajsService } from '../../../services/terrajs.service';
 import { GovService } from '../../../services/api/gov.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import {FARM_TYPE_SINGLE_TOKEN} from '../../../services/farm_info/farm-info.service';
 
 type MapToKeyValue<T> = T extends Map<infer X, infer Y> ? KeyValue<X, Y> : never;
 
@@ -45,7 +46,7 @@ export class ManageRewardsComponent implements OnInit {
     if (!govFarmInfo.autoStake) {
       return;
     }
-    const withdrawAmounts: { [farmContract: string]: { amount: string, dex: string } } = {};
+    const withdrawAmounts: { [farmContract: string]: { amount: string, dex: string, farmType: string } } = {};
 
     if (!isAstro) {
       for (const rewardInfo of Object.values(this.info.rewardInfos)) {
@@ -56,22 +57,22 @@ export class ManageRewardsComponent implements OnInit {
         let pendingReward = 0;
         if (isSpec) {
           pendingReward = +rewardInfo.pending_spec_reward;
-        } else if (farmInfo.dex === 'Terraswap') {
+        } else if (farmInfo.dex === 'Terraswap' || FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
           pendingReward = +rewardInfo.pending_farm_reward;
-        } else if (farmInfo.dex === 'Astroport') {
+        } else if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP') {
           pendingReward = +rewardInfo.pending_farm2_reward;
         }
         if (+pendingReward > 0) {
-          withdrawAmounts[farmInfo.farmContract] = { amount: plus(pendingReward, withdrawAmounts[farmInfo.farmContract]?.amount ?? 0), dex: farmInfo.dex };
+          withdrawAmounts[farmInfo.farmContract] = { amount: plus(pendingReward, withdrawAmounts[farmInfo.farmContract]?.amount ?? 0), dex: farmInfo.dex, farmType: farmInfo.farmType };
         }
       }
     } else {
-      const farmContractsAstroportDex: Set<string> = new Set(this.info.farmInfos.filter(x => x.dex === 'Astroport').map(x => x.farmContract));
+      const farmContractsAstroportDex: Set<string> = new Set(this.info.farmInfos.filter(x => x.dex === 'Astroport' && x.farmType === 'LP').map(x => x.farmContract));
       const rewardInfosAstroportDex = Object.values(this.info.rewardInfos).filter(x => farmContractsAstroportDex.has(x.farmContract));
       for (const rewardInfo of rewardInfosAstroportDex) {
         const pendingReward = +rewardInfo.pending_farm_reward;
         if (+pendingReward > 0) {
-          withdrawAmounts[rewardInfo.farmContract] = { amount: plus(pendingReward, withdrawAmounts[rewardInfo.farmContract]?.amount ?? 0), dex: 'Astroport' };
+          withdrawAmounts[rewardInfo.farmContract] = { amount: plus(pendingReward, withdrawAmounts[rewardInfo.farmContract]?.amount ?? 0), dex: 'Astroport', farmType: 'LP'  };
         }
       }
     }
@@ -81,7 +82,7 @@ export class ManageRewardsComponent implements OnInit {
     const mintMsg = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.gov, { mint: {} });
     const stakeGovMsg = govFarmInfo.getStakeGovMsg(totalAmounts, isSpec ? { days } : undefined);
     const withdrawMsgs = Object.keys(withdrawAmounts).map(farmContract => {
-      if (withdrawAmounts[farmContract].dex === 'Astroport' && isAstro) {
+      if (withdrawAmounts[farmContract].dex === 'Astroport' && isAstro && withdrawAmounts[farmContract].farmType === 'LP') {
         return new MsgExecuteContract(this.terrajs.address, farmContract, {
           withdraw: {
             farm_amount: withdrawAmounts[farmContract].amount,
@@ -89,7 +90,7 @@ export class ManageRewardsComponent implements OnInit {
             spec_amount: '0',
           },
         });
-      } else if (withdrawAmounts[farmContract].dex === 'Astroport' && isSpec) {
+      } else if (withdrawAmounts[farmContract].dex === 'Astroport' && isSpec && withdrawAmounts[farmContract].farmType === 'LP') {
         return new MsgExecuteContract(this.terrajs.address, farmContract, {
           withdraw: {
             farm_amount: '0',
@@ -97,8 +98,8 @@ export class ManageRewardsComponent implements OnInit {
             spec_amount: withdrawAmounts[farmContract].amount,
           },
         });
-      } 
-      else if (withdrawAmounts[farmContract].dex === 'Astroport' && !isAstro) {
+      }
+      else if (withdrawAmounts[farmContract].dex === 'Astroport' && !isAstro && withdrawAmounts[farmContract].farmType === 'LP') {
         return new MsgExecuteContract(this.terrajs.address, farmContract, {
           withdraw: {
             farm_amount: '0',
@@ -107,7 +108,7 @@ export class ManageRewardsComponent implements OnInit {
           },
         });
       } else {
-        // case Terraswap
+        // case Terraswap and nAsset farm (astroport dex)
         return new MsgExecuteContract(this.terrajs.address, farmContract, {
           withdraw: {
             farm_amount: isSpec ? '0' : withdrawAmounts[farmContract].amount,

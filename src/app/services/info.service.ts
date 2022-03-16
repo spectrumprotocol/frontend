@@ -4,7 +4,7 @@ import { TokenService } from './api/token.service';
 import { BankService } from './api/bank.service';
 import { TerraSwapService } from './api/terraswap.service';
 import { PoolResponse } from './api/terraswap_pair/pool_response';
-import { div, minus, plus, times } from '../libs/math';
+import { div, gt, minus, plus, times } from '../libs/math';
 import { CONFIG } from '../consts/config';
 import { TerraSwapFactoryService } from './api/terraswap-factory.service';
 import { GovService } from './api/gov.service';
@@ -13,7 +13,8 @@ import {
   FarmInfoService,
   PairStat,
   PoolInfo,
-  RewardInfoResponseItem
+  RewardInfoResponseItem,
+  FARM_TYPE_SINGLE_TOKEN
 } from './farm_info/farm-info.service';
 import { fromEntries } from '../libs/core';
 import { PairInfo } from './api/terraswap_factory/pair_info';
@@ -27,6 +28,9 @@ import { WalletService } from './api/wallet.service';
 import { AstroportService } from './api/astroport.service';
 import { AstroportFactoryService } from './api/astroport-factory.service';
 import { Apollo, gql } from 'apollo-angular';
+import { AnchorMarketService } from './api/anchor-market.service';
+import { BalanceResponse } from './api/gov/balance_response';
+import { StateInfo } from './api/gov/state_info';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -53,7 +57,23 @@ export type Portfolio = {
   avg_tokens_apr?: number;
   tokens: Map<string, PendingReward & { rewardTokenContract: string, apr?: number }>;
   farms: Map<string, PortfolioItem>;
+  totalGovRewardUST: number;
+  stakedInGovAPR: number;
+  austAPR: number;
 };
+
+export interface GovPoolDetail {
+  days: number;
+  balance: string;
+  apr: number;
+  userBalance: string;
+  userAUst: string;
+  userProfit: string;
+  austApr: number;
+  userAvailableBalance: string;
+  unlockAt: Date | null;
+  moveOptions: { days: number; userBalance: string; unlockAt: Date | null }[];
+}
 
 export type TokenInfo = {
   name: string;
@@ -83,7 +103,8 @@ export class InfoService {
     private lpBalancePipe: LpBalancePipe,
     private httpClient: HttpClient,
     private wallet: WalletService,
-    private apollo: Apollo
+    private apollo: Apollo,
+    private anchorMarket: AnchorMarketService,
   ) {
     try {
       const infoSchemaVersion = localStorage.getItem('infoSchemaVersion');
@@ -146,6 +167,10 @@ export class InfoService {
   tokenBalances: Record<string, string> = {};
   lpTokenBalances: Record<string, string> = {};
   poolResponses: Record<string, PoolResponse> = {};
+
+  govBalanceResponse: BalanceResponse;
+  govStateInfo: StateInfo;
+  poolDetails: GovPoolDetail[] = [];
 
   myTvl = 0;
   allVaults: Vault[] = [];
@@ -222,7 +247,7 @@ export class InfoService {
       }
       const pools = await farmInfo.queryPoolItems();
       for (const pool of pools) {
-        const key = `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}`;
+        const key = farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}` : `${pool.asset_token}`;
         poolInfos[key] = Object.assign(pool,
           {
             key,
@@ -258,14 +283,20 @@ export class InfoService {
     const tasks = Object.keys(this.poolInfos)
       .filter(key => !this.pairInfos[key])
       .map(async key => {
+        let pairInfoKey;
         const baseTokenContract = this.poolInfos[key].baseTokenContract;
+        const denomTokenContract = this.poolInfos[key].denomTokenContract;
+        if (this.poolInfos[key].farmType === 'LP') {
+          pairInfoKey = key;
+        } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
+          pairInfoKey = `${this.poolInfos[key].dex}|${baseTokenContract}|${denomTokenContract}`;
+        }
         const tokenA = baseTokenContract.startsWith('u') ?
           { native_token: { denom: baseTokenContract } } : { token: { contract_addr: baseTokenContract } };
-        const denomTokenContract = this.poolInfos[key].denomTokenContract;
         const tokenB = denomTokenContract.startsWith('u') ?
           { native_token: { denom: denomTokenContract } } : { token: { contract_addr: denomTokenContract } };
         if (this.poolInfos[key].dex === 'Terraswap') {
-          this.pairInfos[key] = await this.terraSwapFactory.query({
+          this.pairInfos[pairInfoKey] = await this.terraSwapFactory.query({
             pair: {
               asset_infos: [
                 tokenA, tokenB
@@ -273,7 +304,7 @@ export class InfoService {
             }
           });
         } else if (this.poolInfos[key].dex === 'Astroport') {
-          this.pairInfos[key] = await this.astroportFactory.query({
+          this.pairInfos[pairInfoKey] = await this.astroportFactory.query({
             pair: {
               asset_infos: [
                 tokenA, tokenB
@@ -347,7 +378,7 @@ export class InfoService {
     await this.refreshPoolInfos();
     await Promise.all([
       this.refreshPoolResponses(),
-      this.ensureAstroportData().catch(_ => {}),
+      this.ensureAstroportData().catch(_ => { }),
     ]);
 
     const vaults = await vaultsTask;
@@ -417,6 +448,13 @@ export class InfoService {
       stat.tvl = plus(stat.tvl, pair.tvl);
     }
     stat.govApr = 0; // stat.vaultFee / stat.govPoolCount / +stat.govTvl;
+
+    // aUST in Gov
+    const anchorState = await this.anchorMarket.query({ epoch_state: {} });
+    const austBalance = await this.token.balance(this.terrajs.settings.austToken, this.terrajs.settings.gov);
+    const austValue = times(austBalance.balance, anchorState.exchange_rate);
+    stat.tvl = plus(stat.tvl, austValue);
+
     this.stat = stat;
     localStorage.setItem('stat', JSON.stringify(stat));
   }
@@ -438,7 +476,11 @@ export class InfoService {
     const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const rewards = await farmInfo.queryRewards();
       for (const reward of rewards) {
-        rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+        if (farmInfo.farmType === 'LP') {
+          rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+        } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
+          rewardInfos[`${reward.asset_token}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+        }
       }
     });
     await Promise.all(tasks);
@@ -488,13 +530,23 @@ export class InfoService {
     const poolResponses: Record<string, PoolResponse> = {};
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
-      const pairInfo = this.pairInfos[key];
-      if (key.split('|')[0] === 'Terraswap' && pairInfo?.contract_addr) {
+      let poolResponseKey;
+      const dex = this.poolInfos[key].dex;
+      if (this.poolInfos[key].farmType === 'LP') {
+        poolResponseKey = key;
+      } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
+        const baseTokenContract = this.poolInfos[key].baseTokenContract;
+        const denomTokenContract = this.poolInfos[key].denomTokenContract;
+        poolResponseKey = `${dex}|${baseTokenContract}|${denomTokenContract}`;
+      }
+      const pairInfo = this.pairInfos[poolResponseKey];
+
+      if (dex === 'Terraswap' && pairInfo?.contract_addr) {
         poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-          .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses Terraswap error: ', error)));
-      } else if (key.split('|')[0] === 'Astroport' && pairInfo?.contract_addr) {
+          .then(it => poolResponses[poolResponseKey] = it).catch(error => console.error('refreshPoolResponses Terraswap error: ', error)));
+      } else if (dex === 'Astroport' && pairInfo?.contract_addr) {
         poolTasks.push(this.astroport.query(pairInfo.contract_addr, { pool: {} })
-          .then(it => poolResponses[key] = it).catch(error => console.error('refreshPoolResponses Astroport error: ', error)));
+          .then(it => poolResponses[poolResponseKey] = it).catch(error => console.error('refreshPoolResponses Astroport error: ', error)));
       }
     }
     await Promise.all(poolTasks);
@@ -537,6 +589,9 @@ export class InfoService {
       gov: { pending_reward_token: 0, pending_reward_ust: 0 },
       tokens: new Map(),
       farms: new Map(),
+      totalGovRewardUST: 0,
+      stakedInGovAPR: 0,
+      austAPR: 0,
     };
     for (const farmInfo of this.farmInfos.filter(fi => this.shouldEnableFarmInfo(fi))) {
       if (this.tokenInfos[farmInfo.rewardTokenContract]?.symbol) {
@@ -553,10 +608,18 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      const bond_amount = (vault.poolInfo.farmType === 'PYLON_LIQUID'
-        ? +rewardInfo.bond_amount
-        : +this.lpBalancePipe.transform(rewardInfo.bond_amount, this, vault.poolInfo.key))
-        / CONFIG.UNIT || 0;
+      let bond_amount;
+      if (vault.poolInfo.farmType === 'PYLON_LIQUID') {
+        bond_amount = +rewardInfo.bond_amount;
+      } else if ((vault.poolInfo.farmType === 'NASSET')) {
+        bond_amount = +this.balancePipe.transform(rewardInfo.bond_amount,
+          this.poolResponses[`${vault.poolInfo.dex}|${vault.poolInfo.baseTokenContract}|${this.terrajs.settings.nexusToken}`],
+          this.poolResponses[vault.poolInfo.rewardKey]);
+      } else {
+        bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this, vault.poolInfo.key);
+      }
+      bond_amount = bond_amount / CONFIG.UNIT || 0;
+
       const farmInfo = this.farmInfos.find(it => it.farmContract === this.poolInfos[vault.poolInfo.key].farmContract);
       portfolio.farms.get(farmInfo.farm).bond_amount_ust += bond_amount;
 
@@ -572,7 +635,7 @@ export class InfoService {
         const astroTokenPoolResponse = this.poolResponses[this.ASTRO_KEY];
 
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
-        if (farmInfo.dex === 'Astroport') {
+        if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP') {
           const pending_farm2_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm2_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
           tvl += pending_farm2_reward_ust;
           portfolio.tokens.get(rewardSymbol).pending_reward_token += rewardInfo.pending_farm2_reward ? +rewardInfo.pending_farm2_reward / CONFIG.UNIT : 0;
@@ -585,7 +648,7 @@ export class InfoService {
 
           portfolio.total_reward_ust += pending_farm_reward_ust;
           portfolio.total_reward_ust += pending_farm2_reward_ust;
-        } else if (farmInfo.dex === 'Terraswap') {
+        } else if (farmInfo.dex === 'Terraswap' || FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
           const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
           tvl += pending_farm_reward_ust;
           portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
@@ -604,12 +667,25 @@ export class InfoService {
     portfolio.gov.pending_reward_ust += gov_spec_staked_ust;
     portfolio.gov.pending_reward_token += +specGovStaked / CONFIG.UNIT;
     tvl += gov_spec_staked_ust;
-    this.myTvl = tvl;
+
 
     const pendingTokenRewards = [...portfolio.tokens.values()].filter(value => value.pending_reward_token > 0);
     portfolio.avg_tokens_apr = pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token * (pr.apr || 0), 0) /
       pendingTokenRewards.reduce((sum, pr) => sum + pr.pending_reward_token, 0);
 
+    let sumGovAPR = 0;
+    let totalStaked = 0;
+    for (const pool of this.poolDetails) {
+      sumGovAPR += +pool.userBalance * pool.apr;
+      totalStaked += +pool.userBalance;
+      portfolio.totalGovRewardUST += +pool.userProfit;
+      portfolio.austAPR = +pool.austApr;
+    }
+    portfolio.stakedInGovAPR = sumGovAPR / totalStaked;
+
+    tvl += portfolio.totalGovRewardUST;
+
+    this.myTvl = tvl;
     this.portfolio = portfolio;
   }
 
@@ -622,6 +698,7 @@ export class InfoService {
 
     await Promise.all(tasks);
     this.updateVaults();
+    await this.fetchPoolDetails();
     await this.updateMyTvl();
   }
 
@@ -651,7 +728,7 @@ export class InfoService {
       console.error('Error in retrieveCachedStat: fallback local info service data init');
       console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
-      localStorage.setItem('infoSchemaVersion', '2');
+      localStorage.setItem('infoSchemaVersion', '3');
     } finally {
       this.loadedNetwork = this.terrajs.settings.chainID;
     }
@@ -721,20 +798,20 @@ export class InfoService {
         compoundApy,
         stakeApy,
         apy,
-        name: poolInfo.farmType === 'PYLON_LIQUID'
+        name: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
-        unitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
+        unitDisplay: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
-        unitDisplayDexAbbreviated: poolInfo.farmType === 'PYLON_LIQUID'
+        unitDisplayDexAbbreviated: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${abbreviatedDex} LP`,
-        shortUnitDisplay: poolInfo.farmType === 'PYLON_LIQUID'
+        shortUnitDisplay: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `LP`,
         score,
-        fullName: poolInfo.farmType === 'PYLON_LIQUID'
+        fullName: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} LP`,
         disabled,
@@ -779,6 +856,84 @@ export class InfoService {
                   }`,
       errorPolicy: 'all'
     }).toPromise()).data;
+  }
+
+  async fetchPoolDetails() {
+
+    const [state, rates] = await Promise.all([
+      this.anchorMarket.query({ epoch_state: {} }),
+      this.httpClient.get<any>(this.terrajs.settings.anchorAPI + '/deposit-rate').toPromise().catch(_ => undefined),
+      this.gov.state().then(it => this.govStateInfo = it),
+      this.terrajs.isConnected
+        ? this.gov.balance().then(it => this.govBalanceResponse = it)
+        : Promise.resolve(null as BalanceResponse),
+      this.refreshPool(),
+    ]);
+
+    const anchorRatePerBlock = rates?.[0]?.deposit_rate ?? '0.000000041729682765';
+    const anchorRatePerYear = times(anchorRatePerBlock, 4656810);
+
+    const vaultFeeByPools = {};
+    let lockedBalance = '0';
+
+    const vaultFeeSlice = this.stat.vaultFee / this.govStateInfo.pool_weight;
+    for (let n = 0; n < this.govStateInfo.pools.length; n++) {
+      const involvedPools = this.govStateInfo.pools.slice(n);
+      const sumTotalBalance = involvedPools.reduce((sum, pool) => sum + +pool.total_balance, 0);
+      const pivotPool = involvedPools[0];
+
+      for (const pool of involvedPools) {
+        const poolVaultFee = +pool.total_balance / sumTotalBalance * vaultFeeSlice * pivotPool.weight;
+        vaultFeeByPools[pool.days] = (vaultFeeByPools[pool.days] || 0) + poolVaultFee;
+      }
+    }
+
+    if (this.govBalanceResponse) {
+      const mostLockedBalance = this.govBalanceResponse.locked_balance.reduce((c, [_, { balance }]) => Math.max(c, +balance), 0);
+      lockedBalance = div(mostLockedBalance, CONFIG.UNIT);
+    }
+
+    this.poolDetails = this.govStateInfo.pools
+      .map((pool) => {
+        const balanceInfo = this.govBalanceResponse?.pools.find(p => p.days === pool.days);
+        const userBalance = div(balanceInfo?.balance ?? 0, CONFIG.UNIT);
+        const userAUst = div(balanceInfo?.pending_aust ?? 0, CONFIG.UNIT);
+        const userProfit = times(userAUst, state.exchange_rate);
+        const unlockAt = balanceInfo?.unlock ? new Date(balanceInfo.unlock * 1000) : null;
+        const poolTvl = +pool.total_balance * +this.specPrice;
+        const apr = vaultFeeByPools[pool.days] / poolTvl;
+        const austApr = +anchorRatePerYear;
+        return {
+          userBalance,
+          userAUst,
+          userProfit,
+          austApr,
+          unlockAt,
+          days: pool.days,
+          apr: apr + apr * +anchorRatePerYear / 2,
+          balance: div(pool.total_balance, CONFIG.UNIT),
+          userAvailableBalance: '0', // populate after this mapping
+          moveOptions: [], // populate after this mapping
+        };
+      })
+      .map((current, _, poolDetails) => {
+        const sumOtherPoolsBalance = poolDetails.filter(d => d.days !== current.days)
+          .reduce((sum, d) => plus(sum, d.userBalance), '0');
+
+        const unreservedBalance = minus(lockedBalance, sumOtherPoolsBalance);
+        const userAvailableBalance = gt(unreservedBalance, 0)
+          ? minus(current.userBalance, unreservedBalance)
+          : current.userBalance;
+
+        const moveOptions = poolDetails.filter(d => d.days > current.days)
+          .map(({ days, userBalance, unlockAt }) => ({ days, userBalance, unlockAt }));
+
+        return {
+          ...current,
+          userAvailableBalance,
+          moveOptions,
+        };
+      });
   }
 
 }

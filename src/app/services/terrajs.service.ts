@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import {Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult, Wallet} from '@terra-money/terra.js';
 import { ISettings, networks } from '../consts/networks';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 import { filter, startWith } from 'rxjs/operators';
 import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus, getChainOptions } from '@terra-money/wallet-provider';
@@ -204,7 +204,14 @@ export class TerrajsService implements OnDestroy {
   }
 
   @throttleAsync(20)
-  async get(path: string, params?: Record<string, string>, headers?: Record<string, string>) {
+  async get(path: string, params?: Record<string, string>, additionalHeaders?: Record<string, string>) {
+    const headers = new HttpHeaders({'Cache-Control': 'no-cache', 'Content-Type': 'application/json'});
+    if (additionalHeaders){
+      const keys = Object.keys(additionalHeaders);
+      for (const key of keys){
+        headers.append(key, additionalHeaders[key]);
+      }
+    }
     const res = await this.httpClient.get<GetResponse>(`${this.settings.lcd}/${path}`, {
       params,
       headers,

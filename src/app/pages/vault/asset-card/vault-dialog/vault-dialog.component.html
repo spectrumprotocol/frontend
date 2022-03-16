@@ -14,12 +14,10 @@
         <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
       </div>
     </div>
-    <div *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'" class="p-2 p-l-0 bulk-name-container">
+    <div *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)" class="p-2 p-l-0 bulk-name-container">
       <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
       <div class="name-detail">
         <h6 class="m-0">{{vault.fullName}}
-          <img *ngIf="vault.poolInfo.dex === 'Astroport'" src="./assets/logo-astroport.svg" class="dex-logo" alt="Astroport DEX">
-          <img *ngIf="vault.poolInfo.dex === 'Terraswap'" src="./assets/logo-terraswap.svg" class="dex-logo" alt="Terraswap DEX">
         </h6>
         <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
       </div>
@@ -95,14 +93,13 @@
         <div class="card-body">
           <p class="card-text sub-topic">
             <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">LP Balance</ng-container>
-            <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">Balance</ng-container>
+            <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)">Balance</ng-container>
           </p>
-          <h3 class="card-title text-primary" *ngIf="vault.poolInfo.farmType !== 'PYLON_LIQUID'">
+          <h3 class="card-title text-primary" *ngIf="vault.poolInfo.farmType === 'LP'">
             {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
             <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
-              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
-              info : vault.poolInfo.key | unit: 6: '1.0-2' }})
-              <i *ngIf="vault.poolInfo.key !== SPEC_KEY" [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo"
+              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: info : vault.poolInfo.key | unit: 6: '1.0-2' }})
+              <i [mdbTooltip]="lpBalanceInfo"
                  class="fas fa-info-circle info-icon super"></i>
             </span>
           </h3>
@@ -114,13 +111,21 @@
                  class="fas fa-info-circle info-icon super"></i>
             </span>
           </h3>
+          <h3 class="card-title text-primary" *ngIf="vault.poolInfo.farmType === 'NASSET'">
+            {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
+            <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
+              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | balance: info.poolResponses[NASSET_PSI_KEY]:info.poolResponses[PSI_UST_KEY] | unit: 6: '1.0-2' }})
+              <i [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo"
+                 class="fas fa-info-circle info-icon super"></i>
+            </span>
+          </h3>
           <h6 *ngIf="info.rewardInfos[vault.poolInfo.key]?.deposit_amount" class="card-subtitle text-success">
             {{ info.rewardInfos[vault.poolInfo.key] | lpEarning }}
           </h6>
         </div>
       </div>
     </div>
-    <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.auto_stake" class="col col-mb">
+    <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.auto_stake && vault.poolInfo.farmType === 'LP'" class="col col-mb">
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
@@ -137,7 +142,9 @@
         </div>
       </div>
     </div>
-    <div *ngIf="vault.poolInfo.dex === 'Terraswap' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="col col-mb">
+    <div *ngIf="(vault.poolInfo.dex === 'Terraswap' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake) ||
+      (vault.poolInfo.auto_stake && FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType))
+      " class="col col-mb">
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
@@ -179,7 +186,6 @@
           </p>
           <h3 class="card-title text-primary">
             {{info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || 0 | unit }}
-<!--            TODO this spec pool response have to be changed once migrated to astroport-->
             <span class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || '0' | balance:
               info.poolResponses[SPEC_KEY] |
@@ -427,8 +433,10 @@
                 </div>
                 <div *ngIf="vault.denomSymbol !== 'UST'" class="row">
                   <div class="col">Expected {{vault.baseSymbol}} Price</div>
-                  <div class="col text-end">{{basedTokenPrice | number:'0.0-6' }}
-                    {{vault.denomSymbol}}</div>
+                  <div class="col text-end">
+                    {{basedTokenPrice | number:'0.0-6' }} {{vault.denomSymbol}}
+                    ({{tokenPriceNonUSTDenomInUST | number:'0.0-6' }} UST)
+                  </div>
                 </div>
                 <div class="row">
                   <div class="col">Gross LP</div>
@@ -459,15 +467,27 @@
                 </div>
               </div>
             </div>
-            <div *ngIf="depositMode === 'bdp'" class="mt-3">
+            <div *ngIf="depositMode === 'single_token'" class="mt-3">
               <div class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
-                    <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}?
-                    <a [href]="vault.baseSymbol | url:'deposit_pylon_gateway'" target="_blank">Deposit via Pylon Gateway</a>
-                    or <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
-                    {{ vault.baseSymbol }} to farm
-                    with.
+                    <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+                      <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}?
+                      <a [href]="vault.baseSymbol | url:'deposit_pylon_gateway'" target="_blank">Deposit via Pylon Gateway</a>
+                      or <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
+                      {{ vault.baseSymbol }} to farm
+                      with.
+                    </ng-container>
+                    <ng-container *ngIf="vault.poolInfo.farmType === 'NASSET'">
+                      <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}?
+                      <a [href]="vault.baseSymbol | url:'nexus_vault'" target="_blank">Deposit
+                        <ng-container *ngIf="vault.baseSymbol === 'nLuna'">bLuna</ng-container>
+                        <ng-container *ngIf="vault.baseSymbol === 'nETH'">bETH</ng-container>
+                        via Nexus Vault</a>
+                      or <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
+                      {{ vault.baseSymbol }} to farm
+                      with.
+                    </ng-container>
                   </div>
                 </div>
               </div>
@@ -483,16 +503,16 @@
               <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
                 <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" height="24" width="24">{{ vault.baseSymbol }}
               </span>
-                <input #depositbDPTokenAmtbDPTokenCtl="ngModel" (input)="depositbDPTokenChanged(false, $event)"
-                       [(ngModel)]="depositbDPTokenAmtbDPToken"
+                <input #depositbDPTokenAmtbDPTokenCtl="ngModel" (input)="depositSingleTokenChanged(false, $event)"
+                       [(ngModel)]="depositTokenAmtSingleToken"
                        [class.is-invalid]="(formDeposit.submitted || depositbDPTokenAmtbDPTokenCtl.touched) && depositbDPTokenAmtbDPTokenCtl.invalid"
                        [max]="+info.tokenBalances[vault.poolInfo.baseTokenContract]" [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
                        class="form-control fix-border" name="depositbDPTokenAmtbDPToken" required type="number" />
-                <button (click)="setMaxDepositbDPToken()" class="btn btn-max last" type="button">
+                <button (click)="setMaxDepositSingleToken()" class="btn btn-max last" type="button">
                   Max
                 </button>
               </div>
-              <div *ngIf="depositbDPTokenAmtbDPToken" class="mt-3 pool-info">
+              <div *ngIf="depositTokenAmtSingleToken" class="mt-3 pool-info">
                 <div *ngIf="+depositFeeLp" class="row">
                   <div class="col">Deposit Fee (0.1%)</div>
                   <div *ngIf="+depositFeeLp > 0" class="col text-end">{{depositFeeLp | number }} {{vault.baseSymbol}}</div>
@@ -503,7 +523,7 @@
                   </div>
                 </div>
                 <div *ngIf="+depositFeeLp" class="row">
-                  <div class="col">Net bDP Token</div>
+                  <div class="col">Net Deposit</div>
                   <div *ngIf="+netLpLp > 0" class="col text-end">{{netLpLp | number }} {{vault.baseSymbol}}</div>
                   <div *ngIf="!(+netLpLp > 0)" class="col text-end">
                     <div class="spinner-grow spinner-small" role="status">
@@ -513,7 +533,14 @@
                 </div>
               </div>
             </div>
-            <div *ngIf="depositMode === 'ust_bdp'" class="mt-3">
+            <div *ngIf="depositMode === 'ust_single_token'" class="mt-3">
+              <div class="card card-green" *ngIf="vault.poolInfo.farmType === 'NASSET'">
+                <div class="card-body">
+                  <div class="small p-2">
+                    <i class="fas fa-info-circle info-icon"></i> Use UST to buy {{ vault.baseSymbol }} and deposit to vault.
+                  </div>
+                </div>
+              </div>
               <div class="text-end small mt-3 mb-1 text-muted fw-bold-600">
                 <span class="sub-topic">Balance: </span>
                 <span class="text-white">{{ info.userUstAmount | number }} UST</span>
@@ -522,27 +549,27 @@
                 <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
                   <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1" height="24" width="24">UST
                 </span>
-                <input #depositBDPAmtUSTCtl="ngModel" (input)="depositUSTForBDPChanged(false, $event)"
-                       [(ngModel)]="depositUSTAmtbDPToken"
-                       [class.is-invalid]="(formDeposit.submitted || depositBDPAmtUSTCtl.touched) && depositBDPAmtUSTCtl.invalid"
+                <input #depositSingleTokenAmtUSTCtl="ngModel" (input)="depositUSTForSingleToken(false, $event)"
+                       [(ngModel)]="depositUSTAmtSingleToken"
+                       [class.is-invalid]="(formDeposit.submitted || depositSingleTokenAmtUSTCtl.touched) && depositSingleTokenAmtUSTCtl.invalid"
                        [max]="+info.userUstAmount" [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
                        class="form-control fix-border" name="depositBDPAmtUST" required type="number" />
-                <button (click)="setMaxDepositUSTForBDP()" class="btn btn-max last" type="button">
+                <button (click)="setMaxDepositUSTForSingleToken()" class="btn btn-max last" type="button">
                   Max
                 </button>
-                <div *ngIf="depositBDPAmtUSTCtl.errors?.max" class="invalid-feedback text-end">UST is not
+                <div *ngIf="depositSingleTokenAmtUSTCtl.errors?.max" class="invalid-feedback text-end">UST is not
                   enough for
                   this transaction</div>
               </div>
 
-              <div *ngIf="depositUSTAmtbDPToken" class="mt-3 pool-info">
-                <div class="row" *ngIf="lpFromSwapDP">
+              <div *ngIf="depositUSTAmtSingleToken && vault.poolInfo.farmType === 'PYLON_LIQUID'" class="mt-3 pool-info">
+                <div class="row" *ngIf="tokenFromSwapSingleToken">
                   <div class="col">Swap</div>
-                  <div class="col text-end">{{ ustForSwapDP | unit }}&nbsp;UST &gt; {{lpFromSwapDP | unit }}&nbsp;{{vault.baseSymbol}}</div>
+                  <div class="col text-end">{{ ustForSwapSingleToken | unit }}&nbsp;UST &gt; {{tokenFromSwapSingleToken | unit }}&nbsp;{{vault.baseSymbol}}</div>
                 </div>
-                <div class="row" *ngIf="lpFromDepositDP">
+                <div class="row" *ngIf="tokenFromDepositbDP">
                   <div class="col">Deposit</div>
-                  <div class="col text-end">{{ ustForDepositDP | unit }}&nbsp;UST &gt; {{lpFromDepositDP | unit }}&nbsp;{{vault.baseSymbol}}</div>
+                  <div class="col text-end">{{ ustForDepositbDP | unit }}&nbsp;UST &gt; {{tokenFromDepositbDP | unit }}&nbsp;{{vault.baseSymbol}}</div>
                 </div>
 
                 <div class="row">
@@ -575,6 +602,50 @@
                 </div>
               </div>
             </div>
+
+            <div *ngIf="depositUSTAmtSingleToken && vault.poolInfo.farmType === 'NASSET'" class="mt-3 pool-info">
+              <div class="row">
+                <div class="col">Expected {{vault.denomSymbol === 'UST' ? vault.baseSymbol :
+                  vault.denomSymbol}} Price</div>
+                <div class="col text-end">{{basedTokenPrice | number:'0.0-6' }} UST</div>
+              </div>
+              <div *ngIf="vault.denomSymbol !== 'UST'" class="row">
+                <div class="col">Expected {{vault.baseSymbol}} Price</div>
+                <div class="col text-end">
+                  {{tokenPrice | number:'0.0-6' }} {{vault.denomSymbol}}
+                  ({{tokenPriceNonUSTDenomInUST | number:'0.0-6' }} UST)
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">Gross {{vault.baseSymbol}}</div>
+                <div *ngIf="+tokenFromSwapSingleToken > 0" class="col text-end">{{tokenFromSwapSingleToken | unit: vault.baseDecimals }} {{vault.baseSymbol}}</div>
+                <div *ngIf="!(+tokenFromSwapSingleToken > 0)" class="col text-end">
+                  <div class="spinner-grow spinner-small" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="+depositFeeUST" class="row">
+                <div class="col">Deposit Fee (0.1%)</div>
+                <div *ngIf="+depositFeeUST > 0" class="col text-end">{{depositFeeUST | unit: vault.baseDecimals }} {{vault.baseSymbol}}</div>
+                <div *ngIf="!(+depositFeeUST > 0)" class="col text-end">
+                  <div class="spinner-grow spinner-small" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="+depositFeeUST" class="row">
+                <div class="col">Net {{vault.baseSymbol}}</div>
+                <div *ngIf="+netLpUST > 0" class="col text-end">{{netLpUST | unit: vault.baseDecimals }} {{vault.baseSymbol}}</div>
+                <div *ngIf="!(+netLpUST > 0)" class="col text-end">
+                  <div class="spinner-grow spinner-small" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
             <div *ngIf="!vault.poolInfo.forceDepositType" class="auto-container mt-3">
               <span class="btn-group w-100">
                 <button (click)="depositType = 'stake'"
@@ -615,7 +686,7 @@
                   <div class="col">Total Rewards APR</div>
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
-                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport'">
+                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farmType === 'LP'">
                   <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
                 </div>
@@ -648,7 +719,7 @@
                   <div class="col">Total Rewards APR</div>
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
-                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport'">
+                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farmType === 'LP'">
                   <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
                 </div>
@@ -698,7 +769,7 @@
                   <div class="col">Total Rewards APR</div>
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
-                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport'">
+                <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farmType === 'LP'">
                   <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
                 </div>
@@ -745,8 +816,9 @@
                         be staked to earn only Gov APR not Airdrop rewards or
                         other staking incentives. Please unstake your {{vault.rewardSymbol}} and stake directly
                         to
-                        {{vault.poolInfo.farm}} Gov
+                        {{vault.poolInfo.baseTokenContract === terrajs.settings.bPsiDPToken ? 'Nexus' : vault.poolInfo.farm}} Gov
                         under your address to earn the benefits.
+<!--                        TODO once more pylon liquid pool available, do proper gov auto-stake mapping-->
                       </div>
                     </div>
                   </div>
@@ -873,7 +945,7 @@
                 <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
                 {{ vault.unitDisplay }}
               </span>
-              <span *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
+              <span *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)" class="input-group-text f-12 igt-fixwidth fw-bold-600">
                 <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
                 {{ vault.baseSymbol }}
               </span>
@@ -896,18 +968,18 @@
               Amount must be within 6 decimal points
             </span>
             <div *ngIf="withdrawAmt" class="mt-3">
-              <div *ngIf="withdrawMode !== 'ust' && withdrawMode !== 'ust_bdp'" class="d-flex">
+              <div *ngIf="withdrawMode !== 'ust' && withdrawMode !== 'ust_single_token'" class="d-flex">
                 <div>Receive</div>
                 <div class="margin-left-auto">
                   <ng-container *ngIf="withdrawMode === 'tokentoken'">
                     {{ withdrawAmt | lpSplit: info.poolResponses[vault.poolInfo.key]: vault.baseSymbol: vault.denomSymbol: vault.baseDecimals }}
                   </ng-container>
-                  <ng-container *ngIf="withdrawMode === 'lp' || withdrawMode === 'bdp'">
+                  <ng-container *ngIf="withdrawMode === 'lp' || withdrawMode === 'single_token'">
                     {{ withdrawAmt | number }} {{vault.unitDisplay}}
                   </ng-container>
                 </div>
               </div>
-              <div *ngIf="withdrawMode === 'ust' || withdrawMode === 'ust_bdp'">
+              <div *ngIf="withdrawMode === 'ust' || withdrawMode === 'ust_single_token'">
                 <div class="d-flex">
                   <div>
                     <span>Expected receive </span>
@@ -972,7 +1044,7 @@
             </div>
             <div class="row mt-3">
             </div>
-            <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.auto_stake" class="row">
+            <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.auto_stake && vault.poolInfo.farmType === 'LP'" class="row">
               <div class="col">
                 Staked ASTRO
                 <small class="text-primary">APR: {{ info.stat.pairs[ASTRO_KEY]?.farmApr | percent }}</small>
@@ -986,7 +1058,8 @@
                 </small>
               </div>
             </div>
-            <div *ngIf="vault.poolInfo.dex === 'Terraswap' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake" class="row">
+            <div *ngIf="(vault.poolInfo.farmType === 'NASSET' && vault.poolInfo.auto_stake) ||
+            (vault.poolInfo.dex === 'Terraswap' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake)" class="row">
               <div class="col">
                 <ng-container *ngIf="!vault.poolInfo.govLock">Staked</ng-container> {{ vault.rewardSymbol }}
                 <small class="text-primary" *ngIf="!vault.poolInfo.govLock">APR: {{ vault.pairStat?.farmApr | percent }}</small>
@@ -1039,8 +1112,8 @@
                  class="d-grid mt-3 mb-3">
               <button (click)="doClaimReward()" class="btn btn-primary" type="submit">
                 <ng-container *ngIf="vault.poolInfo.auto_stake">Claim
-                  <ng-container *ngIf="vault.poolInfo.dex === 'Astroport'">ASTRO + </ng-container>
-                  <ng-container *ngIf="(vault.poolInfo.dex === 'Astroport' && vault.poolInfo.hasProxyReward) || vault.poolInfo.dex === 'Terraswap'">{{vault.rewardSymbol}} + </ng-container>
+                  <ng-container *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farmType === 'LP' ">ASTRO + </ng-container>
+                  <ng-container *ngIf="(vault.poolInfo.dex === 'Astroport' && vault.poolInfo.hasProxyReward) || vault.poolInfo.dex === 'Terraswap' || vault.poolInfo.farmType === 'NASSET'">{{vault.rewardSymbol}} + </ng-container>
                 </ng-container>
                 SPEC</button>
             </div>
@@ -1064,11 +1137,11 @@
         </button>
       </span>
       </ng-container>
-      <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+      <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)">
       <span class="btn-group w-100">
-        <button (click)="depositMode = 'bdp'; changeDepositMode('bdp')" [ngClass]="depositMode === 'bdp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+        <button (click)="depositMode = 'single_token'; changeDepositMode('single_token')" [ngClass]="depositMode === 'single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}</button>
-        <button (click)="depositMode = 'ust_bdp'; changeDepositMode('ust_bdp')" [ngClass]="depositMode === 'ust_bdp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+        <button (click)="depositMode = 'ust_single_token'; changeDepositMode('ust_single_token')" [ngClass]="depositMode === 'ust_single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           UST
         </button>
       </span>
@@ -1078,12 +1151,12 @@
 
   <ng-template #withdrawModeSection>
     <div class="auto-container mb-1">
-    <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
+    <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)">
       <span class="btn-group w-100">
-        <button (click)="withdrawMode = 'bdp'" [ngClass]="withdrawMode === 'bdp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+        <button (click)="withdrawMode = 'single_token'" [ngClass]="withdrawMode === 'single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}
         </button>
-        <button (click)="withdrawMode = 'ust_bdp'; withdrawAmtChanged()" [ngClass]="withdrawMode === 'ust_bdp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+        <button (click)="withdrawMode = 'ust_single_token'; withdrawAmtChanged()" [ngClass]="withdrawMode === 'ust_single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           UST
         </button>
       </span>

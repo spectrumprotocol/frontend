@@ -6,6 +6,7 @@ import { TruncatePipe } from '../pipes/truncate.pipe';
 import { InfoService } from '../services/info.service';
 import { Subscription, switchMap, tap } from 'rxjs';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
+import { TnsNameService } from '../services/api/tns-name.service';
 
 @Component({
   selector: 'app-menubar',
@@ -22,11 +23,13 @@ export class MenubarComponent implements OnInit, OnDestroy {
     private clipboard: Clipboard,
     private modelService: ModalService,
     private truncate: TruncatePipe,
+    private tnsNameService: TnsNameService,
   ) { }
 
   private processes: Subscription;
 
   walletText = 'Connect Wallet';
+  tnsName = null;
 
   async ngOnInit() {
     // NOTE : Create a composite subscription, we will compose everything into it and unsub everything once on destroy.
@@ -41,9 +44,10 @@ export class MenubarComponent implements OnInit, OnDestroy {
 
     this.processes.add(
       this.terrajs.connected.pipe(
-        tap((connected) => {
+        tap(async (connected) => {
           if (connected) {
             this.walletText = this.getWalletText();
+            this.getTNSName().then(tnsName => this.tnsName = tnsName);
           } else {
             this.walletText = 'Connect Wallet';
           }
@@ -54,11 +58,12 @@ export class MenubarComponent implements OnInit, OnDestroy {
           // NOTE : Will wait until the first state who is not "initialized".
           return this.initWallet();
         }),
-        tap((installed) => {
+        tap(async (installed) => {
           if (!installed) {
             this.walletText = 'Please install Terra Station';
           } else if (this.terrajs.isConnected) {
             this.walletText = this.getWalletText();
+            this.getTNSName().then(tnsName => this.tnsName = tnsName);
           }
         })
       ).subscribe()
@@ -77,9 +82,19 @@ export class MenubarComponent implements OnInit, OnDestroy {
     return this.truncate.transform(this.terrajs.address);
   }
 
+  private async getTNSName() {
+    const { name } = await this.tnsNameService.query({
+      get_name: {
+        address: this.terrajs.address
+      }
+    });
+    return this.truncate.transform(name);
+  }
+
   async connect() {
     await this.terrajs.connect();
     this.walletText = this.getWalletText();
+    this.getTNSName().then(tnsName => this.tnsName = tnsName);
   }
 
   async disconnect() {
@@ -90,6 +105,12 @@ export class MenubarComponent implements OnInit, OnDestroy {
   async copy() {
     this.clipboard.copy(this.terrajs.address);
     this.modelService.notify('address copied');
+    this.dropdown.hide();
+  }
+
+  async copyTNS() {
+    this.clipboard.copy(this.tnsName);
+    this.modelService.notify('TNS address copied');
     this.dropdown.hide();
   }
 }

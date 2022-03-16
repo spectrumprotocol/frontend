@@ -30,7 +30,7 @@ export class TerraNameServiceFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
   denomTokenContract = Denom.USD;
-  highlight = true;
+  highlight = false;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.terraNameServiceToken;
@@ -141,8 +141,12 @@ export class TerraNameServiceFarmInfoService implements FarmInfoService {
     const poolTNSAmount = tnsPoolResponse.assets[1]?.info?.token ? tnsPoolResponse.assets[1].amount : tnsPoolResponse.assets[0].amount;
     const tnsPrice = div(poolUSTAmount, poolTNSAmount);
     const current_distribution_schedule = (config.distribution_schedule as []).find(obj => height >= +obj[0] && height <= +obj[1]);
-    const totalMint = +current_distribution_schedule[2];
-
+    let totalMint;
+    if (current_distribution_schedule){
+      totalMint = +current_distribution_schedule[2];
+    } else {
+       totalMint = 0;
+    }
     const r = new BigNumber(poolUSTAmount).multipliedBy(2).div(tnsPoolResponse.total_share);
     // testnet formula
     // const s = new BigNumber(stakingContractLpBalance.balance).times(r);
