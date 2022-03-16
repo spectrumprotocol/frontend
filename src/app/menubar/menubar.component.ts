@@ -29,7 +29,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
   private processes: Subscription;
 
   walletText = 'Connect Wallet';
-  name = '';
+  tnsName = null;
 
   async ngOnInit() {
     // NOTE : Create a composite subscription, we will compose everything into it and unsub everything once on destroy.
@@ -47,7 +47,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
         tap(async (connected) => {
           if (connected) {
             this.walletText = this.getWalletText();
-            this.name = await this.getName();
+            this.getTNSName().then(tnsName => this.tnsName = tnsName);
           } else {
             this.walletText = 'Connect Wallet';
           }
@@ -63,7 +63,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
             this.walletText = 'Please install Terra Station';
           } else if (this.terrajs.isConnected) {
             this.walletText = this.getWalletText();
-            this.name = await this.getName();
+            this.getTNSName().then(tnsName => this.tnsName = tnsName);
           }
         })
       ).subscribe()
@@ -82,19 +82,19 @@ export class MenubarComponent implements OnInit, OnDestroy {
     return this.truncate.transform(this.terrajs.address);
   }
 
-  private async getName() {
+  private async getTNSName() {
     const { name } = await this.tnsNameService.query({
       get_name: {
         address: this.terrajs.address
       }
     });
-    return this.truncate.transform(name)
+    return this.truncate.transform(name);
   }
 
   async connect() {
     await this.terrajs.connect();
     this.walletText = this.getWalletText();
-    this.name = await this.getName();
+    this.getTNSName().then(tnsName => this.tnsName = tnsName);
   }
 
   async disconnect() {
@@ -105,6 +105,12 @@ export class MenubarComponent implements OnInit, OnDestroy {
   async copy() {
     this.clipboard.copy(this.terrajs.address);
     this.modelService.notify('address copied');
+    this.dropdown.hide();
+  }
+
+  async copyTNS() {
+    this.clipboard.copy(this.tnsName);
+    this.modelService.notify('TNS address copied');
     this.dropdown.hide();
   }
 }
