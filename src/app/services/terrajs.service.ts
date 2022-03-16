@@ -24,6 +24,10 @@ export interface PostResponse {
 export interface GetResponse {
   query_result: object;
 }
+export interface GetResponseOld {
+  height: number;
+  result: object;
+}
 export interface NetworkInfo {
   name: string;
   chainID: string;
@@ -223,11 +227,21 @@ export class TerrajsService implements OnDestroy {
         headers.append(key, additionalHeaders[key]);
       }
     }
-    const res = await this.httpClient.get<GetResponse>(`${this.settings.lcd}/${path}`, {
-      params,
-      headers,
-    }).toPromise();
-    return res.query_result as any;
+
+    if (this.USE_NEW_BASE64_API){
+      const res = await this.httpClient.get<GetResponse>(`${this.settings.lcd}/${path}`, {
+        params,
+        headers,
+      }).toPromise();
+      return res.query_result as any;
+    } else {
+      const res = await this.httpClient.get<GetResponseOld>(`${this.settings.lcd}/${path}`, {
+        params,
+        headers,
+      }).toPromise();
+      this.height = +res.height;
+      return res.result as any;
+    }
   }
 
   async getFCD(path: string, params?: Record<string, string>, headers?: Record<string, string>) {
