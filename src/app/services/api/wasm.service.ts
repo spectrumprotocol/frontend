@@ -12,8 +12,12 @@ export class WasmService {
   ) { }
 
   query(contract: string, msg: object) {
-    return this.terrajs.get(`terra/wasm/v1beta1/contracts/${contract}/store`,
-      { query_msg: Buffer.from(JSON.stringify(msg), 'utf-8').toString('base64') });
+    if (this.terrajs.USE_NEW_BASE64_API){
+      return this.terrajs.get(`terra/wasm/v1beta1/contracts/${contract}/store`,
+        { query_msg: Buffer.from(JSON.stringify(msg), 'utf-8').toString('base64') });
+    } else {
+      return this.terrajs.get(`wasm/contracts/${contract}/store`, { query_msg: JSON.stringify(msg) });
+    }
   }
 
   storeCode(byteCode: string) {

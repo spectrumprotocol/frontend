@@ -56,6 +56,8 @@ export class TerrajsService implements OnDestroy {
   private height = 0;
   private posting = false;
   private subscription: Subscription;
+  USE_NEW_BASE64_API = true; // useful for development and debug
+  latestBlockRefreshTime: number;
 
   constructor(
     private httpClient: HttpClient,
@@ -96,16 +98,31 @@ export class TerrajsService implements OnDestroy {
     return (await types).filter(t => t !== 'READONLY');
   }
 
+  @throttleAsync(1) // to prevent first time getHeight from calling API tendermint.blockInfo() simultaneously
   async getHeight(force?: boolean): Promise<number> {
-    if (this.height <= 1 || force) {
-      // wait for loading
+    if (this.height <= 1 || force || this.USE_NEW_BASE64_API) {
+      // first time getHeight
       if (!this.lcdClient) {
-        return this.height;
+        await this.initLcdClient();
       }
-      const blockInfo = await this.lcdClient.tendermint.blockInfo();
-      this.height = +blockInfo.block.header.height;
+      if (!this.height || !this.latestBlockRefreshTime || this.latestBlockRefreshTime + BLOCK_TIME < Date.now() || force){
+        const blockInfo = await this.lcdClient.tendermint.blockInfo();
+        this.height = +blockInfo.block.header.height;
+        this.latestBlockRefreshTime = Date.now();
+        //console.log('call API get height ', this.latestBlockRefreshTime, this.height);
+      }
     }
+    //console.log('use old height', this.latestBlockRefreshTime, this.height);
     return this.height;
+  }
+
+  async initLcdClient(){
+    const gasPrices = await this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`).toPromise();
+    this.lcdClient = new LCDClient({
+      URL: this.network ? this.network.lcd : this.settings.lcd,
+      chainID:  this.network ? this.network.chainID : this.settings.chainID,
+      gasPrices,
+    });
   }
 
   async connect(auto?: boolean): Promise<void> {
@@ -157,7 +174,6 @@ export class TerrajsService implements OnDestroy {
     }
     const state: ConnectedState = await firstValueFrom(this.walletController.states()
       .pipe(filter((it: WalletStates) => it.status === WalletStatus.WALLET_CONNECTED)));
-
     let wallet: WalletInfo;
     if (state.wallets.length === 0) {
 
@@ -183,12 +199,7 @@ export class TerrajsService implements OnDestroy {
     this.network = state.network;
     this.settings = networks[this.network.name];
 
-    const gasPrices = await this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`).toPromise();
-    this.lcdClient = new LCDClient({
-      URL: this.network.lcd,
-      chainID: this.network.chainID,
-      gasPrices,
-    });
+    await this.initLcdClient();
 
     this.isConnected = true;
     this.connected.next(true);
