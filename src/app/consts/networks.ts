@@ -122,6 +122,7 @@ export interface ISettings {
   // astroportVkrUstLP: string;
   // astroportMineUstLP: string;
   // astroportApolloUstLP: string;
+  tnsReverseRecord: string;
 }
 export const networks: Record<string, ISettings> = {
   mainnet: {
@@ -233,6 +234,7 @@ export const networks: Record<string, ISettings> = {
     mirrorFactory: 'terra1mzj9nsxx0lxlaxnekleqdy8xnyw2qrh3uz6h8p',
     burnVaultController: 'terra12f4h5sk0mfmrvectgw3nns56rlp9za9z0hvvvv',
     burnVault: 'terra1gyqyhjppy3k77wltnmqt29ms340mmayk7ank4e',
+    tnsReverseRecord: 'terra13efj2whf6rm7yedc2v7rnz0e6ltzytyhydy98a',
   },
   testnet: {
     specToken: 'terra1kvsxd94ue6f4rtchv2l6me5k07uh26s7637cza',
@@ -342,6 +344,7 @@ export const networks: Record<string, ISettings> = {
     finder: 'finder.extraterrestrial.money',
     mirrorFactory: 'terra10l9xc9eyrpxd5tqjgy6uxrw7dd9cv897cw8wdr',
     burnVaultController: 'terra12f4h5sk0mfmrvectgw3nns56rlp9za9z0hvvvv',
-    burnVault: 'terra1l3g2yv5cqwdtrxeun4a76jkq45gwwm682usvs4'
+    burnVault: 'terra1l3g2yv5cqwdtrxeun4a76jkq45gwwm682usvs4',
+    tnsReverseRecord: 'terra13efj2whf6rm7yedc2v7rnz0e6ltzytyhydy98a',
   },
 };
