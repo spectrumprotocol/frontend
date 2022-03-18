@@ -94,6 +94,8 @@ import { AstroportXdefiUstFarmInfoService } from './services/farm_info/astroport
 import { TerraworldFarmInfoService } from './services/farm_info/terraworld.farm-info.service';
 import { GlowFarmInfoService } from './services/farm_info/glow.farm-info.service';
 import { LoterraFarmInfoService } from 'src/app/services/farm_info/loterra.farm-info.service';
+import { NethFarmInfoService } from './services/farm_info/neth.farm-info.service';
+import { NlunaFarmInfoService } from './services/farm_info/nluna.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -193,6 +195,8 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AstroportPsiUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportNlunaPsiFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportNethPsiFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: NlunaFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: NethFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportOrionUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true },

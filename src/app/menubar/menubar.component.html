@@ -21,7 +21,7 @@
     <!--- right links -->
     <div mdbDropdown class="dropdown" *ngIf="terrajs.address" #dropdown>
       <button class="btn btn-dark dropdown-toggle btn-sm" type="button" mdbDropdownToggle>
-        <i class="fas fa-wallet"></i>&nbsp;<span class="text-muted d-none d-md-inline">{{walletText}}
+        <i class="fas fa-wallet"></i>&nbsp;<span class="text-muted d-none d-md-inline">{{ tnsName || walletText }}
           <span *ngIf="terrajs.network.name !== 'mainnet'" class="text-danger"> ({{terrajs.network.name}})</span>&nbsp;|&nbsp;</span>
         {{info.userUstAmount | number : '1.0-2'}} UST
       </button>
@@ -33,10 +33,11 @@
         </li>
         <li>
           <a class="dropdown-item disabled d-md-none" href="#" tabindex="-1" aria-disabled="true">
-            {{walletText}}
+            {{ tnsName || walletText}}
           </a>
         </li>
         <li><button class="dropdown-item" type="button" (click)="copy()">Copy address</button></li>
+        <li *ngIf="tnsName"><button class="dropdown-item" type="button" (click)="copyTNS()">Copy TNS address</button></li>
         <li><a class="dropdown-item"
             href="https://{{terrajs.settings.finder}}/{{terrajs.settings.chainID}}/account/{{terrajs.address}}"
             target="_blank" (click)="dropdown.hide()">View on Terra Finder</a></li>

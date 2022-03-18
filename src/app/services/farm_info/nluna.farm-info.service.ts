@@ -1,53 +1,59 @@
 import { Injectable } from '@angular/core';
-import BigNumber from 'bignumber.js';
-import { PoolItem } from '../../api/astroport_token_ust_farm/pools_response';
-import { RewardInfoResponseItem } from '../../api/astroport_token_ust_farm/reward_info_response';
-import { TerrajsService } from '../../terrajs.service';
+import { PoolItem } from '../api/nasset_farm/pools_response';
+import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
+import { TerrajsService } from '../terrajs.service';
 import {
   DEX,
-  FarmInfoService,
   FARM_TYPE_ENUM,
+  FarmInfoService,
   PairStat,
   PoolInfo
-} from './../farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../../libs/base64';
-import {PoolResponse} from '../../api/terraswap_pair/pool_response';
-import {VaultsResponse} from '../../api/gov/vaults_response';
-import {Denom} from '../../../consts/denom';
-import {AstroportTokenUstFarmService} from '../../api/astroport-tokenust-farm.service';
-import {WasmService} from '../../api/wasm.service';
-import {PairInfo} from '../../api/terraswap_factory/pair_info';
+} from './farm-info.service';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../libs/base64';
+import { PoolResponse } from '../api/terraswap_pair/pool_response';
+import { WasmService } from '../api/wasm.service';
+import { VaultsResponse } from '../api/gov/vaults_response';
+import {div, times} from '../../libs/math';
 import { Apollo, gql } from 'apollo-angular';
+import { Denom } from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
+import {NassetFarmService} from '../api/nasset-farm.service';
+import {BalancePipe} from '../../pipes/balance.pipe';
+import {TokenService} from '../api/token.service';
 
 @Injectable()
-export class AstroportPsiUstFarmInfoService implements FarmInfoService {
+export class NlunaFarmInfoService implements FarmInfoService {
   farm = 'Nexus';
   autoCompound = true;
   autoStake = true;
   farmColor = '#F4B6C7';
+  farmType: FARM_TYPE_ENUM = 'NASSET';
   auditWarning = false;
-  farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
-  denomTokenContract = Denom.USD;
-  highlight = false;
   mainnetOnly = false;
-  hasProxyReward = true;
+  highlight = true;
 
   get defaultBaseTokenContract() {
+    return this.terrajs.settings.nLunaToken;
+  }
+
+  // not actually denom, but has trade pair
+  get denomTokenContract() {
     return this.terrajs.settings.nexusToken;
   }
 
   constructor(
-    private farmService: AstroportTokenUstFarmService,
+    private nassetFarmService: NassetFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService,
     private apollo: Apollo,
-  ) {
-  }
+    private balancePipe: BalancePipe,
+    private tokenService: TokenService
+  ) { }
 
   get farmContract() {
-    return this.terrajs.settings.astroportPsiUstFarm;
+    return this.terrajs.settings.nLunaFarm;
   }
 
   get rewardTokenContract() {
@@ -59,14 +65,13 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.farmService.query(this.farmContract, { pools: {} });
+    const pool = await this.nassetFarmService.query(this.farmContract, { pools: {} });
     return pool.pools;
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
-    const key = `${this.dex}|${this.defaultBaseTokenContract}|${Denom.USD}`;
-    const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
-    const farmConfigTask = this.farmService.query(this.farmContract, { config: {} });
+    const farmConfigTask = this.nassetFarmService.query(this.farmContract, { config: {} });
+    const nAssetBalanceTask = this.tokenService.balance(this.defaultBaseTokenContract, this.farmContract);
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
     const nexusGovStatTask = apollo.query<any>({
       query: gql`{
@@ -76,30 +81,36 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
         }
       }`
     }).toPromise();
+    // query: gql`{
+    //     getBAssetVaultAprRecords(limit: 7, offset: 0) {
+    //       date
+    //       bEthVaultApr
+    //       bEthVaultManualApr
+    //       bLunaVaultApr
+    //       bLunaVaultManualApr
+    //      }`
+    const nexusNAssetStatTask = apollo.query<any>({
+      query: gql`{
+        getBAssetVaultAprRecords(limit: 1, offset: 0) {
+          bLunaVaultApr
+         }
+        }`
+    }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
-    const lpStatTask = this.getLPStat(poolResponses[key]);
-    const govStatTask = this.getGovStat();
     const pairs: Record<string, PairStat> = {};
 
-    const [depositAmount, farmConfig, lpStat, nexusGovStat] = await Promise.all([depositAmountTask, farmConfigTask, lpStatTask, nexusGovStatTask]);
+    const [farmConfig, nexusGovStat, nexusNAssetStat, nAssetBalance] = await Promise.all([farmConfigTask, nexusGovStatTask, nexusNAssetStatTask, nAssetBalanceTask]);
     const communityFeeRate = +farmConfig.community_fee;
-    const p = poolResponses[key];
-    const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
-    if (!uusd) {
-      return;
-    }
+    const nAssetTvl = this.balancePipe.transform(nAssetBalance.balance, poolResponses[`Astroport|${this.defaultBaseTokenContract}|${this.terrajs.settings.nexusToken}`], poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
 
-    const poolApr = +(lpStat.apr || 0);
+    const poolApr = +(nexusNAssetStat.data?.getBAssetVaultAprRecords[0]?.bLunaVaultApr || 0) / 100;
+    const key = `${this.defaultBaseTokenContract}`;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
-    pair.tvl = new BigNumber(uusd.amount)
-      .times(depositAmount)
-      .times(2)
-      .div(p.total_share)
-      .toString();
+    pair.tvl = nAssetTvl;
     pair.vaultFee = +pair.tvl * pair.poolApr * communityFeeRate;
 
     return pairs;
@@ -114,13 +125,16 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
+        poolAstroApr: 0,
+        specApr: 0
       };
       return stat;
     }
   }
 
+
   async queryRewards(): Promise<RewardInfoResponseItem[]> {
-    const rewardInfo = await this.farmService.query(this.farmContract, {
+    const rewardInfo = await this.nassetFarmService.query(this.farmContract, {
       reward_info: {
         staker_addr: this.terrajs.address,
       }
@@ -140,17 +154,5 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
         }
       }
     );
-  }
-
-  async getLPStat(poolResponse: PoolResponse) {
-    return {
-      apr: 0
-    };
-  }
-
-  async getGovStat() {
-    return {
-      apy: 0
-    };
   }
 }

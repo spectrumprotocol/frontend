@@ -180,7 +180,7 @@ export class AstroportApolloUstFarmInfoService implements FarmInfoService {
       }
     })).tvl;
     const farmUSTTvl = tvlStrategy38; // +farmPoolUSTAmount * 2;
-    // TODO not 100% same as Apollo FE
+    // REMARK: not 100% same as Apollo FE
     const astroApr = astro_total_emit_per_year * +astroPrice / farmUSTTvl;
     const apr =  astroApr + await this.getApolloLPApr(poolResponse, tvlStrategy38);
     return {
@@ -188,7 +188,7 @@ export class AstroportApolloUstFarmInfoService implements FarmInfoService {
     };
   }
 
-  // TODO not 100% same as Apollo FE
+  // REMARK: not 100% same as Apollo FE
   async getApolloLPApr(apolloPoolResponse: PoolResponse, tvlStrategy38: number): Promise<number>{
     const configTask = this.wasm.query(this.terrajs.settings.apolloFactory, {get_config: {}});
     const heightTask = this.terrajs.getHeight();

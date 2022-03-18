@@ -121,6 +121,8 @@ export class UrlPipe implements PipeTransform {
           case 'bPsiDP-24m': return 'https://gateway.pylon.money/tokens/psi';
         }
         return undefined;
+      case 'nexus_vault':
+        return 'https://terra.nexusprotocol.app/vaults';
     }
   }
 
