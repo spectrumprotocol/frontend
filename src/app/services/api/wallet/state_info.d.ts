@@ -21,6 +21,8 @@
 export type Uint128 = string;
 
 export interface StateInfo {
+  buyback_spec?: Uint128 & string;
+  buyback_ust?: Uint128 & string;
   total_burn?: Uint128 & string;
   [k: string]: unknown;
 }

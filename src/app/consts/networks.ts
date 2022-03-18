@@ -100,6 +100,10 @@ export interface ISettings {
   glowStaking: string;
   glowGov: string;
   glowFarm: string;
+  loterraGov: string;
+  loterraStaking: string;
+  loterraToken: string;
+  loterraFarm: string;
   // // batch only
   // lcdPost: string;
   // controller: string;
@@ -207,6 +211,10 @@ export const networks: Record<string, ISettings> = {
     glowStaking: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
     glowGov: 'terra1xxp34xk4rjexwlu0xfdhyn0zr3qsgare04yll0',
     glowFarm: 'terra1u6f5vnux869rnextxypjdyrvnvcaux68nr6nne',
+    loterraGov: 'terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn',
+    loterraStaking: 'terra1pdslh858spzqrtx2gwr69pzm9m2wrv55aeh742',
+    loterraToken: 'terra1ez46kxtulsdv07538fh5ra5xj8l68mu8eg24vr',
+    loterraFarm: 'terra1hdxp4k64lvmwfgtsecxqw4mn4yyktysx757zfe',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
@@ -314,6 +322,10 @@ export const networks: Record<string, ISettings> = {
     glowStaking: '',
     glowGov: '',
     glowFarm: '',
+    loterraGov: '',
+    loterraStaking: '',
+    loterraToken: '',
+    loterraFarm: '',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     mirrorGraph: 'mirrorTest',

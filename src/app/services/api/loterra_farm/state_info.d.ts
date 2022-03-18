@@ -30,7 +30,6 @@ export interface StateInfo {
   earning: Uint128;
   previous_spec_share: Uint128;
   spec_share_index: Decimal;
-  total_farm_amount: Uint128;
   total_farm_share: Uint128;
   total_weight: number;
   [k: string]: unknown;

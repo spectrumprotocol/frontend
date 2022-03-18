@@ -51,7 +51,6 @@ export type ExecuteMsg =
     }
   | {
       compound: {
-        max_compound: Uint128;
         [k: string]: unknown;
       };
     }
