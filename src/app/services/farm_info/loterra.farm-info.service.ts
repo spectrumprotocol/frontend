@@ -14,14 +14,16 @@ import { div } from 'src/app/libs/math';
 
 @Injectable()
 export class LoterraFarmInfoService implements FarmInfoService {
-  farm = 'Loterra';
+  farm = 'LoTerra';
   autoCompound = true;
   autoStake = false;
-  farmColor = '#ff0dff';
+  farmColor = '#eb47f7';
   auditWarning = false;
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Terraswap';
   denomTokenContract = Denom.USD;
+  mainnetOnly = true;
+  highlight = true;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.loterraToken;
@@ -47,9 +49,9 @@ export class LoterraFarmInfoService implements FarmInfoService {
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
-    const rewardInfoTask = this.wasm.query(this.terrajs.settings.loterraStaking, { holder: { address: this.terrajs.settings.loterraFarm } }).catch(_ => ({}));
+    const rewardInfoTask = this.wasm.query(this.terrajs.settings.loterraStaking, { holder: { address: this.terrajs.settings.loterraFarm } });
     const farmConfigTask = this.loterraFarm.query({ config: {} });
-    const stakingStateTask = this.wasm.query(this.terrajs.settings.loterraStaking, { state: {} }).catch(_ => ({}));
+    const stakingStateTask = this.wasm.query(this.terrajs.settings.loterraStaking, { state: {} });
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
