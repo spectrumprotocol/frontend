@@ -220,7 +220,7 @@ export const networks: Record<string, ISettings> = {
     loterraGov: 'terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn',
     loterraStaking: 'terra1pdslh858spzqrtx2gwr69pzm9m2wrv55aeh742',
     loterraToken: 'terra1ez46kxtulsdv07538fh5ra5xj8l68mu8eg24vr',
-    loterraFarm: 'terra1hdxp4k64lvmwfgtsecxqw4mn4yyktysx757zfe',
+    loterraFarm: 'terra1msy2na2lvf64qffelg5t633f6wzlf03t5uvl8f',
     nLunaRewards: 'terra1hjv3quqsrw3jy7pulgutj0tgxrcrnw2zs2j0k7',
     nETHRewards: 'terra1fhqsu40s0lk3p308mcakzjecj6ts6j2guepfr4',
     nLunaFarm: 'terra16usjvptlpdrj7hcmy7mvdap5tttzcya7ch0can',
