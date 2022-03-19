@@ -91,7 +91,7 @@ export class UrlPipe implements PipeTransform {
           case 'XDEFI': return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.xdefiToken}`;
           case 'TNS': return `https://tns.money/trade`;
           case 'Glow': return `https://gov.glowyield.com/`;
-          case 'LOTA': return `https://coinhall.org/charts/terra/${this.terrajs.settings.loterraToken}`;
+          case 'LOTA': return `https://app.terraswap.io/swap?to=${this.terrajs.settings.loterraToken}&type=swap&from=uusd`;
           default: {
             if (dex === 'Astroport') {
               return 'https://app.astroport.fi/swap';
