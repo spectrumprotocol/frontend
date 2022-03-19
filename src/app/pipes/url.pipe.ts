@@ -60,7 +60,7 @@ export class UrlPipe implements PipeTransform {
           case 'TNS': return `https://tns.money/static/images/tns.png`;
           case 'GLOW': return `https://glowyield.com/assets/img/icons/glow.png`;
           case 'Glow': return `https://glowyield.com/assets/img/icons/glow.png`;
-          case 'Loterra': return `https://loterra.io/LOTA.png`;
+          case 'LoTerra': return `https://loterra.io/LOTA.png`;
           case 'LOTA': return `https://loterra.io/LOTA.png`;
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
