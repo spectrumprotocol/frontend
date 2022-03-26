@@ -7,6 +7,7 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { InfoService } from '../info.service';
 import BigNumber from 'bignumber.js';
+import {Denom} from '../../consts/denom';
 
 @Component({
   selector: 'app-tx-post',
@@ -31,7 +32,7 @@ export class TxPostComponent implements OnInit {
   fee: string;
   feeUST: string;
   coins: string[];
-  selectedCoin = 'uusd';
+  selectedCoin = Denom.USD;
   gasBuffer = 70;
   ngx_slider_option = {
     animate: false,
@@ -73,7 +74,7 @@ export class TxPostComponent implements OnInit {
       this.coins = Object.keys(this.info.tokenBalances)
         .filter(it => this.terrajs.lcdClient.config.gasPrices[it]);
       if (!this.coins.length) {
-        this.coins.push('uusd');
+        this.coins.push(Denom.USD);
       }
       if (!this.coins.includes(this.selectedCoin)) {
         this.selectedCoin = this.coins[0];
@@ -84,12 +85,12 @@ export class TxPostComponent implements OnInit {
       const singerOptions: SignerOptions[] = [{ address: this.terrajs.address }];
       this.signMsg = await this.terrajs.lcdClient.tx.create(singerOptions, {
         msgs: this.msgs,
-        feeDenoms: ['uusd'],
+        feeDenoms: [Denom.USD],
       });
       this.gasLimit = this.signMsg.auth_info.fee.gas_limit;
       this.calculateFee();
-      // const taxAndGas = +this.signMsg.fee.amount.get('uusd').amount?.toNumber() || 0;
-      // const uusdToBeSent = +this.msgs[this.msgs.length - 1]?.['coins']?.get('uusd')?.amount?.toNumber() || 0;
+      // const taxAndGas = +this.signMsg.fee.amount.get(Denom.USD).amount?.toNumber() || 0;
+      // const uusdToBeSent = +this.msgs[this.msgs.length - 1]?.['coins']?.get(Denom.USD)?.amount?.toNumber() || 0;
       // const uusdAfterTx = +this.infoService.userUstAmount * CONFIG.UNIT - taxAndGas - uusdToBeSent;
       // if (taxAndGas + uusdToBeSent > +this.infoService.userUstAmount * CONFIG.UNIT){
       //   throw {
@@ -110,7 +111,7 @@ export class TxPostComponent implements OnInit {
     // this.signMsg = StdSignMsg.fromData({
     //   account_number: this.terrajs.address,
     //   chain_id: this.terrajs.network.chainID,
-    //   fee: { gas: '500000', amount: [{ denom: 'uusd', amount: '75000'}] },
+    //   fee: { gas: '500000', amount: [{ denom: Denom.USD, amount: '75000'}] },
     //   memo: '',
     //   msgs: this.msgs.map(it => it.toData()),
     //   sequence: '',
@@ -130,7 +131,7 @@ export class TxPostComponent implements OnInit {
     this.terrajs.lcdClient.market.swapRate(Coin.fromData({
       denom: this.selectedCoin,
       amount: this.fee,
-    }), 'uusd').then(it => this.feeUST = it.amount.toString());
+    }), Denom.USD).then(it => this.feeUST = it.amount.toString());
   }
 
   async execute() {
