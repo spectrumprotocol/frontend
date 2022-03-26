@@ -760,7 +760,7 @@ export class InfoService {
       const farmApr = pairStat?.farmApr || 0;
       const farmAndAstroApr = farmApr + (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
       const farmApy = poolAprTotal + poolAprTotal * farmAndAstroApr / 2;
-      const stakeApy = farmApy + specApy;
+      const stakeApy = farmApy + (poolInfo.tradeApr || 0) + specApy;
       const apy = Math.max(compoundApy, stakeApy);
 
       const baseToken = this.poolInfos[key].baseTokenContract;
