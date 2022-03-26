@@ -39,7 +39,7 @@
         <li><button class="dropdown-item" type="button" (click)="copy()">Copy address</button></li>
         <li *ngIf="tnsName"><button class="dropdown-item" type="button" (click)="copyTNS()">Copy TNS address</button></li>
         <li><a class="dropdown-item"
-            href="https://{{terrajs.settings.finder}}/{{terrajs.settings.chainID}}/account/{{terrajs.address}}"
+            href="https://{{terrajs.settings.finder}}/{{terrajs.network.name}}/account/{{terrajs.address}}"
             target="_blank" (click)="dropdown.hide()">View on Terra Finder</a></li>
         <li class="dropdown-item">
           <div class="solid-line"></div>

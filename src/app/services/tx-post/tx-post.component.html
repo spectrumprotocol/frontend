@@ -28,8 +28,22 @@
             <div class="col-6 small">Fee <i class="fas fa-info-circle info-icon"
                     mdbTooltip="Fee paid to terra chain to execute this transaction"></i></div>
             <div class="col-6 text-end small">
-                {{ fee.toString() | unit }} UST
+                {{ fee | unit }}
+                <select class="d-inline-block w-auto" [(ngModel)]="selectedCoin" (change)="calculateFee()">
+                    <option *ngFor="let coin of coins" [value]="coin">{{ coin|currency }}</option>
+                </select>
+                <span *ngIf="selectedCoin !== 'uusd'"><br />({{ feeUST | unit }} UST)</span>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-3 small gas">Gas buffer</div>
+            <div class="col-7 small">
+                <div class="custom-slider">
+                    <ngx-slider (userChange)="calculateFee()" [(value)]="gasBuffer" [options]="ngx_slider_option"></ngx-slider>
+                </div>
+                <small [class.invisible]="gasBuffer >= 20" class="text-warning"><i class="fas fa-exclamation-triangle"></i> Transaction could fail on low buffer</small>
+            </div>
+            <div class="col-2 small gas">{{ gasBuffer }}%</div>
         </div>
     </div>
     <div *ngIf="txhash">
@@ -41,9 +55,10 @@
         </div>
     </div>
     <div class="row mt-3" *ngIf="confirmMsg && !failed">
-      <div class="col-12">
-        <input type="checkbox" mdbCheckbox class="form-check-input" [(ngModel)]="confirmCheck"><span [innerHTML]="confirmMsg"></span>
-      </div>
+        <div class="col-12">
+            <input type="checkbox" mdbCheckbox class="form-check-input" [(ngModel)]="confirmCheck"><span
+                [innerHTML]="confirmMsg"></span>
+        </div>
     </div>
 </div>
 <div class="modal-footer">

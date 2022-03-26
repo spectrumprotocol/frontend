@@ -96,6 +96,7 @@ import { GlowFarmInfoService } from './services/farm_info/glow.farm-info.service
 import { LoterraFarmInfoService } from 'src/app/services/farm_info/loterra.farm-info.service';
 import { NethFarmInfoService } from './services/farm_info/neth.farm-info.service';
 import { NlunaFarmInfoService } from './services/farm_info/nluna.farm-info.service';
+import { CurrencyPipe } from './pipes/currency.pipe';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -146,7 +147,8 @@ registerLocaleData(locale, 'en');
     ManageRewardsComponent,
     VaultDialogComponent,
     LpEarningPipe,
-    DashboardComponent
+    DashboardComponent,
+    CurrencyPipe
   ],
   imports: [
     AppRoutingModule,
