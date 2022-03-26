@@ -29,7 +29,7 @@
                     mdbTooltip="Fee paid to terra chain to execute this transaction"></i></div>
             <div class="col-6 text-end small">
                 {{ fee | unit }}
-                <select class="d-inline-block w-auto" [(ngModel)]="selectedCoin" (change)="calculateFee()">
+                <select class="d-inline-block w-auto coins-fee-select" [(ngModel)]="selectedCoin" (change)="calculateFee()">
                     <option *ngFor="let coin of coins" [value]="coin">{{ coin|currency }}</option>
                 </select>
                 <span *ngIf="selectedCoin !== 'uusd'"><br />({{ feeUST | unit }} UST)</span>
