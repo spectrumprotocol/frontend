@@ -37,7 +37,7 @@
         </div>
         <div class="row">
             <div class="col-3 small gas">Gas Buffer <i class="fas fa-info-circle info-icon"
-                mdbTooltip="Gas buffer to prevent failed transaction as the actual gas usage might be slightly higher than the estimated gas fee"></i></div>
+                mdbTooltip="Gas buffer prevents failed transaction as the actual gas usage might be slightly higher than the estimated gas fee"></i></div>
             <div class="col-7 small">
                 <div class="custom-slider">
                     <ngx-slider (userChange)="calculateFee()" [(value)]="gasBuffer" [options]="ngx_slider_option"></ngx-slider>
