@@ -1,13 +1,13 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import {Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult, Wallet} from '@terra-money/terra.js';
+import { Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult, Wallet } from '@terra-money/terra.js';
 import { ISettings, networks } from '../consts/networks';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
 import { filter, startWith } from 'rxjs/operators';
 import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus, getChainOptions } from '@terra-money/wallet-provider';
 import { ModalService } from './modal.service';
 import { throttleAsync } from 'utils-decorators';
-import {MdbModalService} from 'mdb-angular-ui-kit/modal';
+import { MdbModalService } from 'mdb-angular-ui-kit/modal';
 import BigNumber from 'bignumber.js';
 
 export const BLOCK_TIME = 6500; // 6.5s
@@ -109,22 +109,20 @@ export class TerrajsService implements OnDestroy {
       if (!this.lcdClient) {
         await this.initLcdClient();
       }
-      if (!this.height || !this.latestBlockRefreshTime || this.latestBlockRefreshTime + BLOCK_TIME < Date.now() || force){
+      if (!this.height || !this.latestBlockRefreshTime || this.latestBlockRefreshTime + BLOCK_TIME < Date.now() || force) {
         const blockInfo = await this.lcdClient.tendermint.blockInfo();
         this.height = +blockInfo.block.header.height;
         this.latestBlockRefreshTime = Date.now();
-        //console.log('call API get height ', this.latestBlockRefreshTime, this.height);
       }
     }
-    //console.log('use old height', this.latestBlockRefreshTime, this.height);
     return this.height;
   }
 
-  async initLcdClient(){
+  async initLcdClient() {
     const gasPrices = await this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`).toPromise();
     this.lcdClient = new LCDClient({
       URL: this.network ? this.network.lcd : this.settings.lcd,
-      chainID:  this.network ? this.network.chainID : this.settings.chainID,
+      chainID: this.network ? this.network.chainID : this.settings.chainID,
       gasPrices,
     });
   }
@@ -143,12 +141,12 @@ export class TerrajsService implements OnDestroy {
       if (!connect) {
         return;
       }
-      if (connect === 'WALLETCONNECT'){
+      if (connect === 'WALLETCONNECT') {
         connectCallbackData = {
           type: connect,
           identifier: null
         };
-      } else{
+      } else {
         terra_extension_router_session = JSON.parse(terra_extension_router_session_raw);
         connectCallbackData = terra_extension_router_session;
         connectCallbackData.type = connect;
@@ -220,15 +218,15 @@ export class TerrajsService implements OnDestroy {
 
   @throttleAsync(20)
   async get(path: string, params?: Record<string, string>, additionalHeaders?: Record<string, string>) {
-    const headers = new HttpHeaders({'Cache-Control': 'no-cache', 'Content-Type': 'application/json'});
-    if (additionalHeaders){
+    const headers = new HttpHeaders({ 'Cache-Control': 'no-cache', 'Content-Type': 'application/json' });
+    if (additionalHeaders) {
       const keys = Object.keys(additionalHeaders);
-      for (const key of keys){
+      for (const key of keys) {
         headers.append(key, additionalHeaders[key]);
       }
     }
 
-    if (this.USE_NEW_BASE64_API){
+    if (this.USE_NEW_BASE64_API) {
       const res = await this.httpClient.get<GetResponse>(`${this.settings.lcd}/${path}`, {
         params,
         headers,
