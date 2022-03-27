@@ -100,6 +100,10 @@ export interface ISettings {
   glowStaking: string;
   glowGov: string;
   glowFarm: string;
+  loterraGov: string;
+  loterraStaking: string;
+  loterraToken: string;
+  loterraFarm: string;
   nLunaRewards: string;
   nETHRewards: string;
   nLunaFarm: string;
@@ -213,6 +217,10 @@ export const networks: Record<string, ISettings> = {
     glowStaking: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
     glowGov: 'terra1xxp34xk4rjexwlu0xfdhyn0zr3qsgare04yll0',
     glowFarm: 'terra1u6f5vnux869rnextxypjdyrvnvcaux68nr6nne',
+    loterraGov: 'terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn',
+    loterraStaking: 'terra1pdslh858spzqrtx2gwr69pzm9m2wrv55aeh742',
+    loterraToken: 'terra1ez46kxtulsdv07538fh5ra5xj8l68mu8eg24vr',
+    loterraFarm: 'terra1msy2na2lvf64qffelg5t633f6wzlf03t5uvl8f',
     nLunaRewards: 'terra1hjv3quqsrw3jy7pulgutj0tgxrcrnw2zs2j0k7',
     nETHRewards: 'terra1fhqsu40s0lk3p308mcakzjecj6ts6j2guepfr4',
     nLunaFarm: 'terra16usjvptlpdrj7hcmy7mvdap5tttzcya7ch0can',
@@ -326,6 +334,10 @@ export const networks: Record<string, ISettings> = {
     glowStaking: '',
     glowGov: '',
     glowFarm: '',
+    loterraGov: '',
+    loterraStaking: '',
+    loterraToken: '',
+    loterraFarm: '',
     nLunaRewards: 'terra17mr0kt7rzey0ycp2eypxnmtv9fjn7e3rc0yfuz',
     nETHRewards: 'terra1wf3tx75j2jg4ut7fa90rgze5etweqxgqlgq5su',
     nLunaFarm: 'terra1qrzu4zls2ep8drfmx2ul4fu9fu5qular9jlktl',

@@ -409,6 +409,11 @@ input[type="number"] {
   border: solid 1px $glow;
 }
 
+.bg-LoTerra {
+  background: $loterra-bg;
+  border: solid 1px $loterra;
+}
+
 .bg-Kujira {
   background: $kujira;
   background: -webkit-linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);

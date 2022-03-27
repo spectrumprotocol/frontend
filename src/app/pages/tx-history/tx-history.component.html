@@ -24,7 +24,7 @@
             <tbody>
             <tr *ngFor="let txHistory of txHistoryList">
               <td>
-                <a class="text-white" href='https://{{terrajs.settings.finder}}/{{terrajs.settings.chainID}}/tx/{{txHistory.txhash}}' target="_blank">
+                <a class="text-white" href='https://{{terrajs.settings.finder}}/{{terrajs.network.name}}/tx/{{txHistory.txhash}}' target="_blank">
                   <div class="d-flex flex-column">
                     <div class="table-font-size2 fw-bold">{{txHistory.action}}</div>
                     <div class="d-flex justify-content-between table-font-size1">

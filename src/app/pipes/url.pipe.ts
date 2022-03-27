@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import {InfoService} from '../services/info.service';
-import {TerrajsService} from '../services/terrajs.service';
+import { InfoService } from '../services/info.service';
+import { TerrajsService } from '../services/terrajs.service';
 
 const MIRROR_ICON_URL = 'https://whitelist.mirror.finance/images';
 
@@ -60,6 +60,8 @@ export class UrlPipe implements PipeTransform {
           case 'TNS': return `https://tns.money/static/images/tns.png`;
           case 'GLOW': return `https://glowyield.com/assets/img/icons/glow.png`;
           case 'Glow': return `https://glowyield.com/assets/img/icons/glow.png`;
+          case 'LoTerra': return `https://loterra.io/LOTA.png`;
+          case 'LOTA': return `https://loterra.io/LOTA.png`;
           default: return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
       case 'trade':
@@ -89,6 +91,7 @@ export class UrlPipe implements PipeTransform {
           case 'XDEFI': return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.xdefiToken}`;
           case 'TNS': return `https://tns.money/trade`;
           case 'Glow': return `https://gov.glowyield.com/`;
+          case 'LOTA': return `https://app.terraswap.io/swap?to=${this.terrajs.settings.loterraToken}&type=swap&from=uusd`;
           default: {
             if (dex === 'Astroport') {
               return 'https://app.astroport.fi/swap';

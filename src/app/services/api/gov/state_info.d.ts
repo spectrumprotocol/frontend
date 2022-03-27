@@ -30,21 +30,21 @@ export interface StateInfo {
   last_mint: number;
   poll_count: number;
   poll_deposit: Uint128;
-  pool_weight: number;
+  pool_weight?: number;
   pools?: StatePoolInfo[];
   prev_aust_balance?: Uint128 & string;
   prev_balance?: Uint128 & string;
   total_staked: Uint128;
   total_weight: number;
   vault_balances?: Uint128 & string;
+  vault_share_multiplier?: Decimal & string;
   [k: string]: unknown;
 }
 export interface StatePoolInfo {
-  active: boolean;
   aust_index?: Decimal & string;
   days: number;
   total_balance: Uint128;
   total_share: Uint128;
-  weight: number;
+  weight?: number;
   [k: string]: unknown;
 }

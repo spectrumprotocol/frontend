@@ -79,19 +79,8 @@ export type ExecuteMsg =
       };
     }
   | {
-      provide_liquidity: {
+      buy_spec: {
         ust_amount?: Uint128 | null;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      bond: {
-        lp_amount?: Uint128 | null;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      specfarm_claim: {
         [k: string]: unknown;
       };
     };

@@ -73,8 +73,8 @@ export type ExecuteMsg =
     }
   | {
       upsert_pool: {
-        active: boolean;
         days: number;
+        weight: number;
         [k: string]: unknown;
       };
     }

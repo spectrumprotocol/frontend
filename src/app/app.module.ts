@@ -57,44 +57,46 @@ import { UnstakeAllComponent } from './pages/vault/unstake-all/unstake-all.compo
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { PylonFarmInfoService } from './services/farm_info/pylon.farm-info.service';
 import { GovPoolComponent } from './pages/gov/gov-pool/gov-pool.component';
-import {NgxSliderModule} from '@angular-slider/ngx-slider';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { FloorPipe } from './pipes/floor.pipe';
-import {TerraNameServiceFarmInfoService} from './services/farm_info/terranameservice.farm-info.service';
+import { TerraNameServiceFarmInfoService } from './services/farm_info/terranameservice.farm-info.service';
 import { ValkyrieFarmInfoService } from './services/farm_info/valkyrie.farm-info.service';
-import {NexusFarmInfoService} from './services/farm_info/nexus.farm-info.service';
-import {OrionFarmInfoService} from './services/farm_info/orion.farm-info.service';
+import { NexusFarmInfoService } from './services/farm_info/nexus.farm-info.service';
+import { OrionFarmInfoService } from './services/farm_info/orion.farm-info.service';
 import { ManageRewardsComponent } from './pages/vault/manage-rewards/manage-rewards.component';
-import {NlunaPsiFarmInfoService} from './services/farm_info/nluna-psi.farm-info.service';
-import {NethPsiFarmInfoService} from './services/farm_info/neth-psi.farm-info.service';
-import {MdbTooltipModule} from 'mdb-angular-ui-kit/tooltip';
-import {MdbDropdownModule} from 'mdb-angular-ui-kit/dropdown';
-import {MdbTabsModule} from 'mdb-angular-ui-kit/tabs';
-import {MdbCollapseModule} from 'mdb-angular-ui-kit/collapse';
-import {MdbFormsModule} from 'mdb-angular-ui-kit/forms';
-import {MdbValidationModule} from 'mdb-angular-ui-kit/validation';
-import {MdbModalService} from 'mdb-angular-ui-kit/modal';
+import { NlunaPsiFarmInfoService } from './services/farm_info/nluna-psi.farm-info.service';
+import { NethPsiFarmInfoService } from './services/farm_info/neth-psi.farm-info.service';
+import { MdbTooltipModule } from 'mdb-angular-ui-kit/tooltip';
+import { MdbDropdownModule } from 'mdb-angular-ui-kit/dropdown';
+import { MdbTabsModule } from 'mdb-angular-ui-kit/tabs';
+import { MdbCollapseModule } from 'mdb-angular-ui-kit/collapse';
+import { MdbFormsModule } from 'mdb-angular-ui-kit/forms';
+import { MdbValidationModule } from 'mdb-angular-ui-kit/validation';
+import { MdbModalService } from 'mdb-angular-ui-kit/modal';
 import { LpEarningPipe } from './pipes/lp-earning.pipe';
-import {BPsiDPFarmInfoService} from './services/farm_info/bPsiDP.farm-info.service';
-import {AstroportAstroUstFarmInfoService} from './services/farm_info/astroport/astroport-astro-ust.farm-info.service';
-import {AstroportLunaUstFarmInfoService} from './services/farm_info/astroport/astroport-luna-ust-farm-info.service';
-import {AstroportBlunaLunaFarmInfoService} from './services/farm_info/astroport/astroport-bluna-luna.farm-info.service';
-import {MdbCheckboxModule} from 'mdb-angular-ui-kit/checkbox';
+import { BPsiDPFarmInfoService } from './services/farm_info/bPsiDP.farm-info.service';
+import { AstroportAstroUstFarmInfoService } from './services/farm_info/astroport/astroport-astro-ust.farm-info.service';
+import { AstroportLunaUstFarmInfoService } from './services/farm_info/astroport/astroport-luna-ust-farm-info.service';
+import { AstroportBlunaLunaFarmInfoService } from './services/farm_info/astroport/astroport-bluna-luna.farm-info.service';
+import { MdbCheckboxModule } from 'mdb-angular-ui-kit/checkbox';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import {AstroportAncUstFarmInfoService} from './services/farm_info/astroport/astroport-anc-ust.farm-info.service';
-import {AstroportMirUstFarmInfoService} from './services/farm_info/astroport/astroport-mir-ust.farm-info.service';
-import {AstroportApolloUstFarmInfoService} from './services/farm_info/astroport/astroport-apollo-ust.farm-info.service';
-import {AstroportMineUstFarmInfoService} from './services/farm_info/astroport/astroport-mine-ust.farm-info.service';
-import {AstroportOrionUstFarmInfoService} from './services/farm_info/astroport/astroport-orion-ust.farm-info.service';
-import {AstroportSttUstFarmInfoService} from './services/farm_info/astroport/astroport-stt-ust.farm-info.service';
-import {AstroportVkrUstFarmInfoService} from './services/farm_info/astroport/astroport-vkr-ust.farm-info.service';
-import {AstroportPsiUstFarmInfoService} from './services/farm_info/astroport/astroport-psi-ust.farm-info.service';
-import {AstroportNlunaPsiFarmInfoService} from './services/farm_info/astroport/astroport-nluna-psi.farm-info.service';
-import {AstroportNethPsiFarmInfoService} from './services/farm_info/astroport/astroport-neth-psi.farm-info.service';
-import {AstroportXdefiUstFarmInfoService} from './services/farm_info/astroport/astroport-xdefi-ust.farm-info.service';
-import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-info.service';
-import {GlowFarmInfoService} from './services/farm_info/glow.farm-info.service';
-import {NethFarmInfoService} from './services/farm_info/neth.farm-info.service';
-import {NlunaFarmInfoService} from './services/farm_info/nluna.farm-info.service';
+import { AstroportAncUstFarmInfoService } from './services/farm_info/astroport/astroport-anc-ust.farm-info.service';
+import { AstroportMirUstFarmInfoService } from './services/farm_info/astroport/astroport-mir-ust.farm-info.service';
+import { AstroportApolloUstFarmInfoService } from './services/farm_info/astroport/astroport-apollo-ust.farm-info.service';
+import { AstroportMineUstFarmInfoService } from './services/farm_info/astroport/astroport-mine-ust.farm-info.service';
+import { AstroportOrionUstFarmInfoService } from './services/farm_info/astroport/astroport-orion-ust.farm-info.service';
+import { AstroportSttUstFarmInfoService } from './services/farm_info/astroport/astroport-stt-ust.farm-info.service';
+import { AstroportVkrUstFarmInfoService } from './services/farm_info/astroport/astroport-vkr-ust.farm-info.service';
+import { AstroportPsiUstFarmInfoService } from './services/farm_info/astroport/astroport-psi-ust.farm-info.service';
+import { AstroportNlunaPsiFarmInfoService } from './services/farm_info/astroport/astroport-nluna-psi.farm-info.service';
+import { AstroportNethPsiFarmInfoService } from './services/farm_info/astroport/astroport-neth-psi.farm-info.service';
+import { AstroportXdefiUstFarmInfoService } from './services/farm_info/astroport/astroport-xdefi-ust.farm-info.service';
+import { TerraworldFarmInfoService } from './services/farm_info/terraworld.farm-info.service';
+import { GlowFarmInfoService } from './services/farm_info/glow.farm-info.service';
+import { LoterraFarmInfoService } from 'src/app/services/farm_info/loterra.farm-info.service';
+import { NethFarmInfoService } from './services/farm_info/neth.farm-info.service';
+import { NlunaFarmInfoService } from './services/farm_info/nluna.farm-info.service';
+import { CurrencyPipe } from './pipes/currency.pipe';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -145,30 +147,31 @@ registerLocaleData(locale, 'en');
     ManageRewardsComponent,
     VaultDialogComponent,
     LpEarningPipe,
-    DashboardComponent
+    DashboardComponent,
+    CurrencyPipe
   ],
-    imports: [
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        BrowserModule,
-        ClipboardModule,
-        FormsModule,
-        HttpClientModule,
-        ReactiveFormsModule,
-        PrettyJsonModule,
-        GraphQLModule,
-        NgxGoogleAnalyticsModule.forRoot(CONFIG.GOOGLE_ANALYTICS_ID),
-        NgxGoogleAnalyticsRouterModule,
-        NgxChartsModule,
-        NgxSliderModule,
-        MdbTooltipModule,
-        MdbDropdownModule,
-        MdbTabsModule,
-        MdbCollapseModule,
-        MdbFormsModule,
-        MdbValidationModule,
-        MdbCheckboxModule,
-    ],
+  imports: [
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    BrowserModule,
+    ClipboardModule,
+    FormsModule,
+    HttpClientModule,
+    ReactiveFormsModule,
+    PrettyJsonModule,
+    GraphQLModule,
+    NgxGoogleAnalyticsModule.forRoot(CONFIG.GOOGLE_ANALYTICS_ID),
+    NgxGoogleAnalyticsRouterModule,
+    NgxChartsModule,
+    NgxSliderModule,
+    MdbTooltipModule,
+    MdbDropdownModule,
+    MdbTabsModule,
+    MdbCollapseModule,
+    MdbFormsModule,
+    MdbValidationModule,
+    MdbCheckboxModule,
+  ],
   providers: [
     // { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true},
     MdbModalService,
@@ -207,6 +210,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AstroportVkrUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportXdefiUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: TerraNameServiceFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: LoterraFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

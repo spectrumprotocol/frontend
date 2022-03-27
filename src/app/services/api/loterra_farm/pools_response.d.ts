@@ -6,6 +6,12 @@
  */
 
 /**
+ * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
+ *
+ * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
+ */
+export type Decimal = string;
+/**
  * A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.
  *
  * # Examples
@@ -19,19 +25,22 @@
  * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
  */
 export type Uint128 = string;
-/**
- * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
- *
- * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
- */
-export type Decimal = string;
 
-export interface StateInfo {
-  earning: Uint128;
-  previous_spec_share: Uint128;
-  spec_share_index: Decimal;
-  total_farm_amount: Uint128;
-  total_farm_share: Uint128;
-  total_weight: number;
+export interface PoolsResponse {
+  pools: PoolItem[];
+  [k: string]: unknown;
+}
+export interface PoolItem {
+  asset_token: string;
+  auto_spec_share_index: Decimal;
+  farm_share: Uint128;
+  farm_share_index: Decimal;
+  stake_spec_share_index: Decimal;
+  staking_token: string;
+  state_spec_share_index: Decimal;
+  total_auto_bond_share: Uint128;
+  total_stake_bond_amount: Uint128;
+  total_stake_bond_share: Uint128;
+  weight: number;
   [k: string]: unknown;
 }
