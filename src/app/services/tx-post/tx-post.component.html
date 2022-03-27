@@ -28,9 +28,9 @@
             <div class="col-6 small">Fee <i class="fas fa-info-circle info-icon"
                     mdbTooltip="Fee paid to terra chain to execute this transaction"></i></div>
             <div class="col-6 text-end small">
-                {{ fee | unit }}
+                <span [class.text-danger]="!isEnoughFee">{{ fee | unit }}</span>
                 <select class="d-inline-block w-auto coins-fee-select" [(ngModel)]="selectedCoin" (change)="calculateFee()">
-                    <option *ngFor="let coin of coins" [value]="coin">{{ coin|currency }}</option>
+                    <option *ngFor="let coin of coins" [value]="coin">{{ coin | currency }}</option>
                 </select>
                 <span *ngIf="selectedCoin !== 'uusd'"><br />({{ feeUST | unit }} UST)</span>
             </div>
@@ -66,7 +66,7 @@
     <button type="button" class="relative waves-light btn btn-secondary" (click)="cancel()" *ngIf="!executed || failed"
         [disabled]="loading">Cancel</button>
     <button type="button" class="relative waves-light btn btn-primary" (click)="execute()" *ngIf="!executed && !failed"
-        [disabled]="loading || (confirmMsg && !confirmCheck)">Confirm</button>
+        [disabled]="loading || (confirmMsg && !confirmCheck) || !isEnoughFee">Confirm</button>
     <button type="button" class="relative waves-light btn btn-primary" (click)="done()"
         *ngIf="executed && !failed">Done</button>
 </div>
