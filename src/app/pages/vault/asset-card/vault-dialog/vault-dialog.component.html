@@ -690,6 +690,10 @@
                   <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
                 </div>
+                <div class="row" *ngIf="vault.poolInfo.tradeApr">
+                  <div class="col">APR from trade fee</div>
+                  <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
+                </div>
                 <div class="row">
                   <div class="col">APY from auto compound</div>
                   <div class="col text-end">{{vault.pairStat?.poolApy || 0 | percent }}</div>
@@ -722,6 +726,10 @@
                 <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farmType === 'LP'">
                   <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
+                </div>
+                <div class="row" *ngIf="vault.poolInfo.tradeApr">
+                  <div class="col">APR from trade fee</div>
+                  <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
                   <div class="col">APY from auto stake</div>
@@ -772,6 +780,10 @@
                 <div class="row" *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.farmType === 'LP'">
                   <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
+                </div>
+                <div class="row" *ngIf="vault.poolInfo.tradeApr">
+                  <div class="col">APR from trade fee</div>
+                  <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
                   <div class="col">APY from mixed</div>
