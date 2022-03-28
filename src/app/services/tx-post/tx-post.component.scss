@@ -20,7 +20,8 @@
 }
 
 ::ng-deep {
-    .custom-slider .ngx-slider {
+    .gas-slider-adjustment .ngx-slider {
+      margin-top: 0.7em;
       .ngx-slider-bar {
         background: $white;
         height: 5px;
