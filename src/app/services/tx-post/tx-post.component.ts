@@ -32,6 +32,7 @@ export class TxPostComponent implements OnInit {
   fee: string;
   feeUST: string;
   coins: string[];
+  isEnoughFee = true;
   selectedCoin = Denom.USD;
   gasBuffer = 70;
   ngx_slider_option = {
@@ -56,6 +57,11 @@ export class TxPostComponent implements OnInit {
     try {
       if (!this.terrajs.isConnected) {
         throw new Error('please connect your wallet');
+      }
+
+      // ensure native token balances
+      if (Object.keys(this.info.tokenBalances).length === 0) {
+        await this.info.refreshNativeTokens();
       }
 
       // load old values
@@ -132,6 +138,7 @@ export class TxPostComponent implements OnInit {
       denom: this.selectedCoin,
       amount: this.fee,
     }), Denom.USD).then(it => this.feeUST = it.amount.toString());
+    this.isEnoughFee = +this.info.tokenBalances[this.selectedCoin] >= +this.fee;
   }
 
   async execute() {
