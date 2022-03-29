@@ -7,7 +7,7 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { InfoService } from '../info.service';
 import BigNumber from 'bignumber.js';
-import {Denom} from '../../consts/denom';
+import { Denom } from '../../consts/denom';
 
 @Component({
   selector: 'app-tx-post',
@@ -134,10 +134,12 @@ export class TxPostComponent implements OnInit {
       .times(this.terrajs.lcdClient.config.gasPrices[this.selectedCoin])
       .integerValue(BigNumber.ROUND_UP)
       .toString();
-    this.terrajs.lcdClient.market.swapRate(Coin.fromData({
-      denom: this.selectedCoin,
-      amount: this.fee,
-    }), Denom.USD).then(it => this.feeUST = it.amount.toString());
+    if (this.selectedCoin !== Denom.USD) {
+      this.terrajs.lcdClient.market.swapRate(Coin.fromData({
+        denom: this.selectedCoin,
+        amount: this.fee,
+      }), Denom.USD).then(it => this.feeUST = it.amount.toString());
+    }
     this.isEnoughFee = +this.info.tokenBalances[this.selectedCoin] >= +this.fee;
   }
 
