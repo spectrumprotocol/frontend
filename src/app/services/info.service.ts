@@ -699,7 +699,10 @@ export class InfoService {
     await Promise.all(tasks);
     this.updateVaults();
     await this.fetchPoolDetails();
-    await this.updateMyTvl();
+
+    if (connected) {
+      await this.updateMyTvl();
+    }
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
