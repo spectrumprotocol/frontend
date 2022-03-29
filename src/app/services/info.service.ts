@@ -722,7 +722,7 @@ export class InfoService {
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
       localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
       localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-      if (skipPoolResponses) {
+      if (!skipPoolResponses) {
         this.poolResponses = data.poolResponses;
         localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
       }
