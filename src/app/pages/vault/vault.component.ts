@@ -50,6 +50,8 @@ export interface Vault {
 export class VaultComponent implements OnInit, OnDestroy {
   private connected: Subscription;
   private heightChanged: Subscription;
+  private onTransaction: Subscription;
+
   private lastSortBy: string;
   public innerWidth: any;
   loading = true;
@@ -93,19 +95,27 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.height = await this.terrajs.getHeight();
         this.lastSortBy = undefined;
       });
+
+    this.onTransaction = this.terrajs.transactionComplete.subscribe(async () => {
+      await this.info.refreshRewardInfos();
+      if (this.showDepositedPoolOnly) {
+        this.refresh();
+      }
+      await this.info.updateMyTvl();
+    });
     this.heightChanged = this.terrajs.heightChanged.subscribe(async i => {
-      if (this.loading || !i) {
+      if (this.loading || !i || document.hidden) {
         return;
       }
-      if (i % 3 === 0) {
+      if (i % 10 === 0) {
         await Promise.all([this.info.refreshPool(), this.info.retrieveCachedStat(true)]);
-      }
-      if (this.terrajs.isConnected) {
-        await this.info.refreshRewardInfos();
-        if (this.showDepositedPoolOnly) {
-          this.refresh();
+        if (this.terrajs.isConnected) {
+          await this.info.refreshRewardInfos();
+          if (this.showDepositedPoolOnly) {
+            this.refresh();
+          }
+          await this.info.updateMyTvl();
         }
-        await this.info.updateMyTvl();
       }
     });
   }
@@ -142,6 +152,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.connected.unsubscribe();
     this.heightChanged.unsubscribe();
+    this.onTransaction.unsubscribe();
   }
 
   memoize(name: string) {
