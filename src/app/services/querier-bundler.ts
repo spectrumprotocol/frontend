@@ -49,7 +49,11 @@ export class QueryBundler {
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
         const task = tasks[i];
-        task.ok(fromBase64(result));
+        const str = fromBase64(result);
+        if (false){ // for debug
+          console.log(task.query.addr, fromBase64(task.query.msg), str);
+        }
+        task.ok(str);
       }
     }).catch(ex => {
       for (const task of tasks) {
