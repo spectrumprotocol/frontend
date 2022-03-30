@@ -496,7 +496,7 @@ export class InfoService {
 
   async refreshRewardInfos() {
     const rewardInfos: InfoService['rewardInfos'] = {};
-    const bundler = new QueryBundler(this.wasm, 8);
+    const bundler = new QueryBundler(this.wasm, 7);
     const tasks: Promise<any>[] = [];
     for (const farmInfo of this.farmInfos) {
       if (!this.shouldEnableFarmInfo(farmInfo)) {
