@@ -30,6 +30,7 @@ export class GovComponent implements OnInit, OnDestroy {
   myBalance: BalanceResponse;
   UNIT = CONFIG.UNIT;
   private connected: Subscription;
+  private onTransaction: Subscription;
 
   constructor(
     private gov: GovService,
@@ -40,8 +41,14 @@ export class GovComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.$gaService.event('VIEW_GOV_PAGE');
+    this.onTransaction = this.terrajs.transactionComplete.subscribe(() => {
+      this.info.refreshBalance({ native_token: true, spec: true });
+    });
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
+        if (connected) {
+          await this.info.refreshBalance({ native_token: true, spec: true });
+        }
         this.info.initializeVaultData(connected);
         this.gov.config()
           .then(it => this.config = it);
@@ -51,6 +58,7 @@ export class GovComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.connected.unsubscribe();
+    this.onTransaction.unsubscribe();
   }
 
   async pollReset() {

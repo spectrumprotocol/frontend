@@ -699,7 +699,10 @@ export class InfoService {
     await Promise.all(tasks);
     this.updateVaults();
     await this.fetchPoolDetails();
-    await this.updateMyTvl();
+
+    if (connected) {
+      await this.updateMyTvl();
+    }
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
@@ -719,7 +722,7 @@ export class InfoService {
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
       localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
       localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-      if (skipPoolResponses) {
+      if (!skipPoolResponses) {
         this.poolResponses = data.poolResponses;
         localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
       }

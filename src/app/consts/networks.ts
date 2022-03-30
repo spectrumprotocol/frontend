@@ -226,7 +226,7 @@ export const networks: Record<string, ISettings> = {
     nLunaFarm: 'terra16usjvptlpdrj7hcmy7mvdap5tttzcya7ch0can',
     nETHFarm: 'terra1gvlll4hytc9s34dskw5ym86erx3hx2j6sa8zhy',
     astroportRouter: 'terra16t7dpwwgx9n3lq6l6te3753lsjqwhxwpday9zx',
-    lcd: 'https://lcd.terra.dev',
+    lcd: 'https://node.spec.finance',
     fcd: 'https://fcd.terra.dev',
     mirrorGraph: 'mirror',
     specAPI: 'https://specapi.azurefd.net/api',

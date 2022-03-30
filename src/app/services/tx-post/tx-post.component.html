@@ -29,31 +29,35 @@
                     mdbTooltip="Fee paid to terra chain to execute this transaction"></i></div>
             <div class="col-6 text-end small">
                 <span>{{ fee | unit }}</span>
-                <select class="d-inline-block w-auto coins-fee-select" [(ngModel)]="selectedCoin" (change)="calculateFee()">
+                <select class="d-inline-block w-auto coins-fee-select" [(ngModel)]="selectedCoin"
+                    (change)="calculateFee()" *ngIf="!loading">
                     <option *ngFor="let coin of coins" [value]="coin">{{ coin | currency }}</option>
-                </select>
+                </select><span *ngIf="loading"> {{ selectedCoin | currency }}</span>
                 <span *ngIf="selectedCoin !== 'uusd'"><br />({{ feeUST | unit }} UST)</span>
             </div>
         </div>
         <div class="row mt-2 mb-1">
-          <div class="col-3 small gas">Gas Buffer <i class="fas fa-info-circle info-icon"
-              mdbTooltip="Gas buffer prevents failed transaction as the actual gas usage might be slightly higher than the estimated gas fee"></i></div>
-          <div class="col-7">
-            <div class="gas-slider-adjustment">
-                <ngx-slider (userChange)="calculateFee()" [(value)]="gasBuffer" [options]="ngx_slider_option"></ngx-slider>
+            <div class="col-3 small gas">Gas Buffer <i class="fas fa-info-circle info-icon"
+                    mdbTooltip="Gas buffer prevents failed transaction as the actual gas usage might be slightly higher than the estimated gas fee"></i>
             </div>
-          </div>
-          <div class="col-2 small gas">{{ gasBuffer }}%</div>
+            <div class="col-7">
+                <div class="gas-slider-adjustment">
+                    <ngx-slider (userChange)="calculateFee()" [(value)]="gasBuffer" [options]="ngx_slider_option" *ngIf="!loading"></ngx-slider>
+                </div>
+            </div>
+            <div class="col-2 small gas">{{ gasBuffer }}%</div>
         </div>
     </div>
-      <div class="row">
+    <div class="row" *ngIf="!failed && !executed && !loading && signMsg">
         <div class="col-3"></div>
         <div class="col-7">
-          <span *ngIf="gasBuffer < 20" class="small text-warning"><i class="fas fa-exclamation-triangle"></i> Transaction could fail on low buffer <br/></span>
-          <span *ngIf="!isEnoughFee" class="small text-danger"><i class="fas fa-exclamation-triangle"></i> You do not have enough coin </span>
+            <span *ngIf="gasBuffer < 20" class="small text-warning"><i class="fas fa-exclamation-triangle"></i>
+                Transaction could fail on low buffer <br /></span>
+            <span *ngIf="!isEnoughFee" class="small text-danger"><i class="fas fa-exclamation-triangle"></i> You do not
+                have enough coin </span>
         </div>
         <div class="col-2"></div>
-      </div>
+    </div>
     <div *ngIf="txhash">
         <div class="row">
             <div class="col-6 small">Transaction Id</div>

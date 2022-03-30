@@ -1,8 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult, Wallet } from '@terra-money/terra.js';
+import { Coin, LCDClient, Msg, SyncTxBroadcastResult } from '@terra-money/terra.js';
 import { ISettings, networks } from '../consts/networks';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, interval, Subject, Subscription } from 'rxjs';
 import { filter, startWith } from 'rxjs/operators';
 import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus, getChainOptions } from '@terra-money/wallet-provider';
 import { ModalService } from './modal.service';
@@ -62,6 +62,7 @@ export class TerrajsService implements OnDestroy {
   private subscription: Subscription;
   USE_NEW_BASE64_API = true; // useful for development and debug
   latestBlockRefreshTime: number;
+  transactionComplete = new Subject();
 
   constructor(
     private httpClient: HttpClient,
@@ -121,8 +122,8 @@ export class TerrajsService implements OnDestroy {
   async initLcdClient() {
     const gasPrices = await this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`).toPromise();
     this.lcdClient = new LCDClient({
-      URL: this.network ? this.network.lcd : this.settings.lcd,
-      chainID: this.network ? this.network.chainID : this.settings.chainID,
+      URL: this.settings.lcd,
+      chainID: this.settings.chainID,
       gasPrices,
     });
   }
@@ -269,6 +270,7 @@ export class TerrajsService implements OnDestroy {
       if (!result) {
         throw new Error('Transaction canceled');
       }
+      this.transactionComplete.next(null);
     } finally {
       this.posting = false;
     }

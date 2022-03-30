@@ -35,14 +35,6 @@ export class MenubarComponent implements OnInit, OnDestroy {
     // NOTE : Create a composite subscription, we will compose everything into it and unsub everything once on destroy.
     this.processes = new Subscription();
     this.processes.add(
-      this.terrajs.heightChanged.pipe(
-        tap(async () => {
-          await this.info.refreshBalance({ native_token: true, spec: true });
-        })
-      ).subscribe()
-    );
-
-    this.processes.add(
       this.terrajs.connected.pipe(
         tap(async (connected) => {
           if (connected) {
@@ -64,6 +56,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
           } else if (this.terrajs.isConnected) {
             this.walletText = this.getWalletText();
             this.getTNSName().then(tnsName => this.tnsName = tnsName);
+            await this.info.refreshBalance({ native_token: true, spec: true });
           }
         })
       ).subscribe()
