@@ -496,30 +496,38 @@ export class InfoService {
 
   async refreshRewardInfos() {
     const rewardInfos: InfoService['rewardInfos'] = {};
-    const bundler = new QueryBundler(this.wasm, 7);
+    const bundler = new QueryBundler(this.wasm, 8);
     const tasks: Promise<any>[] = [];
+    const BUNDLER_BLACKLIST = new Set([this.terrajs.settings.mirrorFarm]);
+    const processRewards = (farmInfo: FarmInfoService, rewards: RewardInfoResponseItem[]) => {
+      if (farmInfo.farmContract === this.terrajs.settings.specFarm) {
+        for (const it of rewards) {
+          it['stake_bond_amount'] = it.bond_amount;
+        }
+      }
+      for (const reward of rewards) {
+        if (farmInfo.farmType === 'LP') {
+          rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+        } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
+          rewardInfos[`${reward.asset_token}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+        }
+      }
+    };
+
     for (const farmInfo of this.farmInfos) {
       if (!this.shouldEnableFarmInfo(farmInfo)) {
         continue;
       }
-      const task = bundler.query(farmInfo.farmContract, {
-        reward_info: {
-          staker_addr: this.terrajs.address,
-        }
-      }).then(({ reward_infos: rewards }: { reward_infos: RewardInfoResponseItem[] }) => {
-        if (farmInfo.farmContract === this.terrajs.settings.specFarm) {
-          for (const it of rewards) {
-            it['stake_bond_amount'] = it.bond_amount;
+      let task;
+      if (BUNDLER_BLACKLIST.has(farmInfo.farmContract)){
+        task = await farmInfo.queryRewards().then((rewards) => processRewards(farmInfo, rewards));
+      } else {
+        task = bundler.query(farmInfo.farmContract, {
+          reward_info: {
+            staker_addr: this.terrajs.address,
           }
-        }
-        for (const reward of rewards) {
-          if (farmInfo.farmType === 'LP') {
-            rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
-          } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
-            rewardInfos[`${reward.asset_token}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
-          }
-        }
-      });
+        }).then(({ reward_infos: rewards }: { reward_infos: RewardInfoResponseItem[] }) => processRewards(farmInfo, rewards));
+      }
       tasks.push(task);
     }
 
