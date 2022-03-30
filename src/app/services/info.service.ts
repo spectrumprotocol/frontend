@@ -14,7 +14,8 @@ import {
   PairStat,
   PoolInfo,
   RewardInfoResponseItem,
-  FARM_TYPE_SINGLE_TOKEN
+  FARM_TYPE_SINGLE_TOKEN,
+  PoolItem
 } from './farm_info/farm-info.service';
 import { fromEntries } from '../libs/core';
 import { PairInfo } from './api/terraswap_factory/pair_info';
@@ -31,6 +32,8 @@ import { Apollo, gql } from 'apollo-angular';
 import { AnchorMarketService } from './api/anchor-market.service';
 import { BalanceResponse } from './api/gov/balance_response';
 import { StateInfo } from './api/gov/state_info';
+import { QueryBundler } from './querier-bundler';
+import { WasmService } from './api/wasm.service';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -105,6 +108,7 @@ export class InfoService {
     private wallet: WalletService,
     private apollo: Apollo,
     private anchorMarket: AnchorMarketService,
+    private wasm: WasmService,
   ) {
     try {
       const infoSchemaVersion = localStorage.getItem('infoSchemaVersion');
@@ -241,37 +245,43 @@ export class InfoService {
   @memoize(1000)
   async refreshPoolInfos() {
     const poolInfos: Record<string, PoolInfo> = {};
-    const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
-      if (!farmInfo.farmContract) {
-        return;
+    const bundler = new QueryBundler(this.wasm);
+    const tasks: Promise<any>[] = [];
+    for (const farmInfo of this.farmInfos) {
+      if (!this.shouldEnableFarmInfo(farmInfo)) {
+        continue;
       }
-      const pools = await farmInfo.queryPoolItems();
-      for (const pool of pools) {
-        const key = farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}` : `${pool.asset_token}`;
-        poolInfos[key] = Object.assign(pool,
-          {
-            key,
-            farm: farmInfo.farm,
-            farmContract: farmInfo.farmContract,
-            baseTokenContract: pool.asset_token,
-            denomTokenContract: farmInfo.denomTokenContract,
-            rewardTokenContract: farmInfo.rewardTokenContract,
-            rewardKey: `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}`,
-            auto_compound: farmInfo.autoCompound,
-            auto_stake: farmInfo.autoStake,
-            govLock: farmInfo.govLock,
-            forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
-              ? (farmInfo.govLock ? 'compound' : undefined)
-              : (farmInfo.autoCompound ? 'compound' : 'stake'),
-            auditWarning: farmInfo.auditWarning,
-            farmType: farmInfo.farmType ?? 'LP',
-            score: (farmInfo.highlight ? 1000000 : 0) + (pool.weight || 0),
-            dex: farmInfo.dex ?? 'Terraswap',
-            highlight: farmInfo.highlight,
-            hasProxyReward: farmInfo.hasProxyReward ?? false,
-          });
-      }
-    });
+      const task = bundler.query(farmInfo.farmContract, { pools: {} })
+        .then(({ pools }: { pools: PoolItem[] }) => {
+          for (const pool of pools) {
+            const key = farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}` : `${pool.asset_token}`;
+            poolInfos[key] = Object.assign(pool,
+              {
+                key,
+                farm: farmInfo.farm,
+                farmContract: farmInfo.farmContract,
+                baseTokenContract: pool.asset_token,
+                denomTokenContract: farmInfo.denomTokenContract,
+                rewardTokenContract: farmInfo.rewardTokenContract,
+                rewardKey: `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}`,
+                auto_compound: farmInfo.autoCompound,
+                auto_stake: farmInfo.autoStake,
+                govLock: farmInfo.govLock,
+                forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
+                  ? (farmInfo.govLock ? 'compound' : undefined)
+                  : (farmInfo.autoCompound ? 'compound' : 'stake'),
+                auditWarning: farmInfo.auditWarning,
+                farmType: farmInfo.farmType ?? 'LP',
+                score: (farmInfo.highlight ? 1000000 : 0) + (pool.weight || 0),
+                dex: farmInfo.dex ?? 'Terraswap',
+                highlight: farmInfo.highlight,
+                hasProxyReward: farmInfo.hasProxyReward ?? false,
+              });
+          }
+        });
+      tasks.push(task);
+    }
+    bundler.flush();
     await Promise.all(tasks);
 
     localStorage.setItem('poolInfos', JSON.stringify(poolInfos));
@@ -280,41 +290,49 @@ export class InfoService {
 
   async ensurePairInfos() {
     await this.ensurePoolInfoLoaded();
-    const tasks = Object.keys(this.poolInfos)
-      .filter(key => !this.pairInfos[key])
-      .map(async key => {
-        let pairInfoKey;
-        const baseTokenContract = this.poolInfos[key].baseTokenContract;
-        const denomTokenContract = this.poolInfos[key].denomTokenContract;
-        if (this.poolInfos[key].farmType === 'LP') {
-          pairInfoKey = key;
-        } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
-          pairInfoKey = `${this.poolInfos[key].dex}|${baseTokenContract}|${denomTokenContract}`;
+    const bundler = new QueryBundler(this.wasm);
+    const tasks: Promise<any>[] = [];
+    for (const key of Object.keys(this.poolInfos)) {
+      if (this.pairInfos[key]) {
+        continue;
+      }
+
+      let pairInfoKey: string;
+      const baseTokenContract = this.poolInfos[key].baseTokenContract;
+      const denomTokenContract = this.poolInfos[key].denomTokenContract;
+      if (this.poolInfos[key].farmType === 'LP') {
+        pairInfoKey = key;
+      } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
+        pairInfoKey = `${this.poolInfos[key].dex}|${baseTokenContract}|${denomTokenContract}`;
+      } else {
+        continue;
+      }
+      const tokenA = baseTokenContract.startsWith('u') ?
+        { native_token: { denom: baseTokenContract } } : { token: { contract_addr: baseTokenContract } };
+      const tokenB = denomTokenContract.startsWith('u') ?
+        { native_token: { denom: denomTokenContract } } : { token: { contract_addr: denomTokenContract } };
+
+      let factory: string;
+      if (this.poolInfos[key].dex === 'Terraswap') {
+        factory = this.terrajs.settings.terraSwapFactory;
+      } else if (this.poolInfos[key].dex === 'Astroport') {
+        factory = this.terrajs.settings.astroportFactory;
+      } else {
+        continue;
+      }
+
+      const task = bundler.query(factory, {
+        pair: {
+          asset_infos: [
+            tokenA, tokenB
+          ]
         }
-        const tokenA = baseTokenContract.startsWith('u') ?
-          { native_token: { denom: baseTokenContract } } : { token: { contract_addr: baseTokenContract } };
-        const tokenB = denomTokenContract.startsWith('u') ?
-          { native_token: { denom: denomTokenContract } } : { token: { contract_addr: denomTokenContract } };
-        if (this.poolInfos[key].dex === 'Terraswap') {
-          this.pairInfos[pairInfoKey] = await this.terraSwapFactory.query({
-            pair: {
-              asset_infos: [
-                tokenA, tokenB
-              ]
-            }
-          });
-        } else if (this.poolInfos[key].dex === 'Astroport') {
-          this.pairInfos[pairInfoKey] = await this.astroportFactory.query({
-            pair: {
-              asset_infos: [
-                tokenA, tokenB
-              ]
-            }
-          });
-        }
-      });
+      }).then(value => this.pairInfos[pairInfoKey] = value);
+      tasks.push(task);
+    }
 
     if (tasks.length) {
+      bundler.flush();
       await Promise.all(tasks);
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
     }
@@ -333,7 +351,9 @@ export class InfoService {
   async ensureTokenInfos() {
     await this.ensurePoolInfoLoaded();
     const cw20Tokens = new Set<string>();
-    Object.keys(this.poolInfos).forEach(key => {
+    const bundler = new QueryBundler(this.wasm);
+    const tasks: Promise<any>[] = [];
+    for (const key of Object.keys(this.poolInfos)) {
       const baseTokenContract = this.poolInfos[key].baseTokenContract;
       const denomTokenContract = this.poolInfos[key].denomTokenContract;
       const rewardTokenContract = this.poolInfos[key].rewardTokenContract;
@@ -346,19 +366,22 @@ export class InfoService {
       if (rewardTokenContract && !rewardTokenContract.startsWith('u')) {
         cw20Tokens.add(rewardTokenContract);
       }
-    });
-    const tasks = Array.from(cw20Tokens)
-      .filter(key => !this.tokenInfos[key])
-      .map(async key => {
-        const it = await this.token.query(key, { token_info: {} });
-        this.tokenInfos[key] = {
+    }
+    for (const key of cw20Tokens) {
+      if (this.tokenInfos[key]) {
+        continue;
+      }
+      const task = bundler.query(key, { token_info: {} })
+        .then(it => this.tokenInfos[key] = {
           name: it.name,
           symbol: this.cleanSymbol(it.symbol),
           decimals: it.decimals,
           unit: 10 ** it.decimals,
-        };
-      });
+        });
+      tasks.push(task);
+    }
     if (tasks.length) {
+      bundler.flush();
       await Promise.all(tasks);
       localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
     }
@@ -473,8 +496,15 @@ export class InfoService {
 
   async refreshRewardInfos() {
     const rewardInfos: InfoService['rewardInfos'] = {};
-    const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
-      const rewards = await farmInfo.queryRewards();
+    const bundler = new QueryBundler(this.wasm, 8);
+    const tasks: Promise<any>[] = [];
+    const BUNDLER_BLACKLIST = new Set([this.terrajs.settings.mirrorFarm]);
+    const processRewards = (farmInfo: FarmInfoService, rewards: RewardInfoResponseItem[]) => {
+      if (farmInfo.farmContract === this.terrajs.settings.specFarm) {
+        for (const it of rewards) {
+          it['stake_bond_amount'] = it.bond_amount;
+        }
+      }
       for (const reward of rewards) {
         if (farmInfo.farmType === 'LP') {
           rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
@@ -482,7 +512,26 @@ export class InfoService {
           rewardInfos[`${reward.asset_token}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
         }
       }
-    });
+    };
+
+    for (const farmInfo of this.farmInfos) {
+      if (!this.shouldEnableFarmInfo(farmInfo)) {
+        continue;
+      }
+      let task;
+      if (BUNDLER_BLACKLIST.has(farmInfo.farmContract)){
+        task = await farmInfo.queryRewards().then((rewards) => processRewards(farmInfo, rewards));
+      } else {
+        task = bundler.query(farmInfo.farmContract, {
+          reward_info: {
+            staker_addr: this.terrajs.address,
+          }
+        }).then(({ reward_infos: rewards }: { reward_infos: RewardInfoResponseItem[] }) => processRewards(farmInfo, rewards));
+      }
+      tasks.push(task);
+    }
+
+    bundler.flush();
     await Promise.all(tasks);
     this.rewardInfos = rewardInfos;
     localStorage.setItem('rewardInfos', JSON.stringify(rewardInfos));
@@ -499,28 +548,33 @@ export class InfoService {
   async refreshPoolResponse(key: string) {
     const pairInfo = this.pairInfos[key];
     const [dex, base, denom] = key.split('|');
+    const bundler = new QueryBundler(this.wasm);
     const tasks: Promise<any>[] = [];
+
+    const balanceQuery = {
+      balance: {
+        address: this.terrajs.address
+      }
+    };
     if (!base.startsWith('u')) {
-      tasks.push(this.token.balance(base)
+      tasks.push(bundler.query(base, balanceQuery)
         .then(it => this.tokenBalances[base] = it.balance));
     } else {
       tasks.push(this.refreshNativeTokens());
     }
     if (!denom.startsWith('u')) {
-      tasks.push(this.token.balance(denom)
+      tasks.push(bundler.query(denom, balanceQuery)
         .then(it => this.tokenBalances[denom] = it.balance));
     } else {
       tasks.push(this.refreshNativeTokens());
     }
-    if (dex === 'Terraswap') {
-      tasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-        .then(it => this.poolResponses[key] = it));
-    } else if (dex === 'Astroport') {
-      tasks.push(this.astroport.query(pairInfo.contract_addr, { pool: {} })
-        .then(it => this.poolResponses[key] = it));
-    }
-    tasks.push(this.token.balance(pairInfo.liquidity_token)
+    tasks.push(bundler.query(pairInfo.contract_addr, { pool: {} })
+      .then(it => this.poolResponses[key] = it));
+
+    tasks.push(bundler.query(pairInfo.liquidity_token, balanceQuery)
       .then(it => this.lpTokenBalances[pairInfo.liquidity_token] = it.balance));
+
+    bundler.flush();
     await Promise.all(tasks);
   }
 
@@ -528,9 +582,10 @@ export class InfoService {
   async refreshPoolResponses() {
     await this.ensurePairInfos();
     const poolResponses: Record<string, PoolResponse> = {};
+    const bundler = new QueryBundler(this.wasm);
     const poolTasks: Promise<any>[] = [];
     for (const key of Object.keys(this.poolInfos)) {
-      let poolResponseKey;
+      let poolResponseKey: string;
       const dex = this.poolInfos[key].dex;
       if (this.poolInfos[key].farmType === 'LP') {
         poolResponseKey = key;
@@ -541,20 +596,19 @@ export class InfoService {
       }
       const pairInfo = this.pairInfos[poolResponseKey];
 
-      if (dex === 'Terraswap' && pairInfo?.contract_addr) {
-        poolTasks.push(this.terraSwap.query(pairInfo.contract_addr, { pool: {} })
-          .then(it => poolResponses[poolResponseKey] = it).catch(error => console.error('refreshPoolResponses Terraswap error: ', error)));
-      } else if (dex === 'Astroport' && pairInfo?.contract_addr) {
-        poolTasks.push(this.astroport.query(pairInfo.contract_addr, { pool: {} })
-          .then(it => poolResponses[poolResponseKey] = it).catch(error => console.error('refreshPoolResponses Astroport error: ', error)));
-      }
+      poolTasks.push(bundler.query(pairInfo.contract_addr, { pool: {} })
+        .then(it => poolResponses[poolResponseKey] = it));
     }
-    await Promise.all(poolTasks);
+
+    bundler.flush();
+    await Promise.all(poolTasks)
+      .catch(error => console.error('refreshPoolResponses error: ', error));
     this.poolResponses = poolResponses;
     localStorage.setItem('poolResponses', JSON.stringify(poolResponses));
   }
 
   async refreshCirculation() {
+    // testnet doesn't have burnvault
     if (this.terrajs.network?.name === 'testnet') {
       const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
       const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
@@ -562,9 +616,19 @@ export class InfoService {
       this.circulation = minus(taskResult[0].total_supply, taskResult[1].locked_amount);
       return;
     } else {
-      const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
-      const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
-      const task3 = this.wallet.balance(this.terrajs.settings.burnVault, this.terrajs.settings.burnVaultController);
+      const bundler = new QueryBundler(this.wasm);
+      const task1 = bundler.query(this.terrajs.settings.specToken, { token_info: {} });
+      const task2 = bundler.query(this.terrajs.settings.wallet, {
+        balance: {
+          address: this.terrajs.settings.platform
+        }
+      });
+      const task3 = bundler.query(this.terrajs.settings.burnVault, {
+        balance: {
+          address: this.terrajs.settings.burnVaultController
+        }
+      });
+      bundler.flush();
       const taskResult = await Promise.all([task1, task2, task3]);
       this.circulation = minus(minus(taskResult[0].total_supply, taskResult[1].locked_amount), taskResult[2].staked_amount);
     }
@@ -706,35 +770,37 @@ export class InfoService {
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
-    try {
-      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
-        throw (data);
-      }
-      this.tokenInfos = data.tokenInfos;
-      this.stat = data.stat;
-      this.pairInfos = data.pairInfos;
-      this.poolInfos = data.poolInfos;
-      this.circulation = data.circulation;
-      this.marketCap = data.marketCap;
-      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-      localStorage.setItem('stat', JSON.stringify(this.stat));
-      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-      localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-      if (!skipPoolResponses) {
-        this.poolResponses = data.poolResponses;
-        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-      }
-    } catch (ex) {
-      // fallback if api die
-      console.error('Error in retrieveCachedStat: fallback local info service data init');
-      console.error(ex);
-      await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
-      localStorage.setItem('infoSchemaVersion', '3');
-    } finally {
-      this.loadedNetwork = this.terrajs.settings.chainID;
+    // try {
+    const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+    if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
+      throw (data);
     }
+    this.tokenInfos = data.tokenInfos;
+    this.stat = data.stat;
+    this.pairInfos = data.pairInfos;
+    this.poolInfos = data.poolInfos;
+    this.circulation = data.circulation;
+    this.marketCap = data.marketCap;
+    localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+    localStorage.setItem('stat', JSON.stringify(this.stat));
+    localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+    localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+    localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
+    if (!skipPoolResponses) {
+      this.poolResponses = data.poolResponses;
+      localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+    }
+
+    // no more fallback
+    // } catch (ex) {
+    //   // fallback if api die
+    //   console.error('Error in retrieveCachedStat: fallback local info service data init');
+    //   console.error(ex);
+    //   await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
+    //   localStorage.setItem('infoSchemaVersion', '3');
+    // } finally {
+    this.loadedNetwork = this.terrajs.settings.chainID;
+    // }
   }
 
   updateVaults() {
