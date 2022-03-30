@@ -63,6 +63,7 @@ export interface ISettings {
   astroportBlunaLunaFarm: string;
   lcd: string;
   fcd: string;
+  querier: string;
   mirrorGraph: string;
   specAPI: string;
   anchorAPI: string;
@@ -228,6 +229,7 @@ export const networks: Record<string, ISettings> = {
     astroportRouter: 'terra16t7dpwwgx9n3lq6l6te3753lsjqwhxwpday9zx',
     lcd: 'https://node.spec.finance',
     fcd: 'https://fcd.terra.dev',
+    querier: 'terra1kwk8xzc3ag5e02mzdvrqafwtjncnpypsnuxztf',
     mirrorGraph: 'mirror',
     specAPI: 'https://specapi.azurefd.net/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
@@ -345,6 +347,7 @@ export const networks: Record<string, ISettings> = {
     astroportRouter: 'terra13wf295fj9u209nknz2cgqmmna7ry3d3j5kv7t4',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
+    querier: 'terra16t9kkqa5esathvd0prw7v4zv5gsud2kvzj5qew',
     mirrorGraph: 'mirrorTest',
     specAPI: 'https://testapi.spec.finance/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',

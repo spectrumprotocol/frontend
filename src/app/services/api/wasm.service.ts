@@ -8,11 +8,11 @@ import { ExecuteOptions, TerrajsService } from '../terrajs.service';
 export class WasmService {
 
   constructor(
-    private terrajs: TerrajsService,
+    public terrajs: TerrajsService,
   ) { }
 
   query(contract: string, msg: object) {
-    if (this.terrajs.USE_NEW_BASE64_API){
+    if (this.terrajs.USE_NEW_BASE64_API) {
       return this.terrajs.get(`terra/wasm/v1beta1/contracts/${contract}/store`,
         { query_msg: Buffer.from(JSON.stringify(msg), 'utf-8').toString('base64') });
     } else {
