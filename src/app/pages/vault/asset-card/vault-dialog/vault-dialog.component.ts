@@ -224,11 +224,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.vault.poolInfo.key !== this.SPEC_KEY) {
       this.lpBalanceInfo += `${this.rewardInfoPipe.transform(this.info.rewardInfos[this.vault.poolInfo.key])} `;
     }
-    const lpSplitText = this.lpSplitPipe.transform(+this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount / this.UNIT,
-      this.info.poolResponses[this.vault.poolInfo.key], this.vault.baseSymbol,
-      this.vault.denomSymbol, this.vault.baseDecimals, '1.0-2'
-    );
-    this.lpBalanceInfo += `(${lpSplitText})`;
+    if (this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount){
+      const lpSplitText = this.lpSplitPipe.transform(+this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount / this.UNIT,
+        this.info.poolResponses[this.vault.poolInfo.key], this.vault.baseSymbol,
+        this.vault.denomSymbol, this.vault.baseDecimals, '1.0-2'
+      );
+      this.lpBalanceInfo += `(${lpSplitText})`;
+    }
   }
 
   ngOnDestroy() {
