@@ -302,7 +302,7 @@ export const networks: Record<string, ISettings> = {
     bPsiDPToken: 'terra1ex8ss7xhwcf8x6n47dn656hf8t0cw97myjr35a',
     psiDPGatewayPool: 'terra1zd8q7wltywdd90x2skvexh06p6r8mwljfqx4eu',
     psiDPToken: 'terra1c6vsshlv5gqtwq48darkunnpxu5ustcv96e0qk',
-    astroToken: 'terra1jqcw39c42mf7ngq4drgggakk3ymljgd3r5c3r5', // xAstro terra1afev5mg7k6gpyn96sv45ql3r35tyknlr72qc3y
+    astroToken: 'terra1jqcw39c42mf7ngq4drgggakk3ymljgd3r5c3r5', // xAstro terra14lpnyzc9z4g3ugr4lhm8s4nle0tq8vcltkhzh7
     bLunaToken: '',
     xdefiToken: '',
     astroportGov: 'terra1h2smqfg9lmemewwde9a4vf8fcp6z8666kxdhzh',
