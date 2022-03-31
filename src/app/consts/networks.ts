@@ -189,7 +189,7 @@ export const networks: Record<string, ISettings> = {
     astroToken: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
     bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
     xdefiToken: 'terra169edevav3pdrtjcx35j6pvzuv54aevewar4nlh',
-    astroportGov: 'terra1nq4aszdm82wujstxwpjxtvckg7ghu63mqkey33',
+    astroportGov: 'terra1f68wt2ch3cx2g62dxtc8v68mkdh5wchdgdjwz7',
     astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
     astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
     astroportLunaUstFarm: 'terra1egstlx9c9pq5taja5sg0yhraa0cl5laxyvm3ln',
@@ -305,7 +305,7 @@ export const networks: Record<string, ISettings> = {
     astroToken: 'terra1jqcw39c42mf7ngq4drgggakk3ymljgd3r5c3r5', // xAstro terra1afev5mg7k6gpyn96sv45ql3r35tyknlr72qc3y
     bLunaToken: '',
     xdefiToken: '',
-    astroportGov: 'terra1ym46q3cv0vnu6sg7hwch9ewdpnvwdaauxwqg7q',
+    astroportGov: 'terra1h2smqfg9lmemewwde9a4vf8fcp6z8666kxdhzh',
     astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
     astroportAstroUstFarm: 'terra19x7u7d837p9x6rzwesnk65n3aml0p3apytz4d2',
     astroportLunaUstFarm: '',
