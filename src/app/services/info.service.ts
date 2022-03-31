@@ -770,7 +770,7 @@ export class InfoService {
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
-    // try {
+    try {
     const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
     if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
       throw (data);
@@ -792,15 +792,15 @@ export class InfoService {
     }
 
     // no more fallback
-    // } catch (ex) {
-    //   // fallback if api die
-    //   console.error('Error in retrieveCachedStat: fallback local info service data init');
-    //   console.error(ex);
-    //   await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
-    //   localStorage.setItem('infoSchemaVersion', '3');
-    // } finally {
+    } catch (ex) {
+      // fallback if api die
+      console.error('Error in retrieveCachedStat: fallback local info service data init');
+      console.error(ex);
+      await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
+      localStorage.setItem('infoSchemaVersion', '3');
+    } finally {
     this.loadedNetwork = this.terrajs.settings.chainID;
-    // }
+    }
   }
 
   updateVaults() {
