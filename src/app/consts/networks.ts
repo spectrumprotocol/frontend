@@ -84,9 +84,11 @@ export interface ISettings {
   astroportNlunaPsiFarm: string;
   astroportNethPsiFarm: string;
   astroportXdefiUstFarm: string;
+  astroportSayveUstFarm: string;
   starterraToken: string;
   apolloToken: string;
   xdefiToken: string;
+  sayveToken: string;
   apolloFactory: string;
   mirrorFactory: string;
   sttStaking: string;
@@ -205,7 +207,9 @@ export const networks: Record<string, ISettings> = {
     astroportNlunaPsiFarm: 'terra1zl3ud44lja3r8ld8nwzh3eukl6h97gp2xr4wq6',
     astroportNethPsiFarm: 'terra1xw3jzqwrql5fvddchzxycd2ygrep5kudsden5c',
     astroportXdefiUstFarm: 'terra1d9cufxz9a4px9zfzq8quqewlj24durtu6lhwfw',
+    astroportSayveUstFarm: 'terra1mr9xlwydgg0lfxvy68ylxuchzy6jdn706vwu8c',
     starterraToken: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n',
+    sayveToken: 'terra14v9wrjs55qsn9lkvylsqela3w2ytwxzkycqzcr',
     sttStaking: 'terra15p807wnm9q3dyw4rvfqsaukxqt6lkuqe62q3mp',
     terraNameServiceGov: 'terra1a5thpf2gdrrneewjkutyz5q6zr2kn8ymg0cxn9',
     terraNameServiceStaking: 'terra1u94zwrreyz3t0jx25nl7800pxsrk6e6dwjqpsx', // tns pool terra1hqnk9expq3k4la2ruzdnyapgndntec4fztdyln
@@ -321,7 +325,9 @@ export const networks: Record<string, ISettings> = {
     astroportNlunaPsiFarm: 'terra1hawqk9fx5y95qhc3s6p6crklwpnas56dss08cy',
     astroportNethPsiFarm: 'terra1zjp0gkz8gqan8ftjmvrtzzertuwywwj3z7yrwv',
     astroportXdefiUstFarm: '',
+    astroportSayveUstFarm: '',
     starterraToken: '',
+    sayveToken: '',
     apolloToken: '',
     apolloFactory: '',
     sttStaking: '',
