@@ -188,6 +188,8 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.showDepositedPoolOnly = false;
         vaults = oldVaults;
       }
+    } else {
+      vaults = vaults.filter(it => !it.disabled || +this.info.rewardInfos?.[it.poolInfo.key]?.bond_amount >= 10);
     }
     if (this.search) {
       vaults = vaults.filter(it => `${it.baseSymbol}${it.denomSymbol}`.toLowerCase().includes(this.search.replace(/-/g, '').toLowerCase()));
