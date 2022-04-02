@@ -698,7 +698,7 @@ export class InfoService {
       if (vault.poolInfo.farm !== 'Spectrum') {
         let rewardKey;
         if (this.NOW_AVAILABLE_AT_ASTROPORT.has(`${vault.poolInfo.dex}|${vault.baseSymbol}|${vault.denomSymbol}`)){
-          rewardKey = `${vault.poolInfo.dex}|${vault.poolInfo.baseTokenContract}|${vault.poolInfo.denomTokenContract}`; // if has pending farm reward from disabled terraswap vault, then should use data from astroport vaults
+          rewardKey = `Astroport|${vault.poolInfo.baseTokenContract}|${vault.poolInfo.denomTokenContract}`; // if has pending farm reward from disabled terraswap vault, then should use data from astroport vaults
         } else {
           rewardKey = vault.poolInfo.rewardKey;
         }
