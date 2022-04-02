@@ -840,7 +840,7 @@ export class InfoService {
           farmAndAstroApr = (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
         } else if (poolInfo.dex === 'Astroport' && poolInfo.farmType === 'LP'){
           farmAndAstroApr = farmApr + (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
-        } else if (poolInfo.dex === 'Terraswap'){
+        } else if (poolInfo.dex === 'Terraswap' || FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)){
           farmAndAstroApr = farmApr;
         }
         farmApy = (poolAprTotal + poolAprTotal * farmAndAstroApr / 2) + (poolInfo.tradeApr || 0);
