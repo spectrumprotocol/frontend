@@ -19,6 +19,7 @@ import { AstroportAstroUstFarmService } from '../../api/astroport-astroust-farm.
 import { WasmService } from '../../api/wasm.service';
 import { PairInfo } from '../../api/terraswap_factory/pair_info';
 import { div } from '../../../libs/math';
+import {Apollo, gql} from 'apollo-angular';
 
 @Injectable()
 export class AstroportAstroUstFarmInfoService implements FarmInfoService {
@@ -40,7 +41,8 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
   constructor(
     private farmService: AstroportAstroUstFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService
+    private wasm: WasmService,
+    private apollo: Apollo,
   ) {
   }
 
@@ -115,13 +117,21 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${Denom.USD}`;
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract } });
     const farmConfigTask = this.farmService.query({ config: {} });
+    const apollo = this.apollo.use('astroport');
+    const astroGovStatTask = apollo.query<any>({
+      query: gql`{
+        staking {
+          _24h_apy
+        }
+      }`
+    }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
     const pairs: Record<string, PairStat> = {};
 
-    const [depositAmount, farmConfig] = await Promise.all([depositAmountTask, farmConfigTask]);
+    const [depositAmount, farmConfig, astroGovStat] = await Promise.all([depositAmountTask, farmConfigTask, astroGovStatTask]);
 
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
@@ -149,7 +159,7 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
         poolAstroApr: 0,
-        farmApr: 0,
+        farmApr: astroGovStat.data?.staking?._24h_apy || 0,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
