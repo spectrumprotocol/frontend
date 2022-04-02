@@ -696,7 +696,13 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardKey];
+        let rewardKey;
+        if (this.NOW_AVAILABLE_AT_ASTROPORT.has(`${vault.poolInfo.dex}|${vault.baseSymbol}|${vault.denomSymbol}`)){
+          rewardKey = `${vault.poolInfo.dex}|${vault.poolInfo.baseTokenContract}|${vault.poolInfo.denomTokenContract}`; // if has pending farm reward from disabled terraswap vault, then should use data from astroport vaults
+        } else {
+          rewardKey = vault.poolInfo.rewardKey;
+        }
+        const rewardTokenPoolResponse = this.poolResponses[rewardKey];
         const astroTokenPoolResponse = this.poolResponses[this.ASTRO_KEY];
 
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
@@ -720,7 +726,7 @@ export class InfoService {
           portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
           portfolio.total_reward_ust += pending_farm_reward_ust;
         }
-        portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[vault.poolInfo.rewardKey]?.farmApr;
+        portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[rewardKey]?.farmApr;
         if (portfolio.tokens.get('ASTRO')) {
           portfolio.tokens.get('ASTRO').apr = this.stat?.pairs[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]?.farmApr || 0;
         }
