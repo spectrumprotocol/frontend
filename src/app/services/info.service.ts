@@ -185,6 +185,7 @@ export class InfoService {
   private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
   private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
+  private PROXY_REWARD_STOPPED: Set<string> = new Set(['Astroport|ANC|UST']);
 
   astroportData: any;
 
@@ -695,7 +696,13 @@ export class InfoService {
       portfolio.tokens.get('SPEC').apr = this.stat?.govApr;
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
-        const rewardTokenPoolResponse = this.poolResponses[vault.poolInfo.rewardKey];
+        let rewardKey;
+        if (this.NOW_AVAILABLE_AT_ASTROPORT.has(`${vault.poolInfo.dex}|${vault.baseSymbol}|${vault.denomSymbol}`)){
+          rewardKey = `Astroport|${vault.poolInfo.baseTokenContract}|${vault.poolInfo.denomTokenContract}`; // if has pending farm reward from disabled terraswap vault, then should use data from astroport vaults
+        } else {
+          rewardKey = vault.poolInfo.rewardKey;
+        }
+        const rewardTokenPoolResponse = this.poolResponses[rewardKey];
         const astroTokenPoolResponse = this.poolResponses[this.ASTRO_KEY];
 
         const rewardSymbol = this.tokenInfos[farmInfo.rewardTokenContract].symbol;
@@ -719,7 +726,7 @@ export class InfoService {
           portfolio.tokens.get(rewardSymbol).pending_reward_ust += pending_farm_reward_ust;
           portfolio.total_reward_ust += pending_farm_reward_ust;
         }
-        portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[vault.poolInfo.rewardKey]?.farmApr;
+        portfolio.tokens.get(rewardSymbol).apr = this.stat?.pairs[rewardKey]?.farmApr;
         if (portfolio.tokens.get('ASTRO')) {
           portfolio.tokens.get('ASTRO').apr = this.stat?.pairs[`Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`]?.farmApr || 0;
         }
@@ -816,6 +823,11 @@ export class InfoService {
       if (!this.poolInfos[key]) {
         continue;
       }
+      const baseToken = this.poolInfos[key].baseTokenContract;
+      const denomToken = this.poolInfos[key].denomTokenContract;
+      const rewardToken = this.poolInfos[key].rewardTokenContract;
+      const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
+      const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const poolInfo = this.poolInfos[key];
       const pairStat = this.stat?.pairs[key];
       const poolApr = pairStat?.poolApr || 0;
@@ -827,16 +839,25 @@ export class InfoService {
       const specApy = specApr + specApr * govApr / 2;
       const compoundApy = poolApy + specApy;
       const farmApr = pairStat?.farmApr || 0;
-      const farmAndAstroApr = farmApr + (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
-      const farmApy = (poolAprTotal + poolAprTotal * farmAndAstroApr / 2) + (poolInfo.tradeApr || 0);
+      let farmAndAstroApr;
+      let farmApy;
+      if (poolInfo.auto_stake){
+        if (poolInfo.dex === 'Astroport' && (poolInfo.farm === 'Astroport' || this.PROXY_REWARD_STOPPED.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`)) && poolInfo.farmType === 'LP'){
+          farmAndAstroApr = (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
+        } else if (poolInfo.dex === 'Astroport' && poolInfo.farmType === 'LP'){
+          farmAndAstroApr = farmApr + (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
+        } else if (poolInfo.dex === 'Terraswap' || FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)){
+          farmAndAstroApr = farmApr;
+        }
+        farmApy = (poolAprTotal + poolAprTotal * farmAndAstroApr / 2) + (poolInfo.tradeApr || 0);
+      }
+      else {
+        farmApy = 0;
+        farmAndAstroApr = 0;
+      }
       const stakeApy = farmApy + specApy;
       const apy = Math.max(compoundApy, stakeApy);
 
-      const baseToken = this.poolInfos[key].baseTokenContract;
-      const denomToken = this.poolInfos[key].denomTokenContract;
-      const rewardToken = this.poolInfos[key].rewardTokenContract;
-      const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
-      const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const score = poolInfo.farm === 'Spectrum' ? 2000000 : (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
       const will_available_at_astroport = this.WILL_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
