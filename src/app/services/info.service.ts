@@ -838,9 +838,9 @@ export class InfoService {
       const govApr = this.stat?.govApr || 0;
       const specApy = specApr + specApr * govApr / 2;
       const compoundApy = poolApy + specApy;
-      const farmApr = pairStat?.farmApr || 0;
-      let farmAndAstroApr;
-      let farmApy;
+      const farmApr = +(pairStat?.farmApr || 0);
+      let farmAndAstroApr = 0;
+      let farmApy = 0;
       if (poolInfo.auto_stake){
         if (poolInfo.dex === 'Astroport' && (poolInfo.farm === 'Astroport' || this.PROXY_REWARD_STOPPED.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`)) && poolInfo.farmType === 'LP'){
           farmAndAstroApr = (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
@@ -849,12 +849,9 @@ export class InfoService {
         } else if (poolInfo.dex === 'Terraswap' || FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)){
           farmAndAstroApr = farmApr;
         }
-        farmApy = (poolAprTotal + poolAprTotal * farmAndAstroApr / 2) + (poolInfo.tradeApr || 0);
+        farmApy = poolAprTotal > 0 ? (poolAprTotal + poolAprTotal * farmAndAstroApr / 2) + (poolInfo.tradeApr || 0) : 0;
       }
-      else {
-        farmApy = 0;
-        farmAndAstroApr = 0;
-      }
+
       const stakeApy = farmApy + specApy;
       const apy = Math.max(compoundApy, stakeApy);
 

@@ -177,7 +177,7 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
         poolAstroApr: 0,
-        farmApr: mirrorGovStat.data.statistic.govAPR,
+        farmApr: +(mirrorGovStat.data?.statistic?.govAPR || 0),
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
