@@ -520,7 +520,7 @@ export class InfoService {
         continue;
       }
       let task;
-      if (BUNDLER_BLACKLIST.has(farmInfo.farmContract)){
+      if (BUNDLER_BLACKLIST.has(farmInfo.farmContract)) {
         task = await farmInfo.queryRewards().then((rewards) => processRewards(farmInfo, rewards));
       } else {
         task = bundler.query(farmInfo.farmContract, {
@@ -697,7 +697,7 @@ export class InfoService {
       portfolio.total_reward_ust += pending_reward_spec_ust;
       if (vault.poolInfo.farm !== 'Spectrum') {
         let rewardKey;
-        if (this.NOW_AVAILABLE_AT_ASTROPORT.has(`${vault.poolInfo.dex}|${vault.baseSymbol}|${vault.denomSymbol}`)){
+        if (this.NOW_AVAILABLE_AT_ASTROPORT.has(`${vault.poolInfo.dex}|${vault.baseSymbol}|${vault.denomSymbol}`)) {
           rewardKey = `Astroport|${vault.poolInfo.baseTokenContract}|${vault.poolInfo.denomTokenContract}`; // if has pending farm reward from disabled terraswap vault, then should use data from astroport vaults
         } else {
           rewardKey = vault.poolInfo.rewardKey;
@@ -778,27 +778,27 @@ export class InfoService {
 
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
-    const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-    if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
-      throw (data);
-    }
-    this.tokenInfos = data.tokenInfos;
-    this.stat = data.stat;
-    this.pairInfos = data.pairInfos;
-    this.poolInfos = data.poolInfos;
-    this.circulation = data.circulation;
-    this.marketCap = data.marketCap;
-    localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-    localStorage.setItem('stat', JSON.stringify(this.stat));
-    localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-    localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-    localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-    if (!skipPoolResponses) {
-      this.poolResponses = data.poolResponses;
-      localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-    }
+      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
+        throw (data);
+      }
+      this.tokenInfos = data.tokenInfos;
+      this.stat = data.stat;
+      this.pairInfos = data.pairInfos;
+      this.poolInfos = data.poolInfos;
+      this.circulation = data.circulation;
+      this.marketCap = data.marketCap;
+      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+      localStorage.setItem('stat', JSON.stringify(this.stat));
+      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+      localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
+      if (!skipPoolResponses) {
+        this.poolResponses = data.poolResponses;
+        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+      }
 
-    // no more fallback
+      // no more fallback
     } catch (ex) {
       // fallback if api die
       console.error('Error in retrieveCachedStat: fallback local info service data init');
@@ -806,7 +806,7 @@ export class InfoService {
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
       localStorage.setItem('infoSchemaVersion', '3');
     } finally {
-    this.loadedNetwork = this.terrajs.settings.chainID;
+      this.loadedNetwork = this.terrajs.settings.chainID;
     }
   }
 
@@ -839,17 +839,20 @@ export class InfoService {
       const specApy = specApr + specApr * govApr / 2;
       const compoundApy = poolApy + specApy;
       const farmApr = +(pairStat?.farmApr || 0);
-      let farmAndAstroApr = 0;
+
       let farmApy = 0;
-      if (poolInfo.auto_stake){
-        if (poolInfo.dex === 'Astroport' && (poolInfo.farm === 'Astroport' || this.PROXY_REWARD_STOPPED.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`)) && poolInfo.farmType === 'LP'){
-          farmAndAstroApr = (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
-        } else if (poolInfo.dex === 'Astroport' && poolInfo.farmType === 'LP'){
-          farmAndAstroApr = farmApr + (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
-        } else if (poolInfo.dex === 'Terraswap' || FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)){
-          farmAndAstroApr = farmApr;
+      if (poolInfo.auto_stake) {
+        let astroApy = 0;
+        let farm2Apy = 0;
+        if (poolInfo.dex === 'Astroport' && poolInfo.farmType === 'LP') {
+          const astroApr = (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
+          astroApy = poolAstroApr + poolAstroApr * astroApr / 2;
         }
-        farmApy = poolAprTotal > 0 ? (poolAprTotal + poolAprTotal * farmAndAstroApr / 2) + (poolInfo.tradeApr || 0) : 0;
+        if (!this.PROXY_REWARD_STOPPED.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`)) {
+          farm2Apy = poolApr + poolApr * farmApr / 2;
+        }
+        const tradeApr = poolInfo.tradeApr || 0;
+        farmApy = astroApy + farm2Apy + tradeApr;
       }
 
       const stakeApy = farmApy + specApy;
