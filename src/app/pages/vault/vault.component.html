@@ -45,7 +45,8 @@
             <h3 class="card-title">
               <app-digit [value]="+info.specPrice"></app-digit> <span class="cur-title"> UST</span>
               <a class="margin-left-auto text-light small"
-                href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" alt="SPEC price chart" title="SPEC price chart" target="_blank">
+                href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20"
+                alt="SPEC price chart" title="SPEC price chart" target="_blank">
                 <img class="float-end mg-18" src="../../../assets/Icon_Chart.svg">
               </a>
             </h3>
@@ -80,7 +81,8 @@
                 <h3 class="card-title text-primary">
                   <app-digit [value]="info.myTvl"></app-digit> <span class="cur-title text-white"> UST</span>
                   <a role="button" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
-                    (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon_PieChart.svg" alt="Portfolio allocation" title="Portfolio allocation"></a>
+                    (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon_PieChart.svg"
+                      alt="Portfolio allocation" title="Portfolio allocation"></a>
                 </h3>
               </div>
             </div>
@@ -167,25 +169,28 @@
               <div mdbDropdown class="dropdown w-100 btn-group" [class.active-border]="activeFarm !== 'All'"
                 #dropdownFarmFilter>
                 <button mdbDropdownToggle class="btn p-0" type="button" aria-expanded="false">
-                  <img *ngIf="activeFarm !== 'All'" class="mobile-icon" [src]="activeFarm | url:'icon'" width="24"
+                  <img *ngIf="activeFarm !== 'Active farms' && activeFarm !== 'Disabled farms'" class="mobile-icon" [src]="activeFarm | url:'icon'" width="24"
                     height="24">
-                  <img *ngIf="activeFarm === 'All'" class="mobile-icon" src="../../../assets/Icon_Farms.svg" width="24"
+                  <img *ngIf="activeFarm === 'Active farms' || activeFarm === 'Disabled farms'" class="mobile-icon" src="../../../assets/Icon_Farms.svg" width="24"
                     height="24">
-                  <span class="text-dropdown d-none d-md-inline ps-2 sub-topic">{{activeFarm}} {{ activeFarm === "All" ?
-                    "Farms" : ""}}</span>
+                  <span class="text-dropdown d-none d-md-inline ps-2 sub-topic">{{activeFarm}}</span>
                   <span class="text-end filter">
                     <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
                   </span>
                 </button>
                 <ul mdbDropdownMenu class="dropdown-menu">
                   <li>
-                    <a class="dropdown-item" [class.active]="activeFarm === 'All'"
-                      (click)="activeFarm = 'All'; refresh()">All</a>
+                    <a class="dropdown-item" [class.active]="activeFarm === 'Active farms'"
+                      (click)="activeFarm = 'Active farms'; refresh()">Active farms</a>
                   </li>
-                  <li *ngFor="let farmInfo of farmInfoDropdownList">
-                    <a class="dropdown-item" [class.active]="activeFarm === farmInfo.farm"
-                      (click)="activeFarm = farmInfo.farm; refresh()"> <img [src]="farmInfo.farm | url:'icon'"
-                        class="farm-logo"> {{farmInfo.farm}}</a>
+                  <li *ngFor="let farm of farmInfoDropdownList">
+                    <a class="dropdown-item" [class.active]="activeFarm === farm"
+                      (click)="activeFarm = farm; refresh()"> <img [src]="farm | url:'icon'" class="farm-logo">
+                      {{farm}}</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" [class.active]="activeFarm === 'Disabled farms'"
+                      (click)="activeFarm = 'Disabled farms'; refresh()"><i class="fas fa-ban text-white farm-logo"></i> Disabled farms</a>
                   </li>
                 </ul>
               </div>

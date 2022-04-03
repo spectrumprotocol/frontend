@@ -59,12 +59,12 @@ export class VaultComponent implements OnInit, OnDestroy {
   search: string;
   showDepositedPoolOnly = false;
   sortBy = 'multiplier';
-  activeFarm = 'All';
+  activeFarm = 'Active farms';
   UNIT = CONFIG.UNIT;
   myTvl = 0;
   height: number;
   isGrid: boolean;
-  farmInfoDropdownList: FarmInfoService[];
+  farmInfoDropdownList: string[];
   shouldBeGrid: boolean;
 
   @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
@@ -80,7 +80,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    this.farmInfoDropdownList = [...new Map(this.info.farmInfos.map(farmInfo => [farmInfo.farm, farmInfo])).values()];
+    this.farmInfoDropdownList = [...new Set(this.info.farmInfos.map(farmInfo => farmInfo.farm))];
     this.showDepositedPoolOnly = localStorage.getItem('deposit') === 'true';
     this.loading = true;
     this.connected = this.terrajs.connected
@@ -163,7 +163,11 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   @debounce(250)
   refresh(resetFilterOnEmpty?: boolean) {
-    let vaults = this.activeFarm === 'All' ? this.info.allVaults : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm);
+    let vaults = this.activeFarm === 'Active farms'
+      ? this.info.allVaults.filter(vault => !vault.disabled)
+      : this.activeFarm === 'Disabled farms'
+        ? this.info.allVaults.filter(vault => vault.disabled)
+        : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm && !vault.disabled);
     if (this.lastSortBy !== this.sortBy) {
       switch (this.sortBy) {
         case 'multiplier':
