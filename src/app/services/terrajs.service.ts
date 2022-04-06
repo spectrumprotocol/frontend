@@ -1,19 +1,27 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { Coin, LCDClient, Msg, SyncTxBroadcastResult } from '@terra-money/terra.js';
-import { ISettings, networks } from '../consts/networks';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, firstValueFrom, interval, Subject, Subscription } from 'rxjs';
-import { filter, startWith } from 'rxjs/operators';
-import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus, getChainOptions } from '@terra-money/wallet-provider';
-import { ModalService } from './modal.service';
-import { throttleAsync } from 'utils-decorators';
-import { MdbModalService } from 'mdb-angular-ui-kit/modal';
+import {Injectable, OnDestroy} from '@angular/core';
+import {Coin, LCDClient, Msg, SyncTxBroadcastResult} from '@terra-money/terra.js';
+import {ISettings, networks} from '../consts/networks';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {BehaviorSubject, firstValueFrom, interval, Subject, Subscription} from 'rxjs';
+import {filter, startWith} from 'rxjs/operators';
+import {
+  ConnectType,
+  getChainOptions,
+  WalletController,
+  WalletInfo,
+  WalletStates,
+  WalletStatus
+} from '@terra-money/wallet-provider';
+import {ModalService} from './modal.service';
+import {throttleAsync} from 'utils-decorators';
+import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import BigNumber from 'bignumber.js';
 
 export const BLOCK_TIME = 6500; // 6.5s
 export const DEFAULT_NETWORK = 'mainnet';
 
 export type Result = SyncTxBroadcastResult.Data;
+
 export interface PostResponse {
   id: number;
   origin: string;
@@ -21,13 +29,16 @@ export interface PostResponse {
   result?: Result;
   error?: { code: number; message?: string; };
 }
+
 export interface GetResponse {
   query_result: object;
 }
+
 export interface GetResponseOld {
   height: number;
   result: object;
 }
+
 export interface NetworkInfo {
   name: string;
   chainID: string;
@@ -35,6 +46,7 @@ export interface NetworkInfo {
   fcd?: string;
   ws?: string;
 }
+
 export interface ExecuteOptions {
   coin?: Coin.Data;
 }
@@ -57,12 +69,12 @@ export class TerrajsService implements OnDestroy {
   lcdClient: LCDClient;
   walletController: WalletController;
   heightChanged = interval(BLOCK_TIME).pipe(startWith(0));
-  private height = 0;
-  private posting = false;
-  private subscription: Subscription;
   USE_NEW_BASE64_API = true; // useful for development and debug
   latestBlockRefreshTime: number;
   transactionComplete = new Subject();
+  private height = 0;
+  private posting = false;
+  private subscription: Subscription;
 
   constructor(
     private httpClient: HttpClient,
@@ -84,13 +96,6 @@ export class TerrajsService implements OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-  }
-
-  private async getWalletController() {
-    while (!this.walletController) {
-      await new Promise(ok => setTimeout(() => ok('')));
-    }
-    return this.walletController;
   }
 
   async checkInstalled() {
@@ -158,7 +163,7 @@ export class TerrajsService implements OnDestroy {
       const types = connectTypes.concat(installTypes);
       const modal = await import('./connect-options/connect-options.component');
       const ref = this.modalService.open(modal.ConnectOptionsComponent, {
-        data: { types }
+        data: {types}
       });
       connectCallbackData = await ref.onClose.toPromise();
       if (!connectCallbackData.type) {
@@ -180,7 +185,7 @@ export class TerrajsService implements OnDestroy {
     let wallet: WalletInfo;
     if (state.wallets.length === 0) {
 
-      this.modal.alert('No wallet, please setup wallet first', { iconType: 'danger' });
+      this.modal.alert('No wallet, please setup wallet first', {iconType: 'danger'});
       throw new Error('No wallet');
     } else if (state.wallets.length === 1) {
       wallet = state.wallets[0];
@@ -219,7 +224,8 @@ export class TerrajsService implements OnDestroy {
 
   @throttleAsync(20)
   async get(path: string, params?: Record<string, string>, additionalHeaders?: Record<string, string>) {
-    const headers = new HttpHeaders({ 'Cache-Control': 'no-cache', 'Content-Type': 'application/json' });
+    // const headers = new HttpHeaders({ 'Cache-Control': 'no-cache', 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
     if (additionalHeaders) {
       const keys = Object.keys(additionalHeaders);
       for (const key of keys) {
@@ -292,5 +298,12 @@ export class TerrajsService implements OnDestroy {
       tax = new BigNumber(taxCap.amount.toString());
     }
     return num.minus(tax).toString();
+  }
+
+  private async getWalletController() {
+    while (!this.walletController) {
+      await new Promise(ok => setTimeout(() => ok('')));
+    }
+    return this.walletController;
   }
 }
