@@ -46,9 +46,11 @@ body {
   letter-spacing: normal;
   color: #fff;
   box-shadow: none;
+
   :disabled {
     box-shadow: none;
   }
+
   &:focus,
   &:hover {
     box-shadow: none;
@@ -66,6 +68,7 @@ body {
 
 .btn-primary {
   box-shadow: none;
+
   :disabled {
     box-shadow: none;
   }
@@ -109,6 +112,7 @@ body {
   background-color: $gray-990 !important;
   color: white !important;
   border: 1px solid white;
+
   &:hover {
     border-color: $primary;
     outline: 0;
@@ -170,6 +174,7 @@ h3.card-title {
 .spec-form {
   margin: 0 auto;
   border-radius: 0.25rem;
+
   .fee {
     background-color: $blue-gray-50;
   }
@@ -178,6 +183,7 @@ h3.card-title {
 .slippageInput {
   width: 60px;
   border: 1px solid $spectrum;
+
   &:focus {
     border: 1px solid $spectrum;
     background-color: transparent;
@@ -244,21 +250,27 @@ h3.card-title {
 pre.json {
   padding: 10px;
   background-color: $dark;
+
   span {
     white-space: normal;
   }
+
   .string {
     color: green;
   }
+
   .number {
     color: darkorange;
   }
+
   .boolean {
     color: blue;
   }
+
   .null {
     color: magenta;
   }
+
   .key {
     color: red;
   }
@@ -289,17 +301,21 @@ input[type="number"] {
 .form-control {
   background-color: transparent;
   border: 1px solid #414851;
+
   &:focus {
     background-color: transparent;
     border: 1px solid #414851;
     box-shadow: none;
   }
+
   &:hover {
     cursor: pointer;
   }
+
   &::placeholder {
     color: $gray-600;
   }
+
   > option {
     background-color: #4f4f4f !important;
   }
@@ -414,6 +430,11 @@ input[type="number"] {
   border: solid 1px $loterra;
 }
 
+.bg-Sayve {
+  background: $sayve-bg;
+  border: solid 1px $sayve;
+}
+
 .bg-Kujira {
   background: $kujira;
   background: -webkit-linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);
@@ -429,6 +450,7 @@ input[type="number"] {
 .reward-table {
   .table {
     background-color: $btn-bg;
+
     tr {
       border-style: none;
       border: 0 transparent;
@@ -508,6 +530,7 @@ input[type="number"] {
   background-color: $gray-990;
   border-radius: 0.4rem;
   box-shadow: none;
+
   .card-body {
     padding: 0.5em;
   }
@@ -527,9 +550,11 @@ input[type="number"] {
 
 .card-md {
   background-color: $btn-bg;
+
   .card-body {
     padding: 1.5em 1.5em;
   }
+
   .lock-icon {
     position: absolute;
     top: 35px;
@@ -538,6 +563,7 @@ input[type="number"] {
 
 .card-sm {
   background-color: $btn-bg;
+
   .card-body {
     padding: 0.5em 0.5em;
   }
@@ -546,24 +572,28 @@ input[type="number"] {
 .card-red {
   background-color: $card-red-bg;
   border: solid 1px $card-red-border;
+
   .card-body {
-      padding: 0.5em 0.5em;
-      .bulk-name-container {
-          display: flex;
-          align-items: center;
-      }
+    padding: 0.5em 0.5em;
+
+    .bulk-name-container {
+      display: flex;
+      align-items: center;
+    }
   }
 }
 
 .card-warning {
   background-color: $card-warning-bg;
   border: solid 1px $card-warning-border;
+
   .card-body {
-      padding: 0.5em 0.5em;
-      .bulk-name-container {
-          display: flex;
-          align-items: center;
-      }
+    padding: 0.5em 0.5em;
+
+    .bulk-name-container {
+      display: flex;
+      align-items: center;
+    }
   }
 }
 
@@ -591,14 +621,14 @@ input[type="number"] {
   transform: rotate(-360deg);
   height: 2px;
   background-image: linear-gradient(
-    to right,
-    #9500cd 1%,
-    #3f3ff7 23%,
-    #02b8d5 49%,
-    #01c541 65%,
-    #f5fe00 78%,
-    #ffa301 90%,
-    #fe0000 100%
+      to right,
+      #9500cd 1%,
+      #3f3ff7 23%,
+      #02b8d5 49%,
+      #01c541 65%,
+      #f5fe00 78%,
+      #ffa301 90%,
+      #fe0000 100%
   );
 }
 
@@ -610,15 +640,18 @@ input[type="number"] {
   border-radius: 6px;
   width: 100%;
   background-color: $gray-950;
+
   .nav-link {
     color: white;
     margin: 5px;
     border: none;
     font-size: 16px;
     text-transform: none;
+
     &:hover {
       background-color: transparent;
     }
+
     &.disabled {
       color: $gray-400 !important;
     }
@@ -659,6 +692,7 @@ input[type="number"] {
     background-color: $gray-990 !important;
     margin-left: 5px;
     margin-right: 5px;
+
     .tab-pane {
       margin-top: -5px;
     }
@@ -688,6 +722,7 @@ input[type="number"] {
     background-color: $gray-990 !important;
     padding: 15px;
   }
+
   *:focus {
     outline: none !important;
   }
@@ -698,11 +733,13 @@ input[type="number"] {
     padding: 5px;
     border-radius: 200px;
   }
+
   .nav-link {
     padding-top: 20px;
     padding-bottom: 20px;
     border-radius: 200px;
     background-color: $gray-940;
+
     &:hover,
     &:focus {
       background-color: $gray-940;
@@ -722,6 +759,7 @@ input[type="number"] {
   float: right;
   padding-right: 0;
   padding-left: 0;
+
   i,
   img {
     padding: 5px;
@@ -771,6 +809,7 @@ i.fa-sort-down {
 
 .badge-progress {
   background: $primary;
+
   &::before {
     border-left: 15px solid $primary;
   }
@@ -778,6 +817,7 @@ i.fa-sort-down {
 
 .badge-executed {
   background: $execute;
+
   &::before {
     border-left: 15px solid $execute;
   }
@@ -785,6 +825,7 @@ i.fa-sort-down {
 
 .badge-passed {
   background: $passed;
+
   &::before {
     border-left: 15px solid $passed;
   }
@@ -792,6 +833,7 @@ i.fa-sort-down {
 
 .badge-rejected {
   background: $text-error;
+
   &::before {
     border-left: 15px solid $text-error;
   }
@@ -799,6 +841,7 @@ i.fa-sort-down {
 
 .badge-expired {
   background: $gray-400;
+
   &::before {
     border-left: 15px solid $gray-400;
   }
@@ -829,13 +872,16 @@ i.fa-sort-down {
   background-color: $gray-990;
   margin-top: 0px;
   border: 1px solid $gray-970;
+
   .dropdown-item {
     background-color: $gray-990;
     border: 0;
     color: white;
+
     &.active {
       background-color: $gray-950;
     }
+
     &:hover {
       background-color: $gray-950 !important;
     }
@@ -870,6 +916,7 @@ i.fa-sort-down {
 
 .btn-group {
   box-shadow: none;
+
   &:hover {
     box-shadow: none;
   }
@@ -879,6 +926,7 @@ i.fa-sort-down {
   .btn-group {
     width: -webkit-fill-available;
   }
+
   .min-125 {
     min-width: 125px;
   }
@@ -890,13 +938,15 @@ i.fa-sort-down {
   font-weight: bold;
   z-index: 1;
 }
+
 .btn-outline-auto {
   color: white;
   border: 0;
   background-color: $gray-950;
   font-weight: bold;
+
   &:hover {
-      z-index: 0;
+    z-index: 0;
   }
 }
 
@@ -960,6 +1010,7 @@ i.fa-sort-down {
     .col-12 {
       padding-bottom: 10px;
     }
+
     .btn-group {
       button,
       a {
@@ -975,6 +1026,7 @@ i.fa-sort-down {
 
   .tab-content {
     margin-top: -4px;
+
     .tab-pane {
       padding: 10px;
     }
@@ -999,6 +1051,7 @@ i.fa-sort-down {
   .col-mbp {
     width: 100%;
     flex: auto;
+
     .mt-5 {
       margin-top: 1rem !important;
     }
@@ -1027,6 +1080,7 @@ i.fa-sort-down {
 .mg-18 {
   margin-top: -18px;
 }
+
 .mg-3 {
   margin-top: -3px;
 }
@@ -1043,7 +1097,7 @@ i.fa-sort-down {
   padding: 0.5rem;
 }
 
-.dex-logo{
+.dex-logo {
   width: 1.25rem;
   height: 1.25rem;
 }
