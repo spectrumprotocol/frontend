@@ -1,39 +1,39 @@
-import { Inject, Injectable } from '@angular/core';
-import { BLOCK_TIME, TerrajsService } from './terrajs.service';
-import { TokenService } from './api/token.service';
-import { BankService } from './api/bank.service';
-import { TerraSwapService } from './api/terraswap.service';
-import { PoolResponse } from './api/terraswap_pair/pool_response';
-import { div, gt, minus, plus, times } from '../libs/math';
-import { CONFIG } from '../consts/config';
-import { TerraSwapFactoryService } from './api/terraswap-factory.service';
-import { GovService } from './api/gov.service';
+import {Inject, Injectable} from '@angular/core';
+import {BLOCK_TIME, TerrajsService} from './terrajs.service';
+import {TokenService} from './api/token.service';
+import {BankService} from './api/bank.service';
+import {TerraSwapService} from './api/terraswap.service';
+import {PoolResponse} from './api/terraswap_pair/pool_response';
+import {div, gt, minus, plus, times} from '../libs/math';
+import {CONFIG} from '../consts/config';
+import {TerraSwapFactoryService} from './api/terraswap-factory.service';
+import {GovService} from './api/gov.service';
 import {
   FARM_INFO_SERVICE,
+  FARM_TYPE_SINGLE_TOKEN,
   FarmInfoService,
   PairStat,
   PoolInfo,
-  RewardInfoResponseItem,
-  FARM_TYPE_SINGLE_TOKEN,
-  PoolItem
+  PoolItem,
+  RewardInfoResponseItem
 } from './farm_info/farm-info.service';
-import { fromEntries } from '../libs/core';
-import { PairInfo } from './api/terraswap_factory/pair_info';
-import { BalancePipe } from '../pipes/balance.pipe';
-import { LpBalancePipe } from '../pipes/lp-balance.pipe';
-import { Vault } from '../pages/vault/vault.component';
-import { HttpClient } from '@angular/common/http';
-import { memoize } from 'utils-decorators';
-import { Denom } from '../consts/denom';
-import { WalletService } from './api/wallet.service';
-import { AstroportService } from './api/astroport.service';
-import { AstroportFactoryService } from './api/astroport-factory.service';
-import { Apollo, gql } from 'apollo-angular';
-import { AnchorMarketService } from './api/anchor-market.service';
-import { BalanceResponse } from './api/gov/balance_response';
-import { StateInfo } from './api/gov/state_info';
-import { QueryBundler } from './querier-bundler';
-import { WasmService } from './api/wasm.service';
+import {fromEntries} from '../libs/core';
+import {PairInfo} from './api/terraswap_factory/pair_info';
+import {BalancePipe} from '../pipes/balance.pipe';
+import {LpBalancePipe} from '../pipes/lp-balance.pipe';
+import {Vault} from '../pages/vault/vault.component';
+import {HttpClient} from '@angular/common/http';
+import {memoize} from 'utils-decorators';
+import {Denom} from '../consts/denom';
+import {WalletService} from './api/wallet.service';
+import {AstroportService} from './api/astroport.service';
+import {AstroportFactoryService} from './api/astroport-factory.service';
+import {Apollo, gql} from 'apollo-angular';
+import {AnchorMarketService} from './api/anchor-market.service';
+import {BalanceResponse} from './api/gov/balance_response';
+import {StateInfo} from './api/gov/state_info';
+import {QueryBundler} from './querier-bundler';
+import {WasmService} from './api/wasm.service';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -92,6 +92,35 @@ const HEIGHT_PER_YEAR = 365 * 24 * 60 * 60 * 1000 / BLOCK_TIME;
 })
 export class InfoService {
 
+  userUstAmount: string;
+  userSpecAmount: string;
+  userSpecLpAmount: string;
+  specPoolInfo: PoolResponse;
+  specPrice: string;
+  poolInfos: Record<string, PoolInfo>;
+  pairInfos: Record<string, PairInfo> = {};
+  tokenInfos: Record<string, TokenInfo> = {};
+  stat: Stat;
+  circulation: string;
+  marketCap: number;
+  rewardInfos: Record<string, RewardInfoResponseItem & { farm: string, farmContract: string }> = {};
+  tokenBalances: Record<string, string> = {};
+  lpTokenBalances: Record<string, string> = {};
+  poolResponses: Record<string, PoolResponse> = {};
+  govBalanceResponse: BalanceResponse;
+  govStateInfo: StateInfo;
+  poolDetails: GovPoolDetail[] = [];
+  myTvl = 0;
+  allVaults: Vault[] = [];
+  portfolio: Portfolio;
+  astroportData: any;
+  private loadedNetwork: string;
+  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
+  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
+  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
+  private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
+  private PROXY_REWARD_STOPPED: Set<string> = new Set(['Astroport|ANC|UST']);
+
   constructor(
     private bankService: BankService,
     @Inject(FARM_INFO_SERVICE) public farmInfos: FarmInfoService[],
@@ -129,9 +158,11 @@ export class InfoService {
         if (poolResponseJson) {
           this.poolResponses = JSON.parse(poolResponseJson);
         }
-        const rewardInfoJson = localStorage.getItem('rewardInfos');
-        if (rewardInfoJson) {
-          this.rewardInfos = JSON.parse(rewardInfoJson);
+        if (this.terrajs.isConnected) {
+          const rewardInfoJson = localStorage.getItem('rewardInfos');
+          if (rewardInfoJson) {
+            this.rewardInfos = JSON.parse(rewardInfoJson);
+          }
         }
         const tokenInfoJson = localStorage.getItem('tokenInfos');
         if (tokenInfoJson) {
@@ -145,49 +176,13 @@ export class InfoService {
         localStorage.removeItem('rewardInfos');
         localStorage.removeItem('tokenInfos');
       }
-    } catch (e) { }
+    } catch (e) {
+    }
   }
 
   get ASTRO_KEY() {
     return `Astroport|${this.terrajs.settings.astroToken}|${Denom.USD}`;
   }
-  userUstAmount: string;
-  userSpecAmount: string;
-  userSpecLpAmount: string;
-
-  specPoolInfo: PoolResponse;
-  specPrice: string;
-
-  private loadedNetwork: string;
-  poolInfos: Record<string, PoolInfo>;
-  pairInfos: Record<string, PairInfo> = {};
-  tokenInfos: Record<string, TokenInfo> = {};
-
-  stat: Stat;
-  circulation: string;
-  marketCap: number;
-
-  rewardInfos: Record<string, RewardInfoResponseItem & { farm: string, farmContract: string }> = {};
-  tokenBalances: Record<string, string> = {};
-  lpTokenBalances: Record<string, string> = {};
-  poolResponses: Record<string, PoolResponse> = {};
-
-  govBalanceResponse: BalanceResponse;
-  govStateInfo: StateInfo;
-  poolDetails: GovPoolDetail[] = [];
-
-  myTvl = 0;
-  allVaults: Vault[] = [];
-
-  portfolio: Portfolio;
-
-  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
-  private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
-  private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
-  private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
-  private PROXY_REWARD_STOPPED: Set<string> = new Set(['Astroport|ANC|UST']);
-
-  astroportData: any;
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
@@ -231,7 +226,7 @@ export class InfoService {
 
   @memoize(1000)
   async refreshPool() {
-    this.specPoolInfo = await this.terraSwap.query(this.terrajs.settings.specPool, { pool: {} });
+    this.specPoolInfo = await this.terraSwap.query(this.terrajs.settings.specPool, {pool: {}});
     this.specPrice = div(this.specPoolInfo.assets[1].amount, this.specPoolInfo.assets[0].amount);
   }
 
@@ -252,8 +247,8 @@ export class InfoService {
       if (!this.shouldEnableFarmInfo(farmInfo)) {
         continue;
       }
-      const task = bundler.query(farmInfo.farmContract, { pools: {} })
-        .then(({ pools }: { pools: PoolItem[] }) => {
+      const task = bundler.query(farmInfo.farmContract, {pools: {}})
+        .then(({pools}: { pools: PoolItem[] }) => {
           for (const pool of pools) {
             const key = farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}` : `${pool.asset_token}`;
             poolInfos[key] = Object.assign(pool,
@@ -309,9 +304,9 @@ export class InfoService {
         continue;
       }
       const tokenA = baseTokenContract.startsWith('u') ?
-        { native_token: { denom: baseTokenContract } } : { token: { contract_addr: baseTokenContract } };
+        {native_token: {denom: baseTokenContract}} : {token: {contract_addr: baseTokenContract}};
       const tokenB = denomTokenContract.startsWith('u') ?
-        { native_token: { denom: denomTokenContract } } : { token: { contract_addr: denomTokenContract } };
+        {native_token: {denom: denomTokenContract}} : {token: {contract_addr: denomTokenContract}};
 
       let factory: string;
       if (this.poolInfos[key].dex === 'Terraswap') {
@@ -339,16 +334,6 @@ export class InfoService {
     }
   }
 
-  private cleanSymbol(symbol: string) {
-    if (symbol.startsWith('wh')) {
-      return symbol.substr(2);
-    } else if (symbol === 'BLUNA') {
-      return 'bLUNA';
-    } else {
-      return symbol;
-    }
-  }
-
   async ensureTokenInfos() {
     await this.ensurePoolInfoLoaded();
     const cw20Tokens = new Set<string>();
@@ -372,7 +357,7 @@ export class InfoService {
       if (this.tokenInfos[key]) {
         continue;
       }
-      const task = bundler.query(key, { token_info: {} })
+      const task = bundler.query(key, {token_info: {}})
         .then(it => this.tokenInfos[key] = {
           name: it.name,
           symbol: this.cleanSymbol(it.symbol),
@@ -402,7 +387,8 @@ export class InfoService {
     await this.refreshPoolInfos();
     await Promise.all([
       this.refreshPoolResponses(),
-      this.ensureAstroportData().catch(_ => { }),
+      this.ensureAstroportData().catch(_ => {
+      }),
     ]);
 
     const vaults = await vaultsTask;
@@ -474,25 +460,13 @@ export class InfoService {
     stat.govApr = 0; // stat.vaultFee / stat.govPoolCount / +stat.govTvl;
 
     // aUST in Gov
-    const anchorState = await this.anchorMarket.query({ epoch_state: {} });
+    const anchorState = await this.anchorMarket.query({epoch_state: {}});
     const austBalance = await this.token.balance(this.terrajs.settings.austToken, this.terrajs.settings.gov);
     const austValue = times(austBalance.balance, anchorState.exchange_rate);
     stat.tvl = plus(stat.tvl, austValue);
 
     this.stat = stat;
     localStorage.setItem('stat', JSON.stringify(stat));
-  }
-
-  private async refreshGovStat(stat: Stat) {
-    const poolTask = this.refreshPool();
-
-    const state = await this.gov.query({ state: {} });
-    stat.govStaked = state.total_staked;
-    stat.govPoolCount = state.pools.length;
-
-    await poolTask;
-    stat.govTvl = times(stat.govStaked, this.specPrice);
-    stat.tvl = plus(stat.tvl, stat.govTvl);
   }
 
   async refreshRewardInfos() {
@@ -508,9 +482,13 @@ export class InfoService {
       }
       for (const reward of rewards) {
         if (farmInfo.farmType === 'LP') {
-          rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+          rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = {
+            ...reward,
+            farm: farmInfo.farm,
+            farmContract: farmInfo.farmContract
+          };
         } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
-          rewardInfos[`${reward.asset_token}`] = { ...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract };
+          rewardInfos[`${reward.asset_token}`] = {...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract};
         }
       }
     };
@@ -527,7 +505,7 @@ export class InfoService {
           reward_info: {
             staker_addr: this.terrajs.address,
           }
-        }).then(({ reward_infos: rewards }: { reward_infos: RewardInfoResponseItem[] }) => processRewards(farmInfo, rewards));
+        }).then(({reward_infos: rewards}: { reward_infos: RewardInfoResponseItem[] }) => processRewards(farmInfo, rewards));
       }
       tasks.push(task);
     }
@@ -569,7 +547,7 @@ export class InfoService {
     } else {
       tasks.push(this.refreshNativeTokens());
     }
-    tasks.push(bundler.query(pairInfo.contract_addr, { pool: {} })
+    tasks.push(bundler.query(pairInfo.contract_addr, {pool: {}})
       .then(it => this.poolResponses[key] = it));
 
     tasks.push(bundler.query(pairInfo.liquidity_token, balanceQuery)
@@ -597,7 +575,7 @@ export class InfoService {
       }
       const pairInfo = this.pairInfos[poolResponseKey];
 
-      poolTasks.push(bundler.query(pairInfo.contract_addr, { pool: {} })
+      poolTasks.push(bundler.query(pairInfo.contract_addr, {pool: {}})
         .then(it => poolResponses[poolResponseKey] = it));
     }
 
@@ -611,14 +589,14 @@ export class InfoService {
   async refreshCirculation() {
     // testnet doesn't have burnvault
     if (this.terrajs.network?.name === 'testnet') {
-      const task1 = this.token.query(this.terrajs.settings.specToken, { token_info: {} });
+      const task1 = this.token.query(this.terrajs.settings.specToken, {token_info: {}});
       const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
       const taskResult = await Promise.all([task1, task2]);
       this.circulation = minus(taskResult[0].total_supply, taskResult[1].locked_amount);
       return;
     } else {
       const bundler = new QueryBundler(this.wasm);
-      const task1 = bundler.query(this.terrajs.settings.specToken, { token_info: {} });
+      const task1 = bundler.query(this.terrajs.settings.specToken, {token_info: {}});
       const task2 = bundler.query(this.terrajs.settings.wallet, {
         balance: {
           address: this.terrajs.settings.platform
@@ -651,7 +629,7 @@ export class InfoService {
     let tvl = 0;
     const portfolio: Portfolio = {
       total_reward_ust: 0,
-      gov: { pending_reward_token: 0, pending_reward_ust: 0 },
+      gov: {pending_reward_token: 0, pending_reward_ust: 0},
       tokens: new Map(),
       farms: new Map(),
       totalGovRewardUST: 0,
@@ -660,8 +638,12 @@ export class InfoService {
     };
     for (const farmInfo of this.farmInfos.filter(fi => this.shouldEnableFarmInfo(fi))) {
       if (this.tokenInfos[farmInfo.rewardTokenContract]?.symbol) {
-        portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, { rewardTokenContract: farmInfo.rewardTokenContract, pending_reward_token: 0, pending_reward_ust: 0 });
-        portfolio.farms.set(farmInfo.farm, { bond_amount_ust: 0 });
+        portfolio.tokens.set(this.tokenInfos[farmInfo.rewardTokenContract].symbol, {
+          rewardTokenContract: farmInfo.rewardTokenContract,
+          pending_reward_token: 0,
+          pending_reward_ust: 0
+        });
+        portfolio.farms.set(farmInfo.farm, {bond_amount_ust: 0});
       } else {
         console.error('updateMyTvl tokenInfos Symbol not found', farmInfo.rewardTokenContract);
       }
@@ -874,11 +856,11 @@ export class InfoService {
         denomDecimals: denomToken.startsWith('u') ? CONFIG.DIGIT : this.tokenInfos[denomToken]?.decimals,
         denomUnit: denomToken.startsWith('u') ? CONFIG.UNIT : this.tokenInfos[denomToken]?.unit,
         baseAssetInfo: baseToken.startsWith('u')
-          ? { native_token: { denom: baseToken } }
-          : { token: { contract_addr: baseToken } },
+          ? {native_token: {denom: baseToken}}
+          : {token: {contract_addr: baseToken}},
         denomAssetInfo: denomToken.startsWith('u')
-          ? { native_token: { denom: denomToken } }
-          : { token: { contract_addr: denomToken } },
+          ? {native_token: {denom: denomToken}}
+          : {token: {contract_addr: denomToken}},
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
         poolInfo,
@@ -914,44 +896,10 @@ export class InfoService {
     }
   }
 
-  @memoize(30000)
-  private async ensureAstroportData() {
-    const apollo = this.apollo.use('astroport');
-    this.astroportData = (await apollo.query<any>({
-      query: gql`query {
-                    pools {
-                      pool_address
-                      token_symbol
-                      trading_fees {
-                        apy
-                        apr
-                        day
-                      }
-                      astro_rewards {
-                        apy
-                        apr
-                        day
-                      }
-                      protocol_rewards {
-                        apy
-                        apr
-                        day
-                      }
-                      total_rewards {
-                        apy
-                        apr
-                        day
-                      }
-                    }
-                  }`,
-      errorPolicy: 'all'
-    }).toPromise()).data;
-  }
-
   async fetchPoolDetails() {
 
     const [state, rates] = await Promise.all([
-      this.anchorMarket.query({ epoch_state: {} }),
+      this.anchorMarket.query({epoch_state: {}}),
       this.httpClient.get<any>(this.terrajs.settings.anchorAPI + '/deposit-rate').toPromise().catch(_ => undefined),
       this.gov.state().then(it => this.govStateInfo = it),
       this.terrajs.isConnected
@@ -979,7 +927,7 @@ export class InfoService {
     }
 
     if (this.govBalanceResponse) {
-      const mostLockedBalance = this.govBalanceResponse.locked_balance.reduce((c, [_, { balance }]) => Math.max(c, +balance), 0);
+      const mostLockedBalance = this.govBalanceResponse.locked_balance.reduce((c, [_, {balance}]) => Math.max(c, +balance), 0);
       lockedBalance = div(mostLockedBalance, CONFIG.UNIT);
     }
 
@@ -1016,7 +964,7 @@ export class InfoService {
           : current.userBalance;
 
         const moveOptions = poolDetails.filter(d => d.days > current.days)
-          .map(({ days, userBalance, unlockAt }) => ({ days, userBalance, unlockAt }));
+          .map(({days, userBalance, unlockAt}) => ({days, userBalance, unlockAt}));
 
         return {
           ...current,
@@ -1024,6 +972,62 @@ export class InfoService {
           moveOptions,
         };
       });
+  }
+
+  private cleanSymbol(symbol: string) {
+    if (symbol.startsWith('wh')) {
+      return symbol.substr(2);
+    } else if (symbol === 'BLUNA') {
+      return 'bLUNA';
+    } else {
+      return symbol;
+    }
+  }
+
+  private async refreshGovStat(stat: Stat) {
+    const poolTask = this.refreshPool();
+
+    const state = await this.gov.query({state: {}});
+    stat.govStaked = state.total_staked;
+    stat.govPoolCount = state.pools.length;
+
+    await poolTask;
+    stat.govTvl = times(stat.govStaked, this.specPrice);
+    stat.tvl = plus(stat.tvl, stat.govTvl);
+  }
+
+  @memoize(30000)
+  private async ensureAstroportData() {
+    const apollo = this.apollo.use('astroport');
+    this.astroportData = (await apollo.query<any>({
+      query: gql`query {
+                    pools {
+                      pool_address
+                      token_symbol
+                      trading_fees {
+                        apy
+                        apr
+                        day
+                      }
+                      astro_rewards {
+                        apy
+                        apr
+                        day
+                      }
+                      protocol_rewards {
+                        apy
+                        apr
+                        day
+                      }
+                      total_rewards {
+                        apy
+                        apr
+                        day
+                      }
+                    }
+                  }`,
+      errorPolicy: 'all'
+    }).toPromise()).data;
   }
 
 }

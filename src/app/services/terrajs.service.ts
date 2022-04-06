@@ -217,6 +217,7 @@ export class TerrajsService implements OnDestroy {
 
   disconnect() {
     this.walletController.disconnect();
+    localStorage.removeItem('rewardInfos');
     localStorage.removeItem('connect');
     localStorage.removeItem('address');
     location.reload();
