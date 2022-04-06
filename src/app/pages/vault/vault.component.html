@@ -9,15 +9,15 @@
       <div class="col-12 col-md-4 pt-2 d-flex justify-content-end align-items-end">
         <div class="d-inline-block f-12">
           Audited by <a
-            href="https://github.com/HalbornSecurity/PublicReports/blob/master/CosmWasm%20Smart%20Contract%20Audits/Spectrum_Protocol_CosmWasm_Smart_Contract_Security_Audit_Halborn_Report_v1_1.pdf"
-            target="_blank">
-            <img src="assets/halborn_logo.svg" alt="Halborn" class="platform-logo-halborn"></a>
+          href="https://github.com/HalbornSecurity/PublicReports/blob/master/CosmWasm%20Smart%20Contract%20Audits/Spectrum_Protocol_CosmWasm_Smart_Contract_Security_Audit_Halborn_Report_v1_1.pdf"
+          target="_blank">
+          <img alt="Halborn" class="platform-logo-halborn" src="assets/halborn_logo.svg"></a>
         </div>
         <div class="d-inline-block f-12 ms-2">
           Get covered at <a
-            href="https://app.insurace.io/Insurance/Cart?id=131&referrer=1384813702756895043012775057428368748461042504960"
-            target="_blank">
-            <img src="assets/insurace.svg" alt="InsurAce" class="platform-logo-insurace"></a>
+          href="https://app.insurace.io/Insurance/Cart?id=131&referrer=1384813702756895043012775057428368748461042504960"
+          target="_blank">
+          <img alt="InsurAce" class="platform-logo-insurace" src="assets/insurace.svg"></a>
         </div>
       </div>
     </div>
@@ -29,9 +29,10 @@
               Total Value Locked
             </p>
             <h3 class="card-title">
-              <app-digit [value]="+info.stat?.tvl / UNIT"></app-digit> <span class="cur-title"> UST</span>
+              <app-digit [value]="+info.stat?.tvl / UNIT"></app-digit>
+              <span class="cur-title"> UST</span>
               <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-10"
-                mdbTooltip="Total value of provided liquidity and staked SPEC"></i>
+                 mdbTooltip="Total value of provided liquidity and staked SPEC"></i>
             </h3>
           </div>
         </div>
@@ -43,10 +44,11 @@
               SPEC Price
             </p>
             <h3 class="card-title">
-              <app-digit [value]="+info.specPrice"></app-digit> <span class="cur-title"> UST</span>
-              <a class="margin-left-auto text-light small"
-                href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20"
-                alt="SPEC price chart" title="SPEC price chart" target="_blank">
+              <app-digit [value]="+info.specPrice"></app-digit>
+              <span class="cur-title"> UST</span>
+              <a alt="SPEC price chart"
+                 class="margin-left-auto text-light small"
+                 href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" target="_blank" title="SPEC price chart">
                 <img class="float-end mg-18" src="../../../assets/Icon_Chart.svg">
               </a>
             </h3>
@@ -60,29 +62,30 @@
               Market Cap
             </p>
             <h3 class="card-title">
-              <app-digit *ngIf="info.marketCap" [value]="info.marketCap"></app-digit>&nbsp;<span class="cur-title"
-                *ngIf="info.marketCap">UST</span>
+              <app-digit *ngIf="info.marketCap" [value]="info.marketCap"></app-digit>&nbsp;<span *ngIf="info.marketCap"
+                                                                                                 class="cur-title">UST</span>
             </h3>
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-6" *ngIf="terrajs.isConnected">
+      <div *ngIf="terrajs.isConnected" class="col-12 col-md-6">
         <div class="card card-grey box-left">
           <div class="card-body ps-3">
             <div class="d-flex align-items-center">
-              <div class="flex-shrink-0 me-3 tvl-chevron-up" *ngIf="+info.myTvl">
+              <div *ngIf="+info.myTvl" class="flex-shrink-0 me-3 tvl-chevron-up">
                 <span class="fas fa-chevron-up animate-up text-success"></span>
               </div>
               <div class="flex-grow-1">
                 <div class="card-text sub-topic">
                   My Total Value <i class="fas fa-info-circle info-icon super"
-                    mdbTooltip="Your provided liquidity, staked rewards, and staked SPEC"></i>
+                                    mdbTooltip="Your provided liquidity, staked rewards, and staked SPEC"></i>
                 </div>
                 <h3 class="card-title text-primary">
-                  <app-digit [value]="info.myTvl"></app-digit> <span class="cur-title text-white"> UST</span>
-                  <a role="button" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
-                    (click)="openYourTVL()"><img class="float-end mg-18" src="../../../assets/Icon_PieChart.svg"
-                      alt="Portfolio allocation" title="Portfolio allocation"></a>
+                  <app-digit [value]="info.myTvl"></app-digit>
+                  <span class="cur-title text-white"> UST</span>
+                  <a (click)="openYourTVL()" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
+                     role="button"><img alt="Portfolio allocation" class="float-end mg-18"
+                                                  src="../../../assets/Icon_PieChart.svg" title="Portfolio allocation"></a>
                 </h3>
               </div>
             </div>
@@ -100,7 +103,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-6" *ngIf="terrajs.isConnected">
+      <div *ngIf="terrajs.isConnected" class="col-12 col-md-6">
         <!--   -->
         <app-unstake-all></app-unstake-all>
       </div>
@@ -117,10 +120,10 @@
             <div class="d-flex justify-content-between">
               <div>
                 <div class="d-none d-sm-block">
-                  <a style="cursor:pointer" (click)="setIsGrid(true)">
+                  <a (click)="setIsGrid(true)" style="cursor:pointer">
                     <img [src]="isGrid ? '../../../assets/Icon-grid-white.svg' : '../../../assets/Icon-grid-grey.svg'">
                   </a>
-                  <a style="cursor:pointer" (click)="setIsGrid(false)">
+                  <a (click)="setIsGrid(false)" style="cursor:pointer">
                     <img [src]="!isGrid ? '../../../assets/Icon-list-white.svg' : '../../../assets/Icon-list-grey.svg'">
                   </a>
                 </div>
@@ -128,8 +131,8 @@
               <div>
                 <span class="align-sub sub-topic text-dropdown">Deposited only</span>
                 <label class="switch">
-                  <input type="checkbox" id="showDepositedPoolOnly" [(ngModel)]="showDepositedPoolOnly"
-                    (change)="refresh();memoize('deposit')">
+                  <input (change)="refresh();memoize('deposit')" [(ngModel)]="showDepositedPoolOnly" id="showDepositedPoolOnly"
+                         type="checkbox">
                   <span class="slider"></span>
                 </label>
               </div>
@@ -140,8 +143,8 @@
               <div>
                 <span class="align-sub">Deposited only</span>
                 <label class="switch">
-                  <input type="checkbox" id="showDepositedPoolOnlyMobile" [(ngModel)]="showDepositedPoolOnly"
-                    (change)="refresh();memoize('deposit')">
+                  <input (change)="refresh();memoize('deposit')" [(ngModel)]="showDepositedPoolOnly" id="showDepositedPoolOnlyMobile"
+                         type="checkbox">
                   <span class="slider"></span>
                 </label>
               </div>
@@ -155,8 +158,9 @@
             <div class="d-flex">
               <div class="form-group has-search">
                 <span class="fa fa-search form-control-feedback mg-3"></span>
-                <input type="text" class="form-control placeholder-white" placeholder="Search vaults"
-                  aria-label="Search" aria-describedby="search-addon" [(ngModel)]="search" (ngModelChange)="refresh()">
+                <input (ngModelChange)="refresh()" [(ngModel)]="search" aria-describedby="search-addon"
+                       aria-label="Search" class="form-control placeholder-white" placeholder="Search vaults"
+                       type="text">
               </div>
             </div>
           </div>
@@ -166,31 +170,34 @@
         <div class="card box-left">
           <div class="card-body card-grey p-0 border-6 school-options-dropdown text-center">
             <div class="d-flex">
-              <div mdbDropdown class="dropdown w-100 btn-group" [class.active-border]="activeFarm !== 'All'"
-                #dropdownFarmFilter>
-                <button mdbDropdownToggle class="btn p-0" type="button" aria-expanded="false">
-                  <img *ngIf="activeFarm !== 'Active farms' && activeFarm !== 'Disabled farms'" class="mobile-icon" [src]="activeFarm | url:'icon'" width="24"
-                    height="24">
-                  <img *ngIf="activeFarm === 'Active farms' || activeFarm === 'Disabled farms'" class="mobile-icon" src="../../../assets/Icon_Farms.svg" width="24"
-                    height="24">
+              <div #dropdownFarmFilter [class.active-border]="activeFarm !== defaultActiveFarm" class="dropdown w-100 btn-group"
+                   mdbDropdown>
+                <button aria-expanded="false" class="btn p-0" mdbDropdownToggle type="button">
+                  <img *ngIf="activeFarm !== 'Active farms' && activeFarm !== 'Disabled farms'" [src]="activeFarm | url:'icon'"
+                       class="mobile-icon" height="24"
+                       width="24">
+                  <img *ngIf="activeFarm === 'Active farms' || activeFarm === 'Disabled farms'" class="mobile-icon"
+                       height="24" src="../../../assets/Icon_Farms.svg"
+                       width="24">
                   <span class="text-dropdown d-none d-md-inline ps-2 sub-topic">{{activeFarm}}</span>
                   <span class="text-end filter">
-                    <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
+                    <img class="ms-3" height="12" src="../../../assets/chevron-down.svg" width="12">
                   </span>
                 </button>
-                <ul mdbDropdownMenu class="dropdown-menu">
+                <ul class="dropdown-menu" mdbDropdownMenu>
                   <li>
-                    <a class="dropdown-item" [class.active]="activeFarm === 'Active farms'"
-                      (click)="activeFarm = 'Active farms'; refresh()">Active farms</a>
+                    <a (click)="activeFarm = 'Active farms'; refresh()" [class.active]="activeFarm === 'Active farms'"
+                       class="dropdown-item">Active farms</a>
                   </li>
                   <li *ngFor="let farm of farmInfoDropdownList">
-                    <a class="dropdown-item" [class.active]="activeFarm === farm"
-                      (click)="activeFarm = farm; refresh()"> <img [src]="farm | url:'icon'" class="farm-logo">
+                    <a (click)="activeFarm = farm; refresh()" [class.active]="activeFarm === farm"
+                       class="dropdown-item"> <img [src]="farm | url:'icon'" class="farm-logo">
                       {{farm}}</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" [class.active]="activeFarm === 'Disabled farms'"
-                      (click)="activeFarm = 'Disabled farms'; refresh()"><i class="fas fa-ban text-white farm-logo"></i> Disabled farms</a>
+                    <a (click)="activeFarm = 'Disabled farms'; refresh()" [class.active]="activeFarm === 'Disabled farms'"
+                       class="dropdown-item"><i
+                      class="fas fa-ban text-white farm-logo"></i> Disabled farms</a>
                   </li>
                 </ul>
               </div>
@@ -201,30 +208,30 @@
       <div class="col-2 col-sm-2 col-md-2">
         <div class="card box-left">
           <div class="card-body p-0 border-6 school-options-dropdown text-center">
-            <div mdbDropdown class="dropdown w-100 btn-group" [class.active-border]="sortBy !== 'multiplier'"
-              #dropdownSortBy>
-              <button mdbDropdownToggle class="btn p-0" type="button" aria-expanded="false">
-                <img class="mobile-icon" src="../../../assets/Icon_SortBy.svg" width="24" height="24">
+            <div #dropdownSortBy [class.active-border]="sortBy !== 'multiplier'" class="dropdown w-100 btn-group"
+                 mdbDropdown>
+              <button aria-expanded="false" class="btn p-0" mdbDropdownToggle type="button">
+                <img class="mobile-icon" height="24" src="../../../assets/Icon_SortBy.svg" width="24">
                 <span class="text-dropdown d-none d-sm-none d-md-inline sub-topic">Sort by</span>
                 <span class="text-end filter">
-                  <img src="../../../assets/chevron-down.svg" class="ms-3" width="12" height="12">
+                  <img class="ms-3" height="12" src="../../../assets/chevron-down.svg" width="12">
                 </span>
               </button>
-              <ul mdbDropdownMenu class="dropdown-menu">
+              <ul class="dropdown-menu" mdbDropdownMenu>
                 <li>
-                  <a class="dropdown-item" [class.active]="sortBy === 'multiplier'"
-                    (click)="sortBy = 'multiplier'; refresh()">Default</a>
+                  <a (click)="sortBy = 'multiplier'; refresh()" [class.active]="sortBy === 'multiplier'"
+                     class="dropdown-item">Default</a>
                 </li>
                 <li>
-                  <a class="dropdown-item" [class.active]="sortBy === 'apy'"
-                    (click)="sortBy = 'apy'; refresh()">APY%</a>
+                  <a (click)="sortBy = 'apy'; refresh()" [class.active]="sortBy === 'apy'"
+                     class="dropdown-item">APY%</a>
                 </li>
                 <li>
-                  <a class="dropdown-item" [class.active]="sortBy === 'dpr'"
-                    (click)="sortBy = 'dpr'; refresh()">DPR%</a>
+                  <a (click)="sortBy = 'dpr'; refresh()" [class.active]="sortBy === 'dpr'"
+                     class="dropdown-item">DPR%</a>
                 </li>
                 <li>
-                  <a class="dropdown-item" [class.active]="sortBy === 'tvl'" (click)="sortBy = 'tvl'; refresh()">TVL</a>
+                  <a (click)="sortBy = 'tvl'; refresh()" [class.active]="sortBy === 'tvl'" class="dropdown-item">TVL</a>
                 </li>
               </ul>
             </div>
@@ -234,13 +241,14 @@
     </div>
 
     <div *ngIf="loading" class="d-flex align-items-center justify-content-center pt-3"><span
-        class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...</div>
+      aria-hidden="true" class="spinner-grow spinner-grow-sm" role="status"></span>&nbsp;Loading...
+    </div>
 
     <div *ngIf="!loading" class="d-flex justify-content-between pt-3">
       <div class="d-flex justify-content-start align-items-end">
         <div class="d-none d-md-flex">
           <span class="fw-bold text-light"><i class="fas fa-hashtag"></i> {{vaults.length}} {{
-            vaults.length > 1 ? "Vaults" :"Vault"}}</span>
+            vaults.length > 1 ? "Vaults" : "Vault"}}</span>
         </div>
       </div>
     </div>
@@ -249,7 +257,7 @@
       <ng-container *ngFor="let vault of vaults; trackBy: vaultId">
         <div [ngClass]="{'col-lg-4': isGrid, 'col-sm-6': isGrid, 'col-12': !isGrid  }">
           <!--          [useShortNumber]="!shouldBeGrid"-->
-          <app-asset-card [vault]="vault" [isGrid]="isGrid"></app-asset-card>
+          <app-asset-card [isGrid]="isGrid" [vault]="vault"></app-asset-card>
         </div>
       </ng-container>
     </div>

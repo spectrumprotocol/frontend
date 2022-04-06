@@ -42,6 +42,8 @@ export interface Vault {
   poolAprTotal: number;
 }
 
+export type SORT_BY = 'multiplier' | 'apy' | 'dpr' | 'tvl';
+
 @Component({
   selector: 'app-vault',
   templateUrl: './vault.component.html',
@@ -53,8 +55,10 @@ export class VaultComponent implements OnInit, OnDestroy {
   vaults: Vault[] = [];
   search: string;
   showDepositedPoolOnly = false;
-  sortBy = 'multiplier';
-  activeFarm = 'Active farms';
+  defaultSortBy: SORT_BY = 'multiplier';
+  defaultActiveFarm = 'Active farms';
+  sortBy: SORT_BY = this.defaultSortBy;
+  activeFarm = this.defaultActiveFarm;
   UNIT = CONFIG.UNIT;
   myTvl = 0;
   height: number;
@@ -66,7 +70,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   private connected: Subscription;
   private heightChanged: Subscription;
   private onTransaction: Subscription;
-  private lastSortBy: string;
+  private lastSortBy: SORT_BY;
   private lastActiveFarm: string;
 
   constructor(
