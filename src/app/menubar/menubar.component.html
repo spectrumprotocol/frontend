@@ -21,7 +21,7 @@
       </li>
 
     </ul>
-    <div class="dropdown" mdbDropdown>
+    <div class="collapse navbar-collapse d-md-none" mdbDropdown>
       <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
         <i class="fas fa-handshake"></i>&nbsp;<span class="text-muted d-md-inline">Partners</span>
       </button>
@@ -111,6 +111,12 @@
       <li class="nav-item ms-1 me-1">
         <a (click)="mobileMenu.hide()" class="nav-link" routerLink="/gov" routerLinkActive="active"><i
           class="fas fa-balance-scale"></i> Gov</a>
+      </li>
+      <li class="nav-item ms-1 me-1">
+        <a class="nav-link" href="https://aperture.finance/?ref=Spectrum" target="_blank">
+          <img alt="Aperture" class="partner-icon" src="assets/aperture.png">
+          Aperture Finance - mAssets delta-neutral
+        </a>
       </li>
     </ul>
   </div>
