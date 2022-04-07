@@ -1,87 +1,116 @@
 <nav class="navbar navbar-expand-md navbar-dark navbar-bg">
   <div class="container">
-    <a class="navbar-brand" routerLink="/"><img src="/assets/spec_logo.svg" class="logo" /></a>
+    <a class="navbar-brand" routerLink="/"><img class="logo" src="/assets/spec_logo.svg"/></a>
     <!-- Left links -->
     <ul class="navbar-nav d-none d-md-flex">
       <li class="nav-item">
-        <a class="nav-link text-center" routerLink="/dashboard" routerLinkActive="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a class="nav-link text-center" routerLink="/dashboard" routerLinkActive="active"><i
+          class="fas fa-tachometer-alt"></i> Dashboard</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-center" routerLink="/vaults" routerLinkActive="active"><i class="fas fa-shield-alt"></i> Vaults</a>
+        <a class="nav-link text-center" routerLink="/vaults" routerLinkActive="active"><i class="fas fa-shield-alt"></i>
+          Vaults</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-center" routerLink="/trade" routerLinkActive="active"><i class="fas fa-exchange-alt"></i> Trade SPEC</a>
+        <a class="nav-link text-center" routerLink="/trade" routerLinkActive="active"><i
+          class="fas fa-exchange-alt"></i> Trade SPEC</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-center" routerLink="/gov" routerLinkActive="active"><i class="fas fa-balance-scale"></i> Gov</a>
+        <a class="nav-link text-center" routerLink="/gov" routerLinkActive="active"><i class="fas fa-balance-scale"></i>
+          Gov</a>
       </li>
+
     </ul>
+    <div class="dropdown" mdbDropdown>
+      <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
+        <i class="fas fa-handshake"></i>&nbsp;<span class="text-muted d-md-inline">Partners</span>
+      </button>
+      <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu dropdown-menu-end" mdbDropdownMenu>
+        <li>
+          <a class="dropdown-item" href="https://aperture.finance/?ref=Spectrum" target="_blank">
+            <img alt="Aperture" class="partner-icon" src="assets/aperture.png">
+            Aperture Finance - mAssets delta-neutral
+          </a>
+        </li>
+      </ul>
+    </div>
     <!-- Left links -->
 
     <!--- right links -->
-    <div mdbDropdown class="dropdown" *ngIf="terrajs.address" #dropdown>
-      <button class="btn btn-dark dropdown-toggle btn-sm" type="button" mdbDropdownToggle>
+    <div #dropdown *ngIf="terrajs.address" class="dropdown" mdbDropdown>
+      <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
         <i class="fas fa-wallet"></i>&nbsp;<span class="text-muted d-none d-md-inline">{{ tnsName || walletText }}
-          <span *ngIf="terrajs.network.name !== 'mainnet'" class="text-danger"> ({{terrajs.network.name}})</span>&nbsp;|&nbsp;</span>
+        <span *ngIf="terrajs.network.name !== 'mainnet'" class="text-danger"> ({{terrajs.network.name}})</span>&nbsp;|&nbsp;</span>
         {{info.userUstAmount | number : '1.0-2'}} UST
       </button>
-      <ul mdbDropdownMenu class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+      <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu dropdown-menu-end" mdbDropdownMenu>
         <li>
-          <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">
+          <a aria-disabled="true" class="dropdown-item disabled" href="#" tabindex="-1">
             SPEC: {{ info.userSpecAmount | number: '1.0-2' }}
           </a>
         </li>
         <li>
-          <a class="dropdown-item disabled d-md-none" href="#" tabindex="-1" aria-disabled="true">
+          <a aria-disabled="true" class="dropdown-item disabled d-md-none" href="#" tabindex="-1">
             {{ tnsName || walletText}}
           </a>
         </li>
-        <li><button class="dropdown-item" type="button" (click)="copy()">Copy address</button></li>
-        <li *ngIf="tnsName"><button class="dropdown-item" type="button" (click)="copyTNS()">Copy TNS address</button></li>
-        <li><a class="dropdown-item"
-            href="https://{{terrajs.settings.finder}}/{{terrajs.network.name}}/account/{{terrajs.address}}"
-            target="_blank" (click)="dropdown.hide()">View on Terra Finder</a></li>
+        <li>
+          <button (click)="copy()" class="dropdown-item" type="button">Copy address</button>
+        </li>
+        <li *ngIf="tnsName">
+          <button (click)="copyTNS()" class="dropdown-item" type="button">Copy TNS address</button>
+        </li>
+        <li><a (click)="dropdown.hide()"
+               class="dropdown-item"
+               href="https://{{terrajs.settings.finder}}/{{terrajs.network.name}}/account/{{terrajs.address}}"
+               target="_blank">View on Terra Finder</a></li>
         <li class="dropdown-item">
           <div class="solid-line"></div>
         </li>
-        <li><button class="dropdown-item" type="button" (click)="disconnect()">Disconnect</button></li>
+        <li>
+          <button (click)="disconnect()" class="dropdown-item" type="button">Disconnect</button>
+        </li>
       </ul>
     </div>
-    <button type="button" class="btn btn-dark btn-sm" *ngIf="!terrajs.address" (click)="connect()"><i
-        class="fas fa-wallet"></i>&nbsp;<span class="text-muted">
+    <button (click)="connect()" *ngIf="!terrajs.address" class="btn btn-dark btn-sm" type="button"><i
+      class="fas fa-wallet"></i>&nbsp;<span class="text-muted">
         {{walletText}} </span></button>
 
 
-        <button
-        class="navbar-toggler d-md-none bg-gray"
-        type="button"
-        data-mdb-toggle="collapse"
-        data-mdb-target="#navbarToggleMobileMenu"
-        aria-controls="navbarToggleMobileMenu"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-        (click)="mobileMenu.toggle()"
-      >
+    <button
+      (click)="mobileMenu.toggle()"
+      aria-controls="navbarToggleMobileMenu"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+      class="navbar-toggler d-md-none bg-gray"
+      data-mdb-target="#navbarToggleMobileMenu"
+      data-mdb-toggle="collapse"
+      type="button"
+    >
       <i class="fas fa-bars"></i>
     </button>
     <!--- right links -->
   </div>
 </nav>
 
-<div mdbCollapse #mobileMenu="mdbCollapse" class="collapse navbar-collapse d-md-none" id="navbarToggleMobileMenu">
+<div #mobileMenu="mdbCollapse" class="collapse navbar-collapse d-md-none" id="navbarToggleMobileMenu" mdbCollapse>
   <div class="container-fluid justify-content-center">
     <ul class="navbar-nav">
       <li class="nav-item ms-1 me-1">
-        <a class="nav-link" routerLink="/dashboard" routerLinkActive="active" (click)="mobileMenu.hide()"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a (click)="mobileMenu.hide()" class="nav-link" routerLink="/dashboard" routerLinkActive="active"><i
+          class="fas fa-tachometer-alt"></i> Dashboard</a>
       </li>
       <li class="nav-item ms-1 me-1">
-        <a class="nav-link" routerLink="/vaults" routerLinkActive="active" (click)="mobileMenu.hide()"><i class="fas fa-shield-alt"></i> Vaults</a>
+        <a (click)="mobileMenu.hide()" class="nav-link" routerLink="/vaults" routerLinkActive="active"><i
+          class="fas fa-shield-alt"></i> Vaults</a>
       </li>
       <li class="nav-item ms-1 me-1">
-        <a class="nav-link" routerLink="/trade" routerLinkActive="active" (click)="mobileMenu.hide()"><i class="fas fa-exchange-alt"></i> Trade SPEC</a>
+        <a (click)="mobileMenu.hide()" class="nav-link" routerLink="/trade" routerLinkActive="active"><i
+          class="fas fa-exchange-alt"></i> Trade SPEC</a>
       </li>
       <li class="nav-item ms-1 me-1">
-        <a class="nav-link" routerLink="/gov" routerLinkActive="active" (click)="mobileMenu.hide()"><i class="fas fa-balance-scale"></i> Gov</a>
+        <a (click)="mobileMenu.hide()" class="nav-link" routerLink="/gov" routerLinkActive="active"><i
+          class="fas fa-balance-scale"></i> Gov</a>
       </li>
     </ul>
   </div>

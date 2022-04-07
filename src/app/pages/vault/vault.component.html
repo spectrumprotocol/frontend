@@ -48,7 +48,8 @@
               <span class="cur-title"> UST</span>
               <a alt="SPEC price chart"
                  class="margin-left-auto text-light small"
-                 href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" target="_blank" title="SPEC price chart">
+                 href="https://coinhall.org/charts/terra/terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20" target="_blank"
+                 title="SPEC price chart">
                 <img class="float-end mg-18" src="../../../assets/Icon_Chart.svg">
               </a>
             </h3>
@@ -83,9 +84,10 @@
                 <h3 class="card-title text-primary">
                   <app-digit [value]="info.myTvl"></app-digit>
                   <span class="cur-title text-white"> UST</span>
-                  <a (click)="openYourTVL()" *ngIf="!loading && terrajs.isConnected" class="margin-left-auto text-light small"
+                  <a (click)="openYourTVL()" *ngIf="!loading && terrajs.isConnected"
+                     class="margin-left-auto text-light small"
                      role="button"><img alt="Portfolio allocation" class="float-end mg-18"
-                                                  src="../../../assets/Icon_PieChart.svg" title="Portfolio allocation"></a>
+                                        src="../../../assets/Icon_PieChart.svg" title="Portfolio allocation"></a>
                 </h3>
               </div>
             </div>
@@ -110,7 +112,10 @@
 
       <div class="col-12">
         <div class="terra-container mt-2 mb-2">
-          Nexus Protocol nLuna, nETH, and LoTerra LOTA-UST vaults are now live!
+          <span>
+            Get ready for automated delta-neutral Mirror mAssets. <a href="https://aperture.finance/?ref=Spectrum"
+                                                                     target="_blank"> Aperture Finance </a> launch is imminent!
+          </span>
         </div>
       </div>
 
@@ -131,7 +136,8 @@
               <div>
                 <span class="align-sub sub-topic text-dropdown">Deposited only</span>
                 <label class="switch">
-                  <input (change)="refresh();memoize('deposit')" [(ngModel)]="showDepositedPoolOnly" id="showDepositedPoolOnly"
+                  <input (change)="refresh();memoize('deposit')" [(ngModel)]="showDepositedPoolOnly"
+                         id="showDepositedPoolOnly"
                          type="checkbox">
                   <span class="slider"></span>
                 </label>
@@ -143,7 +149,8 @@
               <div>
                 <span class="align-sub">Deposited only</span>
                 <label class="switch">
-                  <input (change)="refresh();memoize('deposit')" [(ngModel)]="showDepositedPoolOnly" id="showDepositedPoolOnlyMobile"
+                  <input (change)="refresh();memoize('deposit')" [(ngModel)]="showDepositedPoolOnly"
+                         id="showDepositedPoolOnlyMobile"
                          type="checkbox">
                   <span class="slider"></span>
                 </label>
@@ -170,10 +177,12 @@
         <div class="card box-left">
           <div class="card-body card-grey p-0 border-6 school-options-dropdown text-center">
             <div class="d-flex">
-              <div #dropdownFarmFilter [class.active-border]="activeFarm !== defaultActiveFarm" class="dropdown w-100 btn-group"
+              <div #dropdownFarmFilter [class.active-border]="activeFarm !== defaultActiveFarm"
+                   class="dropdown w-100 btn-group"
                    mdbDropdown>
                 <button aria-expanded="false" class="btn p-0" mdbDropdownToggle type="button">
-                  <img *ngIf="activeFarm !== 'Active farms' && activeFarm !== 'Disabled farms'" [src]="activeFarm | url:'icon'"
+                  <img *ngIf="activeFarm !== 'Active farms' && activeFarm !== 'Disabled farms'"
+                       [src]="activeFarm | url:'icon'"
                        class="mobile-icon" height="24"
                        width="24">
                   <img *ngIf="activeFarm === 'Active farms' || activeFarm === 'Disabled farms'" class="mobile-icon"
@@ -195,7 +204,8 @@
                       {{farm}}</a>
                   </li>
                   <li>
-                    <a (click)="activeFarm = 'Disabled farms'; refresh()" [class.active]="activeFarm === 'Disabled farms'"
+                    <a (click)="activeFarm = 'Disabled farms'; refresh()"
+                       [class.active]="activeFarm === 'Disabled farms'"
                        class="dropdown-item"><i
                       class="fas fa-ban text-white farm-logo"></i> Disabled farms</a>
                   </li>
