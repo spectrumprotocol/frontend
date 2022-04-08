@@ -73,6 +73,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   private lastSortBy: SORT_BY;
   private lastActiveFarm: string;
 
+  private BLACKLIST: Set<string> = new Set(['Starterra']);
+
+
   constructor(
     public info: InfoService,
     public terrajs: TerrajsService,
@@ -83,7 +86,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    this.farmInfoDropdownList = [...new Set(this.info.farmInfos.map(farmInfo => farmInfo.farm))];
+    this.farmInfoDropdownList = [...new Set(this.info.farmInfos.filter(farmInfo => !this.BLACKLIST.has(farmInfo.farm)).map(farmInfo => farmInfo.farm))];
     this.showDepositedPoolOnly = localStorage.getItem('deposit') === 'true';
     this.loading = true;
     this.connected = this.terrajs.connected
