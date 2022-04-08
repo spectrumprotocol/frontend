@@ -1043,6 +1043,19 @@
                   </div>
                 </div>
               </div>
+              <div *ngIf="vault.baseSymbol === 'STT' && vault.denomSymbol === 'UST'"
+                   class="card card-blue mt-3 mb-3">
+                <div class="card-body">
+                  <div class="card-text small mb-1">
+                    <div class="bulk-name-container">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      <div class="name-detail">
+                        StarTerra has implemented 5% transaction selling fee which breaks Spectrum Auto-Compound feature. Deposit to STT-UST Vault has been disabled. If you want to withdraw your LP from the vault, we suggest that you withdraw as LP or STT+UST to avoid selling fee.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
 
               <button (click)="doWithdraw()" [disabled]="withdrawAmtCtl.invalid" class="btn btn-primary"

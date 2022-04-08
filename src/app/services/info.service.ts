@@ -115,7 +115,7 @@ export class InfoService {
   portfolio: Portfolio;
   astroportData: any;
   private loadedNetwork: string;
-  private DISABLED_VAULTS: Set<string> = new Set(['Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
+  private DISABLED_VAULTS: Set<string> = new Set(['Astroport|STT|UST', 'Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
   private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
   private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
@@ -811,19 +811,22 @@ export class InfoService {
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const poolInfo = this.poolInfos[key];
+
+      const shouldSetAprZero = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
+
       const pairStat = this.stat?.pairs[key];
-      const poolApr = pairStat?.poolApr || 0;
-      const poolAstroApr = pairStat?.poolAstroApr || 0;
-      const poolAprTotal = poolApr + poolAstroApr;
-      const poolApy = pairStat?.poolApy || 0;
-      const specApr = pairStat?.specApr || 0;
+      const poolApr = shouldSetAprZero ? 0 : pairStat?.poolApr || 0;
+      const poolAstroApr = shouldSetAprZero ? 0 : pairStat?.poolAstroApr || 0;
+      const poolAprTotal = shouldSetAprZero ? 0 : poolApr + poolAstroApr;
+      const poolApy = shouldSetAprZero ? 0 : pairStat?.poolApy || 0;
+      const specApr = shouldSetAprZero ? 0 : pairStat?.specApr || 0;
       const govApr = this.stat?.govApr || 0;
       const specApy = specApr + specApr * govApr / 2;
       const compoundApy = poolApy + specApy;
       const farmApr = +(pairStat?.farmApr || 0);
 
       let farmApy = 0;
-      if (poolInfo.auto_stake) {
+      if (poolInfo.auto_stake && !shouldSetAprZero) {
         let astroApy = 0;
         let farm2Apy = 0;
         if (poolInfo.dex === 'Astroport' && poolInfo.farmType === 'LP') {
