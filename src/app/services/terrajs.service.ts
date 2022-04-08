@@ -283,8 +283,9 @@ export class TerrajsService implements OnDestroy {
     }
   }
 
-  toDate(height: number) {
+  async toDate(height: number) {
     const now = Date.now();
+    await this.getHeight();
     return new Date(now + (height - this.height) * BLOCK_TIME);
   }
 

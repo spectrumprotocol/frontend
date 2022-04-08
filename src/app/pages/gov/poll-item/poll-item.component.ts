@@ -1,8 +1,8 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { CONFIG } from '../../../consts/config';
-import { ConfigInfo as GovConfigInfo } from '../../../services/api/gov/config_info';
-import { PollInfo as GovPollInfo } from '../../../services/api/gov/polls_response';
-import { TerrajsService } from '../../../services/terrajs.service';
+import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {CONFIG} from '../../../consts/config';
+import {ConfigInfo as GovConfigInfo} from '../../../services/api/gov/config_info';
+import {PollInfo as GovPollInfo} from '../../../services/api/gov/polls_response';
+import {TerrajsService} from '../../../services/terrajs.service';
 
 type ConfigInfo = GovConfigInfo;
 type PollInfo = GovPollInfo;
@@ -38,9 +38,11 @@ export class PollItemComponent implements OnChanges {
   date: Date;
   dateLabel: string;
   quorumPositioning: number;
+
   constructor(
     private terrajs: TerrajsService
-  ) { }
+  ) {
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     const poll: PollInfo = changes['poll']?.currentValue || this.poll;
@@ -52,7 +54,7 @@ export class PollItemComponent implements OnChanges {
     this.quorumPositioning = Number(config.quorum) / 2 * 100;
   }
 
-  private calcPoll(poll: PollInfo, staked: number, config: ConfigInfo) {
+  private async calcPoll(poll: PollInfo, staked: number, config: ConfigInfo) {
     if (poll && staked && config) {
       this.yes_ratio = +poll.yes_votes / staked;
       this.no_ratio = +poll.no_votes / staked;
@@ -62,28 +64,28 @@ export class PollItemComponent implements OnChanges {
       this.votes_balance = this.yes_balance + this.no_balance;
       switch (poll.status) {
         case 'in_progress':
-          this.date = this.terrajs.toDate(poll.end_height);
+          this.date = await this.terrajs.toDate(poll.end_height);
           this.dateLabel = 'Poll end';
           break;
         case 'rejected':
-          this.date = this.terrajs.toDate(poll.end_height);
+          this.date = await this.terrajs.toDate(poll.end_height);
           this.dateLabel = 'Ended';
           break;
         case 'passed':
           if (this.poll.execute_msgs?.length > 0) {
-            this.date = this.terrajs.toDate(poll.end_height + config.effective_delay);
+            this.date = await this.terrajs.toDate(poll.end_height + config.effective_delay);
             this.dateLabel = 'Execution time';
           } else {
-            this.date = this.terrajs.toDate(poll.end_height);
+            this.date = await this.terrajs.toDate(poll.end_height);
             this.dateLabel = 'Ended';
           }
           break;
         case 'executed':
-          this.date = this.terrajs.toDate(poll.end_height + config.effective_delay);
+          this.date = await this.terrajs.toDate(poll.end_height + config.effective_delay);
           this.dateLabel = 'Executed';
           break;
         case 'expired':
-          this.date = this.terrajs.toDate(poll.end_height + config.expiration_period);
+          this.date = await this.terrajs.toDate(poll.end_height + config.expiration_period);
           this.dateLabel = 'Expired';
           break;
       }

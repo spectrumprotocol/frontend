@@ -7,7 +7,7 @@
       </div>
       <div class="col-12 col-md-4 pt-2 d-flex justify-content-end align-items-end">
         <div class="d-inline-block f-12">
-          <button type="button" class="btn btn-sm btn-primary ms-2" routerLink="/gov/poll/new">Create Poll</button>
+          <button class="btn btn-sm btn-primary ms-2" routerLink="/gov/poll/new" type="button">Create Poll</button>
         </div>
       </div>
     </div>
@@ -22,9 +22,9 @@
               <h3 class="card-title">
                 <app-digit [value]="+info.stat?.govStaked / UNIT"></app-digit>
                 <span class="cur-title"> SPEC (<app-digit
-                    [value]="info.circulation ? +info.stat?.govStaked * 100 / +info.circulation : 0"></app-digit>%)
+                  [value]="info.circulation ? +info.stat?.govStaked * 100 / +info.circulation : 0"></app-digit>%)
                   <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-10"
-                    mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
+                     mdbTooltip="Total quantity of SPEC tokens staked and ratio of the quantity of staked SPEC tokens to the circulation supply"></i>
                 </span>
               </h3>
             </div>
@@ -40,7 +40,7 @@
                 <app-digit [value]="+info.circulation / UNIT"></app-digit>
                 <span class="cur-title"> SPEC
                   <i class="fas fa-info-circle info-icon margin-left-auto float-end md-icon mg-10"
-                    mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
+                     mdbTooltip="Total quantity of SPEC minted (less locked development fund)"></i>
                 </span>
               </h3>
             </div>
@@ -53,8 +53,8 @@
                 Market Cap
               </p>
               <h3 class="card-title">
-                <app-digit *ngIf="info.marketCap" [value]="info.marketCap"></app-digit>&nbsp;<span class="cur-title"
-                  *ngIf="info.marketCap"> UST</span>
+                <app-digit *ngIf="info.marketCap" [value]="info.marketCap"></app-digit>&nbsp;<span *ngIf="info.marketCap"
+                                                                                                   class="cur-title"> UST</span>
               </h3>
             </div>
           </div>
@@ -63,7 +63,7 @@
     </div>
 
     <h4>Staking Pools <i class="fas fa-info-circle info-icon super fs-6"
-        mdbTooltip="Stake SPEC to earn revenue from vault fee"></i>
+                         mdbTooltip="Stake SPEC to earn revenue from vault fee"></i>
     </h4>
 
     <div class="row g-1 pt-3">
@@ -72,9 +72,10 @@
           <div class="card-body ps-3">
             <p class="card-text sub-topic">
               Staked in Gov
-              
+
             </p>
-            <p *ngIf="+info.govBalanceResponse?.balance" class="small text-primary mb-0 float-end mg-10">{{info.portfolio.stakedInGovAPR | percent}} APR</p>
+            <p *ngIf="+info.govBalanceResponse?.balance"
+               class="small text-primary mb-0 float-end mg-10">{{info.portfolio?.stakedInGovAPR || 0 | percent}} APR</p>
             <h3 class="card-title">
               <app-digit [value]="+info.govBalanceResponse?.balance / UNIT"></app-digit>
               <span class="cur-title"> SPEC</span>
@@ -98,13 +99,13 @@
     </div>
 
     <div *ngIf="!info.poolDetails.length" class="d-flex align-items-center justify-content-center pt-3">
-      <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;Loading...
+      <span aria-hidden="true" class="spinner-grow spinner-grow-sm" role="status"></span>&nbsp;Loading...
     </div>
 
     <div class="row gy-3 pt-3">
       <div *ngFor="let detail of info.poolDetails; trackBy: trackPoolDetails" class="col-12">
-        <app-gov-pool [detail]="detail" [walletBalance]="info.userSpecAmount || '0'"
-          (transactionComplete)="info.fetchPoolDetails()">
+        <app-gov-pool (transactionComplete)="info.fetchPoolDetails()" [detail]="detail"
+                      [walletBalance]="info.userSpecAmount || '0'">
         </app-gov-pool>
       </div>
     </div>
@@ -112,11 +113,11 @@
     <div class="row pt-5">
       <div class="col-4">
         <h5>Polls <i class="fas fa-info-circle info-icon super"
-            mdbTooltip="Staked SPEC can be used as voting power in polls that are currently in progress"></i>
+                     mdbTooltip="Staked SPEC can be used as voting power in polls that are currently in progress"></i>
         </h5>
       </div>
       <div class="col-8 text-end form-group">
-        <select class="form-control filter" [(ngModel)]="filteredStatus" (change)="pollReset()">
+        <select (change)="pollReset()" [(ngModel)]="filteredStatus" class="form-control filter">
           <option value="">All</option>
           <option value="in_progress">In Progress</option>
           <option value="passed">Passed</option>
@@ -126,13 +127,13 @@
         </select>
       </div>
     </div>
-    <div class="row pt-3 g-4" *ngIf="config && info.stat?.govStaked">
-      <div class="col-12 col-sm-6" *ngFor="let poll of polls">
-        <app-poll-item [poll]="poll" [config]="config" [staked]="+info.stat.govStaked" link="gov">
+    <div *ngIf="config && info.stat?.govStaked" class="row pt-3 g-4">
+      <div *ngFor="let poll of polls" class="col-12 col-sm-6">
+        <app-poll-item [config]="config" [poll]="poll" [staked]="+info.stat.govStaked" link="gov">
         </app-poll-item>
       </div>
       <div class="d-grid gap-2 col-4 mx-auto">
-        <button type="button" class="btn btn-secondary border-1" *ngIf="hasMore" (click)="pollMore()">More</button>
+        <button (click)="pollMore()" *ngIf="hasMore" class="btn btn-secondary border-1" type="button">More</button>
       </div>
     </div>
   </div>
