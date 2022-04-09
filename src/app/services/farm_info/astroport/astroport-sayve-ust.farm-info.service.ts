@@ -1,25 +1,18 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { PoolItem } from '../../api/astroport_token_ust_farm/pools_response';
-import { RewardInfoResponseItem } from '../../api/astroport_token_ust_farm/reward_info_response';
-import { TerrajsService } from '../../terrajs.service';
-import {
-  DEX,
-  FarmInfoService,
-  FARM_TYPE_ENUM,
-  PairStat,
-  PoolInfo
-} from './../farm-info.service';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../../libs/base64';
-import { PoolResponse } from '../../api/terraswap_pair/pool_response';
-import { VaultsResponse } from '../../api/gov/vaults_response';
-import { Denom } from '../../../consts/denom';
-import { AstroportTokenUstFarmService } from '../../api/astroport-tokenust-farm.service';
-import { WasmService } from '../../api/wasm.service';
-import { PairInfo } from '../../api/terraswap_factory/pair_info';
-import { BalancePipe } from '../../../pipes/balance.pipe';
-import { HttpClient } from '@angular/common/http';
+import {PoolItem} from '../../api/astroport_token_ust_farm/pools_response';
+import {RewardInfoResponseItem} from '../../api/astroport_token_ust_farm/reward_info_response';
+import {TerrajsService} from '../../terrajs.service';
+import {DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo} from './../farm-info.service';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {PoolResponse} from '../../api/terraswap_pair/pool_response';
+import {VaultsResponse} from '../../api/gov/vaults_response';
+import {Denom} from '../../../consts/denom';
+import {AstroportTokenUstFarmService} from '../../api/astroport-tokenust-farm.service';
+import {WasmService} from '../../api/wasm.service';
+import {PairInfo} from '../../api/terraswap_factory/pair_info';
+import {BalancePipe} from '../../../pipes/balance.pipe';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class AstroportSayveUstFarmInfoService implements FarmInfoService {
@@ -31,13 +24,9 @@ export class AstroportSayveUstFarmInfoService implements FarmInfoService {
   farmType: FARM_TYPE_ENUM = 'LP';
   dex: DEX = 'Astroport';
   denomTokenContract = Denom.USD;
-  highlight = false;
+  highlight = true;
   mainnetOnly = true;
   hasProxyReward = true;
-
-  get defaultBaseTokenContract() {
-    return this.terrajs.settings.sayveToken;
-  }
 
   constructor(
     private farmService: AstroportTokenUstFarmService,
@@ -46,6 +35,10 @@ export class AstroportSayveUstFarmInfoService implements FarmInfoService {
     private httpClient: HttpClient,
     private balancePipe: BalancePipe,
   ) {
+  }
+
+  get defaultBaseTokenContract() {
+    return this.terrajs.settings.sayveToken;
   }
 
   get farmContract() {
@@ -61,15 +54,20 @@ export class AstroportSayveUstFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.farmService.query(this.farmContract, { pools: {} });
+    const pool = await this.farmService.query(this.farmContract, {pools: {}});
     return pool.pools;
   }
 
   // no LP APR calculation, return 0 to use Astroport API
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${Denom.USD}`;
-    const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
-    const farmConfigTask = this.farmService.query(this.farmContract, { config: {} });
+    const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
+      deposit: {
+        lp_token: pairInfos[key].liquidity_token,
+        user: this.farmContract
+      }
+    });
+    const farmConfigTask = this.farmService.query(this.farmContract, {config: {}});
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
@@ -104,7 +102,7 @@ export class AstroportSayveUstFarmInfoService implements FarmInfoService {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
         poolAstroApr: 0,
-        farmApr:  0,
+        farmApr: 0,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
