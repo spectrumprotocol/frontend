@@ -1,61 +1,68 @@
 @import "../../scss/variables";
 
 .logo {
-    width: 48px;
-    height: 48px;
+  width: 48px;
+  height: 48px;
 }
 
 .navbar {
-    padding-bottom: 0.5625rem;
+  padding-bottom: 0.5625rem;
 }
 
 .navbar-bg {
-    background-color: $gray-990;
-    box-shadow: none;
+  background-color: $gray-990;
+  box-shadow: none;
 }
 
 .navbar-sm-bg {
-    background-color: $gray-990;
+  background-color: $gray-990;
 }
 
 .nav-item {
-    background-color: $gray-990;
-    .nav-link {
-        font-weight: bold;
-        font-size: 14px;
-        color: white;
-        padding: 10px 20px !important;
-        margin: 5px !important;
-        width: 120px;
-        width: inherit;
-        text-align: center;
-    }
+  background-color: $gray-990;
+
+  .nav-link {
+    font-weight: bold;
+    font-size: 14px;
+    color: white;
+    padding: 10px 20px !important;
+    margin: 5px !important;
+    width: 120px;
+    width: inherit;
+    text-align: center;
+  }
 }
 
 .nav-item .active {
-    border-radius: 6px;
-    background-color: #ffffff17;
-    border-color: transparent;
+  border-radius: 6px;
+  background-color: #ffffff17;
+  border-color: transparent;
 }
 
 .navbar-collapse {
-    .navbar-nav {
-        li > a {
-            padding: 10px;
-        }
+  .navbar-nav {
+    li > a {
+      padding: 10px;
     }
+  }
 }
 
 .navbar-toggler {
-    padding: 14px;
+  padding: 14px;
 }
+
 .btn-sm {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .solid-line {
-    margin-left: 5px;
-    margin-right: 5px;
-    height: 1px;
-    border-bottom: 1px solid $gray-500;
-  }
+  margin-left: 5px;
+  margin-right: 5px;
+  height: 1px;
+  border-bottom: 1px solid $gray-500;
+}
+
+.partner-icon {
+  width: 25px;
+  height: 25px;
+}

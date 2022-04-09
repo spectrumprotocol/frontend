@@ -1,14 +1,14 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { TerrajsService } from '../../services/terrajs.service';
-import { InfoService } from '../../services/info.service';
-import { debounce } from 'utils-decorators';
-import { FarmInfoService, PairStat, PoolInfo } from '../../services/farm_info/farm-info.service';
-import { CONFIG } from '../../consts/config';
-import { PairInfo } from '../../services/api/terraswap_factory/pair_info';
-import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { MdbModalService } from 'mdb-angular-ui-kit/modal';
-import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
+import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Subscription} from 'rxjs';
+import {TerrajsService} from '../../services/terrajs.service';
+import {InfoService} from '../../services/info.service';
+import {debounce} from 'utils-decorators';
+import {PairStat, PoolInfo} from '../../services/farm_info/farm-info.service';
+import {CONFIG} from '../../consts/config';
+import {PairInfo} from '../../services/api/terraswap_factory/pair_info';
+import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import {MdbModalService} from 'mdb-angular-ui-kit/modal';
+import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
 
 export interface Vault {
   baseSymbol: string;
@@ -42,33 +42,39 @@ export interface Vault {
   poolAprTotal: number;
 }
 
+export type SORT_BY = 'multiplier' | 'apy' | 'dpr' | 'tvl';
+
 @Component({
   selector: 'app-vault',
   templateUrl: './vault.component.html',
   styleUrls: ['./vault.component.scss']
 })
 export class VaultComponent implements OnInit, OnDestroy {
-  private connected: Subscription;
-  private heightChanged: Subscription;
-  private onTransaction: Subscription;
-
-  private lastSortBy: string;
   public innerWidth: any;
   loading = true;
   vaults: Vault[] = [];
   search: string;
   showDepositedPoolOnly = false;
-  sortBy = 'multiplier';
-  activeFarm = 'Active farms';
+  defaultSortBy: SORT_BY = 'multiplier';
+  defaultActiveFarm = 'Active farms';
+  sortBy: SORT_BY = this.defaultSortBy;
+  activeFarm = this.defaultActiveFarm;
   UNIT = CONFIG.UNIT;
   myTvl = 0;
   height: number;
   isGrid: boolean;
   farmInfoDropdownList: string[];
   shouldBeGrid: boolean;
-
   @ViewChild('dropdownFarmFilter') dropdownFarmFilter: MdbDropdownDirective;
   @ViewChild('dropdownSortBy') dropdownSortBy: MdbDropdownDirective;
+  private connected: Subscription;
+  private heightChanged: Subscription;
+  private onTransaction: Subscription;
+  private lastSortBy: SORT_BY;
+  private lastActiveFarm: string;
+
+  private BLACKLIST: Set<string> = new Set(['Starterra']);
+
 
   constructor(
     public info: InfoService,
@@ -80,14 +86,13 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    this.farmInfoDropdownList = [...new Set(this.info.farmInfos.map(farmInfo => farmInfo.farm))];
+    this.farmInfoDropdownList = [...new Set(this.info.farmInfos.filter(farmInfo => !this.BLACKLIST.has(farmInfo.farm)).map(farmInfo => farmInfo.farm))];
     this.showDepositedPoolOnly = localStorage.getItem('deposit') === 'true';
     this.loading = true;
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         this.loading = true;
         this.info.updateVaults();
-        this.refresh(true);
         this.info.refreshPool();
         await this.info.initializeVaultData(connected);
         this.refresh(true);
@@ -168,7 +173,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       : this.activeFarm === 'Disabled farms'
         ? this.info.allVaults.filter(vault => vault.disabled)
         : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm && !vault.disabled);
-    if (this.lastSortBy !== this.sortBy) {
+    if (this.lastSortBy !== this.sortBy || this.lastActiveFarm !== this.activeFarm || !this.search) {
       switch (this.sortBy) {
         case 'multiplier':
           vaults.sort((a, b) => b.score - a.score);
@@ -184,6 +189,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           break;
       }
       this.lastSortBy = this.sortBy;
+      this.lastActiveFarm = this.activeFarm;
     }
     if (this.showDepositedPoolOnly) {
       const oldVaults = vaults;
@@ -201,7 +207,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.dropdownSortBy.hide();
   }
 
-  vaultId = (_: number, item: Vault) => item.baseSymbol;
+  vaultId = (_: number, item: Vault) => item.poolInfo.key;
 
   async openYourTVL() {
     this.$gaService.event('CLICK_OPEN_YOUR_TVL');
