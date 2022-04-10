@@ -196,6 +196,8 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: GlowFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportMirUstFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportStlunaLdoFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportStlunaLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true},
