@@ -107,6 +107,7 @@ export class AstroportStlunaLdoFarmInfoService implements FarmInfoService {
       .div(stlunaLdoPoolResponses.total_share)
       .toString();
 
+    // TODO cannot use lp_balance_transform due to circular DI
     const poolApr = 0;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];

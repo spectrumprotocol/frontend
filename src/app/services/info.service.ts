@@ -18,7 +18,7 @@ import {
   RewardInfoResponseItem
 } from './farm_info/farm-info.service';
 import {fromEntries} from '../libs/core';
-import {PairInfo} from './api/terraswap_factory/pair_info';
+import {PairInfo} from './api/astroport_pair/pair_info';
 import {BalancePipe} from '../pipes/balance.pipe';
 import {LpBalancePipe} from '../pipes/lp-balance.pipe';
 import {Vault} from '../pages/vault/vault.component';
@@ -125,7 +125,7 @@ export class InfoService {
     private bankService: BankService,
     @Inject(FARM_INFO_SERVICE) public farmInfos: FarmInfoService[],
     private gov: GovService,
-    private terrajs: TerrajsService,
+    public terrajs: TerrajsService,
     private terraSwap: TerraSwapService,
     private astroport: AstroportService,
     private terraSwapFactory: TerraSwapFactoryService,
