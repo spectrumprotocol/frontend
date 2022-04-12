@@ -110,6 +110,7 @@ export interface ISettings {
   nLunaFarm: string;
   nETHFarm: string;
   astroportRouter: string;
+  specBorrowedFarm: string;
   // // batch only
   // lcdPost: string;
   // controller: string;
@@ -227,6 +228,7 @@ export const networks: Record<string, ISettings> = {
     nLunaFarm: 'terra16usjvptlpdrj7hcmy7mvdap5tttzcya7ch0can',
     nETHFarm: 'terra1gvlll4hytc9s34dskw5ym86erx3hx2j6sa8zhy',
     astroportRouter: 'terra16t7dpwwgx9n3lq6l6te3753lsjqwhxwpday9zx',
+    specBorrowedFarm: '',
     // lcd: 'https://lcd.terra.dev',
     lcd: 'https://node2.spec.finance',
     fcd: 'https://fcd.terra.dev',
@@ -346,6 +348,7 @@ export const networks: Record<string, ISettings> = {
     nLunaFarm: 'terra1qrzu4zls2ep8drfmx2ul4fu9fu5qular9jlktl',
     nETHFarm: 'terra1zhdxsmpzpakrxcns00kyegpd8gsj4qvrahwj26',
     astroportRouter: 'terra13wf295fj9u209nknz2cgqmmna7ry3d3j5kv7t4',
+    specBorrowedFarm: 'terra1jr9ctj9segzevwz6w7gmdc35jhcgxgsuqmrudy',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     querier: 'terra16t9kkqa5esathvd0prw7v4zv5gsud2kvzj5qew',

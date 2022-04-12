@@ -244,13 +244,27 @@ export class InfoService {
     const bundler = new QueryBundler(this.wasm);
     const tasks: Promise<any>[] = [];
     for (const farmInfo of this.farmInfos) {
+      const getKey = (pool: Omit<PoolItem, 'key'>) => farmInfo.farmType === 'LP'
+        ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}`
+        : `${pool.asset_token}`;
+
       if (!this.shouldEnableFarmInfo(farmInfo)) {
         continue;
       }
+
+      if (farmInfo.getCustomPoolInfos) {
+        const pools = await farmInfo.getCustomPoolInfos();
+        for (const pool of pools) {
+          const key = getKey(pool);
+          poolInfos[key] = { ...pool, key } as PoolInfo;
+        }
+        continue;
+      }
+
       const task = bundler.query(farmInfo.farmContract, {pools: {}})
         .then(({pools}: { pools: PoolItem[] }) => {
           for (const pool of pools) {
-            const key = farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}` : `${pool.asset_token}`;
+            const key = getKey(pool);
             poolInfos[key] = Object.assign(pool,
               {
                 key,
