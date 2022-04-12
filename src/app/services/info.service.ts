@@ -501,6 +501,8 @@ export class InfoService {
             farm: farmInfo.farm,
             farmContract: farmInfo.farmContract
           };
+        } else if (farmInfo.farmType === 'BORROWED') {
+          rewardInfos[farmInfo.denomTokenContract] = {...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract};
         } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
           rewardInfos[`${reward.asset_token}`] = {...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract};
         }

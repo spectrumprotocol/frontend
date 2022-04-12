@@ -92,8 +92,8 @@
       <div class="card box-left">
         <div class="card-body">
           <p class="card-text sub-topic">
-            <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">LP Balance</ng-container>
-            <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)">Balance</ng-container>
+            <ng-container *ngIf="vault.poolInfo.farmType === 'LP' || vault.poolInfo.farmType === 'BORROWED'">LP Balance</ng-container>
+            <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'">Balance</ng-container>
           </p>
           <h3 class="card-title text-primary" *ngIf="vault.poolInfo.farmType === 'LP'">
             {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
@@ -115,6 +115,14 @@
             {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
             <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | balance: info.poolResponses[NASSET_PSI_KEY]:info.poolResponses[PSI_UST_KEY] | unit: 6: '1.0-2' }})
+              <i [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo"
+                 class="fas fa-info-circle info-icon super"></i>
+            </span>
+          </h3>
+          <h3 class="card-title text-primary" *ngIf="vault.poolInfo.farmType === 'BORROWED'">
+            {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
+            <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
+              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_value || '0' | unit: 6: '1.0-2' }})
               <i [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo"
                  class="fas fa-info-circle info-icon super"></i>
             </span>
@@ -947,8 +955,11 @@
             <ng-container *ngTemplateOutlet="withdrawModeSection"></ng-container>
             <div class="text-end small mt-3 mb-1 fw-bold">
               <span class="sub-topic">Deposited: </span>
-              <span class="text-white">
+              <span *ngIf="vault.poolInfo.farmType !== 'BORROWED'" class="text-white">
                 {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || 0 | unit }} {{vault.unitDisplay }}
+              </span>
+              <span *ngIf="vault.poolInfo.farmType === 'BORROWED'" class="text-white">
+                {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || 0 | unit }} LP
               </span>
             </div>
             <div class="input-group">
@@ -957,7 +968,12 @@
                 <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
                 {{ vault.unitDisplay }}
               </span>
-              <span *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)" class="input-group-text f-12 igt-fixwidth fw-bold-600">
+              <span *ngIf="vault.poolInfo.farmType === 'BORROWED'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
+                <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
+                <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+                LP
+              </span>
+              <span *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
                 <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
                 {{ vault.baseSymbol }}
               </span>
@@ -1166,7 +1182,7 @@
       <span class="btn-group w-100">
         <button (click)="depositMode = 'single_token'; changeDepositMode('single_token')" [ngClass]="depositMode === 'single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}</button>
-        <button (click)="depositMode = 'ust_single_token'; changeDepositMode('ust_single_token')" [ngClass]="depositMode === 'ust_single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+        <button *ngIf="vault.poolInfo.farmType !== 'BORROWED'" (click)="depositMode = 'ust_single_token'; changeDepositMode('ust_single_token')" [ngClass]="depositMode === 'ust_single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           UST
         </button>
       </span>
@@ -1181,7 +1197,7 @@
         <button (click)="withdrawMode = 'single_token'" [ngClass]="withdrawMode === 'single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}
         </button>
-        <button (click)="withdrawMode = 'ust_single_token'; withdrawAmtChanged()" [ngClass]="withdrawMode === 'ust_single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+        <button *ngIf="vault.poolInfo.farmType !== 'BORROWED'" (click)="withdrawMode = 'ust_single_token'; withdrawAmtChanged()" [ngClass]="withdrawMode === 'ust_single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           UST
         </button>
       </span>

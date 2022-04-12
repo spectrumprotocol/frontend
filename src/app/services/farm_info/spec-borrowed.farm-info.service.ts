@@ -36,6 +36,7 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
     return Denom.USD;
   }
 
+  // borrowed token
   get denomTokenContract() {
     return this.terrajs.settings.specToken;
   }
