@@ -14,9 +14,14 @@ import {InjectionToken} from '@angular/core';
 import {MsgExecuteContract} from '@terra-money/terra.js';
 import {PoolResponse} from '../api/terraswap_pair/pool_response';
 import {VaultsResponse} from '../api/gov/vaults_response';
-import {PairInfo} from '../api/terraswap_factory/pair_info';
+import {PairInfo} from '../api/astroport_pair/pair_info';
 
-export type PoolItem = SpecPoolItem | MirrorPoolItem | nAssetPsiPoolItem | PylonLiquidPoolItem | AstroportTokenUSTPoolItem;
+export type PoolItem =
+  SpecPoolItem
+  | MirrorPoolItem
+  | nAssetPsiPoolItem
+  | PylonLiquidPoolItem
+  | AstroportTokenUSTPoolItem;
 export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID' | 'NASSET';
 export const FARM_TYPE_SINGLE_TOKEN: Set<string> = new Set(['PYLON_LIQUID', 'NASSET']);
 
@@ -41,7 +46,10 @@ export type PoolInfo = PoolItem & {
   tradeApr?: number;
   commission?: number;
 };
-export type RewardInfoResponseItem = AstroportTokenUSTRewardInfoResponseItem | MirrorRewardInfoResponseItem | SpecRewardInfoResponseItem;
+export type RewardInfoResponseItem =
+  AstroportTokenUSTRewardInfoResponseItem
+  | MirrorRewardInfoResponseItem
+  | SpecRewardInfoResponseItem;
 
 export interface PairStat {
   tvl: string;
@@ -88,8 +96,11 @@ export interface FarmInfoService {
   readonly denomTokenContract: string;
 
   queryPoolItems(): Promise<PoolItem[]>;
+
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>>;
+
   queryRewards(): Promise<RewardInfoResponseItem[]>;
+
   getStakeGovMsg?(amount: string, additionalData?: object): MsgExecuteContract;
 }
 
