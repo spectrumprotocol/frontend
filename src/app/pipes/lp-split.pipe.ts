@@ -1,8 +1,8 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { CONFIG } from '../consts/config';
-import { PoolResponse } from '../services/api/terraswap_pair/pool_response';
-import { UnitPipe } from './unit.pipe';
+import {CONFIG} from '../consts/config';
+import {PoolResponse} from '../services/api/terraswap_pair/pool_response';
+import {UnitPipe} from './unit.pipe';
 import {TerrajsService} from '../services/terrajs.service';
 
 @Pipe({
@@ -13,9 +13,10 @@ export class LpSplitPipe implements PipeTransform {
   constructor(
     private unitPipe: UnitPipe,
     private terrajs: TerrajsService
-  ) { }
+  ) {
+  }
 
-  transform(lp: number, poolResponse: PoolResponse, baseSymbol: string, denomSymbol: string, decimals?: number, digitsInfo?: string): string {
+  transform(lp: number, poolResponse: PoolResponse, baseSymbol: string, denomSymbol: string, baseDecimals?: number, baseDigitsInfo?: string, denomDecimals?: number, denomDigitsInfo?: string): string {
     if (typeof lp !== 'number' || !poolResponse) {
       return undefined;
     }
@@ -29,12 +30,12 @@ export class LpSplitPipe implements PipeTransform {
       .div(poolResponse.total_share)
       .toString();
     if (poolResponse.assets[0].info.native_token) {
-      return `${this.unitPipe.transform(amount2, decimals, digitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount1, 6, digitsInfo)} ${denomSymbol}`;
+      return `${this.unitPipe.transform(amount2, baseDecimals, baseDigitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount1, denomDecimals, denomDigitsInfo)} ${denomSymbol}`;
     } else if (poolResponse.assets[0].info.token['contract_addr'] === this.terrajs.settings.nexusToken && poolResponse.assets[1].info.token) {
       // handle Astroport Psi-nAsset case
-      return `${this.unitPipe.transform(amount2, decimals, digitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount1, 6, digitsInfo)} ${denomSymbol}`;
+      return `${this.unitPipe.transform(amount2, baseDecimals, baseDigitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount1, denomDecimals, denomDigitsInfo)} ${denomSymbol}`;
     } else {
-      return `${this.unitPipe.transform(amount1, decimals, digitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount2, 6, digitsInfo)} ${denomSymbol}`;
+      return `${this.unitPipe.transform(amount1, baseDecimals, baseDigitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount2, denomDecimals, denomDigitsInfo)} ${denomSymbol}`;
     }
   }
 
