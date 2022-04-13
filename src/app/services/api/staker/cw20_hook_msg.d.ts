@@ -5,7 +5,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Cw20HookMsg = {
+export type StakerCw20HookMsg = {
   zap_to_unbond: {
     belief_price?: Decimal | null;
     belief_price_b?: Decimal | null;
@@ -28,21 +28,22 @@ export type Decimal = string;
  */
 export type AssetInfo =
   | {
-      token: {
-        contract_addr: string;
-        [k: string]: unknown;
-      };
-    }
+  token: {
+    contract_addr: string;
+    [k: string]: unknown;
+  };
+}
   | {
-      native_token: {
-        denom: string;
-        [k: string]: unknown;
-      };
-    };
+  native_token: {
+    denom: string;
+    [k: string]: unknown;
+  };
+};
 
 export interface SwapOperation {
   asset_info: AssetInfo;
   belief_price?: Decimal | null;
   pair_contract: string;
+
   [k: string]: unknown;
 }

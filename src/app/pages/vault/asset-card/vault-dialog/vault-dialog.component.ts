@@ -31,6 +31,7 @@ import {AstroportRouterService} from '../../../../services/api/astroport-router.
 import {RewardInfoPipe} from 'src/app/pipes/reward-info.pipe';
 import {LpSplitPipe} from 'src/app/pipes/lp-split.pipe';
 import {SwapOperation} from '../../../../services/api/staker/query_msg';
+import {StakerCw20HookMsg} from '../../../../services/api/staker/cw20_hook_msg';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'single_token' | 'ust_single_token';
@@ -678,6 +679,32 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.withdrawTokenPrice = floor18Decimal(div(tokenAmt, returnAmt));
       this.withdrawUST = ustAmt.plus(returnAmt).toString();
       this.withdrawMinUST = ustAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
+    } else if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
+      // LDO -> stLuna
+      const poolResponseStlunaLdo = this.info.poolResponses[this.vault.poolInfo.key];
+      const [stlunaAsset, ldoAsset] = poolResponseStlunaLdo.assets[0].info.token?.['contract_addr'] === this.terrajs.settings.stlunaToken
+        ? [poolResponseStlunaLdo.assets[1], poolResponseStlunaLdo.assets[0]]
+        : [poolResponseStlunaLdo.assets[0], poolResponseStlunaLdo.assets[1]];
+      const ldoAmtToBeWithdrawn = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
+        .times(ldoAsset.amount).div(poolResponseStlunaLdo.total_share).integerValue();
+      const stlunaAmtToBeWithdrawn = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
+        .times(stlunaAsset.amount).div(poolResponseStlunaLdo.total_share).integerValue();
+      const ldoPoolAmtAfterWithdrawn = new BigNumber(ldoAsset.amount).minus(ldoAmtToBeWithdrawn);
+      const stlunaPoolAmtAfterWithdrawn = new BigNumber(stlunaAsset.amount).minus(stlunaAmtToBeWithdrawn);
+      const stLunaReturnAmtFromSellingLdo = ldoPoolAmtAfterWithdrawn.minus(stlunaPoolAmtAfterWithdrawn.times(ldoPoolAmtAfterWithdrawn).div(stlunaAsset.amount))
+        .times(1 - +commission)
+        .integerValue()
+        .toString(); // this is correct
+      // stluna 0.2 ldo 5.6 -> 0.202337
+      // 9301843706035 3364052865 560156893 202583 9301283549142 3363850282 201963
+      console.log(stlunaAsset.amount,
+        ldoAsset.amount,
+        stlunaAmtToBeWithdrawn.toNumber(),
+        ldoAmtToBeWithdrawn.toNumber(),
+        stlunaPoolAmtAfterWithdrawn.toNumber(),
+        ldoPoolAmtAfterWithdrawn.toNumber(),
+        +stLunaReturnAmtFromSellingLdo);
+      // stLuna -> Luna -> UST
     } else {
       const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
       const asset0Token: string = poolResponse.assets[0].info.token
@@ -783,7 +810,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             belief_price: this.withdrawTokenPrice,
             max_spread: this.SLIPPAGE,
           },
-        };
+        } as StakerCw20HookMsg;
       } else {
         msg = {
           zap_to_unbond: {
@@ -793,8 +820,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             belief_price: this.withdrawTokenPrice,
             belief_price_b: this.withdrawBaseTokenPrice,
             max_spread: this.SLIPPAGE,
+            swap_hints: this.getSwapHints(true)
           },
-        };
+        } as StakerCw20HookMsg;
       }
       const withdrawUst = new MsgExecuteContract(
         this.terrajs.address,
@@ -1287,7 +1315,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getSwapHints() {
+  private getSwapHints(reverse?: boolean): [] {
     let swap_hints;
     if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
       const luna_ust_pairInfo = this.info.pairInfos[this.LUNA_UST_KEY];
@@ -1309,6 +1337,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         belief_price: null,
         pair_contract: stluna_luna_pairInfo.contract_addr,
       } as SwapOperation];
+      if (reverse) {
+        swap_hints.reverse();
+      }
     }
     return swap_hints;
   }
