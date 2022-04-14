@@ -31,7 +31,7 @@ import {AstroportRouterService} from '../../../../services/api/astroport-router.
 import {RewardInfoPipe} from 'src/app/pipes/reward-info.pipe';
 import {LpSplitPipe} from 'src/app/pipes/lp-split.pipe';
 import {SwapOperation} from '../../../../services/api/staker/query_msg';
-import {StakerCw20HookMsg} from '../../../../services/api/staker/cw20_hook_msg';
+import {Cw20HookMsg as StakerCw20HookMsg} from '../../../../services/api/staker/cw20_hook_msg';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'single_token' | 'ust_single_token';
@@ -1307,12 +1307,18 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   private findAssetBaseAndDenom() {
     const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
-    const asset0Token: string = poolResponse.assets[0].info.token
-      ? poolResponse.assets[0].info.token?.['contract_addr']
-      : poolResponse.assets[0].info.native_token?.['denom'];
-    return asset0Token === this.vault.poolInfo.baseTokenContract
-      ? [poolResponse.assets[0], poolResponse.assets[1]]
-      : [poolResponse.assets[1], poolResponse.assets[0]];
+    if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
+      return this.terrajs.settings.ldoToken === this.vault.poolInfo.baseTokenContract
+        ? [poolResponse.assets[0], poolResponse.assets[1]]
+        : [poolResponse.assets[1], poolResponse.assets[0]];
+    } else {
+      const asset0Token: string = poolResponse.assets[0].info.token
+        ? poolResponse.assets[0].info.token?.['contract_addr']
+        : poolResponse.assets[0].info.native_token?.['denom'];
+      return asset0Token === this.vault.poolInfo.baseTokenContract
+        ? [poolResponse.assets[0], poolResponse.assets[1]]
+        : [poolResponse.assets[1], poolResponse.assets[0]];
+    }
   }
 
   private toContractPrice(price: string, offer_decimals: number, ask_decimals: number) {
