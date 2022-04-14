@@ -1014,6 +1014,9 @@
                   <i class="fas fa-info-circle"></i> With this option, withdrawn assets will be automatically sold to
                   UST.
                 </div>
+                <div class="card-text small text-info mb-1 mt-1" *ngIf="vault.poolInfo.farmContract === terrajs.settings.astroportStlunaLdoFarm">
+                  <i class="fas fa-info-circle"></i> Due to swap hops of LDO -> stLuna -> Luna -> UST exposing 0.3%, 0.05%, and 0.3% swap fee. <br>Expected receive is less than LP Balance UST value of other vaults.
+                </div>
               </div>
             </div>
             <div class="d-grid mt-3">
