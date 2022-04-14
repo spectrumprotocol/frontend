@@ -856,17 +856,30 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           },
         } as StakerCw20HookMsg;
       } else {
-        msg = {
-          zap_to_unbond: {
-            sell_asset: this.vault.denomAssetInfo,
-            sell_asset_b: this.vault.baseAssetInfo,
-            target_asset: {native_token: {denom: Denom.USD}},
-            belief_price: this.withdrawTokenPrice,
-            belief_price_b: this.withdrawBaseTokenPrice,
-            max_spread: this.SLIPPAGE,
-            swap_hints: this.getSwapHints(true)
-          },
-        } as StakerCw20HookMsg;
+        if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
+          msg = {
+            zap_to_unbond: {
+              sell_asset: this.vault.baseAssetInfo,
+              sell_asset_b: this.vault.denomAssetInfo,
+              target_asset: {native_token: {denom: Denom.USD}},
+              belief_price: this.withdrawTokenPrice,
+              belief_price_b: this.withdrawBaseTokenPrice,
+              max_spread: this.SLIPPAGE,
+              swap_hints: this.getSwapHints(true)
+            },
+          } as StakerCw20HookMsg;
+        } else {
+          msg = {
+            zap_to_unbond: {
+              sell_asset: this.vault.denomAssetInfo,
+              sell_asset_b: this.vault.baseAssetInfo,
+              target_asset: {native_token: {denom: Denom.USD}},
+              belief_price: this.withdrawTokenPrice,
+              belief_price_b: this.withdrawBaseTokenPrice,
+              max_spread: this.SLIPPAGE,
+            },
+          } as StakerCw20HookMsg;
+        }
       }
       const withdrawUst = new MsgExecuteContract(
         this.terrajs.address,
@@ -1370,25 +1383,38 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
       const luna_ust_pairInfo = this.info.pairInfos[this.LUNA_UST_KEY];
       const stluna_luna_pairInfo = this.info.pairInfos[this.STLUNA_LUNA_KEY];
-      swap_hints = [{
-        asset_info: {
-          native_token: {
-            denom: Denom.USD
-          }
-        },
-        belief_price: null,
-        pair_contract: luna_ust_pairInfo.contract_addr,
-      } as SwapOperation, {
-        asset_info: {
-          native_token: {
-            denom: Denom.LUNA
-          }
-        },
-        belief_price: null,
-        pair_contract: stluna_luna_pairInfo.contract_addr,
-      } as SwapOperation];
       if (reverse) {
-        swap_hints.reverse();
+        swap_hints = [{
+          asset_info: {
+            token: {
+              contract_addr: this.terrajs.settings.stlunaToken
+            }
+          },
+          pair_contract: stluna_luna_pairInfo.contract_addr,
+        } as SwapOperation, {
+          asset_info: {
+            native_token: {
+              denom: Denom.LUNA
+            }
+          },
+          pair_contract: luna_ust_pairInfo.contract_addr,
+        } as SwapOperation];
+      } else {
+        swap_hints = [{
+          asset_info: {
+            native_token: {
+              denom: Denom.USD
+            }
+          },
+          pair_contract: luna_ust_pairInfo.contract_addr,
+        } as SwapOperation, {
+          asset_info: {
+            native_token: {
+              denom: Denom.LUNA
+            }
+          },
+          pair_contract: stluna_luna_pairInfo.contract_addr,
+        } as SwapOperation];
       }
     }
     return swap_hints;
