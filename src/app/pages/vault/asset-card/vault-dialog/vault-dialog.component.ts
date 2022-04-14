@@ -685,24 +685,16 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const [ldoAsset, stlunaAsset] = poolResponseStlunaLdo.assets[0].info.token?.['contract_addr'] === this.terrajs.settings.stlunaToken
         ? [poolResponseStlunaLdo.assets[1], poolResponseStlunaLdo.assets[0]]
         : [poolResponseStlunaLdo.assets[0], poolResponseStlunaLdo.assets[1]];
-      console.log(stlunaAsset);
       const stlunaAmtToBeWithdrawn = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
         .times(stlunaAsset.amount).div(poolResponseStlunaLdo.total_share).integerValue();
       const ldoAmtToBeWithdrawn = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
         .times(ldoAsset.amount).div(poolResponseStlunaLdo.total_share).integerValue();
       const ldoPoolAmtAfterWithdrawn = new BigNumber(ldoAsset.amount).minus(ldoAmtToBeWithdrawn);
       const stlunaPoolAmtAfterWithdrawn = new BigNumber(stlunaAsset.amount).minus(stlunaAmtToBeWithdrawn);
-      const stlunaPoolAmtAfterWithdrawnAdjustedForDifferentDecimals = stlunaPoolAmtAfterWithdrawn.times(10 ** 2);
       const stLunaReturnAmtFromSellingLdo = stlunaPoolAmtAfterWithdrawn.minus(ldoPoolAmtAfterWithdrawn.times(stlunaPoolAmtAfterWithdrawn).div(ldoAsset.amount))
         .times(1 - +commission)
         .integerValue()
-        .toString(); // this is correct
-      // stluna 0.2 ldo 5.61 ->
-      // 9301843706035 3364052865 560156893 202583 9301283549142 3363850282 201963
-      console.log(
-        ldoAmtToBeWithdrawn.toNumber(),
-        stlunaAmtToBeWithdrawn.toNumber(),
-        +stLunaReturnAmtFromSellingLdo);
+        .toString();
       // stLuna -> Luna -> UST
       // const simulation_msg = {
       //   simulation: {
@@ -712,15 +704,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       //     }
       //   }
       // };
-      // console.log(simulation_msg);
       // const simulate = await this.astroport.query(pairInfo.contract_addr, simulation_msg);
       // const stLunaReturnAmtFromSellingLdo = simulate.return_amount;
-      // console.log(
-      //   ldoAmtToBeWithdrawn.toNumber(),
-      //   stlunaAmtToBeWithdrawn.toNumber(),
-      //   +stLunaReturnAmtFromSellingLdo);
       const totalStLunaToBeSold = plus(stLunaReturnAmtFromSellingLdo, stlunaAmtToBeWithdrawn);
-      console.log(totalStLunaToBeSold);
       const simulateSwapOperationRes = await this.astroportRouter.query({
         simulate_swap_operations: {
           offer_amount: totalStLunaToBeSold.toString(),
@@ -756,10 +742,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           ]
         }
       });
-      console.log(simulateSwapOperationRes);
       this.withdrawTokenPrice = floor18Decimal(div(totalStLunaToBeSold, simulateSwapOperationRes.amount));
-      this.withdrawBaseTokenPrice = floor18Decimal(div(stlunaAmtToBeWithdrawn, stLunaReturnAmtFromSellingLdo));
-      console.log(this.withdrawTokenPrice, this.withdrawBaseTokenPrice);
+      this.withdrawBaseTokenPrice = floor18Decimal(div(ldoAmtToBeWithdrawn, stLunaReturnAmtFromSellingLdo));
+      // console.log(this.withdrawTokenPrice, this.withdrawBaseTokenPrice);
+      // console.log(div(simulateSwapOperationRes.amount, totalStLunaToBeSold), div(stLunaReturnAmtFromSellingLdo, ldoAmtToBeWithdrawn));
 
       this.withdrawUST = simulateSwapOperationRes.amount;
       this.withdrawMinUST = times(simulateSwapOperationRes.amount, 1 - +this.SLIPPAGE).toString();
