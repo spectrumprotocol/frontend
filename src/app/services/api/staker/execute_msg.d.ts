@@ -42,7 +42,6 @@ export type ExecuteMsg =
         pair_asset: AssetInfo;
         pair_asset_b?: AssetInfo | null;
         provide_asset: Asset;
-        skip_stable_swap?: boolean | null;
         swap_hints?: SwapOperation[] | null;
         [k: string]: unknown;
       };

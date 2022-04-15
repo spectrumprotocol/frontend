@@ -30,7 +30,7 @@ import {FARM_TYPE_SINGLE_TOKEN} from 'src/app/services/farm_info/farm-info.servi
 import {AstroportRouterService} from '../../../../services/api/astroport-router.service';
 import {RewardInfoPipe} from 'src/app/pipes/reward-info.pipe';
 import {LpSplitPipe} from 'src/app/pipes/lp-split.pipe';
-import {SwapOperation} from '../../../../services/api/staker/query_msg';
+import {Decimal, SwapOperation} from '../../../../services/api/staker/query_msg';
 import {Cw20HookMsg as StakerCw20HookMsg} from '../../../../services/api/staker/cw20_hook_msg';
 
 const DEPOSIT_FEE = '0.001';
@@ -79,6 +79,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   netLpUST: string;
   tokenPrice: string;
   tokenPriceNonUSTDenomInUST: string;
+  swapHintPrices: { [p: string]: Decimal } = {};
   basedTokenPrice: string;
   ustForSwapSingleToken: string;
   ustForDepositbDP: string;
@@ -438,7 +439,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               },
             },
             belief_price_b: this.basedTokenPrice,
-            skip_stable_swap: true, //this.vault.pairInfo?.['stable'] ? true : false, // TODO
             swap_hints: this.getSwapHints()
           }
         } as StakerExecuteMsg, new Coins([coin]));
@@ -785,7 +785,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           .toString();
       }
 
-      this.withdrawBaseTokenPrice = floor18Decimal(div(tokenBAmt, returnAmt));
+      this.withdrawBaseTokenPrice = floor18Decimal(div(tokenBAmt, returnAmt)); // nluna
       const withdrawA = tokenAAmt.plus(returnAmt);
       const withdrawMinA = tokenAAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE));
 
@@ -1063,6 +1063,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.depositFeeUST = undefined;
       this.netLpUST = undefined;
       this.tokenPriceNonUSTDenomInUST = undefined;
+      this.swapHintPrices = {};
     }
     let grossLp: BigNumber;
     const depositTVL = new BigNumber(this.depositUSTAmtUST).times(CONFIG.UNIT);
@@ -1103,9 +1104,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         res = await this.stakerAstroport.query(simulate_zap_to_bond_msg);
       }
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
-      this.tokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.denomDecimals);
-      this.basedTokenPrice = this.toUIPrice(res.belief_price_b, this.vault.baseDecimals, this.vault.baseDecimals);
-      this.tokenPriceNonUSTDenomInUST = floor18Decimal(times(this.tokenPrice, this.basedTokenPrice));
+      if (this.terrajs.settings.astroportStlunaLdoFarm === this.vault.poolInfo.farmContract) {
+        this.swapHintPrices = res.swap_hint_prices;
+        this.basedTokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.baseDecimals); // stluna
+        this.tokenPrice = this.toUIPrice(res.belief_price_b, 6, this.vault.denomDecimals); // ldo
+        this.tokenPriceNonUSTDenomInUST = floor18Decimal(times(this.tokenPrice, this.basedTokenPrice));
+      } else {
+        this.tokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.denomDecimals);
+        this.basedTokenPrice = this.toUIPrice(res.belief_price_b, this.vault.baseDecimals, this.vault.baseDecimals);
+        this.tokenPriceNonUSTDenomInUST = floor18Decimal(times(this.tokenPrice, this.basedTokenPrice));
+      }
+
     }
 
     const depositFee = this.vault.poolInfo.farm === 'Spectrum'
