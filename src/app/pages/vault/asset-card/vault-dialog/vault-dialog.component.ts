@@ -417,31 +417,56 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
         await this.terrajs.post(msgs);
       } else {
-        const msgs = new MsgExecuteContract(this.terrajs.address, staker, {
-          zap_to_bond: {
-            asset_token: this.vault.poolInfo.asset_token,
-            contract: farmContract,
-            provide_asset: {
-              info: {
-                native_token: {
-                  denom: Denom.USD
-                }
+        let msgs;
+        if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
+          msgs = new MsgExecuteContract(this.terrajs.address, staker, {
+            zap_to_bond: {
+              asset_token: this.vault.poolInfo.asset_token, // stluna
+              contract: farmContract,
+              provide_asset: {
+                info: {
+                  native_token: {
+                    denom: Denom.USD
+                  }
+                },
+                amount: depositUST
               },
-              amount: depositUST
-            },
-            pair_asset: this.vault.denomAssetInfo,
-            belief_price: this.tokenPrice,
-            max_spread: CONFIG.SLIPPAGE_TOLERANCE,
-            compound_rate: auto_compound_ratio,
-            pair_asset_b: {
-              token: {
-                contract_addr: this.vault.poolInfo.baseTokenContract // nasset
+              pair_asset: this.vault.baseAssetInfo, // stluna
+              belief_price: this.basedTokenPrice, // stluna
+              max_spread: '0.02',
+              compound_rate: auto_compound_ratio,
+              pair_asset_b: this.vault.denomAssetInfo, // ldo
+              belief_price_b: this.tokenPrice, // ldo
+              swap_hints: this.getSwapHints()
+            }
+          } as StakerExecuteMsg, new Coins([coin]));
+        } else {
+          msgs = new MsgExecuteContract(this.terrajs.address, staker, {
+            zap_to_bond: {
+              asset_token: this.vault.poolInfo.asset_token,
+              contract: farmContract,
+              provide_asset: {
+                info: {
+                  native_token: {
+                    denom: Denom.USD
+                  }
+                },
+                amount: depositUST
               },
-            },
-            belief_price_b: this.basedTokenPrice,
-            swap_hints: this.getSwapHints()
-          }
-        } as StakerExecuteMsg, new Coins([coin]));
+              pair_asset: this.vault.denomAssetInfo,
+              belief_price: this.tokenPrice,
+              max_spread: CONFIG.SLIPPAGE_TOLERANCE,
+              compound_rate: auto_compound_ratio,
+              pair_asset_b: {
+                token: {
+                  contract_addr: this.vault.poolInfo.baseTokenContract // nasset
+                },
+              },
+              belief_price_b: this.basedTokenPrice,
+              swap_hints: this.getSwapHints()
+            }
+          } as StakerExecuteMsg, new Coins([coin]));
+        }
         await this.terrajs.post(msgs);
       }
     } else if (this.depositMode === 'single_token') {
