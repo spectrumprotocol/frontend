@@ -204,16 +204,18 @@
               <div class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
-                    <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}? <a
-                          [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
+                    <i class="fas fa-info-circle info-icon"></i>&nbsp;
+                    <span>Need more {{vault.baseSymbol}}<ng-container *ngIf="vault.denomSymbol !== 'UST'">, {{vault.denomSymbol}} </ng-container>? </span>
+                      <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy {{ vault.baseSymbol }}</a>
                     <span *ngIf="vault.poolInfo.farm === 'Mirror' && vault.baseSymbol.startsWith('m')">
-                      or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Borrow</a>
+                      or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Borrow {{vault.baseSymbol}}</a>
                     </span>
                     <span *ngIf="vault.poolInfo.farm === 'Nexus' && vault.baseSymbol.startsWith('n')">
-                      or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Mint</a>
+                      or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Mint {{vault.baseSymbol}}</a>
                     </span>
-                    {{ vault.baseSymbol }} to farm
-                    with
+                    <ng-container *ngIf="vault.denomSymbol !== 'UST'">
+                      &nbsp;<a [href]="vault.denomSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy {{ vault.denomSymbol }}</a>
+                    </ng-container>
                   </div>
                 </div>
               </div>
