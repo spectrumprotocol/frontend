@@ -219,7 +219,7 @@ export class InfoService {
     for (const coin of it.toArray()) {
       this.tokenBalances[coin.denom] = coin.amount.toString() ?? '0';
     }
-    if (!this.tokenBalances[Denom.LUNA]) {
+    if (!this.tokenBalances[Denom.LUNA] || !it.toArray().find(coin => coin.denom === Denom.LUNA)) {
       this.tokenBalances[Denom.LUNA] = '0';
     }
   }
