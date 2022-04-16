@@ -102,6 +102,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       });
 
     this.onTransaction = this.terrajs.transactionComplete.subscribe(async () => {
+      await this.info.refreshNativeTokens();
       await this.info.refreshRewardInfos();
       if (this.showDepositedPoolOnly) {
         this.refresh();
