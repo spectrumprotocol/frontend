@@ -157,6 +157,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       if (this.terrajs.isConnected) {
         if (this.vault.poolInfo.farmType === 'LP') {
           const tasks: Promise<any>[] = [];
+          if (this.vault.poolInfo.baseTokenContract.startsWith('u') || this.vault.poolInfo.denomTokenContract.startsWith('u')) {
+            tasks.push(this.info.refreshNativeTokens());
+          }
           tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.key));
           await Promise.all(tasks);
           if (this.depositTokenAAmtTokenToken && this.tokenAToBeStatic) {
@@ -584,8 +587,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositFeeLp = undefined;
     this.netLpLp = undefined;
     this.depositUSTAmtSingleToken = undefined;
-
-    this.depositType = undefined;
   }
 
   @debounce(250)
