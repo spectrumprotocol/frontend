@@ -1110,7 +1110,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
       this.tokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.baseDecimals);
     } else {
-      const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
+      let assetBase;
+      let assetDenom;
+      if (this.terrajs.settings.astroportStlunaLdoFarm === this.vault.poolInfo.farmContract) {
+        const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
+        [assetBase, assetDenom] = this.terrajs.settings.ldoToken === this.vault.poolInfo.baseTokenContract
+          ? [poolResponse.assets[0], poolResponse.assets[1]]
+          : [poolResponse.assets[1], poolResponse.assets[0]];
+      } else {
+        [assetBase, assetDenom] = this.findAssetBaseAndDenom();
+      }
+
       const simulate_zap_to_bond_msg = {
         simulate_zap_to_bond: {
           pair_asset_b: assetBase.info,
@@ -1354,18 +1364,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   private findAssetBaseAndDenom() {
     const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
-    if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
-      return this.terrajs.settings.ldoToken === this.vault.poolInfo.baseTokenContract
-        ? [poolResponse.assets[0], poolResponse.assets[1]]
-        : [poolResponse.assets[1], poolResponse.assets[0]];
-    } else {
-      const asset0Token: string = poolResponse.assets[0].info.token
-        ? poolResponse.assets[0].info.token?.['contract_addr']
-        : poolResponse.assets[0].info.native_token?.['denom'];
-      return asset0Token === this.vault.poolInfo.baseTokenContract
-        ? [poolResponse.assets[0], poolResponse.assets[1]]
-        : [poolResponse.assets[1], poolResponse.assets[0]];
-    }
+    const asset0Token: string = poolResponse.assets[0].info.token
+      ? poolResponse.assets[0].info.token?.['contract_addr']
+      : poolResponse.assets[0].info.native_token?.['denom'];
+    return asset0Token === this.vault.poolInfo.baseTokenContract
+      ? [poolResponse.assets[0], poolResponse.assets[1]]
+      : [poolResponse.assets[1], poolResponse.assets[0]];
   }
 
   private toContractPrice(price: string, offer_decimals: number, ask_decimals: number) {

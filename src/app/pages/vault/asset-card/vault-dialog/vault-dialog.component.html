@@ -236,8 +236,8 @@
                     <input #depositTokenAAmtTokenTokenCtl="ngModel"
                            (input)="depositTokenATokenTokenChanged(false, $event)" [(ngModel)]="depositTokenAAmtTokenToken"
                            [class.is-invalid]="(formDeposit.submitted || depositTokenAAmtTokenTokenCtl.touched) && depositTokenAAmtTokenTokenCtl.invalid"
-                           [max]="+info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit" [min]="0.000001"
-                           [pattern]="'^[0-9]+(.[0-9]{0,' + vault.baseDecimals + '})?$'" [step]="0.000001"
+                           [max]="+info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit"
+                           [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,' + vault.baseDecimals + '})?$'" [step]="0.000001"
                            class="form-control fix-border" name="depositTokenAAmtTokenTokenCtl" required type="number" />
                     <button (click)="setMaxDepositTokenATokenToken()" class="btn btn-max last" type="button">
                       Max
@@ -300,7 +300,7 @@
                              (input)="depositTokenBTokenTokenChanged(false, $event)" [(ngModel)]="depositTokenBAmtTokenToken"
                              [class.is-invalid]="(formDeposit.submitted || depositTokenBAmtTokenTokenCtl.touched) && depositTokenBAmtTokenTokenCtl.invalid"
                              [max]="+info.tokenBalances[vault.poolInfo.denomTokenContract] / vault.denomUnit"
-                             [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
+                             [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,' + vault.denomDecimals + '})?$'" [step]="0.000001"
                              class="form-control fix-border" name="depositTokenBAmtTokenTokenCtl" required type="number" />
                       <button (click)="setMaxDepositTokenBTokenToken()" class="btn btn-max last" type="button">
                         Max
