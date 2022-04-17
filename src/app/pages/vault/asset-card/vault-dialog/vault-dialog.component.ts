@@ -433,7 +433,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               },
               pair_asset: this.vault.baseAssetInfo, // stluna
               belief_price: this.basedTokenPrice, // stluna
-              max_spread: '0.02',
+              max_spread: '0.03',
               compound_rate: auto_compound_ratio,
               pair_asset_b: this.vault.denomAssetInfo, // ldo
               belief_price_b: this.tokenPrice, // ldo
