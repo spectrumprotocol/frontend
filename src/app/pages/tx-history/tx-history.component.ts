@@ -483,6 +483,17 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
       }
     }
 
+    // Bond native
+    if (lastMsg.execute_msg['bond_native'] && this.info.farmInfos.find(o => o.farmContract === msgs[0].contract)) {
+      const coin = lastMsg.coins[0];
+      const farmInfo = this.info.farmInfos.find(o => o.farmContract === msgs[0].contract);
+      const farm = farmInfo?.farm;
+      const amount = +coin.amount / CONFIG.UNIT || 0;
+      const baseTokenSymbol = this.getSymbol(coin.denom);
+
+      return txHistoryFactory.depositFarm(farm, baseTokenSymbol, '', amount, 1, farmInfo.dex, null, farmInfo.farmType);
+    }
+
     // Unbond as ${dex} LP (and swap)
     if (msgs[0]?.execute_msg['unbond'] &&
       this.info.farmInfos.find(o => o.farmContract === msgs[0].contract) &&
@@ -490,11 +501,24 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
     ) {
       const unbondMsg = msgs[0].execute_msg['unbond'];
 
-      const amount = +unbondMsg.amount / CONFIG.UNIT;
-      const baseTokenSymbol = this.getSymbol(unbondMsg.asset_token);
+      let amount: number;
+      let baseTokenSymbol: string;
       const farmInfo = this.info.farmInfos.find(o => o.farmContract === msgs[0].contract);
       const farm = farmInfo?.farm;
       const denomTokenSymbol = this.getSymbol(farmInfo?.denomTokenContract);
+      if (farmInfo.farmType === 'BORROWED') {
+        const logLines = lastContractEvent.attributes.reverse();
+        const askAsset = logLines.find(o => o.key === 'ask_asset')?.value;
+        const offerAmount = logLines.find(o => o.key === 'offer_amount')?.value;
+        const returnAmount = logLines.find(o => o.key === 'return_amount')?.value;
+        const withdrawA = logLines.find(o => o.key === 'withdraw_a_amount')?.value;
+        const withdrawB = logLines.find(o => o.key === 'withdraw_b_amount')?.value;
+        amount = +plus(returnAmount, offerAmount === withdrawA ? withdrawB : withdrawA) / CONFIG.UNIT || 0;
+        baseTokenSymbol = this.getSymbol(askAsset);
+      } else {
+        amount = +unbondMsg.amount / CONFIG.UNIT;
+        baseTokenSymbol = this.getSymbol(unbondMsg.asset_token);
+      }
 
       if (!sendExecuteMsg?.msg['execute_swap_operations']) {
         return txHistoryFactory.withdrawFarm(farm, baseTokenSymbol, denomTokenSymbol, amount, false, farmInfo.dex, null, farmInfo.farmType);
