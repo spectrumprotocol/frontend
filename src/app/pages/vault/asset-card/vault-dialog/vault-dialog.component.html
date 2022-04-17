@@ -1,8 +1,8 @@
 <div class="modal-header pb-0">
   <div class="col-11 d-flex justify-content-center">
-    <div *ngIf="vault.poolInfo.farmType === 'LP'" class="p-2 p-l-0 bulk-name-container">
-      <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
-      <img [src]="vault.denomSymbol | url:'icon'"
+    <div *ngIf="vault.poolInfo.farmType === 'LP' || vault.poolInfo.farmType === 'BORROWED'" class="p-2 p-l-0 bulk-name-container">
+      <img [src]="(vault.poolInfo.farmType === 'BORROWED' ? vault.denomSymbol : vault.baseSymbol) | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
+      <img [src]="(vault.poolInfo.farmType === 'BORROWED' ? vault.baseSymbol : vault.denomSymbol) | url:'icon'"
            class="img-fluid rounded-circle assetIcon float-start token-denom">
       <!--          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon-list-sm float-start">-->
       <!--          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle assetIcon ust-outline float-start">-->
@@ -14,7 +14,7 @@
         <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
       </div>
     </div>
-    <div *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)" class="p-2 p-l-0 bulk-name-container">
+    <div *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'" class="p-2 p-l-0 bulk-name-container">
       <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
       <div class="name-detail">
         <h6 class="m-0">{{vault.fullName}}

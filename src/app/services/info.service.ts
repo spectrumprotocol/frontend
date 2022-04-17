@@ -908,9 +908,7 @@ export class InfoService {
           ? baseSymbol
           : `LP`,
         score,
-        fullName: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
-          ? baseSymbol
-          : `${baseSymbol}-${denomSymbol} LP`,
+        fullName: vaultName,
         disabled,
         will_available_at_astroport,
         now_available_at_astroport,
