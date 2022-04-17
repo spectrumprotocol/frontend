@@ -678,6 +678,8 @@ export class InfoService {
         bond_amount = +this.balancePipe.transform(rewardInfo.bond_amount,
           this.poolResponses[`${vault.poolInfo.dex}|${vault.poolInfo.baseTokenContract}|${this.terrajs.settings.nexusToken}`],
           this.poolResponses[vault.poolInfo.rewardKey]);
+      } else if (vault.poolInfo.farmType === 'BORROWED') {
+        bond_amount = +rewardInfo.net_amount;
       } else {
         bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this, vault.poolInfo.key);
       }
@@ -828,6 +830,12 @@ export class InfoService {
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const poolInfo = this.poolInfos[key];
 
+      const vaultName = poolInfo.farmType === 'BORROWED'
+        ? `${denomSymbol}-${baseSymbol} LP`
+        : FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
+          ? baseSymbol
+          : `${baseSymbol}-${denomSymbol} LP`;
+
       const shouldSetAprZero = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
 
       const pairStat = this.stat?.pairs[key];
@@ -889,9 +897,7 @@ export class InfoService {
         compoundApy,
         stakeApy,
         apy,
-        name: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
-          ? baseSymbol
-          : `${baseSymbol}-${denomSymbol} LP`,
+        name: vaultName,
         unitDisplay: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,

@@ -105,6 +105,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   tokenFromSwapSingleToken: string;
   tokenFromDepositbDP: string;
 
+  depositTotalCredit: string;
+  depositAvailableCredit: string;
+  depositEstAssets: string;
+
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
   auto_compound_percent_reallocate = 50;
@@ -118,6 +122,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     hideLimitLabels: true,
   };
   bufferUST = 3.5;
+  farmInfo: FarmInfoService;
 
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
@@ -137,6 +142,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.farmInfo = this.info.farmInfos.find(it => it.farmContract === this.vault.poolInfo.farmContract);
     if (this.vault.poolInfo.farmType === 'LP') {
       this.depositMode = 'tokentoken';
       this.withdrawMode = 'tokentoken';
@@ -162,6 +168,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           const tasks: Promise<any>[] = [];
           tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.baseTokenContract)); // AssetToken-Farm
           tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.denomTokenContract)); // Farm-UST
+
+          if (this.vault.poolInfo.farmType === 'BORROWED') {
+            tasks.push(this.refreshBorrowedFarmData());
+          }
+
           await Promise.all(tasks);
           if (this.depositUSTAmtSingleToken) {
             this.depositUSTForSingleToken(true);
@@ -246,7 +257,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   setMaxWithdrawAmount() {
     const rewardInfo = this.info.rewardInfos?.[this.vault.poolInfo.key];
     if (rewardInfo) {
-      this.withdrawAmt = +rewardInfo.bond_amount / CONFIG.UNIT;
+      this.withdrawAmt = this.vault.poolInfo.farmType === 'BORROWED'
+        ? +rewardInfo.net_amount / CONFIG.UNIT
+        : +rewardInfo.bond_amount / CONFIG.UNIT;
     }
     this.withdrawAmtChanged();
   }
@@ -555,8 +568,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
 
       if (+this.ustForDepositbDP) {
-        const farmInfo = this.info.farmInfos.find(it => it.farmContract === this.vault.poolInfo.farmContract);
-        const liquidPool = farmInfo.pylonLiquidInfo;
+        const liquidPool = this.farmInfo.pylonLiquidInfo;
         msgs.push(new MsgExecuteContract(
           this.terrajs.address,
           liquidPool.dpPool,
@@ -847,12 +859,15 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       await this.terrajs.post([unbond, withdrawLp]);
     } else if (this.withdrawMode === 'lp' || this.withdrawMode === 'single_token') {
       if (this.vault.poolInfo.farmType === 'BORROWED') {
+        const rewardInfo = this.info.rewardInfos[this.vault.poolInfo.key];
+        const percentage = +div(times(this.withdrawAmt, CONFIG.UNIT), rewardInfo.net_amount as any);
+        const unbondAmount = percentage === 1 ? undefined : floor(times(rewardInfo.bond_amount, percentage));
         await this.terrajs.post(new MsgExecuteContract(
           this.terrajs.address,
           this.vault.poolInfo.farmContract,
           {
             unbond: {
-              amount: times(this.withdrawAmt, CONFIG.UNIT),
+              amount: unbondAmount,
               belief_price: this.withdrawTokenPrice,
               max_spread: this.SLIPPAGE,
             },
@@ -1208,7 +1223,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
 
     const grossLp = new BigNumber(this.depositTokenAmtSingleToken);
-    const depositFee = grossLp.multipliedBy(DEPOSIT_FEE);
+    const depositFee = this.vault.poolInfo.farmType === 'BORROWED'
+      ? new BigNumber('0')
+      : grossLp.multipliedBy(DEPOSIT_FEE);
     this.netLpLp = grossLp.minus(depositFee).toString();
     this.depositFeeLp = depositFee.toString();
   }
@@ -1326,5 +1343,18 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.grossLpUST = grossLp.toString();
     this.netLpUST = grossLp.minus(depositFee).toString();
     this.depositFeeUST = depositFee.toString();
+  }
+
+  async refreshBorrowedFarmData() {
+    const userCredit = await this.farmInfo.getUserCredit();
+    const poolResponse = this.info.poolResponses[this.keySingleToken_Denom];
+    const [baseAsset, borrowedAsset] = poolResponse.assets[0].info === this.vault.baseAssetInfo
+      ? [poolResponse.assets[0], poolResponse.assets[1]]
+      : [poolResponse.assets[1], poolResponse.assets[0]];
+    const price = times(div(baseAsset.amount, borrowedAsset.amount), 0.995); // for price diff
+    const depositedAmount = (this.info.rewardInfos[this.vault.poolInfo.key]?.net_amount ?? '0') as string;
+
+    this.depositTotalCredit = times(userCredit, price);
+    this.depositAvailableCredit = minus(this.depositTotalCredit, depositedAmount);
   }
 }

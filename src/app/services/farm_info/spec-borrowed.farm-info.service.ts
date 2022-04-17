@@ -2,7 +2,10 @@ import { Injectable } from '@angular/core';
 import { MsgExecuteContract } from '@terra-money/terra.js';
 import { CONFIG } from 'src/app/consts/config';
 import { Denom } from 'src/app/consts/denom';
+import { plus, times } from 'src/app/libs/math';
+import { GovService } from '../api/gov.service';
 import { VaultsResponse } from '../api/gov/vaults_response';
+import { SpecBorrowedFarmService } from '../api/spec-borrowed-farm.service';
 import { PairInfo } from '../api/terraswap_factory/pair_info';
 import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { TerrajsService } from '../terrajs.service';
@@ -21,7 +24,9 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
   highlight = false;
 
   constructor(
-    private terrajs: TerrajsService
+    private terrajs: TerrajsService,
+    private specBorrowedFarm: SpecBorrowedFarmService,
+    private gov: GovService
   ) { }
 
   get farmContract() {
@@ -82,5 +87,17 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
         weight: 0,
       } as const
     ];
+  }
+
+  async getUserCredit(): Promise<string> {
+    const config = await this.specBorrowedFarm.query({ config: {} });
+    const balance = await this.gov.balance();
+
+    return balance.pools?.reduce((sum, pool) => {
+      const credit = config.gov.credits.find(c => c.days === pool.days);
+      const multiplier = +credit?.credit || 0;
+
+      return plus(sum, times(pool.balance, multiplier));
+    }, '0');
   }
 }

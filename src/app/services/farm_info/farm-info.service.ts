@@ -93,4 +93,5 @@ export interface FarmInfoService {
   getStakeGovMsg?(amount: string, additionalData?: object): MsgExecuteContract;
 
   getCustomPoolInfos?(): Promise<Omit<PoolInfo, 'key'>[]>;
+  getUserCredit?(): Promise<string>;
 }

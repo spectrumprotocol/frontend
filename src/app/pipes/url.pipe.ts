@@ -124,6 +124,11 @@ export class UrlPipe implements PipeTransform {
         return undefined;
       case 'nexus_vault':
         return 'https://terra.nexusprotocol.app/vaults';
+      case 'gov':
+        const gov = {
+          SPEC: '/gov',
+        };
+        return gov[symbol];
     }
   }
 
