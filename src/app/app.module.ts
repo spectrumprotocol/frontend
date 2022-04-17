@@ -223,8 +223,6 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: AstroportXdefiUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: TerraNameServiceFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: LoterraFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportStlunaLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportStlunaLdoFarmInfoService, multi: true},
     TruncatePipe,
     DecimalPipe,
     UnitPipe,
