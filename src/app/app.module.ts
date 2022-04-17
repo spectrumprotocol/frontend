@@ -98,6 +98,7 @@ import {NethFarmInfoService} from './services/farm_info/neth.farm-info.service';
 import {NlunaFarmInfoService} from './services/farm_info/nluna.farm-info.service';
 import {CurrencyPipe} from './pipes/currency.pipe';
 import {SpecBorrowedFarmInfoService} from './services/farm_info/spec-borrowed.farm-info.service';
+import {AstroportSayveUstFarmInfoService} from './services/farm_info/astroport/astroport-sayve-ust.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -205,6 +206,7 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportMineUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportSayveUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportSttUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true},
