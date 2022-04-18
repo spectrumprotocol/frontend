@@ -75,8 +75,10 @@ const txHistoryFactory = {
 
       const viaDesc = via ? ' via ' + via : '';
 
-      if ('returnAmountB' in provide) {
+      if ('returnAmountB' in provide && returnAmountB) {
         desc += ` ${provideAmount} UST${viaDesc} for ${lpDesc} which bought <br>${returnAmount} ${tokenBSymbol} at price ${price} UST, ${returnAmountB} ${tokenASymbol} at price ${priceB} ${tokenBSymbol}`;
+      } else if ('returnAmountB' in provide && !returnAmountB) {
+        desc += ` ${provideAmount} UST${viaDesc} for ${lpDesc} which bought <br>${returnAmount} ${tokenBSymbol} at price ${price} UST`;
       } else if ('price' in provide) {
         desc += ` ${provideAmount} UST${viaDesc} for ${lpDesc} which bought <br>${returnAmount} ${tokenASymbol} at price ${price} UST`;
       } else {

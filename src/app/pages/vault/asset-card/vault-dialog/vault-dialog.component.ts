@@ -566,6 +566,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
 
     this.depositTokenAAmtTokenToken = undefined;
+    this.depositTokenBAmtTokenToken = undefined;
+    this.depositLPAmtLP = undefined;
     this.depositUSTAmountTokenUST = undefined;
     this.depositUSTAmtUST = undefined;
 
