@@ -103,7 +103,63 @@
                         [xAxis]="xAxisArea"
                         [yAxis]="yAxisArea"
                         [timeline]="timelineArea"
-                        [results]="graphData"
+                        [results]="tvlGraphData"
+                        [gradient]="gradient">
+                      <ng-template #seriesTooltipTemplate let-model="model">
+                        <span class="text-red">{{ model[0].value / UNIT | shortNum }}</span><br>
+                        <span>{{ model[0].name | date:'EEE, LLL d YYYY' }}</span>
+                      </ng-template>
+<!--                      hack way to prevent tooltipTemplate from showing when cursor is at pink dot-->
+                      <ng-template #tooltipTemplate>
+                      </ng-template>
+                    </ngx-charts-area-chart-stacked>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3 mh-50">
+                        <p class="card-text sub-topic">
+                            Earning Timeline
+                        </p>
+                    </div>
+                    <ngx-charts-area-chart-stacked
+                        class="chart-container"
+                        [tooltipDisabled]="false"
+                        [view]="viewArea"
+                        [timeline]="true"
+                        [scheme]="colorAreaChart"
+                        [xAxis]="xAxisArea"
+                        [yAxis]="yAxisArea"
+                        [timeline]="timelineArea"
+                        [results]="earningGraphData"
+                        [gradient]="gradient">
+                      <ng-template #seriesTooltipTemplate let-model="model">
+                        <span class="text-red">{{ model[0].value / UNIT | shortNum }}</span><br>
+                        <span>{{ model[0].name | date:'EEE, LLL d YYYY' }}</span>
+                      </ng-template>
+<!--                      hack way to prevent tooltipTemplate from showing when cursor is at pink dot-->
+                      <ng-template #tooltipTemplate>
+                      </ng-template>
+                    </ngx-charts-area-chart-stacked>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card card-grey box-left h-100">
+                    <div class="card-body ps-3 mh-50">
+                        <p class="card-text sub-topic">
+                            Burn Timeline
+                        </p>
+                    </div>
+                    <ngx-charts-area-chart-stacked
+                        class="chart-container"
+                        [tooltipDisabled]="false"
+                        [view]="viewArea"
+                        [timeline]="true"
+                        [scheme]="colorAreaChart"
+                        [xAxis]="xAxisArea"
+                        [yAxis]="yAxisArea"
+                        [timeline]="timelineArea"
+                        [results]="burnGraphData"
                         [gradient]="gradient">
                       <ng-template #seriesTooltipTemplate let-model="model">
                         <span class="text-red">{{ model[0].value / UNIT | shortNum }}</span><br>
