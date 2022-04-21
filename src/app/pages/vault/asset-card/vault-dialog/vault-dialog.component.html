@@ -119,8 +119,9 @@
                  class="fas fa-info-circle info-icon super"></i>
             </span>
           </h3>
-          <h6 *ngIf="info.rewardInfos[vault.poolInfo.key]?.deposit_amount" class="card-subtitle text-success">
-            {{ info.rewardInfos[vault.poolInfo.key] | lpEarning }} (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : vault.poolInfo.key | number: '1.0-2' }})
+          <h6 *ngIf="lpEarningPipe.transform(info.rewardInfos[vault.poolInfo.key])" class="card-subtitle text-success">
+            {{ info.rewardInfos[vault.poolInfo.key] | lpEarning }}
+            (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : vault.poolInfo.key | number: '1.0-2' }})
           </h6>
         </div>
       </div>

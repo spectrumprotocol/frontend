@@ -32,6 +32,7 @@ import {RewardInfoPipe} from 'src/app/pipes/reward-info.pipe';
 import {LpSplitPipe} from 'src/app/pipes/lp-split.pipe';
 import {Decimal, SwapOperation} from '../../../../services/api/staker/query_msg';
 import {Cw20HookMsg as StakerCw20HookMsg} from '../../../../services/api/staker/cw20_hook_msg';
+import {LpEarningPipe} from '../../../../pipes/lp-earning.pipe';
 
 const DEPOSIT_FEE = '0.001';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'single_token' | 'ust_single_token';
@@ -41,7 +42,7 @@ export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'ust' | 'single_t
   templateUrl: './vault-dialog.component.html',
   styleUrls: ['./vault-dialog.component.scss'],
   animations: [fade],
-  providers: [LpBalancePipe, PercentPipe, RewardInfoPipe, LpSplitPipe]
+  providers: [LpBalancePipe, PercentPipe, RewardInfoPipe, LpSplitPipe, LpEarningPipe]
 })
 export class VaultDialogComponent implements OnInit, OnDestroy {
   vault: Vault;
@@ -114,6 +115,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private astroportRouter: AstroportRouterService,
     private rewardInfoPipe: RewardInfoPipe,
     private lpSplitPipe: LpSplitPipe,
+    public lpEarningPipe: LpEarningPipe
   ) {
   }
 
