@@ -121,7 +121,9 @@
           </h3>
           <h6 *ngIf="lpEarningPipe.transform(info.rewardInfos[vault.poolInfo.key])" class="card-subtitle text-success">
             {{ info.rewardInfos[vault.poolInfo.key] | lpEarning }}
-            (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : vault.poolInfo.key | number: '1.0-2' }})
+            <ng-container *ngIf="vault.poolInfo.farmType != 'PYLON_LIQUID'">
+              (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : vault.poolInfo.key | number: '1.0-2' }})
+            </ng-container>
           </h6>
         </div>
       </div>
