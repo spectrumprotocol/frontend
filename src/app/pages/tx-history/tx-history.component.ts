@@ -28,12 +28,13 @@ const txHistoryFactory = {
     action: 'Trade' as const,
     desc: `Sold ${offerAmount} SPEC for ${returnAmount} ${returnAsset} at price ${price} ${returnAsset}`,
   }),
-  unstakeRewards: (items: { farm: string; pool: string; specAmount: number; farmAmount?: number; tokenSymbol?: string }[]) => ({
+  unstakeRewards: (items: { farm: string; pool: string; specAmount: number; farmAmount?: number; farmSymbol?: string; farm2Amount?: number; farm2Symbol?: string }[]) => ({
     action: 'Farm' as const,
     desc: items
-      .map(({farm, pool, specAmount, farmAmount, tokenSymbol}) => {
+      .map(({farm, pool, specAmount, farmAmount, farmSymbol, farm2Amount, farm2Symbol}) => {
         let desc = `Unstaked rewards from ${farm} farm, ${pool}`;
-        desc += farmAmount && tokenSymbol ? `, ${farmAmount} ${tokenSymbol}` : '';
+        desc += farmAmount && farmSymbol ? `, ${farmAmount} ${farmSymbol}` : '';
+        desc += farm2Amount && farm2Symbol ? `, ${farm2Amount} ${farm2Symbol}` : '';
         desc += `, ${specAmount} SPEC`;
         return desc;
       })
@@ -351,12 +352,18 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
           const event = events?.find(o => o.type === 'from_contract');
           const farmAmount = +event?.attributes.find(o => o.key === 'farm_amount')?.value / this.getUnit(farmInfo.rewardTokenContract) || 0;
           const specAmount = +event?.attributes.find(o => o.key === 'spec_amount')?.value / CONFIG.UNIT || 0;
+          const farmSymbol = farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP' ? this.getSymbol(this.terrajs.settings.astroToken) : this.getSymbol(farmInfo.rewardTokenContract);
+          const farm2Symbol = farmInfo.dex === 'Astroport' && farmInfo.hasProxyReward && farmInfo.farmType === 'LP' ? this.getSymbol(farmInfo.rewardTokenContract) : undefined;
+          const farm2Amount = +event?.attributes.find(o => o.key === 'farm2_amount')?.value / this.getUnit(farmInfo.rewardTokenContract) || 0;
+
           unstakes.push({
             farm: farmInfo.farm,
             pool: poolName,
             farmAmount,
-            tokenSymbol: this.getSymbol(farmInfo.rewardTokenContract),
-            specAmount
+            farmSymbol,
+            specAmount,
+            farm2Symbol,
+            farm2Amount
           });
         } else {
           const event = events?.find(o => o.type === 'from_contract');
