@@ -433,11 +433,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               },
               pair_asset: this.vault.baseAssetInfo, // stluna
               belief_price: this.basedTokenPrice, // stluna
-              max_spread: '0.03',
+              max_spread: '0.01',
               compound_rate: auto_compound_ratio,
               pair_asset_b: this.vault.denomAssetInfo, // ldo
               belief_price_b: this.tokenPrice, // ldo
-              swap_hints: this.getSwapHints()
+              swap_hints: this.getSwapHints(false, this.swapHintPrices)
             }
           } as StakerExecuteMsg, new Coins([coin]));
         } else {
@@ -1416,7 +1416,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getSwapHints(reverse?: boolean): [] {
+  private getSwapHints(reverse?: boolean, swapHintPrices?: { [p: string]: Decimal }): [] {
     let swap_hints;
     if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
       const luna_ust_pairInfo = this.info.pairInfos[this.LUNA_UST_KEY];
@@ -1429,6 +1429,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             }
           },
           pair_contract: stluna_luna_pairInfo.contract_addr,
+          belief_price: swapHintPrices ? swapHintPrices[1] : undefined
         } as SwapOperation, {
           asset_info: {
             native_token: {
@@ -1436,6 +1437,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             }
           },
           pair_contract: luna_ust_pairInfo.contract_addr,
+          belief_price: swapHintPrices ? swapHintPrices[0] : undefined
         } as SwapOperation];
       } else {
         swap_hints = [{
@@ -1445,6 +1447,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             }
           },
           pair_contract: luna_ust_pairInfo.contract_addr,
+          belief_price: swapHintPrices ? swapHintPrices[0] : undefined
         } as SwapOperation, {
           asset_info: {
             native_token: {
@@ -1452,6 +1455,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             }
           },
           pair_contract: stluna_luna_pairInfo.contract_addr,
+          belief_price: swapHintPrices ? swapHintPrices[1] : undefined
         } as SwapOperation];
       }
     }
