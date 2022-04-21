@@ -119,8 +119,8 @@ const txHistoryFactory = {
       desc += ` ${amountDesc}`;
     } else if (!isWithdrawToUST) {
       const {tokenAAmount, tokenBAmount} = demand;
-      desc += tokenBAmount ? ` ${tokenBAmount} ${baseTokenSymbol},` : '';
-      desc += ` ${tokenAAmount} ${denomTokenSymbol} (${amountDesc})`;
+      desc += tokenBAmount ? ` ${tokenBAmount} ${denomTokenSymbol},` : '';
+      desc += ` ${tokenAAmount} ${baseTokenSymbol} (${amountDesc})`;
     } else {
       const {tokenAAmount} = demand;
       desc += ` ${tokenAAmount} UST (${amountDesc})`;
