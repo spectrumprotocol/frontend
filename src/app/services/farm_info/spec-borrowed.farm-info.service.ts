@@ -59,13 +59,12 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
     return poolItems;
   }
 
-  queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const pairs: Record<string, PairStat> = {};
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${this.denomTokenContract}`;
 
     pairs[key] = createPairStat(0, key);
-
-    return null;
+    return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
     function createPairStat(poolApr: number, key: string) {
