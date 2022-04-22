@@ -9,6 +9,7 @@ import {RewardInfoResponseItem as SpecRewardInfoResponseItem} from '../api/spec_
 import {
   RewardInfoResponseItem as AstroportTokenUSTRewardInfoResponseItem
 } from '../api/astroport_token_ust_farm/reward_info_response';
+import {RewardInfoResponseItem as BorrowedFarmRewardInfoResponseItem} from '../api/borrowed_farm/reward_info_response';
 
 import {InjectionToken} from '@angular/core';
 import {MsgExecuteContract} from '@terra-money/terra.js';
@@ -49,7 +50,8 @@ export type PoolInfo = PoolItem & {
 export type RewardInfoResponseItem =
   AstroportTokenUSTRewardInfoResponseItem
   | MirrorRewardInfoResponseItem
-  | SpecRewardInfoResponseItem;
+  | SpecRewardInfoResponseItem
+  | BorrowedFarmRewardInfoResponseItem;
 
 export interface PairStat {
   tvl: string;
@@ -104,5 +106,6 @@ export interface FarmInfoService {
   getStakeGovMsg?(amount: string, additionalData?: object): MsgExecuteContract;
 
   getCustomPoolInfos?(): Promise<Omit<PoolInfo, 'key'>[]>;
+
   getUserCredit?(): Promise<string>;
 }

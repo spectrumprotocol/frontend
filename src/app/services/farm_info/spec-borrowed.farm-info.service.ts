@@ -1,15 +1,13 @@
-import { Injectable } from '@angular/core';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { CONFIG } from 'src/app/consts/config';
-import { Denom } from 'src/app/consts/denom';
-import { plus, times } from 'src/app/libs/math';
-import { GovService } from '../api/gov.service';
-import { VaultsResponse } from '../api/gov/vaults_response';
-import { SpecBorrowedFarmService } from '../api/spec-borrowed-farm.service';
-import { PairInfo } from '../api/terraswap_factory/pair_info';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { TerrajsService } from '../terrajs.service';
-import { FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem } from './farm-info.service';
+import {Injectable} from '@angular/core';
+import {Denom} from 'src/app/consts/denom';
+import {plus, times} from 'src/app/libs/math';
+import {GovService} from '../api/gov.service';
+import {VaultsResponse} from '../api/gov/vaults_response';
+import {SpecBorrowedFarmService} from '../api/spec-borrowed-farm.service';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
+import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {TerrajsService} from '../terrajs.service';
+import {FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem} from './farm-info.service';
 
 @Injectable()
 export class SpecBorrowedFarmInfoService implements FarmInfoService {
@@ -25,9 +23,10 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
 
   constructor(
     private terrajs: TerrajsService,
-    private specBorrowedFarm: SpecBorrowedFarmService,
+    private borrowedFarmService: SpecBorrowedFarmService,
     private gov: GovService
-  ) { }
+  ) {
+  }
 
   get farmContract() {
     return this.terrajs.settings.specBorrowedFarm;
@@ -46,16 +45,51 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.specToken;
   }
 
-  queryPoolItems(): Promise<PoolItem[]> {
-    throw new Error('Method not implemented.');
+  async queryPoolItems(): Promise<PoolItem[]> {
+    const config = await this.borrowedFarmService.query({config: {}});
+    console.log(config);
+    const poolItems: PoolItem[] = [{
+      asset_token: this.denomTokenContract,
+      spec_share_index: '0',
+      staking_token: '',
+      state_spec_share_index: '0',
+      total_bond_amount: '0',
+      weight: 0,
+    }];
+    return poolItems;
   }
 
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
-    throw new Error('Method not implemented.');
+    const pairs: Record<string, PairStat> = {};
+    const key = `${this.dex}|${this.defaultBaseTokenContract}|${this.denomTokenContract}`;
+
+    pairs[key] = createPairStat(0, key);
+
+    return null;
+
+    // tslint:disable-next-line:no-shadowed-variable
+    function createPairStat(poolApr: number, key: string) {
+      const poolInfo = poolInfos[key];
+      const stat: PairStat = {
+        poolApr,
+        poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
+        poolAstroApr: 0,
+        farmApr: 0,
+        tvl: '0',
+        multiplier: 0,
+        vaultFee: 0,
+      };
+      return stat;
+    }
   }
 
-  queryRewards(): Promise<RewardInfoResponseItem[]> {
-    throw new Error('Method not implemented.');
+  async queryRewards(): Promise<RewardInfoResponseItem[]> {
+    const rewardInfo = await this.borrowedFarmService.query({
+      reward_info: {
+        staker_addr: this.terrajs.address,
+      }
+    });
+    return rewardInfo.reward_infos;
   }
 
   async getCustomPoolInfos(): Promise<Omit<PoolInfo, 'key'>[]> {
@@ -90,7 +124,7 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
   }
 
   async getUserCredit(): Promise<string> {
-    const config = await this.specBorrowedFarm.query({ config: {} });
+    const config = await this.borrowedFarmService.query({config: {}});
     const balance = await this.gov.balance();
 
     return balance.pools?.reduce((sum, pool) => {

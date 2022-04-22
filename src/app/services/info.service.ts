@@ -487,7 +487,7 @@ export class InfoService {
     const rewardInfos: InfoService['rewardInfos'] = {};
     const bundler = new QueryBundler(this.wasm, 8);
     const tasks: Promise<any>[] = [];
-    const BUNDLER_BLACKLIST = new Set([this.terrajs.settings.mirrorFarm]);
+    const BUNDLER_BLACKLIST = new Set([this.terrajs.settings.mirrorFarm, this.terrajs.settings.specBorrowedFarm]);
     const processRewards = (farmInfo: FarmInfoService, rewards: RewardInfoResponseItem[]) => {
       if (farmInfo.farmContract === this.terrajs.settings.specFarm) {
         for (const it of rewards) {
