@@ -26,17 +26,23 @@ export type Decimal = string;
  */
 export type Uint128 = string;
 
-export interface SimulateZapToBondResponse {
-  belief_price: Decimal;
-  belief_price_b?: Decimal | null;
-  lp_amount: Uint128;
-  provide_a: Uint128;
-  provide_b: Uint128;
-  receive_a: Uint128;
-  swap_a?: Uint128 | null;
-  swap_hint_prices?: {
-    [k: string]: Decimal;
-  } | null;
-  swap_ust: Uint128;
+export interface PoolsResponse {
+  pools: PoolItem[];
+  [k: string]: unknown;
+}
+export interface PoolItem {
+  asset_token: string;
+  auto_spec_share_index: Decimal;
+  farm2_share: Uint128;
+  farm2_share_index: Decimal;
+  farm_share: Uint128;
+  farm_share_index: Decimal;
+  stake_spec_share_index: Decimal;
+  staking_token: string;
+  state_spec_share_index: Decimal;
+  total_auto_bond_share: Uint128;
+  total_stake_bond_amount: Uint128;
+  total_stake_bond_share: Uint128;
+  weight: number;
   [k: string]: unknown;
 }

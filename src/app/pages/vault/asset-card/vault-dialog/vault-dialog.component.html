@@ -125,8 +125,11 @@
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.net_value || '0' | unit: 6: '1.0-2' }})
             </span>
           </h3>
-          <h6 *ngIf="info.rewardInfos[vault.poolInfo.key]?.deposit_amount" class="card-subtitle text-success">
+          <h6 *ngIf="lpEarningPipe.transform(info.rewardInfos[vault.poolInfo.key])" class="card-subtitle text-success">
             {{ info.rewardInfos[vault.poolInfo.key] | lpEarning }}
+            <ng-container *ngIf="vault.poolInfo.farmType != 'PYLON_LIQUID'">
+              (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : vault.poolInfo.key | number: '1.0-2' }})
+            </ng-container>
           </h6>
         </div>
       </div>
@@ -210,16 +213,18 @@
               <div class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
-                    <i class="fas fa-info-circle info-icon"></i> Need more {{ vault.baseSymbol }}? <a
-                          [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy</a>
+                    <i class="fas fa-info-circle info-icon"></i>&nbsp;
+                    <span>Need more {{vault.baseSymbol}}<ng-container *ngIf="vault.denomSymbol !== 'UST'">, {{vault.denomSymbol}} </ng-container>? </span>
+                      <a [href]="vault.baseSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy {{ vault.baseSymbol }}</a>
                     <span *ngIf="vault.poolInfo.farm === 'Mirror' && vault.baseSymbol.startsWith('m')">
-                      or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Borrow</a>
+                      or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Borrow {{vault.baseSymbol}}</a>
                     </span>
                     <span *ngIf="vault.poolInfo.farm === 'Nexus' && vault.baseSymbol.startsWith('n')">
-                      or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Mint</a>
+                      or <a [href]="vault.baseSymbol | url:'mint'" target="_blank">Mint {{vault.baseSymbol}}</a>
                     </span>
-                    {{ vault.baseSymbol }} to farm
-                    with
+                    <ng-container *ngIf="vault.denomSymbol !== 'UST'">
+                      &nbsp;<a [href]="vault.denomSymbol | url:'trade' : vault.poolInfo.dex" target="_blank">Buy {{ vault.denomSymbol }}</a>
+                    </ng-container>
                   </div>
                 </div>
               </div>
@@ -240,8 +245,8 @@
                     <input #depositTokenAAmtTokenTokenCtl="ngModel"
                            (input)="depositTokenATokenTokenChanged(false, $event)" [(ngModel)]="depositTokenAAmtTokenToken"
                            [class.is-invalid]="(formDeposit.submitted || depositTokenAAmtTokenTokenCtl.touched) && depositTokenAAmtTokenTokenCtl.invalid"
-                           [max]="+info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit" [min]="0.000001"
-                           [pattern]="'^[0-9]+(.[0-9]{0,' + vault.baseDecimals + '})?$'" [step]="0.000001"
+                           [max]="+info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit"
+                           [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,' + vault.baseDecimals + '})?$'" [step]="0.000001"
                            class="form-control fix-border" name="depositTokenAAmtTokenTokenCtl" required type="number" />
                     <button (click)="setMaxDepositTokenATokenToken()" class="btn btn-max last" type="button">
                       Max
@@ -304,7 +309,7 @@
                              (input)="depositTokenBTokenTokenChanged(false, $event)" [(ngModel)]="depositTokenBAmtTokenToken"
                              [class.is-invalid]="(formDeposit.submitted || depositTokenBAmtTokenTokenCtl.touched) && depositTokenBAmtTokenTokenCtl.invalid"
                              [max]="+info.tokenBalances[vault.poolInfo.denomTokenContract] / vault.denomUnit"
-                             [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001"
+                             [min]="0.000001" [pattern]="'^[0-9]+(.[0-9]{0,' + vault.denomDecimals + '})?$'" [step]="0.000001"
                              class="form-control fix-border" name="depositTokenBAmtTokenTokenCtl" required type="number" />
                       <button (click)="setMaxDepositTokenBTokenToken()" class="btn btn-max last" type="button">
                         Max
@@ -432,18 +437,40 @@
               </div>
 
               <div *ngIf="depositUSTAmtUST" class="mt-3 pool-info">
-                <div class="row">
-                  <div class="col">Expected {{vault.denomSymbol === 'UST' ? vault.baseSymbol :
-                    vault.denomSymbol}} Price</div>
-                  <div class="col text-end">{{tokenPrice | number:'0.0-6' }} UST</div>
-                </div>
-                <div *ngIf="vault.denomSymbol !== 'UST'" class="row">
-                  <div class="col">Expected {{vault.baseSymbol}} Price</div>
-                  <div class="col text-end">
-                    {{basedTokenPrice | number:'0.0-6' }} {{vault.denomSymbol}}
-                    ({{tokenPriceNonUSTDenomInUST | number:'0.0-6' }} UST)
+                <ng-container *ngIf="vault.poolInfo.farmContract !== terrajs.settings.astroportStlunaLdoFarm">
+                  <div class="row">
+                    <div class="col">Expected {{vault.denomSymbol === 'UST' ? vault.baseSymbol :
+                      vault.denomSymbol}} Price</div>
+                    <div class="col text-end">{{tokenPrice | number:'0.0-6' }} UST</div>
                   </div>
-                </div>
+                  <div *ngIf="vault.denomSymbol !== 'UST'" class="row">
+                    <div class="col">Expected {{vault.baseSymbol}} Price</div>
+                    <div class="col text-end">
+                      {{basedTokenPrice | number:'0.0-6' }} {{vault.denomSymbol}}
+                      ({{tokenPriceNonUSTDenomInUST | number:'0.0-6' }} UST)
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="vault.poolInfo.farmContract === terrajs.settings.astroportStlunaLdoFarm">
+                  <div class="row">
+                    <div class="col">Expected Luna Price</div>
+                    <div class="col text-end"> {{swapHintPrices[0] || 0 | number:'0.0-6'}} UST</div>
+                  </div>
+                  <div class="row">
+                    <div class="col">Expected stLuna Price</div>
+                    <div class="col text-end">{{swapHintPrices[1] || 0 | number:'0.0-6' }} LUNA
+                    ({{basedTokenPrice | number:'0.0-6' }} UST)
+                    </div>
+                  </div>
+                  <div *ngIf="vault.denomSymbol !== 'UST'" class="row">
+                    <div class="col">Expected LDO Price</div>
+                    <div class="col text-end">
+                      {{tokenPrice | number:'0.0-6' }} stLUNA
+                      ({{tokenPriceNonUSTDenomInUST | number:'0.0-6' }} UST)
+                    </div>
+                  </div>
+                </ng-container>
+
                 <div class="row">
                   <div class="col">Gross LP</div>
                   <div *ngIf="+grossLpUST > 0" class="col text-end">{{grossLpUST | number }} LP</div>
@@ -1007,7 +1034,7 @@
                 <div *ngIf="vault.poolInfo.farmType === 'BORROWED'">Expected receive</div>
                 <div class="margin-left-auto">
                   <ng-container *ngIf="withdrawMode === 'tokentoken'">
-                    {{ withdrawAmt | lpSplit: info.poolResponses[vault.poolInfo.key]: vault.baseSymbol: vault.denomSymbol: vault.baseDecimals }}
+                    {{ withdrawAmt | lpSplit: info.poolResponses[vault.poolInfo.key]: vault.baseSymbol: vault.denomSymbol: vault.baseDecimals: null: vault.denomDecimals: null }}
                   </ng-container>
                   <ng-container *ngIf="withdrawMode === 'lp' || withdrawMode === 'single_token'">
                     {{ withdrawAmt | number }} {{vault.unitDisplay}}
@@ -1036,6 +1063,9 @@
                 <div class="card-text small text-info mb-1 mt-1">
                   <i class="fas fa-info-circle"></i> With this option, withdrawn assets will be automatically sold to
                   UST.
+                </div>
+                <div class="card-text small text-info mb-1 mt-1" *ngIf="vault.poolInfo.farmContract === terrajs.settings.astroportStlunaLdoFarm">
+                  <i class="fas fa-info-circle"></i> Due to swap hops of LDO -> stLuna -> Luna -> UST exposing 0.3%, 0.05%, and 0.3% swap fee. <br>Expected receive is less than UST value of LP Balance compared to other vaults.
                 </div>
               </div>
             </div>

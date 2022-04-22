@@ -99,6 +99,12 @@ import {NlunaFarmInfoService} from './services/farm_info/nluna.farm-info.service
 import {CurrencyPipe} from './pipes/currency.pipe';
 import {SpecBorrowedFarmInfoService} from './services/farm_info/spec-borrowed.farm-info.service';
 import {AstroportSayveUstFarmInfoService} from './services/farm_info/astroport/astroport-sayve-ust.farm-info.service';
+import {
+  AstroportStlunaLunaFarmInfoService
+} from './services/farm_info/astroport/astroport-stluna-luna.farm-info.service';
+import {AstroportStlunaLdoFarmInfoService} from './services/farm_info/astroport/astroport-stluna-ldo.farm-info.service';
+import {AstroportStethUstFarmInfoService} from './services/farm_info/astroport/astroport-steth-ust.farm-info.service';
+import {AstroportStsolUstFarmInfoService} from './services/farm_info/astroport/astroport-stsol-ust.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -193,6 +199,10 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: GlowFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: MirrorFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportMirUstFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportStethUstFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportStsolUstFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportStlunaLdoFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportStlunaLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true},

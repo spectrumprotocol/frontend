@@ -435,6 +435,11 @@ input[type="number"] {
   border: solid 1px $sayve;
 }
 
+.bg-Lido {
+  background: $lido-bg;
+  border: solid 1px $lido;
+}
+
 .bg-Kujira {
   background: $kujira;
   background: -webkit-linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);

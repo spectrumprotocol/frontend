@@ -5,37 +5,6 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type QueryMsg =
-  | {
-      config: {
-        [k: string]: unknown;
-      };
-    }
-  | {
-      simulate_zap_to_bond: {
-        pair_asset: AssetInfo;
-        pair_asset_b?: AssetInfo | null;
-        provide_asset: Asset;
-        swap_hints?: SwapOperation[] | null;
-        [k: string]: unknown;
-      };
-    };
-/**
- * AssetInfo contract_addr is usually passed from the cw20 hook so we can trust the contract_addr is properly validated.
- */
-export type AssetInfo =
-  | {
-      token: {
-        contract_addr: string;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      native_token: {
-        denom: string;
-        [k: string]: unknown;
-      };
-    };
 /**
  * A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.
  *
@@ -57,14 +26,29 @@ export type Uint128 = string;
  */
 export type Decimal = string;
 
-export interface Asset {
-  amount: Uint128;
-  info: AssetInfo;
+export interface RewardInfoResponse {
+  reward_infos: RewardInfoResponseItem[];
+  staker_addr: string;
   [k: string]: unknown;
 }
-export interface SwapOperation {
-  asset_info: AssetInfo;
-  belief_price?: Decimal | null;
-  pair_contract: string;
+export interface RewardInfoResponseItem {
+  asset_token: string;
+  auto_bond_amount: Uint128;
+  auto_bond_share: Uint128;
+  auto_spec_share_index: Decimal;
+  bond_amount: Uint128;
+  deposit_amount?: Uint128 | null;
+  deposit_time?: number | null;
+  farm2_share: Uint128;
+  farm2_share_index: Decimal;
+  farm_share: Uint128;
+  farm_share_index: Decimal;
+  pending_farm2_reward: Uint128;
+  pending_farm_reward: Uint128;
+  pending_spec_reward: Uint128;
+  spec_share: Uint128;
+  stake_bond_amount: Uint128;
+  stake_bond_share: Uint128;
+  stake_spec_share_index: Decimal;
   [k: string]: unknown;
 }

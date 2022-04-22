@@ -85,6 +85,14 @@ export interface ISettings {
   astroportNethPsiFarm: string;
   astroportXdefiUstFarm: string;
   astroportSayveUstFarm: string;
+  astroportStlunaLunaFarm: string;
+  astroportStsolUstFarm: string;
+  astroportStethUstFarm: string;
+  astroportStlunaLdoFarm: string;
+  stlunaToken: string;
+  stsolToken: string;
+  stethToken: string;
+  ldoToken: string;
   starterraToken: string;
   apolloToken: string;
   xdefiToken: string;
@@ -132,6 +140,7 @@ export interface ISettings {
   // astroportApolloUstLP: string;
   tnsReverseRecord: string;
 }
+
 export const networks: Record<string, ISettings> = {
   mainnet: {
     specToken: 'terra1s5eczhe0h0jutf46re52x5z4r03c8hupacxmdr',
@@ -209,6 +218,14 @@ export const networks: Record<string, ISettings> = {
     astroportNethPsiFarm: 'terra1xw3jzqwrql5fvddchzxycd2ygrep5kudsden5c',
     astroportXdefiUstFarm: 'terra1d9cufxz9a4px9zfzq8quqewlj24durtu6lhwfw',
     astroportSayveUstFarm: 'terra1mr9xlwydgg0lfxvy68ylxuchzy6jdn706vwu8c',
+    astroportStlunaLunaFarm: 'terra19dfth8559etgnqmnu9nwd87pjqsuufswwclcav',
+    astroportStsolUstFarm: 'terra1puxzzlcr2urp4pvx523xhq593tgpt7damnm6pc',
+    astroportStethUstFarm: 'terra12td8as6zhm3m9djjmpxzfue9syvrj0ewe070hf',
+    astroportStlunaLdoFarm: 'terra1aeaz2w7gxu7ga8fj76mna8skhvq6ft0q0x42tv',
+    stlunaToken: 'terra1yg3j2s986nyp5z7r2lvt0hx3r0lnd7kwvwwtsc', // decimal 6
+    stsolToken: 'terra1t9ul45l7m6jw6sxgvnp8e5hj8xzkjsg82g84ap', // decimal 8
+    stethToken: 'terra133chr09wu8sakfte5v7vd8qzq9vghtkv4tn0ur', // decimal 8
+    ldoToken: 'terra1jxypgnfa07j6w92wazzyskhreq2ey2a5crgt6z', // decimal 8
     starterraToken: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n',
     sayveToken: 'terra14v9wrjs55qsn9lkvylsqela3w2ytwxzkycqzcr',
     sttStaking: 'terra15p807wnm9q3dyw4rvfqsaukxqt6lkuqe62q3mp',
@@ -329,6 +346,14 @@ export const networks: Record<string, ISettings> = {
     astroportNethPsiFarm: 'terra1zjp0gkz8gqan8ftjmvrtzzertuwywwj3z7yrwv',
     astroportXdefiUstFarm: '',
     astroportSayveUstFarm: '',
+    astroportStlunaLunaFarm: '',
+    astroportStsolUstFarm: '',
+    astroportStethUstFarm: '',
+    astroportStlunaLdoFarm: '',
+    stlunaToken: '',
+    stsolToken: '',
+    stethToken: '',
+    ldoToken: '',
     starterraToken: '',
     sayveToken: '',
     apolloToken: '',

@@ -10,60 +10,62 @@ export type ExecuteMsg =
       receive: Cw20ReceiveMsg;
     }
   | {
-      bond: {
-        asset_token?: string | null;
-        assets: [Asset, Asset];
-        compound_rate?: Decimal | null;
-        contract: string;
-        slippage_tolerance: Decimal;
-        staker_addr?: string | null;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      bond_hook: {
-        asset_token: string;
-        compound_rate?: Decimal | null;
-        contract: string;
-        prev_staking_token_amount: Uint128;
-        staker_addr: string;
-        staking_token: string;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      zap_to_bond: {
-        asset_token?: string | null;
-        belief_price?: Decimal | null;
-        belief_price_b?: Decimal | null;
-        compound_rate?: Decimal | null;
-        contract: string;
-        max_spread: Decimal;
-        pair_asset: AssetInfo;
-        pair_asset_b?: AssetInfo | null;
-        provide_asset: Asset;
-        swap_hints?: SwapOperation[] | null;
-        [k: string]: unknown;
-      };
-    }
-  | {
       update_config: {
-        allow_all?: boolean | null;
-        insert_allowlist?: string[] | null;
-        remove_allowlist?: string[] | null;
+        community_fee?: Decimal | null;
+        controller?: string | null;
+        controller_fee?: Decimal | null;
+        deposit_fee?: Decimal | null;
+        owner?: string | null;
+        platform_fee?: Decimal | null;
         [k: string]: unknown;
       };
     }
   | {
-      zap_to_unbond_hook: {
-        belief_price_a?: Decimal | null;
-        belief_price_b?: Decimal | null;
-        max_spread: Decimal;
-        prev_asset_a: Asset;
-        prev_asset_b?: Asset | null;
-        prev_target_asset: Asset;
-        staker_addr: string;
-        swap_hints?: SwapOperation[] | null;
+      unbond: {
+        amount: Uint128;
+        asset_token: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      register_asset: {
+        asset_token: string;
+        staking_token: string;
+        weight: number;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      withdraw: {
+        asset_token?: string | null;
+        farm2_amount?: Uint128 | null;
+        farm_amount?: Uint128 | null;
+        spec_amount?: Uint128 | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      stake: {
+        asset_token: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      compound: {
+        threshold_compound_astro?: Uint128 | null;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      update_bond: {
+        amount_to_auto: Uint128;
+        amount_to_stake: Uint128;
+        asset_token: string;
+        [k: string]: unknown;
+      };
+    }
+  | {
+      send_fee: {
         [k: string]: unknown;
       };
     };
@@ -88,22 +90,6 @@ export type Uint128 = string;
  */
 export type Binary = string;
 /**
- * AssetInfo contract_addr is usually passed from the cw20 hook so we can trust the contract_addr is properly validated.
- */
-export type AssetInfo =
-  | {
-      token: {
-        contract_addr: string;
-        [k: string]: unknown;
-      };
-    }
-  | {
-      native_token: {
-        denom: string;
-        [k: string]: unknown;
-      };
-    };
-/**
  * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
  *
  * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
@@ -117,16 +103,5 @@ export interface Cw20ReceiveMsg {
   amount: Uint128;
   msg: Binary;
   sender: string;
-  [k: string]: unknown;
-}
-export interface Asset {
-  amount: Uint128;
-  info: AssetInfo;
-  [k: string]: unknown;
-}
-export interface SwapOperation {
-  asset_info: AssetInfo;
-  belief_price?: Decimal | null;
-  pair_contract: string;
   [k: string]: unknown;
 }

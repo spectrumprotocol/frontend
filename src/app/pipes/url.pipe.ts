@@ -105,6 +105,16 @@ export class UrlPipe implements PipeTransform {
             return `https://raw.githubusercontent.com/sayveprotocol/web-assets/main/logos/sayve-logo.png`;
           case 'Sayve':
             return `https://raw.githubusercontent.com/sayveprotocol/web-assets/main/logos/sayve-logo.png`;
+          case 'Lido':
+            return `https://static.lido.fi/LDO/LDO.png`;
+          case 'LDO':
+            return `https://static.lido.fi/LDO/LDO.png`;
+          case 'stLuna':
+            return `https://static.lido.fi/stLUNA/stLUNA.png`;
+          case 'stSOL':
+            return `https://static.lido.fi/stSOL/stSOL.png`;
+          case 'wstETH':
+            return `https://static.lido.fi/wstETH/wstETH.png`;
           default:
             return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
@@ -161,6 +171,14 @@ export class UrlPipe implements PipeTransform {
             return `https://app.terraswap.io/swap?to=${this.terrajs.settings.loterraToken}&type=swap&from=uusd`;
           case 'SAYVE':
             return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.sayveToken}`;
+          case 'LDO':
+            return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.ldoToken}`;
+          case 'stLuna':
+            return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.stlunaToken}`;
+          case 'stSOL':
+            return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.stsolToken}`;
+          case 'wstETH':
+            return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.stethToken}`;
           default: {
             if (dex === 'Astroport') {
               return 'https://app.astroport.fi/swap';

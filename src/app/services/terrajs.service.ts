@@ -64,6 +64,7 @@ export class TerrajsService implements OnDestroy {
   connected = new BehaviorSubject(false);
   settings: ISettings = networks[DEFAULT_NETWORK];
   address: string;
+  networkName: string = DEFAULT_NETWORK;
   network: NetworkInfo;
   isConnected: boolean;
   lcdClient: LCDClient;
@@ -205,6 +206,7 @@ export class TerrajsService implements OnDestroy {
     }
     this.address = state.wallets[0].terraAddress;
     this.network = state.network;
+    this.networkName = this.network.name;
     this.settings = networks[this.network.name];
 
     await this.initLcdClient();

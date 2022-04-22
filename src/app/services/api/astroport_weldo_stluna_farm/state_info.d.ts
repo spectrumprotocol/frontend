@@ -6,12 +6,6 @@
  */
 
 /**
- * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
- *
- * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
- */
-export type Decimal = string;
-/**
  * A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.
  *
  * # Examples
@@ -25,18 +19,19 @@ export type Decimal = string;
  * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
  */
 export type Uint128 = string;
+/**
+ * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
+ *
+ * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
+ */
+export type Decimal = string;
 
-export interface SimulateZapToBondResponse {
-  belief_price: Decimal;
-  belief_price_b?: Decimal | null;
-  lp_amount: Uint128;
-  provide_a: Uint128;
-  provide_b: Uint128;
-  receive_a: Uint128;
-  swap_a?: Uint128 | null;
-  swap_hint_prices?: {
-    [k: string]: Decimal;
-  } | null;
-  swap_ust: Uint128;
+export interface StateInfo {
+  earning: Uint128;
+  previous_spec_share: Uint128;
+  spec_share_index: Decimal;
+  total_farm2_share: Uint128;
+  total_farm_share: Uint128;
+  total_weight: number;
   [k: string]: unknown;
 }
