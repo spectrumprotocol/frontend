@@ -10,8 +10,6 @@ import {VaultsResponse} from '../../api/gov/vaults_response';
 import {Denom} from '../../../consts/denom';
 import {WasmService} from '../../api/wasm.service';
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
-import {BalancePipe} from '../../../pipes/balance.pipe';
-import {HttpClient} from '@angular/common/http';
 import {getStablePrice} from '../../../libs/stable';
 import {balance_transform} from '../../calc/balance_calc';
 import {AstroportStlunaLunaFarmService} from '../../api/astroport-stlunaluna-farm.service';
@@ -34,8 +32,6 @@ export class AstroportStlunaLunaFarmInfoService implements FarmInfoService {
     private farmService: AstroportStlunaLunaFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService,
-    private httpClient: HttpClient,
-    private balancePipe: BalancePipe,
   ) {
   }
 

@@ -171,7 +171,6 @@ export class AstroportStlunaLdoFarmInfoService implements FarmInfoService {
 
     const totalStlunaValueUST = times(stlunaPriceInUST, stlunaAsset.amount);
     const ldoPrice = times(div(+stlunaAsset.amount * 100, ldoAsset.amount), stlunaPriceInUST);
-    console.log(ldoPrice);
     const getStLunaLdoLPStatTask = this.getStLunaLdoLPStat(stlunaLdoPoolResponses, ldoPrice);
 
     const [depositAmount, farmConfig, getStLunaLdoLPStat] = await Promise.all([depositAmountTask, farmConfigTask, getStLunaLdoLPStatTask]);
@@ -226,7 +225,6 @@ export class AstroportStlunaLdoFarmInfoService implements FarmInfoService {
     const height = await this.terrajs.getHeight();
     const configTask = this.wasm.query(this.terrajs.settings.astroportStlunaLdoStaking, {config: {}});
     const stateTask = this.wasm.query(this.terrajs.settings.astroportStlunaLdoStaking, {state: {}});
-    // const stakingContractLpBalanceTask = this.wasm.query(this.terrajs.settings.terraNameServiceLp, { balance: { address: this.terrajs.settings.terraNameServiceStaking } });
     const [config, state] = await Promise.all([configTask, stateTask]);
     const poolLdoAmount = stlunaLdoPoolResponse.assets.find(asset => asset.info.token['contract_addr'] === this.terrajs.settings.ldoToken).amount || 0;
     const current_distribution_schedule = (config.distribution_schedule as []).find(obj => height >= +obj[0] && height <= +obj[1]);
@@ -237,9 +235,8 @@ export class AstroportStlunaLdoFarmInfoService implements FarmInfoService {
       totalMint = 0;
     }
     const poolLdoAmountUSTValue = times(poolLdoAmount, ldoPrice);
-    console.log(stlunaLdoPoolResponse);
     const r = new BigNumber(poolLdoAmountUSTValue).multipliedBy(2).div(stlunaLdoPoolResponse.total_share);
-    const s = new BigNumber(state.total_bond_amount).multipliedBy(r);
+    const s = new BigNumber(state.total_bond_amount).multipliedBy(r).dividedBy(10);
     const apr = new BigNumber(totalMint).multipliedBy(ldoPrice).div(s).toNumber();
     return {
       apr,
