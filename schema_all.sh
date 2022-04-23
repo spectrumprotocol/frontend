@@ -24,6 +24,10 @@ npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_token_luna_
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_token_ust_farm/schema/ -o ./src/app/services/api/astroport_token_ust_farm
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_token_token_farm/schema/ -o ./src/app/services/api/astroport_token_token_farm
 
+npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_stluna_luna_farm/schema/ -o ./src/app/services/api/astroport_stluna_luna_farm
+npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_sttoken_ust_farm/schema/ -o ./src/app/services/api/astroport_sttoken_ust_farm
+npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_weldo_stluna_farm/schema/ -o ./src/app/services/api/astroport_weldo_stluna_farm
+
 
 npx json2ts -i ../astroport/astroport/contracts/factory/schema/ -o ./src/app/services/api/astroport_factory
 npx json2ts -i ../astroport/astroport/contracts/pair/schema/ -o ./src/app/services/api/astroport_pair

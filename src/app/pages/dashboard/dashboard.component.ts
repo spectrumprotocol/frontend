@@ -27,7 +27,9 @@ export class DashboardComponent implements AfterViewInit {
   displayData: any = null;
   tvlData;
   specCirculationData: ISerial[];
-  graphData: IChartData[];
+  tvlGraphData: IChartData[];
+  earningGraphData: IChartData[];
+  burnGraphData: IChartData[];
   legendData;
   UNIT = CONFIG.UNIT;
   viewDonut: any = [700, 300];
@@ -85,9 +87,27 @@ export class DashboardComponent implements AfterViewInit {
           value: result.circulation.others / this.UNIT
         }];
 
-        this.graphData = [{
+        this.tvlGraphData = [{
           name: '',
           series: result.tvl.previousValues.reverse().map(it => {
+            return {
+              name: it.date,
+              value: it.total
+            };
+            })
+        }];
+        this.earningGraphData = [{
+          name: '',
+          series: result.earning.previousValues.reverse().map(it => {
+            return {
+              name: it.date,
+              value: it.total
+            };
+            })
+        }];
+        this.burnGraphData = [{
+          name: '',
+          series: result.burn.previousValues.reverse().map(it => {
             return {
               name: it.date,
               value: it.total

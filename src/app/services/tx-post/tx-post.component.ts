@@ -168,7 +168,7 @@ export class TxPostComponent implements OnInit {
       };
       const res = await this.terrajs.walletController.post(postMsg);
       this.txhash = res.result.txhash;
-      this.link = this.txhash && `https://${this.terrajs.settings.finder}/${this.terrajs.network.name}/tx/${this.txhash}`;
+      this.link = this.txhash && `https://${this.terrajs.settings.finder}/${this.terrajs.networkName}/tx/${this.txhash}`;
       if (!res.success) {
         throw res;
       }

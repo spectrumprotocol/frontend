@@ -34,6 +34,9 @@ export interface SimulateZapToBondResponse {
   provide_b: Uint128;
   receive_a: Uint128;
   swap_a?: Uint128 | null;
+  swap_hint_prices?: {
+    [k: string]: Decimal;
+  } | null;
   swap_ust: Uint128;
   [k: string]: unknown;
 }

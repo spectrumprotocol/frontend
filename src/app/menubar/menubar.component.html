@@ -40,7 +40,7 @@
     <div #dropdown *ngIf="terrajs.address" class="dropdown" mdbDropdown>
       <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
         <i class="fas fa-wallet"></i>&nbsp;<span class="text-muted d-none d-md-inline">{{ tnsName || walletText }}
-        <span *ngIf="terrajs.network.name !== 'mainnet'" class="text-danger"> ({{terrajs.network.name}})</span>&nbsp;|&nbsp;</span>
+        <span *ngIf="terrajs.networkName !== 'mainnet'" class="text-danger"> ({{terrajs.networkName}})</span>&nbsp;|&nbsp;</span>
         {{info.userUstAmount | number : '1.0-2'}} UST
       </button>
       <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu dropdown-menu-end" mdbDropdownMenu>
@@ -62,7 +62,7 @@
         </li>
         <li><a (click)="dropdown.hide()"
                class="dropdown-item"
-               href="https://{{terrajs.settings.finder}}/{{terrajs.network.name}}/account/{{terrajs.address}}"
+               href="https://{{terrajs.settings.finder}}/{{terrajs.networkName}}/account/{{terrajs.address}}"
                target="_blank">View on Terra Finder</a></li>
         <li class="dropdown-item">
           <div class="solid-line"></div>
