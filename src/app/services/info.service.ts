@@ -419,7 +419,7 @@ export class InfoService {
                 pair.poolApr = +found.protocol_rewards.apr;
                 pair.poolAstroApr = +found.astro_rewards.apr;
                 const proxyAndAstroApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
-                pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (+found.trading_fees.apr + 1) - 1 : 0;
+                pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (+found.trading_fees.apy + 1) - 1 : 0;
                 pair.vaultFee = +pair.tvl * (pair.poolApr + pair.poolAstroApr) * 0.06;
                 // pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
                 // this.poolInfos[key].tradeApr = +found.trading_fees.apr;
