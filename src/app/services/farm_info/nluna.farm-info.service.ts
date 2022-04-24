@@ -1,22 +1,15 @@
-import { Injectable } from '@angular/core';
-import { PoolItem } from '../api/nasset_farm/pools_response';
-import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
-import { TerrajsService } from '../terrajs.service';
-import {
-  DEX,
-  FARM_TYPE_ENUM,
-  FarmInfoService,
-  PairStat,
-  PoolInfo
-} from './farm-info.service';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../libs/base64';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { WasmService } from '../api/wasm.service';
-import { VaultsResponse } from '../api/gov/vaults_response';
-import {div, times} from '../../libs/math';
-import { Apollo, gql } from 'apollo-angular';
-import { Denom } from '../../consts/denom';
+import {Injectable} from '@angular/core';
+import {PoolItem} from '../api/nasset_farm/pools_response';
+import {RewardInfoResponseItem} from '../api/pylon_farm/reward_info_response';
+import {TerrajsService} from '../terrajs.service';
+import {DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo} from './farm-info.service';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
+import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {WasmService} from '../api/wasm.service';
+import {VaultsResponse} from '../api/gov/vaults_response';
+import {Apollo, gql} from 'apollo-angular';
+import {Denom} from '../../consts/denom';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 import {NassetFarmService} from '../api/nasset-farm.service';
 import {BalancePipe} from '../../pipes/balance.pipe';
@@ -32,7 +25,7 @@ export class NlunaFarmInfoService implements FarmInfoService {
   auditWarning = false;
   dex: DEX = 'Astroport';
   mainnetOnly = false;
-  highlight = true;
+  highlight = false;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.nLunaToken;
@@ -50,7 +43,8 @@ export class NlunaFarmInfoService implements FarmInfoService {
     private apollo: Apollo,
     private balancePipe: BalancePipe,
     private tokenService: TokenService
-  ) { }
+  ) {
+  }
 
   get farmContract() {
     return this.terrajs.settings.nLunaFarm;
@@ -65,12 +59,12 @@ export class NlunaFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.nassetFarmService.query(this.farmContract, { pools: {} });
+    const pool = await this.nassetFarmService.query(this.farmContract, {pools: {}});
     return pool.pools;
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
-    const farmConfigTask = this.nassetFarmService.query(this.farmContract, { config: {} });
+    const farmConfigTask = this.nassetFarmService.query(this.farmContract, {config: {}});
     const nAssetBalanceTask = this.tokenService.balance(this.defaultBaseTokenContract, this.farmContract);
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
     const nexusGovStatTask = apollo.query<any>({
@@ -150,7 +144,7 @@ export class NlunaFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.nexusGov,
           amount,
-          msg: toBase64({ stake_voting_tokens: {} })
+          msg: toBase64({stake_voting_tokens: {}})
         }
       }
     );

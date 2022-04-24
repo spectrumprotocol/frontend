@@ -63,6 +63,7 @@ export interface ISettings {
   astroportBlunaLunaFarm: string;
   lcd: string;
   fcd: string;
+  querier: string;
   mirrorGraph: string;
   specAPI: string;
   anchorAPI: string;
@@ -83,9 +84,20 @@ export interface ISettings {
   astroportNlunaPsiFarm: string;
   astroportNethPsiFarm: string;
   astroportXdefiUstFarm: string;
+  astroportSayveUstFarm: string;
+  astroportStlunaLunaFarm: string;
+  astroportStsolUstFarm: string;
+  astroportStethUstFarm: string;
+  astroportStlunaLdoFarm: string;
+  astroportStlunaLdoStaking: string;
+  stlunaToken: string;
+  stsolToken: string;
+  stethToken: string;
+  ldoToken: string;
   starterraToken: string;
   apolloToken: string;
   xdefiToken: string;
+  sayveToken: string;
   apolloFactory: string;
   mirrorFactory: string;
   sttStaking: string;
@@ -100,6 +112,10 @@ export interface ISettings {
   glowStaking: string;
   glowGov: string;
   glowFarm: string;
+  loterraGov: string;
+  loterraStaking: string;
+  loterraToken: string;
+  loterraFarm: string;
   nLunaRewards: string;
   nETHRewards: string;
   nLunaFarm: string;
@@ -125,6 +141,7 @@ export interface ISettings {
   // astroportApolloUstLP: string;
   tnsReverseRecord: string;
 }
+
 export const networks: Record<string, ISettings> = {
   mainnet: {
     specToken: 'terra1s5eczhe0h0jutf46re52x5z4r03c8hupacxmdr',
@@ -185,7 +202,7 @@ export const networks: Record<string, ISettings> = {
     astroToken: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
     bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
     xdefiToken: 'terra169edevav3pdrtjcx35j6pvzuv54aevewar4nlh',
-    astroportGov: 'terra1nq4aszdm82wujstxwpjxtvckg7ghu63mqkey33',
+    astroportGov: 'terra1f68wt2ch3cx2g62dxtc8v68mkdh5wchdgdjwz7',
     astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
     astroportAstroUstFarm: 'terra1wn0d0zwl382pnl6hdcd8r926yx6mcqcag7v39j',
     astroportLunaUstFarm: 'terra1egstlx9c9pq5taja5sg0yhraa0cl5laxyvm3ln',
@@ -201,7 +218,18 @@ export const networks: Record<string, ISettings> = {
     astroportNlunaPsiFarm: 'terra1zl3ud44lja3r8ld8nwzh3eukl6h97gp2xr4wq6',
     astroportNethPsiFarm: 'terra1xw3jzqwrql5fvddchzxycd2ygrep5kudsden5c',
     astroportXdefiUstFarm: 'terra1d9cufxz9a4px9zfzq8quqewlj24durtu6lhwfw',
+    astroportSayveUstFarm: 'terra1mr9xlwydgg0lfxvy68ylxuchzy6jdn706vwu8c',
+    astroportStlunaLunaFarm: 'terra19dfth8559etgnqmnu9nwd87pjqsuufswwclcav',
+    astroportStsolUstFarm: 'terra1puxzzlcr2urp4pvx523xhq593tgpt7damnm6pc',
+    astroportStethUstFarm: 'terra12td8as6zhm3m9djjmpxzfue9syvrj0ewe070hf',
+    astroportStlunaLdoFarm: 'terra1aeaz2w7gxu7ga8fj76mna8skhvq6ft0q0x42tv',
+    astroportStlunaLdoStaking: 'terra10t8rn7swtkmkfm56mmxwmk2v9xrv78fljsd3ez',
+    stlunaToken: 'terra1yg3j2s986nyp5z7r2lvt0hx3r0lnd7kwvwwtsc', // decimal 6
+    stsolToken: 'terra1t9ul45l7m6jw6sxgvnp8e5hj8xzkjsg82g84ap', // decimal 8
+    stethToken: 'terra133chr09wu8sakfte5v7vd8qzq9vghtkv4tn0ur', // decimal 8
+    ldoToken: 'terra1jxypgnfa07j6w92wazzyskhreq2ey2a5crgt6z', // decimal 8
     starterraToken: 'terra13xujxcrc9dqft4p9a8ls0w3j0xnzm6y2uvve8n',
+    sayveToken: 'terra14v9wrjs55qsn9lkvylsqela3w2ytwxzkycqzcr',
     sttStaking: 'terra15p807wnm9q3dyw4rvfqsaukxqt6lkuqe62q3mp',
     terraNameServiceGov: 'terra1a5thpf2gdrrneewjkutyz5q6zr2kn8ymg0cxn9',
     terraNameServiceStaking: 'terra1u94zwrreyz3t0jx25nl7800pxsrk6e6dwjqpsx', // tns pool terra1hqnk9expq3k4la2ruzdnyapgndntec4fztdyln
@@ -214,14 +242,20 @@ export const networks: Record<string, ISettings> = {
     glowStaking: 'terra1le3a67j4khkjhyytkllxre60dvywm43ztq2s8t',
     glowGov: 'terra1xxp34xk4rjexwlu0xfdhyn0zr3qsgare04yll0',
     glowFarm: 'terra1u6f5vnux869rnextxypjdyrvnvcaux68nr6nne',
+    loterraGov: 'terra1342fp86c3z3q0lksq92lncjxpkfl9hujwh6xfn',
+    loterraStaking: 'terra1pdslh858spzqrtx2gwr69pzm9m2wrv55aeh742',
+    loterraToken: 'terra1ez46kxtulsdv07538fh5ra5xj8l68mu8eg24vr',
+    loterraFarm: 'terra1msy2na2lvf64qffelg5t633f6wzlf03t5uvl8f',
     nLunaRewards: 'terra1hjv3quqsrw3jy7pulgutj0tgxrcrnw2zs2j0k7',
     nETHRewards: 'terra1fhqsu40s0lk3p308mcakzjecj6ts6j2guepfr4',
     nLunaFarm: 'terra16usjvptlpdrj7hcmy7mvdap5tttzcya7ch0can',
     nETHFarm: 'terra1gvlll4hytc9s34dskw5ym86erx3hx2j6sa8zhy',
     lunaBurnFarm: '',
     astroportRouter: 'terra16t7dpwwgx9n3lq6l6te3753lsjqwhxwpday9zx',
-    lcd: 'https://lcd.terra.dev',
+    // lcd: 'https://lcd.terra.dev',
+    lcd: 'https://node2.spec.finance',
     fcd: 'https://fcd.terra.dev',
+    querier: 'terra1kwk8xzc3ag5e02mzdvrqafwtjncnpypsnuxztf',
     mirrorGraph: 'mirror',
     specAPI: 'https://specapi.azurefd.net/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
@@ -294,10 +328,10 @@ export const networks: Record<string, ISettings> = {
     bPsiDPToken: 'terra1ex8ss7xhwcf8x6n47dn656hf8t0cw97myjr35a',
     psiDPGatewayPool: 'terra1zd8q7wltywdd90x2skvexh06p6r8mwljfqx4eu',
     psiDPToken: 'terra1c6vsshlv5gqtwq48darkunnpxu5ustcv96e0qk',
-    astroToken: 'terra1jqcw39c42mf7ngq4drgggakk3ymljgd3r5c3r5', // xAstro terra1afev5mg7k6gpyn96sv45ql3r35tyknlr72qc3y
+    astroToken: 'terra1jqcw39c42mf7ngq4drgggakk3ymljgd3r5c3r5', // xAstro terra14lpnyzc9z4g3ugr4lhm8s4nle0tq8vcltkhzh7
     bLunaToken: '',
     xdefiToken: '',
-    astroportGov: 'terra1ym46q3cv0vnu6sg7hwch9ewdpnvwdaauxwqg7q',
+    astroportGov: 'terra1h2smqfg9lmemewwde9a4vf8fcp6z8666kxdhzh',
     astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
     astroportAstroUstFarm: 'terra19x7u7d837p9x6rzwesnk65n3aml0p3apytz4d2',
     astroportLunaUstFarm: '',
@@ -313,7 +347,18 @@ export const networks: Record<string, ISettings> = {
     astroportNlunaPsiFarm: 'terra1hawqk9fx5y95qhc3s6p6crklwpnas56dss08cy',
     astroportNethPsiFarm: 'terra1zjp0gkz8gqan8ftjmvrtzzertuwywwj3z7yrwv',
     astroportXdefiUstFarm: '',
+    astroportSayveUstFarm: '',
+    astroportStlunaLunaFarm: '',
+    astroportStsolUstFarm: '',
+    astroportStethUstFarm: '',
+    astroportStlunaLdoFarm: '',
+    astroportStlunaLdoStaking: '',
+    stlunaToken: '',
+    stsolToken: '',
+    stethToken: '',
+    ldoToken: '',
     starterraToken: '',
+    sayveToken: '',
     apolloToken: '',
     apolloFactory: '',
     sttStaking: '',
@@ -328,6 +373,10 @@ export const networks: Record<string, ISettings> = {
     glowStaking: '',
     glowGov: '',
     glowFarm: '',
+    loterraGov: '',
+    loterraStaking: '',
+    loterraToken: '',
+    loterraFarm: '',
     nLunaRewards: 'terra17mr0kt7rzey0ycp2eypxnmtv9fjn7e3rc0yfuz',
     nETHRewards: 'terra1wf3tx75j2jg4ut7fa90rgze5etweqxgqlgq5su',
     nLunaFarm: 'terra1qrzu4zls2ep8drfmx2ul4fu9fu5qular9jlktl',
@@ -336,6 +385,7 @@ export const networks: Record<string, ISettings> = {
     astroportRouter: 'terra13wf295fj9u209nknz2cgqmmna7ry3d3j5kv7t4',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
+    querier: 'terra16t9kkqa5esathvd0prw7v4zv5gsud2kvzj5qew',
     mirrorGraph: 'mirrorTest',
     specAPI: 'https://testapi.spec.finance/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',

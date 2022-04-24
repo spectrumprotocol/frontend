@@ -11,8 +11,8 @@ import { Coin, Coins, MsgExecuteContract } from '@terra-money/terra.js';
 import { debounce } from 'utils-decorators';
 import { toBase64 } from '../../libs/base64';
 import { fade } from '../../consts/animations';
-import {GoogleAnalyticsService} from 'ngx-google-analytics';
-import {Denom} from '../../consts/denom';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { Denom } from '../../consts/denom';
 
 @Component({
   selector: 'app-trade',
@@ -22,7 +22,6 @@ import {Denom} from '../../consts/denom';
 })
 export class TradeComponent implements OnInit, OnDestroy {
 
-  connected: Subscription;
   @ViewChild('formBuySPEC') formBuySpec: NgForm;
   @ViewChild('formSellSPEC') formSellSpec: NgForm;
   @ViewChild('inputBuySPEC') inputBuySPEC: ElementRef;
@@ -43,7 +42,9 @@ export class TradeComponent implements OnInit, OnDestroy {
   minimumReceivedSellUST: string;
   expectedPriceSellSPEC: string;
 
+  private connected: Subscription;
   private heightChanged: Subscription;
+  private onTransaction: Subscription;
 
   constructor(
     private terraSwapService: TerraSwapService,
@@ -54,7 +55,9 @@ export class TradeComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnDestroy(): void {
+    this.connected.unsubscribe();
     this.heightChanged.unsubscribe();
+    this.onTransaction.unsubscribe();
   }
 
   async ngOnInit() {
@@ -62,8 +65,15 @@ export class TradeComponent implements OnInit, OnDestroy {
       this.slippagePercentage = parseFloat(localStorage.getItem('slippagePercentage'));
     }
 
+    this.connected = this.terrajs.connected.subscribe(async (connected) => {
+      if (connected) {
+        await this.infoService.refreshBalance({ native_token: true, spec: true });
+      }
+    });
+    this.onTransaction = this.terrajs.transactionComplete.subscribe(() => {
+      this.infoService.refreshBalance({ native_token: true, spec: true });
+    });
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
-      // await this.infoService.refreshBalance({ spec: true, ust: true });
       if (this.amountBuyUST) {
         this.refreshBuySPECInfo('UST');
       }

@@ -10,15 +10,16 @@ import {
   PairStat,
   PoolInfo
 } from './../farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {toBase64} from '../../../libs/base64';
-import {PoolResponse} from '../../api/terraswap_pair/pool_response';
-import {VaultsResponse} from '../../api/gov/vaults_response';
-import {Denom} from '../../../consts/denom';
-import {AstroportAstroUstFarmService} from '../../api/astroport-astroust-farm.service';
-import {WasmService} from '../../api/wasm.service';
-import {PairInfo} from '../../api/terraswap_factory/pair_info';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { toBase64 } from '../../../libs/base64';
+import { PoolResponse } from '../../api/terraswap_pair/pool_response';
+import { VaultsResponse } from '../../api/gov/vaults_response';
+import { Denom } from '../../../consts/denom';
+import { AstroportAstroUstFarmService } from '../../api/astroport-astroust-farm.service';
+import { WasmService } from '../../api/wasm.service';
+import { PairInfo } from '../../api/terraswap_factory/pair_info';
 import { div } from '../../../libs/math';
+import {Apollo, gql} from 'apollo-angular';
 
 @Injectable()
 export class AstroportAstroUstFarmInfoService implements FarmInfoService {
@@ -40,7 +41,8 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
   constructor(
     private farmService: AstroportAstroUstFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService
+    private wasm: WasmService,
+    private apollo: Apollo,
   ) {
   }
 
@@ -61,7 +63,7 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
     return pool.pools;
   }
 
-  ////Spectrum calculation
+  // //Spectrum calculation
   // async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
   //   const key = `${this.dex}|${this.terrajs.settings.astroToken}|${Denom.USD}`;
   //   const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
@@ -113,15 +115,23 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
   // no LP APR calculation, return 0 to use Astroport API
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${Denom.USD}`;
-    const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
+    const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract } });
     const farmConfigTask = this.farmService.query({ config: {} });
+    const apollo = this.apollo.use('astroport');
+    const astroGovStatTask = apollo.query<any>({
+      query: gql`{
+        staking {
+          _24h_apy
+        }
+      }`
+    }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
     const pairs: Record<string, PairStat> = {};
 
-    const [depositAmount, farmConfig] = await Promise.all([depositAmountTask, farmConfigTask]);
+    const [depositAmount, farmConfig, astroGovStat] = await Promise.all([depositAmountTask, farmConfigTask, astroGovStatTask]);
 
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
@@ -149,7 +159,7 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
         poolAstroApr: 0,
-        farmApr:  0,
+        farmApr: astroGovStat.data?.staking?._24h_apy || 0,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
@@ -182,7 +192,7 @@ export class AstroportAstroUstFarmInfoService implements FarmInfoService {
   }
 
   async getLPStat(poolResponse: PoolResponse) {
-    const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, {config: {}});
+    const config = await this.wasm.query(this.terrajs.settings.astroportGenerator, { config: {} });
     const alloc_point = 150000;
     const astro_per_block = +config.tokens_per_block * (alloc_point / +config.total_alloc_point);
     const astro_total_emit_per_year = astro_per_block / 6.5 * 60 * 60 * 24 * 365;

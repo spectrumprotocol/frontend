@@ -16,6 +16,7 @@ export type QueryMsg =
         pair_asset: AssetInfo;
         pair_asset_b?: AssetInfo | null;
         provide_asset: Asset;
+        swap_hints?: SwapOperation[] | null;
         [k: string]: unknown;
       };
     };
@@ -49,9 +50,21 @@ export type AssetInfo =
  * let c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```
  */
 export type Uint128 = string;
+/**
+ * A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0
+ *
+ * The greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)
+ */
+export type Decimal = string;
 
 export interface Asset {
   amount: Uint128;
   info: AssetInfo;
+  [k: string]: unknown;
+}
+export interface SwapOperation {
+  asset_info: AssetInfo;
+  belief_price?: Decimal | null;
+  pair_contract: string;
   [k: string]: unknown;
 }

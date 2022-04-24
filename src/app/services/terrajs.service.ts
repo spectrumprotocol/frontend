@@ -1,12 +1,19 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import {Coin, LCDClient, Msg, MsgExecuteContract, SyncTxBroadcastResult, Wallet} from '@terra-money/terra.js';
-import { ISettings, networks } from '../consts/networks';
+import {Injectable, OnDestroy} from '@angular/core';
+import {Coin, LCDClient, Msg, SyncTxBroadcastResult} from '@terra-money/terra.js';
+import {ISettings, networks} from '../consts/networks';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import { BehaviorSubject, firstValueFrom, interval, Subscription } from 'rxjs';
-import { filter, startWith } from 'rxjs/operators';
-import { ConnectType, WalletController, WalletInfo, WalletStates, WalletStatus, getChainOptions } from '@terra-money/wallet-provider';
-import { ModalService } from './modal.service';
-import { throttleAsync } from 'utils-decorators';
+import {BehaviorSubject, firstValueFrom, interval, Subject, Subscription} from 'rxjs';
+import {filter, startWith} from 'rxjs/operators';
+import {
+  ConnectType,
+  getChainOptions,
+  WalletController,
+  WalletInfo,
+  WalletStates,
+  WalletStatus
+} from '@terra-money/wallet-provider';
+import {ModalService} from './modal.service';
+import {throttleAsync} from 'utils-decorators';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import BigNumber from 'bignumber.js';
 
@@ -14,6 +21,7 @@ export const BLOCK_TIME = 6500; // 6.5s
 export const DEFAULT_NETWORK = 'mainnet';
 
 export type Result = SyncTxBroadcastResult.Data;
+
 export interface PostResponse {
   id: number;
   origin: string;
@@ -21,13 +29,16 @@ export interface PostResponse {
   result?: Result;
   error?: { code: number; message?: string; };
 }
+
 export interface GetResponse {
   query_result: object;
 }
+
 export interface GetResponseOld {
   height: number;
   result: object;
 }
+
 export interface NetworkInfo {
   name: string;
   chainID: string;
@@ -35,6 +46,7 @@ export interface NetworkInfo {
   fcd?: string;
   ws?: string;
 }
+
 export interface ExecuteOptions {
   coin?: Coin.Data;
 }
@@ -52,16 +64,18 @@ export class TerrajsService implements OnDestroy {
   connected = new BehaviorSubject(false);
   settings: ISettings = networks[DEFAULT_NETWORK];
   address: string;
+  networkName: string = DEFAULT_NETWORK;
   network: NetworkInfo;
   isConnected: boolean;
   lcdClient: LCDClient;
   walletController: WalletController;
   heightChanged = interval(BLOCK_TIME).pipe(startWith(0));
+  USE_NEW_BASE64_API = true; // useful for development and debug
+  latestBlockRefreshTime: number;
+  transactionComplete = new Subject();
   private height = 0;
   private posting = false;
   private subscription: Subscription;
-  USE_NEW_BASE64_API = true; // useful for development and debug
-  latestBlockRefreshTime: number;
 
   constructor(
     private httpClient: HttpClient,
@@ -85,13 +99,6 @@ export class TerrajsService implements OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  private async getWalletController() {
-    while (!this.walletController) {
-      await new Promise(ok => setTimeout(() => ok('')));
-    }
-    return this.walletController;
-  }
-
   async checkInstalled() {
     const types = await firstValueFrom((await this.getWalletController()).availableInstallTypes());
     return types.length === 0;
@@ -109,22 +116,20 @@ export class TerrajsService implements OnDestroy {
       if (!this.lcdClient) {
         await this.initLcdClient();
       }
-      if (!this.height || !this.latestBlockRefreshTime || this.latestBlockRefreshTime + BLOCK_TIME < Date.now() || force){
+      if (!this.height || !this.latestBlockRefreshTime || this.latestBlockRefreshTime + BLOCK_TIME < Date.now() || force) {
         const blockInfo = await this.lcdClient.tendermint.blockInfo();
         this.height = +blockInfo.block.header.height;
         this.latestBlockRefreshTime = Date.now();
-        //console.log('call API get height ', this.latestBlockRefreshTime, this.height);
       }
     }
-    //console.log('use old height', this.latestBlockRefreshTime, this.height);
     return this.height;
   }
 
-  async initLcdClient(){
+  async initLcdClient() {
     const gasPrices = await this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`).toPromise();
     this.lcdClient = new LCDClient({
-      URL: this.network ? this.network.lcd : this.settings.lcd,
-      chainID:  this.network ? this.network.chainID : this.settings.chainID,
+      URL: this.settings.lcd,
+      chainID: this.settings.chainID,
       gasPrices,
     });
   }
@@ -143,12 +148,12 @@ export class TerrajsService implements OnDestroy {
       if (!connect) {
         return;
       }
-      if (connect === 'WALLETCONNECT'){
+      if (connect === 'WALLETCONNECT') {
         connectCallbackData = {
           type: connect,
           identifier: null
         };
-      } else{
+      } else {
         terra_extension_router_session = JSON.parse(terra_extension_router_session_raw);
         connectCallbackData = terra_extension_router_session;
         connectCallbackData.type = connect;
@@ -159,7 +164,7 @@ export class TerrajsService implements OnDestroy {
       const types = connectTypes.concat(installTypes);
       const modal = await import('./connect-options/connect-options.component');
       const ref = this.modalService.open(modal.ConnectOptionsComponent, {
-        data: { types }
+        data: {types}
       });
       connectCallbackData = await ref.onClose.toPromise();
       if (!connectCallbackData.type) {
@@ -181,7 +186,7 @@ export class TerrajsService implements OnDestroy {
     let wallet: WalletInfo;
     if (state.wallets.length === 0) {
 
-      this.modal.alert('No wallet, please setup wallet first', { iconType: 'danger' });
+      this.modal.alert('No wallet, please setup wallet first', {iconType: 'danger'});
       throw new Error('No wallet');
     } else if (state.wallets.length === 1) {
       wallet = state.wallets[0];
@@ -201,6 +206,7 @@ export class TerrajsService implements OnDestroy {
     }
     this.address = state.wallets[0].terraAddress;
     this.network = state.network;
+    this.networkName = this.network.name;
     this.settings = networks[this.network.name];
 
     await this.initLcdClient();
@@ -213,6 +219,7 @@ export class TerrajsService implements OnDestroy {
 
   disconnect() {
     this.walletController.disconnect();
+    localStorage.removeItem('rewardInfos');
     localStorage.removeItem('connect');
     localStorage.removeItem('address');
     location.reload();
@@ -220,15 +227,16 @@ export class TerrajsService implements OnDestroy {
 
   @throttleAsync(20)
   async get(path: string, params?: Record<string, string>, additionalHeaders?: Record<string, string>) {
-    const headers = new HttpHeaders({'Cache-Control': 'no-cache', 'Content-Type': 'application/json'});
-    if (additionalHeaders){
+    // const headers = new HttpHeaders({ 'Cache-Control': 'no-cache', 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+    if (additionalHeaders) {
       const keys = Object.keys(additionalHeaders);
-      for (const key of keys){
+      for (const key of keys) {
         headers.append(key, additionalHeaders[key]);
       }
     }
 
-    if (this.USE_NEW_BASE64_API){
+    if (this.USE_NEW_BASE64_API) {
       const res = await this.httpClient.get<GetResponse>(`${this.settings.lcd}/${path}`, {
         params,
         headers,
@@ -271,13 +279,15 @@ export class TerrajsService implements OnDestroy {
       if (!result) {
         throw new Error('Transaction canceled');
       }
+      this.transactionComplete.next(null);
     } finally {
       this.posting = false;
     }
   }
 
-  toDate(height: number) {
+  async toDate(height: number) {
     const now = Date.now();
+    await this.getHeight();
     return new Date(now + (height - this.height) * BLOCK_TIME);
   }
 
@@ -292,5 +302,12 @@ export class TerrajsService implements OnDestroy {
       tax = new BigNumber(taxCap.amount.toString());
     }
     return num.minus(tax).toString();
+  }
+
+  private async getWalletController() {
+    while (!this.walletController) {
+      await new Promise(ok => setTimeout(() => ok('')));
+    }
+    return this.walletController;
   }
 }

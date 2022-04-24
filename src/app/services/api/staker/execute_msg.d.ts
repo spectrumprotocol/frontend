@@ -11,6 +11,7 @@ export type ExecuteMsg =
     }
   | {
       bond: {
+        asset_token?: string | null;
         assets: [Asset, Asset];
         compound_rate?: Decimal | null;
         contract: string;
@@ -32,6 +33,7 @@ export type ExecuteMsg =
     }
   | {
       zap_to_bond: {
+        asset_token?: string | null;
         belief_price?: Decimal | null;
         belief_price_b?: Decimal | null;
         compound_rate?: Decimal | null;
@@ -40,11 +42,13 @@ export type ExecuteMsg =
         pair_asset: AssetInfo;
         pair_asset_b?: AssetInfo | null;
         provide_asset: Asset;
+        swap_hints?: SwapOperation[] | null;
         [k: string]: unknown;
       };
     }
   | {
       update_config: {
+        allow_all?: boolean | null;
         insert_allowlist?: string[] | null;
         remove_allowlist?: string[] | null;
         [k: string]: unknown;
@@ -59,6 +63,7 @@ export type ExecuteMsg =
         prev_asset_b?: Asset | null;
         prev_target_asset: Asset;
         staker_addr: string;
+        swap_hints?: SwapOperation[] | null;
         [k: string]: unknown;
       };
     };
@@ -117,5 +122,11 @@ export interface Cw20ReceiveMsg {
 export interface Asset {
   amount: Uint128;
   info: AssetInfo;
+  [k: string]: unknown;
+}
+export interface SwapOperation {
+  asset_info: AssetInfo;
+  belief_price?: Decimal | null;
+  pair_contract: string;
   [k: string]: unknown;
 }

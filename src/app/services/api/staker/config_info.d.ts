@@ -6,6 +6,7 @@
  */
 
 export interface ConfigInfo {
+  allow_all: boolean;
   allowlist: string[];
   owner: string;
   terraswap_factory: string;

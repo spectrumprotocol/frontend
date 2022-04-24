@@ -1,13 +1,13 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { CONFIG } from '../../../consts/config';
-import { toBase64 } from '../../../libs/base64';
-import { times } from '../../../libs/math';
-import { GovService } from '../../../services/api/gov.service';
-import { TokenService } from '../../../services/api/token.service';
-import { TerrajsService } from '../../../services/terrajs.service';
-import { MdbCollapseDirective } from 'mdb-angular-ui-kit/collapse';
-import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import {CONFIG} from '../../../consts/config';
+import {toBase64} from '../../../libs/base64';
+import {times} from '../../../libs/math';
+import {GovService} from '../../../services/api/gov.service';
+import {TokenService} from '../../../services/api/token.service';
+import {TerrajsService} from '../../../services/terrajs.service';
+import {MdbCollapseDirective} from 'mdb-angular-ui-kit/collapse';
+import {Msg, MsgExecuteContract} from '@terra-money/terra.js';
 
 export enum GovPoolTab {
   Deposit,
@@ -33,7 +33,7 @@ export interface GovPoolDetail {
   templateUrl: './gov-pool.component.html',
   styleUrls: ['./gov-pool.component.scss'],
 })
-export class GovPoolComponent implements OnChanges {
+export class GovPoolComponent implements OnInit, OnChanges {
   @Input() detail: GovPoolDetail;
   @Input() walletBalance: string;
   @Output() transactionComplete = new EventEmitter();
@@ -53,7 +53,12 @@ export class GovPoolComponent implements OnChanges {
     private token: TokenService,
     private gov: GovService,
     private ga: GoogleAnalyticsService,
-  ) { }
+  ) {
+  }
+
+  async ngOnInit() {
+
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.detail) {
@@ -72,7 +77,7 @@ export class GovPoolComponent implements OnChanges {
       send: {
         amount: times(this.depositAmount, CONFIG.UNIT),
         contract: this.terrajs.settings.gov,
-        msg: toBase64({ stake_tokens: { days: this.detail.days } }),
+        msg: toBase64({stake_tokens: {days: this.detail.days}}),
       },
     });
 
@@ -117,11 +122,11 @@ export class GovPoolComponent implements OnChanges {
     this.moveDays = null;
   }
 
-  onActiveTabChange() {
-    if (this.detail.moveOptions.length === 1 && !this.moveDays) {
-      this.moveDays = this.detail.moveOptions[0].days;
-    }
-  }
+  // onActiveTabChange() {
+  //   // if (this.detail.moveOptions.length === 1 && !this.moveDays) {
+  //   //   this.moveDays = this.detail.moveOptions[0].days;
+  //   // }
+  // }
 
   calculateDepositUnlock() {
     if (this.depositAmount <= 0) {
@@ -130,8 +135,8 @@ export class GovPoolComponent implements OnChanges {
     }
 
     this.estimatedDepositUnlock = this.calculateUnlock(
-      { amount: this.depositAmount, days: 0 },
-      { amount: +this.detail.userBalance, days: this.detail.days, unlockAt: this.detail.unlockAt });
+      {amount: this.depositAmount, days: 0},
+      {amount: +this.detail.userBalance, days: this.detail.days, unlockAt: this.detail.unlockAt});
   }
 
   calculateMoveUnlock() {
@@ -143,25 +148,8 @@ export class GovPoolComponent implements OnChanges {
     }
 
     this.estimatedMoveUnlock = this.calculateUnlock(
-      { amount: this.moveAmount, days: this.detail.days, unlockAt: this.detail.unlockAt },
-      { amount: +moveOption.userBalance, days: moveOption.days, unlockAt: moveOption.unlockAt });
-  }
-
-  private calculateUnlock(from: { amount: number, days: number, unlockAt?: Date }, to: { amount: number, days: number, unlockAt?: Date }) {
-    const now = Date.now();
-    const fromUnlockTime = from.unlockAt?.getTime() || 0;
-    const toUnlockTime = to.unlockAt?.getTime() || 0;
-    const fromLock = Math.max(fromUnlockTime - now, 0) + (to.days - from.days) * 60 * 60 * 24 * 1000;
-    const toLock = Math.max(toUnlockTime - now, 0);
-    const newAmount = from.amount + to.amount;
-
-    if (!newAmount) {
-      return null;
-    }
-
-    const newLock = (from.amount * fromLock + to.amount * toLock) / newAmount;
-
-    return newLock ? new Date(now + newLock) : null;
+      {amount: this.moveAmount, days: this.detail.days, unlockAt: this.detail.unlockAt},
+      {amount: +moveOption.userBalance, days: moveOption.days, unlockAt: moveOption.unlockAt});
   }
 
   async doClaimReward(ust: boolean) {
@@ -196,5 +184,22 @@ export class GovPoolComponent implements OnChanges {
     await this.terrajs.post(messages);
 
     this.transactionComplete.emit();
+  }
+
+  private calculateUnlock(from: { amount: number, days: number, unlockAt?: Date }, to: { amount: number, days: number, unlockAt?: Date }) {
+    const now = Date.now();
+    const fromUnlockTime = from.unlockAt?.getTime() || 0;
+    const toUnlockTime = to.unlockAt?.getTime() || 0;
+    const fromLock = Math.max(fromUnlockTime - now, 0) + (to.days - from.days) * 60 * 60 * 24 * 1000;
+    const toLock = Math.max(toUnlockTime - now, 0);
+    const newAmount = from.amount + to.amount;
+
+    if (!newAmount) {
+      return null;
+    }
+
+    const newLock = (from.amount * fromLock + to.amount * toLock) / newAmount;
+
+    return newLock ? new Date(now + newLock) : null;
   }
 }

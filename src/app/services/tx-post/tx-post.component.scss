@@ -1,3 +1,5 @@
+@import "src/scss/variables";
+
 .modal-header {
     display: block;
     text-align: center;
@@ -11,4 +13,42 @@
     width: 4em;
     height: 4em;
     border-width: 0.5em;
+}
+
+.gas {
+    align-self: center;
+}
+
+::ng-deep {
+    .gas-slider-adjustment .ngx-slider {
+      margin-top: 0.7em;
+      .ngx-slider-bar {
+        background: $white;
+        height: 5px;
+      }
+      .ngx-slider-pointer {
+        width: 16px;
+        height: 16px;
+        top: auto;
+        bottom: -8px;
+        background-color: $primary;
+        &:focus {
+          outline-style: none !important;
+          outline-width: 0 !important;
+        }
+        &:after {
+          display: none;
+        }
+      }
+      .ngx-slider-bubble {
+        display: none;
+      }
+    }
+  }
+
+.coins-fee-select{
+  background-color: $gray-990;
+  color: white;
+  border: 1px solid white;
+  margin-left: 0.5em;
 }
