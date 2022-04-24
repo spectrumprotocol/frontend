@@ -415,6 +415,10 @@ input[type="number"] {
   background: linear-gradient(315deg, darken($kujira, 7%) 0%, $kujira 50%);
 }
 
+.bg-Luna {
+  border: solid 1px $luna;
+}
+
 .bg-your-rewards {
   background: #ed7b84;
   background: -webkit-linear-gradient(315deg, darken(#ed7b84, 7%) 0%, #ed7b84 50%);

@@ -31,6 +31,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { AnchorMarketService } from './api/anchor-market.service';
 import { BalanceResponse } from './api/gov/balance_response';
 import { StateInfo } from './api/gov/state_info';
+import { Coin } from '@terra-money/terra.js';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -288,6 +289,8 @@ export class InfoService {
         const denomTokenContract = this.poolInfos[key].denomTokenContract;
         if (this.poolInfos[key].farmType === 'LP') {
           pairInfoKey = key;
+        } else if (this.poolInfos[key].farmType === 'LUNA_BURN') {
+          return;
         } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
           pairInfoKey = `${this.poolInfos[key].dex}|${baseTokenContract}|${denomTokenContract}`;
         }
@@ -615,6 +618,12 @@ export class InfoService {
         bond_amount = +this.balancePipe.transform(rewardInfo.bond_amount,
           this.poolResponses[`${vault.poolInfo.dex}|${vault.poolInfo.baseTokenContract}|${this.terrajs.settings.nexusToken}`],
           this.poolResponses[vault.poolInfo.rewardKey]);
+      } else if (vault.poolInfo.farmType === 'LUNA_BURN') {
+        const amount = +rewardInfo.bond_amount + +rewardInfo.unbonding_amount;
+        if (amount > 0) {
+          const amountInUst = await this.terrajs.lcdClient.market.swapRate(new Coin(Denom.LUNA, amount), Denom.USD);
+          bond_amount = +amountInUst.amount.toString();
+        }
       } else {
         bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this, vault.poolInfo.key);
       }

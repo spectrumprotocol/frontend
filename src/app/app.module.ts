@@ -95,6 +95,7 @@ import {TerraworldFarmInfoService} from './services/farm_info/terraworld.farm-in
 import {GlowFarmInfoService} from './services/farm_info/glow.farm-info.service';
 import {NethFarmInfoService} from './services/farm_info/neth.farm-info.service';
 import {NlunaFarmInfoService} from './services/farm_info/nluna.farm-info.service';
+import {LunaBurnFarmInfoService} from './services/farm_info/luna-burn.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -207,6 +208,7 @@ registerLocaleData(locale, 'en');
     { provide: FARM_INFO_SERVICE, useClass: AstroportVkrUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: AstroportXdefiUstFarmInfoService, multi: true },
     { provide: FARM_INFO_SERVICE, useClass: TerraNameServiceFarmInfoService, multi: true },
+    { provide: FARM_INFO_SERVICE, useClass: LunaBurnFarmInfoService, multi: true },
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

@@ -119,6 +119,9 @@
                  class="fas fa-info-circle info-icon super"></i>
             </span>
           </h3>
+          <h3 class="card-title text-primary" *ngIf="vault.poolInfo.farmType === 'LUNA_BURN'">
+            {{ (+info.rewardInfos[vault.poolInfo.key]?.bond_amount + +info.rewardInfos[vault.poolInfo.key]?.unbonding_amount) || '0' | unit: 6}}
+          </h3>
           <h6 *ngIf="info.rewardInfos[vault.poolInfo.key]?.deposit_amount" class="card-subtitle text-success">
             {{ info.rewardInfos[vault.poolInfo.key] | lpEarning }}
           </h6>
@@ -174,6 +177,18 @@
               info.poolResponses[vault.poolInfo.rewardKey] |
               unit: vault.baseDecimals : '1.0-2' }})
             </span>
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="vault.poolInfo.farmType === 'LUNA_BURN'" class="col col-mb">
+      <div class="card box-left h-100">
+        <div class="card-body">
+          <p class="card-text sub-topic">
+            Withdrawing Balance
+          </p>
+          <h3 class="card-title text-primary">
+            {{ info.rewardInfos[vault.poolInfo.key]?.unbonding_amount || '0' | unit: 6 }}
           </h3>
         </div>
       </div>
@@ -468,7 +483,7 @@
               </div>
             </div>
             <div *ngIf="depositMode === 'single_token'" class="mt-3">
-              <div class="card card-green">
+              <div *ngIf="vault.poolInfo.farmType !== 'LUNA_BURN'" class="card card-green">
                 <div class="card-body">
                   <div class="small p-2">
                     <ng-container *ngIf="vault.poolInfo.farmType === 'PYLON_LIQUID'">
@@ -933,6 +948,15 @@
         <mdb-tab title="Withdraw">
           <form #formWithdraw="ngForm" class="needs-validation p-3" novalidate>
             <ng-container *ngTemplateOutlet="withdrawModeSection"></ng-container>
+            <div *ngIf="vault.poolInfo.farmType === 'LUNA_BURN'" class="card card-green">
+              <div class="card-body">
+                <div class="small p-2">
+                  <i class="fas fa-info-circle info-icon"></i>
+                  Withdrawal take time to process. After completing it will be claimable in Claim tab.
+                  You can have only 3 processing withdrawal at the same time.
+                </div>
+              </div>
+            </div>
             <div class="text-end small mt-3 mb-1 fw-bold">
               <span class="sub-topic">Deposited: </span>
               <span class="text-white">
@@ -1033,8 +1057,11 @@
               </div>
 
 
-              <button (click)="doWithdraw()" [disabled]="withdrawAmtCtl.invalid" class="btn btn-primary"
-                      type="submit">Withdraw</button>
+              <button (click)="doWithdraw()" [disabled]="withdrawAmtCtl.invalid || (vault.poolInfo.farmType === 'LUNA_BURN' && unbondings.length >= 3)"
+                class="btn btn-primary" type="submit">
+                Withdraw
+                <span *ngIf="vault.poolInfo.farmType === 'LUNA_BURN'">({{ 3 - unbondings.length }} / 3)</span>
+              </button>
             </div>
           </form>
         </mdb-tab>
@@ -1043,6 +1070,19 @@
             <div class="small mt-6">
             </div>
             <div class="row mt-3">
+            </div>
+            <div *ngIf="vault.poolInfo.farmType === 'LUNA_BURN'">
+              <div class="row">
+                <div class="col">
+                  Claimable LUNA
+                </div>
+                <div class="col text-end">
+                  {{ unbondingAmount || 0 | unit }} LUNA
+                </div>
+              </div>
+              <div class="d-grid mt-3 mb-3">
+                <button (click)="doClaimUnbonded()" class="btn btn-primary" type="submit">Claim LUNA</button>
+              </div>
             </div>
             <div *ngIf="vault.poolInfo.dex === 'Astroport' && vault.poolInfo.auto_stake && vault.poolInfo.farmType === 'LP'" class="row">
               <div class="col">
@@ -1137,7 +1177,7 @@
         </button>
       </span>
       </ng-container>
-      <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)">
+      <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'LUNA_BURN'">
       <span class="btn-group w-100">
         <button (click)="depositMode = 'single_token'; changeDepositMode('single_token')" [ngClass]="depositMode === 'single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}</button>
@@ -1151,7 +1191,7 @@
 
   <ng-template #withdrawModeSection>
     <div class="auto-container mb-1">
-    <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)">
+    <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'LUNA_BURN'">
       <span class="btn-group w-100">
         <button (click)="withdrawMode = 'single_token'" [ngClass]="withdrawMode === 'single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}
