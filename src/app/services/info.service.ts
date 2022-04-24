@@ -244,39 +244,48 @@ export class InfoService {
     const poolInfos: Record<string, PoolInfo> = {};
     const bundler = new QueryBundler(this.wasm);
     const tasks: Promise<any>[] = [];
+    const BUNDLER_BLACKLIST = new Set([this.terrajs.settings.lunaBurnFarm]);
     for (const farmInfo of this.farmInfos) {
       if (!this.shouldEnableFarmInfo(farmInfo)) {
         continue;
       }
-      const task = bundler.query(farmInfo.farmContract, {pools: {}})
-        .then(({pools}: { pools: PoolItem[] }) => {
-          for (const pool of pools) {
-            const key = farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}` : `${pool.asset_token}`;
-            poolInfos[key] = Object.assign(pool,
-              {
-                key,
-                farm: farmInfo.farm,
-                farmContract: farmInfo.farmContract,
-                baseTokenContract: pool.asset_token,
-                denomTokenContract: farmInfo.denomTokenContract,
-                rewardTokenContract: farmInfo.rewardTokenContract,
-                rewardKey: `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}`,
-                auto_compound: farmInfo.autoCompound,
-                auto_stake: farmInfo.autoStake,
-                govLock: farmInfo.govLock,
-                forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
-                  ? (farmInfo.govLock ? 'compound' : undefined)
-                  : (farmInfo.autoCompound ? 'compound' : 'stake'),
-                auditWarning: farmInfo.auditWarning,
-                farmType: farmInfo.farmType ?? 'LP',
-                score: (farmInfo.highlight ? 1000000 : 0) + (pool.weight || 0),
-                dex: farmInfo.dex ?? 'Terraswap',
-                highlight: farmInfo.highlight,
-                hasProxyReward: farmInfo.hasProxyReward ?? false,
-                notUseAstroportGqlApr: farmInfo.notUseAstroportGqlApr
-              });
-          }
-        });
+
+      const processPoolItems = (pools: PoolItem[]) => {
+        for (const pool of pools) {
+          const key = farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}` : `${pool.asset_token}`;
+          poolInfos[key] = Object.assign(pool, {
+            key,
+            farm: farmInfo.farm,
+            farmContract: farmInfo.farmContract,
+            baseTokenContract: pool.asset_token,
+            denomTokenContract: farmInfo.denomTokenContract,
+            rewardTokenContract: farmInfo.rewardTokenContract,
+            rewardKey: `${farmInfo.dex}|${farmInfo.rewardTokenContract}|${Denom.USD}`,
+            auto_compound: farmInfo.autoCompound,
+            auto_stake: farmInfo.autoStake,
+            govLock: farmInfo.govLock,
+            forceDepositType: farmInfo.autoCompound === farmInfo.autoStake
+              ? (farmInfo.govLock ? 'compound' : undefined)
+              : (farmInfo.autoCompound ? 'compound' : 'stake'),
+            auditWarning: farmInfo.auditWarning,
+            farmType: farmInfo.farmType ?? 'LP',
+            score: (farmInfo.highlight ? 1000000 : 0) + (pool.weight || 0),
+            dex: farmInfo.dex ?? 'Terraswap',
+            highlight: farmInfo.highlight,
+            hasProxyReward: farmInfo.hasProxyReward ?? false,
+            notUseAstroportGqlApr: farmInfo.notUseAstroportGqlApr
+          });
+        }
+      };
+
+      let task;
+      if (BUNDLER_BLACKLIST.has(farmInfo.farmContract)) {
+        task = await farmInfo.queryPoolItems().then(processPoolItems);
+      } else {
+        task = bundler.query(farmInfo.farmContract, {pools: {}})
+          .then(({ pools }) => processPoolItems(pools));
+      }
+
       tasks.push(task);
     }
     bundler.flush();
@@ -579,6 +588,8 @@ export class InfoService {
       const dex = this.poolInfos[key].dex;
       if (this.poolInfos[key].farmType === 'LP') {
         poolResponseKey = key;
+      } else if (this.poolInfos[key].farmType === 'LUNA_BURN') {
+        continue;
       } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
         const baseTokenContract = this.poolInfos[key].baseTokenContract;
         const denomTokenContract = this.poolInfos[key].denomTokenContract;
