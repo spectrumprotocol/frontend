@@ -104,6 +104,7 @@ export interface ISettings {
   nETHRewards: string;
   nLunaFarm: string;
   nETHFarm: string;
+  lunaBurnFarm: string;
   astroportRouter: string;
   // // batch only
   // lcdPost: string;
@@ -217,6 +218,7 @@ export const networks: Record<string, ISettings> = {
     nETHRewards: 'terra1fhqsu40s0lk3p308mcakzjecj6ts6j2guepfr4',
     nLunaFarm: 'terra16usjvptlpdrj7hcmy7mvdap5tttzcya7ch0can',
     nETHFarm: 'terra1gvlll4hytc9s34dskw5ym86erx3hx2j6sa8zhy',
+    lunaBurnFarm: '',
     astroportRouter: 'terra16t7dpwwgx9n3lq6l6te3753lsjqwhxwpday9zx',
     lcd: 'https://lcd.terra.dev',
     fcd: 'https://fcd.terra.dev',
@@ -330,6 +332,7 @@ export const networks: Record<string, ISettings> = {
     nETHRewards: 'terra1wf3tx75j2jg4ut7fa90rgze5etweqxgqlgq5su',
     nLunaFarm: 'terra1qrzu4zls2ep8drfmx2ul4fu9fu5qular9jlktl',
     nETHFarm: 'terra1zhdxsmpzpakrxcns00kyegpd8gsj4qvrahwj26',
+    lunaBurnFarm: 'terra19t9ghfulneltljeug9umnczxhtzg27udljcvrj',
     astroportRouter: 'terra13wf295fj9u209nknz2cgqmmna7ry3d3j5kv7t4',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',

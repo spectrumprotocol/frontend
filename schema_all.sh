@@ -16,6 +16,7 @@ npx json2ts -i ../contracts/contracts/farms/spectrum_pylon_liquid_farm/schema/ -
 npx json2ts -i ../contracts/contracts/farms/spectrum_terra_name_service_farm/schema/ -o ./src/app/services/api/terra_name_service_farm
 npx json2ts -i ../contracts/contracts/farms/spectrum_glow_farm/schema/ -o ./src/app/services/api/glow_farm
 npx json2ts -i ../contracts/contracts/farms/spectrum_nasset_farm/schema/ -o ./src/app/services/api/nasset_farm
+npx json2ts -i ../contracts/contracts/farms/spectrum_luna_burn_farm/schema/ -o ./src/app/services/api/luna_burn_farm
 
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_farm/schema/ -o ./src/app/services/api/astroport_farm
 npx json2ts -i ../contracts/contracts/astro_farms/spectrum_astroport_luna_ust_farm/schema/ -o ./src/app/services/api/astroport_luna_ust_farm
@@ -30,4 +31,3 @@ npx json2ts -i ../astroport/astroport/contracts/pair_stable/schema/ -o ./src/app
 npx json2ts -i ../astroport/astroport/contracts/router/schema/ -o ./src/app/services/api/astroport_router
 npx json2ts -i ../astroport/astroport/contracts/token/schema/ -o ./src/app/services/api/astroport_token
 npx json2ts -i ../astroport/astroport-core/contracts/tokenomics/generator/schema/ -o ./src/app/services/api/astroport_generator
-
