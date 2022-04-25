@@ -89,6 +89,9 @@ export interface ISettings {
   astroportStsolUstFarm: string;
   astroportStethUstFarm: string;
   astroportStlunaLdoFarm: string;
+  astroportStlunaLdoStaking: string;
+  astroportMarsUstFarm: string;
+  marsToken: string;
   stlunaToken: string;
   stsolToken: string;
   stethToken: string;
@@ -222,6 +225,9 @@ export const networks: Record<string, ISettings> = {
     astroportStsolUstFarm: 'terra1puxzzlcr2urp4pvx523xhq593tgpt7damnm6pc',
     astroportStethUstFarm: 'terra12td8as6zhm3m9djjmpxzfue9syvrj0ewe070hf',
     astroportStlunaLdoFarm: 'terra1aeaz2w7gxu7ga8fj76mna8skhvq6ft0q0x42tv',
+    astroportStlunaLdoStaking: 'terra10t8rn7swtkmkfm56mmxwmk2v9xrv78fljsd3ez',
+    astroportMarsUstFarm: 'terra1d55nmhuq75r3vf93hwkau2stts4mpe9h22herz',
+    marsToken: 'terra12hgwnpupflfpuual532wgrxu2gjp0tcagzgx4n',
     stlunaToken: 'terra1yg3j2s986nyp5z7r2lvt0hx3r0lnd7kwvwwtsc', // decimal 6
     stsolToken: 'terra1t9ul45l7m6jw6sxgvnp8e5hj8xzkjsg82g84ap', // decimal 8
     stethToken: 'terra133chr09wu8sakfte5v7vd8qzq9vghtkv4tn0ur', // decimal 8
@@ -350,6 +356,9 @@ export const networks: Record<string, ISettings> = {
     astroportStsolUstFarm: '',
     astroportStethUstFarm: '',
     astroportStlunaLdoFarm: '',
+    astroportStlunaLdoStaking: '',
+    astroportMarsUstFarm: '',
+    marsToken: '',
     stlunaToken: '',
     stsolToken: '',
     stethToken: '',

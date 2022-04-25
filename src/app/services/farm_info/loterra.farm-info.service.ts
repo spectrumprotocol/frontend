@@ -1,16 +1,16 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { LoterraFarmService } from '../api/loterra-farm.service';
-import { PoolItem } from '../api/loterra_farm/pools_response';
-import { RewardInfoResponseItem } from '../api/loterra_farm/reward_info_response';
-import { TerrajsService } from '../terrajs.service';
-import { DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo } from './farm-info.service';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { VaultsResponse } from '../api/gov/vaults_response';
-import { Denom } from '../../consts/denom';
-import { PairInfo } from '../api/terraswap_factory/pair_info';
-import { WasmService } from 'src/app/services/api/wasm.service';
-import { div } from 'src/app/libs/math';
+import {LoterraFarmService} from '../api/loterra-farm.service';
+import {PoolItem} from '../api/loterra_farm/pools_response';
+import {RewardInfoResponseItem} from '../api/loterra_farm/reward_info_response';
+import {TerrajsService} from '../terrajs.service';
+import {DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo} from './farm-info.service';
+import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {VaultsResponse} from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
+import {PairInfo} from '../api/terraswap_factory/pair_info';
+import {WasmService} from 'src/app/services/api/wasm.service';
+import {div} from 'src/app/libs/math';
 
 @Injectable()
 export class LoterraFarmInfoService implements FarmInfoService {
@@ -23,7 +23,7 @@ export class LoterraFarmInfoService implements FarmInfoService {
   dex: DEX = 'Terraswap';
   denomTokenContract = Denom.USD;
   mainnetOnly = true;
-  highlight = true;
+  highlight = false;
 
   get defaultBaseTokenContract() {
     return this.terrajs.settings.loterraToken;
@@ -33,7 +33,8 @@ export class LoterraFarmInfoService implements FarmInfoService {
     private loterraFarm: LoterraFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService
-  ) { }
+  ) {
+  }
 
   get farmContract() {
     return this.terrajs.settings.loterraFarm;
@@ -44,14 +45,14 @@ export class LoterraFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.loterraFarm.query({ pools: {} });
+    const pool = await this.loterraFarm.query({pools: {}});
     return pool.pools;
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
-    const rewardInfoTask = this.wasm.query(this.terrajs.settings.loterraStaking, { holder: { address: this.terrajs.settings.loterraFarm } });
-    const farmConfigTask = this.loterraFarm.query({ config: {} });
-    const stakingStateTask = this.wasm.query(this.terrajs.settings.loterraStaking, { state: {} });
+    const rewardInfoTask = this.wasm.query(this.terrajs.settings.loterraStaking, {holder: {address: this.terrajs.settings.loterraFarm}});
+    const farmConfigTask = this.loterraFarm.query({config: {}});
+    const stakingStateTask = this.wasm.query(this.terrajs.settings.loterraStaking, {state: {}});
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);

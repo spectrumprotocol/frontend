@@ -286,6 +286,7 @@ export class InfoService {
                 dex: farmInfo.dex ?? 'Terraswap',
                 highlight: farmInfo.highlight,
                 hasProxyReward: farmInfo.hasProxyReward ?? false,
+                notUseAstroportGqlApr: farmInfo.notUseAstroportGqlApr
               });
           }
         });
@@ -420,16 +421,23 @@ export class InfoService {
           // if farmInfo.queryPairStats return poolApr 0 and poolAstroApr 0, meaning that do not use calculation on Spectrum side but use Astroport API
           if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP') {
             const found = this.astroportData.pools.find(pool => pool?.pool_address === this.pairInfos[key]?.contract_addr);
-            // to prevent set pairStat undefined in case of no data available from Astroport api
-            if (found) {
+            if (farmInfo.notUseAstroportGqlApr) {
               const pair = pairStats[key];
-              pair.poolApr = +found.protocol_rewards.apr;
-              pair.poolAstroApr = +found.astro_rewards.apr;
-              const proxyAndAstroApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
-              pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (+found.trading_fees.apr + 1) - 1 : 0;
-              pair.vaultFee = +pair.tvl * (pair.poolApr + pair.poolAstroApr) * 0.06;
-              // pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
-              // this.poolInfos[key].tradeApr = +found.trading_fees.apr;
+              const proxyAndAstroApy = ((+pair.poolApr + +pair.poolAstroApr) / 8760 + 1) ** 8760 - 1;
+              const foundTradingFeeApr = +found?.trading_fees?.apr || 0;
+              pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (foundTradingFeeApr + 1) - 1 : 0;
+            } else {
+              // to prevent set pairStat undefined in case of no data available from Astroport api
+              if (found) {
+                const pair = pairStats[key];
+                pair.poolApr = +found.protocol_rewards.apr;
+                pair.poolAstroApr = +found.astro_rewards.apr;
+                const proxyAndAstroApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
+                pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (+found.trading_fees.apy + 1) - 1 : 0;
+                pair.vaultFee = +pair.tvl * (pair.poolApr + pair.poolAstroApr) * 0.06;
+                // pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
+                // this.poolInfos[key].tradeApr = +found.trading_fees.apr;
+              }
             }
           }
           if (farmInfo.dex === 'Terraswap' && farmInfo.farmType === 'LP') {

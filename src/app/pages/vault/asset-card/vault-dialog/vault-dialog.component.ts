@@ -196,6 +196,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.refreshData();
   }
 
+  get shouldShowAPRFromAstroportData() {
+    return this.vault.poolInfo.dex === 'Astroport' && this.vault.poolInfo.farmType === 'LP' && !this.vault.poolInfo.notUseAstroportGqlApr;
+  }
+
   getAPRAPYTooltipHTML() {
     let html = '<div class="apyapr-tooltip">';
     let totalApr = 0;
@@ -216,7 +220,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       html += `Trade APR ${this.percentPipe.transform(this.vault.poolInfo.tradeApr)} <br>`;
       // html += `Trade APY ${this.percentPipe.transform((this.vault.poolInfo.tradeApr / 365 + 1) ** 365 - 1)} <br>`;
     }
-    if (this.vault.poolInfo.dex === 'Astroport' && this.vault.poolInfo.farmType === 'LP') {
+    if (this.shouldShowAPRFromAstroportData) {
       html += `(APR from Astroport data) <br>`;
     }
     if (this.vault.pairStat?.poolApy > 0) {

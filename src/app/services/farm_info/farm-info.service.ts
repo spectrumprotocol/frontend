@@ -46,6 +46,7 @@ export type PoolInfo = PoolItem & {
   govLock: boolean;
   tradeApr?: number;
   commission?: number;
+  notUseAstroportGqlApr?: boolean
 };
 export type RewardInfoResponseItem =
   AstroportTokenUSTRewardInfoResponseItem
@@ -96,6 +97,8 @@ export interface FarmInfoService {
   // baseToken should be is get from querying poolInfo
   readonly defaultBaseTokenContract: string;
   readonly denomTokenContract: string;
+
+  readonly notUseAstroportGqlApr?: boolean;
 
   queryPoolItems(): Promise<PoolItem[]>;
 

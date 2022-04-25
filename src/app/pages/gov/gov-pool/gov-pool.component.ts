@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
 import {CONFIG} from '../../../consts/config';
 import {toBase64} from '../../../libs/base64';
@@ -33,7 +33,7 @@ export interface GovPoolDetail {
   templateUrl: './gov-pool.component.html',
   styleUrls: ['./gov-pool.component.scss'],
 })
-export class GovPoolComponent implements OnInit {
+export class GovPoolComponent implements OnInit, OnChanges {
   @Input() detail: GovPoolDetail;
   @Input() walletBalance: string;
   @Output() transactionComplete = new EventEmitter();
@@ -57,17 +57,14 @@ export class GovPoolComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.isWithdrawLocked = Date.now() < this.detail.unlockAt?.getTime();
-    if (this.detail.moveOptions.length === 1 && !this.moveDays) {
-      this.moveDays = this.detail.moveOptions[0].days;
-    }
+
   }
 
-  // ngOnChanges(changes: SimpleChanges) {
-  //   if (changes.detail) {
-  //     this.isWithdrawLocked = Date.now() < changes.detail.currentValue.unlockAt?.getTime();
-  //   }
-  // }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.detail) {
+      this.isWithdrawLocked = Date.now() < changes.detail.currentValue.unlockAt?.getTime();
+    }
+  }
 
   async submitDeposit() {
     if (this.depositAmount <= 0) {

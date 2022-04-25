@@ -105,6 +105,7 @@ import {
 import {AstroportStlunaLdoFarmInfoService} from './services/farm_info/astroport/astroport-stluna-ldo.farm-info.service';
 import {AstroportStethUstFarmInfoService} from './services/farm_info/astroport/astroport-steth-ust.farm-info.service';
 import {AstroportStsolUstFarmInfoService} from './services/farm_info/astroport/astroport-stsol-ust.farm-info.service';
+import {AstroporMarsUstFarmInfoService} from './services/farm_info/astroport/astroport-mars-ust.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -190,6 +191,7 @@ registerLocaleData(locale, 'en');
       multi: true
     },
     {provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: SpecBorrowedFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportApolloUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportAstroUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportLunaUstFarmInfoService, multi: true},
@@ -203,6 +205,8 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: AstroportStsolUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportStlunaLdoFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportStlunaLunaFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: LoterraFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroporMarsUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: NexusFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: NlunaPsiFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: NethPsiFarmInfoService, multi: true},
@@ -218,13 +222,11 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportSayveUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportSttUstFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: TerraNameServiceFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: TerraworldFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: ValkyrieFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportVkrUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportXdefiUstFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: TerraNameServiceFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: LoterraFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: SpecBorrowedFarmInfoService, multi: true},
     TruncatePipe,
     DecimalPipe,
     UnitPipe,
