@@ -105,5 +105,8 @@ export interface FarmInfoService {
   queryRewards(): Promise<RewardInfoResponseItem[]>;
 
   getStakeGovMsg?(amount: string, additionalData?: object): MsgExecuteContract;
+
+  getConfig?();
+
 }
 

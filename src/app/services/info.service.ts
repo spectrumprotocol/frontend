@@ -403,13 +403,19 @@ export class InfoService {
           if (!pairStats[key].poolAstroApr) {
             pairStats[key].poolAstroApr = 0;
           }
+          let [controller_fee, platform_fee, community_fee] = [0.01, 0.01, 0.06];
+          if (farmInfo.getConfig) {
+            const farmConfig = farmInfo.getConfig();
+            [controller_fee, platform_fee, community_fee] = [+farmConfig.controller_fee, +farmConfig.platform_fee, +farmConfig.community_fee];
+          }
+          const totalFee = controller_fee + platform_fee + community_fee;
           // if (farmInfo.dex === 'Astroport'){
           // if farmInfo.queryPairStats return poolApr 0 and poolAstroApr 0, meaning that do not use calculation on Spectrum side but use Astroport API
           if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP') {
             const found = this.astroportData.pools.find(pool => pool?.pool_address === this.pairInfos[key]?.contract_addr);
             if (farmInfo.notUseAstroportGqlApr) {
               const pair = pairStats[key];
-              const proxyAndAstroApy = ((+pair.poolApr + +pair.poolAstroApr) / 8760 + 1) ** 8760 - 1;
+              const proxyAndAstroApy = (((+pair.poolApr + +pair.poolAstroApr) * (1 - totalFee)) / 8760 + 1) ** 8760 - 1;
               const foundTradingFeeApr = +found?.trading_fees?.apr || 0;
               pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (foundTradingFeeApr + 1) - 1 : 0;
             } else {
@@ -418,7 +424,7 @@ export class InfoService {
                 const pair = pairStats[key];
                 pair.poolApr = +found.protocol_rewards.apr;
                 pair.poolAstroApr = +found.astro_rewards.apr;
-                const proxyAndAstroApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;
+                const proxyAndAstroApy = (((+found.protocol_rewards.apr + +found.astro_rewards.apr) * (1 - totalFee)) / 8760 + 1) ** 8760 - 1;
                 pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (+found.trading_fees.apy + 1) - 1 : 0;
                 pair.vaultFee = +pair.tvl * (pair.poolApr + pair.poolAstroApr) * 0.06;
                 // pairStats[key].poolApy = ((+found.protocol_rewards.apr + +found.astro_rewards.apr) / 8760 + 1) ** 8760 - 1;

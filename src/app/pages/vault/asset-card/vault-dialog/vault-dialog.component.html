@@ -722,7 +722,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from auto compound</div>
+                  <div class="col">APY from auto compound (fee incl.)</div>
                   <div class="col text-end">{{vault.pairStat?.poolApy || 0 | percent }}</div>
                 </div>
                 <div class="row">
@@ -759,7 +759,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-                  <div class="col">APY from auto stake</div>
+                  <div class="col">APY from auto stake (fee incl.)</div>
                   <div class="col text-end">{{vault.farmApy | percent }}</div>
                 </div>
                 <div class="row">
@@ -813,7 +813,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from mixed</div>
+                  <div class="col">APY from mixed (fee incl.)</div>
                   <div class="col text-end">{{vault['mixApy'] || 0 | percent }}</div>
                 </div>
                 <div class="row">
