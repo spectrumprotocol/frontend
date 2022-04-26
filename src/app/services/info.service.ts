@@ -210,6 +210,7 @@ export class InfoService {
     if (opt.native_token) {
       tasks.push(this.refreshNativeTokens());
     }
+    await Promise.all(tasks);
   }
 
   @memoize(1000)
