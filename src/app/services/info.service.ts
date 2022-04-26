@@ -434,6 +434,9 @@ export class InfoService {
           }
           if (farmInfo.dex === 'Terraswap' && farmInfo.farmType === 'LP') {
             // supported only in backend
+          } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
+            const poolApy = ((+pairStats[key].poolApr * (1 - totalFee)) / 8760 + 1) ** 8760 - 1;
+            pairStats[key].poolApy = pairStats[key].poolApr > 0 ? poolApy : 0;
           }
         }
 
