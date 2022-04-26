@@ -248,9 +248,19 @@ export class InfoService {
         continue;
       }
       const task = bundler.query(farmInfo.farmContract, {pools: {}})
-        .then(({pools}: { pools: PoolItem[] }) => {
+        .then(async ({pools}: { pools: PoolItem[] }) => {
           for (const pool of pools) {
             const key = farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}` : `${pool.asset_token}`;
+            let farmConfig;
+            if (farmInfo.getConfig) {
+              farmConfig = await farmInfo.getConfig();
+            } else {
+              farmConfig = {
+                controller_fee: 0.01,
+                platform_fee: 0.01,
+                community_fee: 0.06,
+              };
+            }
             poolInfos[key] = Object.assign(pool,
               {
                 key,
@@ -272,7 +282,8 @@ export class InfoService {
                 dex: farmInfo.dex ?? 'Terraswap',
                 highlight: farmInfo.highlight,
                 hasProxyReward: farmInfo.hasProxyReward ?? false,
-                notUseAstroportGqlApr: farmInfo.notUseAstroportGqlApr
+                notUseAstroportGqlApr: farmInfo.notUseAstroportGqlApr,
+                farmConfig
               });
           }
         });
@@ -403,12 +414,8 @@ export class InfoService {
           if (!pairStats[key].poolAstroApr) {
             pairStats[key].poolAstroApr = 0;
           }
-          let [controller_fee, platform_fee, community_fee] = [0.01, 0.01, 0.06];
-          if (farmInfo.getConfig) {
-            const farmConfig = farmInfo.getConfig();
-            [controller_fee, platform_fee, community_fee] = [+farmConfig.controller_fee, +farmConfig.platform_fee, +farmConfig.community_fee];
-          }
-          const totalFee = controller_fee + platform_fee + community_fee;
+          const farmConfig = this.poolInfos[key].farmConfig;
+          const totalFee = +farmConfig.controller_fee + +farmConfig.platform_fee + +farmConfig.community_fee;
           // if (farmInfo.dex === 'Astroport'){
           // if farmInfo.queryPairStats return poolApr 0 and poolAstroApr 0, meaning that do not use calculation on Spectrum side but use Astroport API
           if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP') {
@@ -846,12 +853,15 @@ export class InfoService {
       if (poolInfo.auto_stake && !shouldSetAprZero) {
         let astroApy = 0;
         let farm2Apy = 0;
+        const totalFee = +poolInfo.farmConfig.controller_fee + +poolInfo.farmConfig.platform_fee + +poolInfo.farmConfig.community_fee;
         if (poolInfo.dex === 'Astroport' && poolInfo.farmType === 'LP') {
           const astroApr = (this.stat.pairs[this.ASTRO_KEY]?.farmApr || 0);
-          astroApy = poolAstroApr + poolAstroApr * astroApr / 2;
+          const poolAstroAprWithFee = poolAstroApr * (1 - totalFee);
+          astroApy = poolAstroAprWithFee + poolAstroAprWithFee * astroApr / 2;
         }
         if (!this.PROXY_REWARD_STOPPED.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`)) {
-          farm2Apy = poolApr + poolApr * farmApr / 2;
+          const poolAprWithFee = poolApr * (1 - totalFee);
+          farm2Apy = poolAprWithFee + poolAprWithFee * farmApr / 2;
         }
         const tradeApr = poolInfo.tradeApr || 0;
         farmApy = astroApy + farm2Apy + tradeApr;
