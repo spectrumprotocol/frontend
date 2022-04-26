@@ -26,7 +26,7 @@ import {AstroportService} from '../../../../services/api/astroport.service';
 import {SimulateZapToBondResponse} from '../../../../services/api/staker/simulate_zap_to_bond_response';
 import {SimulationResponse} from '../../../../services/api/terraswap_pair/simulation_response';
 import {PercentPipe} from '@angular/common';
-import {FARM_TYPE_SINGLE_TOKEN} from 'src/app/services/farm_info/farm-info.service';
+import {FarmInfoService, FARM_TYPE_SINGLE_TOKEN, Unbonding } from 'src/app/services/farm_info/farm-info.service';
 import {AstroportRouterService} from '../../../../services/api/astroport-router.service';
 import {RewardInfoPipe} from 'src/app/pipes/reward-info.pipe';
 import {LpSplitPipe} from 'src/app/pipes/lp-split.pipe';
@@ -86,6 +86,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   ustForDepositbDP: string;
   tokenFromSwapSingleToken: string;
   tokenFromDepositbDP: string;
+  unbondings: Unbonding[] = [];
+  unbondingAmount: string;
   auto_compound_percent_deposit = 50;
   auto_compound_percent_reallocate = 50;
   ngx_slider_option: NgxSliderOptions = {
@@ -98,6 +100,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     hideLimitLabels: true,
   };
   bufferUST = 3.5;
+  farmInfo: FarmInfoService;
   private heightChanged: Subscription;
 
   constructor(
@@ -148,6 +151,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.farmInfo = this.info.farmInfos.find(it => it.farmContract === this.vault.poolInfo.farmContract);
+
     if (this.vault.poolInfo.farmType === 'LP') {
       this.depositMode = 'tokentoken';
       this.withdrawMode = 'tokentoken';
@@ -173,6 +178,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           const tasks: Promise<any>[] = [];
           tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.baseTokenContract)); // AssetToken-Farm
           tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.denomTokenContract)); // Farm-UST
+
+          if (this.vault.poolInfo.farmType === 'LUNA_BURN') {
+            tasks.push(this.refreshLunaFarmData());
+          }
+
           await Promise.all(tasks);
           if (this.depositUSTAmtSingleToken) {
             this.depositUSTForSingleToken(true);
@@ -478,19 +488,29 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else if (this.depositMode === 'single_token') {
       const dpTokenAmount = times(this.depositTokenAmtSingleToken, CONFIG.UNIT);
       const farmContract = this.vault.poolInfo.farmContract;
-      const msg = {
-        send: {
-          amount: dpTokenAmount,
-          contract: farmContract,
-          msg: toBase64({
-            bond: {
-              asset_token: this.vault.poolInfo.asset_token, // not needed for contract, but for tx-history
-              compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
-            }
-          })
-        }
-      };
-      await this.tokenService.handle(this.vault.poolInfo.baseTokenContract, msg);
+      if (this.vault.poolInfo.farmType === 'LUNA_BURN') {
+        const msg = new MsgExecuteContract(
+          this.terrajs.address,
+          farmContract,
+          { bond: {} },
+          { [Denom.LUNA]: dpTokenAmount }
+        );
+        await this.terrajs.post(msg);
+      } else {
+        const msg = {
+          send: {
+            amount: dpTokenAmount,
+            contract: farmContract,
+            msg: toBase64({
+              bond: {
+                asset_token: this.vault.poolInfo.asset_token, // not needed for contract, but for tx-history
+                compound_rate: this.vault.poolInfo.auto_compound ? auto_compound_ratio : undefined
+              }
+            })
+          }
+        };
+        await this.tokenService.handle(this.vault.poolInfo.baseTokenContract, msg);
+      }
     } else if (this.depositMode === 'ust_single_token') {
       const msgs: MsgExecuteContract[] = [];
       if (+this.ustForSwapSingleToken) {
@@ -532,8 +552,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
 
       if (+this.ustForDepositbDP) {
-        const farmInfo = this.info.farmInfos.find(it => it.farmContract === this.vault.poolInfo.farmContract);
-        const liquidPool = farmInfo.pylonLiquidInfo;
+        const liquidPool = this.farmInfo.pylonLiquidInfo;
         msgs.push(new MsgExecuteContract(
           this.terrajs.address,
           liquidPool.dpPool,
@@ -1466,5 +1485,26 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
     }
     return swap_hints;
+  }
+
+  public async doClaimUnbonded() {
+    const collectMsg = new MsgExecuteContract(
+      this.terrajs.address,
+      this.vault.poolInfo.farmContract,
+      { collect: {} }
+    );
+
+    const claimMsg = new MsgExecuteContract(
+      this.terrajs.address,
+      this.vault.poolInfo.farmContract,
+      { claim_unbond: {} }
+    );
+
+    await this.terrajs.post([collectMsg, claimMsg]);
+  }
+
+  private async refreshLunaFarmData() {
+    this.unbondings = await this.farmInfo.getUnbondings();
+    this.unbondingAmount = this.unbondings.reduce((sum, x) => plus(sum, x.amount), '0');
   }
 }

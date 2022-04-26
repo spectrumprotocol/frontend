@@ -22,8 +22,8 @@ export type PoolItem =
   | nAssetPsiPoolItem
   | PylonLiquidPoolItem
   | AstroportTokenUSTPoolItem;
-export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID' | 'NASSET';
-export const FARM_TYPE_SINGLE_TOKEN: Set<string> = new Set(['PYLON_LIQUID', 'NASSET']);
+export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID' | 'NASSET' | 'LUNA_BURN';
+export const FARM_TYPE_SINGLE_TOKEN: Set<FARM_TYPE_ENUM> = new Set(['PYLON_LIQUID', 'NASSET', 'LUNA_BURN']);
 
 export type DEX = 'Terraswap' | 'Astroport';
 export type PoolInfo = PoolItem & {
@@ -62,6 +62,11 @@ export interface PairStat {
   vaultFee: number;
   specApr?: number;
   dpr?: number;
+}
+
+export interface Unbonding {
+  amount: string;
+  claimable: boolean;
 }
 
 export const FARM_INFO_SERVICE = new InjectionToken('FARM_INFO_SERVICE');
@@ -105,5 +110,6 @@ export interface FarmInfoService {
   queryRewards(): Promise<RewardInfoResponseItem[]>;
 
   getStakeGovMsg?(amount: string, additionalData?: object): MsgExecuteContract;
-}
 
+  getUnbondings?(): Promise<Unbonding[]>;
+}

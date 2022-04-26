@@ -104,6 +104,7 @@ import {
 import {AstroportStlunaLdoFarmInfoService} from './services/farm_info/astroport/astroport-stluna-ldo.farm-info.service';
 import {AstroportStethUstFarmInfoService} from './services/farm_info/astroport/astroport-steth-ust.farm-info.service';
 import {AstroportStsolUstFarmInfoService} from './services/farm_info/astroport/astroport-stsol-ust.farm-info.service';
+import {LunaBurnFarmInfoService} from './services/farm_info/luna-burn.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -223,6 +224,7 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: AstroportXdefiUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: TerraNameServiceFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: LoterraFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: LunaBurnFarmInfoService, multi: true},
     TruncatePipe,
     DecimalPipe,
     UnitPipe,
