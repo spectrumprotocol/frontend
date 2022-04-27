@@ -714,7 +714,7 @@
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
                 <div class="row" *ngIf="shouldShowAPRFromAstroportData">
-                  <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
+                  <div class="col">APR from Astroport data <a class="text-white" href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
                 </div>
                 <div class="row" *ngIf="vault.poolInfo.tradeApr">
@@ -722,7 +722,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from auto compound (fee incl.)</div>
+                  <div class="col">APY from auto compound <a class="text-white" href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
                   <div class="col text-end">{{vault.pairStat?.poolApy || 0 | percent }}</div>
                 </div>
                 <div class="row">
@@ -759,7 +759,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-                  <div class="col">APY from auto stake (fee incl.)</div>
+                  <div class="col">APY from auto stake <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
                   <div class="col text-end">{{vault.farmApy | percent }}</div>
                 </div>
                 <div class="row">
@@ -879,11 +879,6 @@
 
               <button (click)="doDeposit()" [disabled]="formDeposit.invalid" class="btn btn-primary mt-3"
                       type="submit">Deposit</button>
-              <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" class="text-end small fee-remark text-muted mt-1">
-                <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">
-                  * fees applied
-                </a>
-              </div>
             </div>
           </form>
         </mdb-tab>
