@@ -87,6 +87,12 @@ export type TokenInfo = {
 
 const HEIGHT_PER_YEAR = 365 * 24 * 60 * 60 * 1000 / BLOCK_TIME;
 
+export const defaultFarmConfig = {
+  controller_fee: 0.01,
+  platform_fee: 0.01,
+  community_fee: 0.06,
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -256,11 +262,7 @@ export class InfoService {
             if (farmInfo.getConfig) {
               farmConfig = await farmInfo.getConfig();
             } else {
-              farmConfig = {
-                controller_fee: 0.01,
-                platform_fee: 0.01,
-                community_fee: 0.06,
-              };
+              farmConfig = defaultFarmConfig;
             }
             poolInfos[key] = Object.assign(pool,
               {
@@ -415,7 +417,7 @@ export class InfoService {
           if (!pairStats[key].poolAstroApr) {
             pairStats[key].poolAstroApr = 0;
           }
-          const farmConfig = this.poolInfos[key].farmConfig;
+          const farmConfig = this.poolInfos[key]?.farmConfig || defaultFarmConfig;
           const totalFee = +farmConfig.controller_fee + +farmConfig.platform_fee + +farmConfig.community_fee;
           // if (farmInfo.dex === 'Astroport'){
           // if farmInfo.queryPairStats return poolApr 0 and poolAstroApr 0, meaning that do not use calculation on Spectrum side but use Astroport API
