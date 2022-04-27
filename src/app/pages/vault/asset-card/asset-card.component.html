@@ -84,7 +84,7 @@
               mdbTooltip="Estimated rate of return per day"></i> -->
               Daily
             </div>
-            <div class="fs-6 fw-bold">{{ vault.pairStat?.dpr || 0 | percent }}</div>
+            <div class="fs-6 fw-bold">{{ vault.pairStat?.dpr || 0 | percent: '1.4-4' }}</div>
           </div>
           <div *ngIf="vault.poolInfo.farmType === 'LP'" class="col-12 col-sm-4 mt-1 text-end">
             <div class="f-12">LP Balance</div>
@@ -208,7 +208,7 @@
                 <div class="f-12 sub-topic">Daily</div>
               </div>
               <div>
-                <div class="f-14 fw-bold">{{vault.pairStat?.dpr || 0 | percent}}</div>
+                <div class="f-14 fw-bold">{{vault.pairStat?.dpr || 0 | percent: '1.4-4'}}</div>
               </div>
             </div>
           </div>
