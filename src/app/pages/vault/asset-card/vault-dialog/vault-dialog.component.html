@@ -714,7 +714,7 @@
                   <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
                 </div>
                 <div class="row" *ngIf="shouldShowAPRFromAstroportData">
-                  <div class="col">APR from Astroport data <a class="text-white" href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
+                  <div class="col">APR from Astroport data <a href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a></div>
                   <div class="col text-end"></div>
                 </div>
                 <div class="row" *ngIf="vault.poolInfo.tradeApr">
@@ -722,7 +722,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from auto compound <a class="text-white" href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
+                  <div class="col">APY from auto compound <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
                   <div class="col text-end">{{vault.pairStat?.poolApy || 0 | percent }}</div>
                 </div>
                 <div class="row">
@@ -813,7 +813,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from mixed <a class="text-white" href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
+                  <div class="col">APY from mixed <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
                   <div class="col text-end">{{vault['mixApy'] || 0 | percent }}</div>
                 </div>
                 <div class="row">
