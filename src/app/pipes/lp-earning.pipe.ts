@@ -1,6 +1,4 @@
-import { DecimalPipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
-import { CONFIG } from '../consts/config';
 import { RewardInfoResponseItem } from '../services/api/mirror_farm/reward_info_response';
 
 // const secondsPerYear = 365 * 24 * 60 * 60;
@@ -11,10 +9,10 @@ import { RewardInfoResponseItem } from '../services/api/mirror_farm/reward_info_
 export class LpEarningPipe implements PipeTransform {
 
   constructor(
-    private decimalPipe: DecimalPipe,
+    // private decimalPipe: DecimalPipe,
   ) { }
 
-  transform(rewardInfo: Partial<RewardInfoResponseItem>): string {
+  transform(rewardInfo: Partial<RewardInfoResponseItem>): number {
     if (!rewardInfo || !rewardInfo.deposit_amount) {
       return undefined;
     }
@@ -25,8 +23,9 @@ export class LpEarningPipe implements PipeTransform {
       return undefined;
     }
 
-    const earning = (bondAmount - depositAmount) / CONFIG.UNIT;
-    return `+${this.decimalPipe.transform(earning)}`;
+    return bondAmount - depositAmount;
+    // const earning = (bondAmount - depositAmount) / CONFIG.UNIT;
+    // return `+${this.decimalPipe.transform(earning)}`;
     // const secondsDeposit = Date.now() / 1000 - rewardInfo.deposit_time;
     // const earningPerYear = earning * secondsPerYear / secondsDeposit;
     // const apr = earningPerYear * 100 / depositAmount;
