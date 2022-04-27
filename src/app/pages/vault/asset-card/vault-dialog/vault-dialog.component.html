@@ -83,7 +83,7 @@
             Daily Rate <i class="fas fa-info-circle info-icon super" mdbTooltip="Estimated rate of return per day"></i>
           </p>
           <h3 class="card-title">
-            {{ vault.pairStat?.dpr || 0 | percent }}
+            {{ vault.pairStat?.dpr || 0 | percent: '1.4-4' }}
           </h3>
         </div>
       </div>
