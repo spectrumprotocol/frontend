@@ -1112,6 +1112,11 @@ i.fa-sort-down {
   height: 1.25rem;
 }
 
+.tooltip-inner {
+  min-width: 100px;
+  max-width: 100%;
+}
+
 .apyapr-tooltip {
   text-align: left !important;
   font-size: 12px;
