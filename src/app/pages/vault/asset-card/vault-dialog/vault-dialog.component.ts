@@ -97,7 +97,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     showTicksValues: false,
     hideLimitLabels: true,
   };
-  bufferUST = 3.5;
+  bufferUST = 1.25;
   private heightChanged: Subscription;
 
   constructor(
