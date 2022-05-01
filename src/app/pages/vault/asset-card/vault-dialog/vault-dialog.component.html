@@ -120,7 +120,7 @@
             </span>
           </h3>
           <h6 *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="card-subtitle text-success">
-            {{ info.rewardInfos[vault.poolInfo.key] | lpEarning | unit }}
+            +{{ info.rewardInfos[vault.poolInfo.key] | lpEarning | unit }}
             <ng-container *ngIf="vault.poolInfo.farmType != 'PYLON_LIQUID'">
               (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : vault.poolInfo.key | unit: 6: '1.0-2' }})
             </ng-container>
