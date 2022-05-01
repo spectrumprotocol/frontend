@@ -119,6 +119,10 @@ export class UrlPipe implements PipeTransform {
             return `https://marsprotocol.io/MARSTokenMini.svg`;
           case 'MARS':
             return `https://marsprotocol.io/MARSTokenMini.svg`;
+          case 'ORNE':
+            return `https://orne.io/img/token_icon.png`;
+          case 'Orne':
+            return `https://orne.io/img/token_icon.png`;
           default:
             return `${MIRROR_ICON_URL}/${symbol}.png`;
         }
@@ -185,6 +189,8 @@ export class UrlPipe implements PipeTransform {
             return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.stethToken}`;
           case 'MARS':
             return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.marsToken}`;
+          case 'ORNE':
+            return `https://app.astroport.fi/swap?from=uusd&to=${this.terrajs.settings.orneToken}`;
           default: {
             if (dex === 'Astroport') {
               return 'https://app.astroport.fi/swap';
