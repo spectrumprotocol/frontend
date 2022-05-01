@@ -106,6 +106,7 @@ import {AstroportStlunaLdoFarmInfoService} from './services/farm_info/astroport/
 import {AstroportStethUstFarmInfoService} from './services/farm_info/astroport/astroport-steth-ust.farm-info.service';
 import {AstroportStsolUstFarmInfoService} from './services/farm_info/astroport/astroport-stsol-ust.farm-info.service';
 import {AstroporMarsUstFarmInfoService} from './services/farm_info/astroport/astroport-mars-ust.farm-info.service';
+import {AstroportOrneUstFarmInfoService} from './services/farm_info/astroport/astroport-orne-ust.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -217,6 +218,7 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: NethFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportOrionUstFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportOrneUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportMineUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true},

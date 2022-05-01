@@ -103,8 +103,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     showTicksValues: false,
     hideLimitLabels: true,
   };
-  bufferUST = 3.5;
+
   farmInfo: FarmInfoService;
+  bufferUST = 1.25;
 
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
@@ -201,36 +202,57 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   getAPRAPYTooltipHTML() {
-    let html = '<div class="apyapr-tooltip">';
+    let html = '<div class="apyapr-tooltip container">';
     let totalApr = 0;
     if (this.vault.pairStat?.poolApr > 0) {
-      html += `${this.vault.rewardSymbol} APR ${this.percentPipe.transform(this.vault.pairStat.poolApr)} <br>`;
-      // html += `${this.vault.rewardSymbol} APY ${this.percentPipe.transform((this.vault.pairStat.poolApr / 365 + 1) ** 365 - 1)} <br>`;
+      html += `<div class="row">
+                    <div class="col-10">${this.vault.rewardSymbol} APR</div>
+                    <div class="col-2">${this.percentPipe.transform(this.vault.pairStat.poolApr)}</div>
+                </div>`;
       totalApr += this.vault.pairStat.poolApr;
     }
     if (this.vault.pairStat?.poolAstroApr > 0) {
-      html += `ASTRO APR ${this.percentPipe.transform(this.vault.pairStat.poolAstroApr)} <br>`;
-      // html += `ASTRO APY ${this.percentPipe.transform((this.vault.pairStat.poolAstroApr / 365 + 1) ** 365 - 1)} <br>`;
+      html += `<div class="row">
+                    <div class="col-10">ASTRO APR</div>
+                    <div class="col-2">${this.percentPipe.transform(this.vault.pairStat.poolAstroApr)}</div>
+            </div>`;
       totalApr += this.vault.pairStat.poolAstroApr;
     }
     if (this.vault.pairStat?.poolApr > 0 && this.vault.pairStat?.poolAstroApr > 0) {
-      html += `Rewards APR ${this.percentPipe.transform(totalApr)} <br>`;
+      html += `<div class="row">
+                    <div class="col-10">Rewards APR</div>
+                    <div class="col-2">${this.percentPipe.transform(totalApr)}</div>
+            </div>`;
     }
     if (this.vault.poolInfo?.tradeApr > 0 && this.vault.poolInfo.farmType === 'LP') {
-      html += `Trade APR ${this.percentPipe.transform(this.vault.poolInfo.tradeApr)} <br>`;
-      // html += `Trade APY ${this.percentPipe.transform((this.vault.poolInfo.tradeApr / 365 + 1) ** 365 - 1)} <br>`;
+      html += `<div class="row">
+                    <div class="col-10">Trade APR</div>
+                    <div class="col-2">${this.percentPipe.transform(this.vault.poolInfo.tradeApr)}</div>
+            </div>`;
     }
     if (this.shouldShowAPRFromAstroportData) {
-      html += `(APR from Astroport data) <br>`;
+      html += `<div class="row">
+                    <div class="col-10">(APR from Astroport data)</div>
+                    <div class="col-2"></div>
+            </div>`;
     }
     if (this.vault.pairStat?.poolApy > 0) {
-      html += `Auto-compound APY ${this.percentPipe.transform(this.vault.pairStat?.poolApy)} <br>`;
+      html += `<div class="row">
+                    <div class="col-10">Auto-compound APY (fee incl.)</div>
+                    <div class="col-2">${this.percentPipe.transform(this.vault.pairStat?.poolApy)}</div>
+            </div>`;
     }
     if (this.vault.farmApy > 0 && this.vault.poolInfo.auto_stake) {
-      html += `Auto-stake APY ${this.percentPipe.transform(+this.vault.farmApy)} <br>`;
+      html += `<div class="row">
+                    <div class="col-10">Auto-stake APY (fee incl.)</div>
+                    <div class="col-2">${this.percentPipe.transform(+this.vault.farmApy)}</div>
+            </div>`;
     }
     if (this.vault.specApy > 0) {
-      html += `SPEC APR ${this.percentPipe.transform(this.vault.specApy)} <br><br>`;
+      html += `<div class="row">
+                    <div class="col-10">SPEC APR</div>
+                    <div class="col-2">${this.percentPipe.transform(this.vault.specApy)}</div>
+            </div>`;
     }
     html += '</div>';
     return html;

@@ -47,6 +47,7 @@ export type PoolInfo = PoolItem & {
   tradeApr?: number;
   commission?: number;
   notUseAstroportGqlApr?: boolean
+  farmConfig?: any;
 };
 export type RewardInfoResponseItem =
   AstroportTokenUSTRewardInfoResponseItem
@@ -107,6 +108,8 @@ export interface FarmInfoService {
   queryRewards(): Promise<RewardInfoResponseItem[]>;
 
   getStakeGovMsg?(amount: string, additionalData?: object): MsgExecuteContract;
+
+  getConfig?();
 
   getCustomPoolInfos?(): Promise<Omit<PoolInfo, 'key'>[]>;
 

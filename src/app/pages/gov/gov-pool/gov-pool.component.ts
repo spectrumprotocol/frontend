@@ -57,7 +57,9 @@ export class GovPoolComponent implements OnInit, OnChanges {
   }
 
   async ngOnInit() {
-
+    if (this.detail.moveOptions.length === 1 && !this.moveDays) {
+      this.moveDays = this.detail.moveOptions[0].days;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -121,12 +123,6 @@ export class GovPoolComponent implements OnInit, OnChanges {
     this.moveAmount = null;
     this.moveDays = null;
   }
-
-  // onActiveTabChange() {
-  //   // if (this.detail.moveOptions.length === 1 && !this.moveDays) {
-  //   //   this.moveDays = this.detail.moveOptions[0].days;
-  //   // }
-  // }
 
   calculateDepositUnlock() {
     if (this.depositAmount <= 0) {

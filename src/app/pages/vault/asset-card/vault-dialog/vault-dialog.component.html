@@ -83,7 +83,7 @@
             Daily Rate <i class="fas fa-info-circle info-icon super" mdbTooltip="Estimated rate of return per day"></i>
           </p>
           <h3 class="card-title">
-            {{ vault.pairStat?.dpr || 0 | percent }}
+            {{ vault.pairStat?.dpr || 0 | percent: '1.4-4' }}
           </h3>
         </div>
       </div>
@@ -125,10 +125,10 @@
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.net_value || '0' | unit: 6: '1.0-2' }})
             </span>
           </h3>
-          <h6 *ngIf="lpEarningPipe.transform(info.rewardInfos[vault.poolInfo.key])" class="card-subtitle text-success">
-            {{ info.rewardInfos[vault.poolInfo.key] | lpEarning }}
+          <h6 *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="card-subtitle text-success">
+            +{{ info.rewardInfos[vault.poolInfo.key] | lpEarning | unit }}
             <ng-container *ngIf="vault.poolInfo.farmType != 'PYLON_LIQUID'">
-              (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : vault.poolInfo.key | number: '1.0-2' }})
+              (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : vault.poolInfo.key | unit: 6: '1.0-2' }})
             </ng-container>
           </h6>
         </div>
@@ -744,7 +744,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from auto compound</div>
+                  <div class="col">APY from auto compound <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
                   <div class="col text-end">{{vault.pairStat?.poolApy || 0 | percent }}</div>
                 </div>
                 <div class="row">
@@ -781,7 +781,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-                  <div class="col">APY from auto stake</div>
+                  <div class="col">APY from auto stake <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
                   <div class="col text-end">{{vault.farmApy | percent }}</div>
                 </div>
                 <div class="row">
@@ -835,7 +835,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from mixed</div>
+                  <div class="col">APY from mixed <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
                   <div class="col text-end">{{vault['mixApy'] || 0 | percent }}</div>
                 </div>
                 <div class="row">
@@ -901,11 +901,6 @@
 
               <button (click)="doDeposit()" [disabled]="formDeposit.invalid" class="btn btn-primary mt-3"
                       type="submit">Deposit</button>
-              <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" class="text-end small fee-remark text-muted mt-1">
-                <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">
-                  * fees applied
-                </a>
-              </div>
             </div>
           </form>
         </mdb-tab>
