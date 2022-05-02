@@ -898,7 +898,14 @@ export class InfoService {
       const apy = Math.max(compoundApy, stakeApy);
 
       const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
-      const score = poolInfo.farm === 'Spectrum' ? 2000000 : (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0) - (disabled ? 1000000 : 0);
+      let score;
+      if (poolInfo.farm === 'Spectrum') {
+        score = 2000000;
+      } else if (disabled) {
+        score = 2100000;
+      } else {
+        score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0);
+      }
       const will_available_at_astroport = this.WILL_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const now_available_at_astroport = this.NOW_AVAILABLE_AT_ASTROPORT.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       const proxy_reward_not_yet_available = this.PROXY_REWARD_NOT_YET_AVAILABLE.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
