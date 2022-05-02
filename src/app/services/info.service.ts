@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {BLOCK_TIME, TerrajsService} from './terrajs.service';
+import {BLOCK_TIME, DEFAULT_NETWORK, TerrajsService} from './terrajs.service';
 import {TokenService} from './api/token.service';
 import {BankService} from './api/bank.service';
 import {TerraSwapService} from './api/terraswap.service';
@@ -10,7 +10,8 @@ import {TerraSwapFactoryService} from './api/terraswap-factory.service';
 import {GovService} from './api/gov.service';
 import {
   FARM_INFO_SERVICE,
-  FARM_TYPE_SINGLE_TOKEN,
+  FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN,
+  FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN,
   FarmInfoService,
   PairStat,
   PoolInfo,
@@ -263,7 +264,7 @@ export class InfoService {
         const pools = await farmInfo.getCustomPoolInfos();
         for (const pool of pools) {
           const key = getKey(pool);
-          poolInfos[key] = { ...pool, key } as PoolInfo;
+          poolInfos[key] = {...pool, key} as PoolInfo;
         }
         continue;
       }
@@ -327,7 +328,7 @@ export class InfoService {
       const denomTokenContract = this.poolInfos[key].denomTokenContract;
       if (this.poolInfos[key].farmType === 'LP') {
         pairInfoKey = key;
-      } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
+      } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
         pairInfoKey = `${this.poolInfos[key].dex}|${baseTokenContract}|${denomTokenContract}`;
       } else {
         continue;
@@ -458,7 +459,7 @@ export class InfoService {
           }
           if (farmInfo.dex === 'Terraswap' && farmInfo.farmType === 'LP') {
             // supported only in backend
-          } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
+          } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmInfo.farmType)) {
             const poolApy = ((+pairStats[key].poolApr * (1 - totalFee)) / 8760 + 1) ** 8760 - 1;
             pairStats[key].poolApy = pairStats[key].poolApr > 0 ? poolApy : 0;
           }
@@ -529,8 +530,12 @@ export class InfoService {
             farmContract: farmInfo.farmContract
           };
         } else if (farmInfo.farmType === 'BORROWED') {
-          rewardInfos[farmInfo.denomTokenContract] = {...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract};
-        } else if (FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
+          rewardInfos[farmInfo.denomTokenContract] = {
+            ...reward,
+            farm: farmInfo.farm,
+            farmContract: farmInfo.farmContract
+          };
+        } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmInfo.farmType)) {
           rewardInfos[`${reward.asset_token}`] = {...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract};
         }
       }
@@ -611,7 +616,7 @@ export class InfoService {
       const dex = this.poolInfos[key].dex;
       if (this.poolInfos[key].farmType === 'LP') {
         poolResponseKey = key;
-      } else if (FARM_TYPE_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
+      } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
         const baseTokenContract = this.poolInfos[key].baseTokenContract;
         const denomTokenContract = this.poolInfos[key].denomTokenContract;
         poolResponseKey = `${dex}|${baseTokenContract}|${denomTokenContract}`;
@@ -746,7 +751,7 @@ export class InfoService {
 
           portfolio.total_reward_ust += pending_farm_reward_ust;
           portfolio.total_reward_ust += pending_farm2_reward_ust;
-        } else if (farmInfo.dex === 'Terraswap' || FARM_TYPE_SINGLE_TOKEN.has(farmInfo.farmType)) {
+        } else if (farmInfo.dex === 'Terraswap' || FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmInfo.farmType)) {
           const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
           tvl += pending_farm_reward_ust;
           portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
@@ -857,11 +862,9 @@ export class InfoService {
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const poolInfo = this.poolInfos[key];
 
-      const vaultName = poolInfo.farmType === 'BORROWED'
-        ? `${denomSymbol}-${baseSymbol} LP`
-        : FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
-          ? baseSymbol
-          : `${baseSymbol}-${denomSymbol} LP`;
+      const vaultName = FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(poolInfo.farmType)
+        ? baseSymbol
+        : `${baseSymbol}-${denomSymbol} LP`;
 
       const shouldSetAprZero = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
 
@@ -935,13 +938,13 @@ export class InfoService {
         stakeApy,
         apy,
         name: vaultName,
-        unitDisplay: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
+        unitDisplay: FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
-        unitDisplayDexAbbreviated: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
+        unitDisplayDexAbbreviated: FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${abbreviatedDex} LP`,
-        shortUnitDisplay: FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType)
+        shortUnitDisplay: FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `LP`,
         score,

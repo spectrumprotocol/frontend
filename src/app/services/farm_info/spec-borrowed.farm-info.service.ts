@@ -36,12 +36,11 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
     return this.terrajs.settings.specToken;
   }
 
-  get defaultBaseTokenContract() {
+  get denomTokenContract() {
     return Denom.USD;
   }
 
-  // borrowed token
-  get denomTokenContract() {
+  get defaultBaseTokenContract() {
     return this.terrajs.settings.specToken;
   }
 
@@ -49,9 +48,9 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
     const config = await this.borrowedFarmService.query({config: {}});
     console.log(config);
     const poolItems: PoolItem[] = [{
-      asset_token: this.denomTokenContract,
+      asset_token: this.defaultBaseTokenContract,
       spec_share_index: '0',
-      staking_token: '',
+      staking_token: null,
       state_spec_share_index: '0',
       total_bond_amount: '0',
       weight: 0,
@@ -96,7 +95,7 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
       {
         farm: this.farm,
         farmContract: this.farmContract,
-        baseTokenContract: Denom.USD,
+        baseTokenContract: this.defaultBaseTokenContract,
         denomTokenContract: this.denomTokenContract,
         rewardTokenContract: this.rewardTokenContract,
         rewardKey: `${this.dex}|${this.rewardTokenContract}|${Denom.USD}`,
@@ -112,7 +111,7 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
         hasProxyReward: false,
 
         // need to clean up interface
-        asset_token: this.denomTokenContract,
+        asset_token: this.defaultBaseTokenContract,
         spec_share_index: '0',
         staking_token: '',
         state_spec_share_index: '0',

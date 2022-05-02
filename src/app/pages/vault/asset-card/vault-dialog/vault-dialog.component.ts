@@ -26,7 +26,7 @@ import {AstroportService} from '../../../../services/api/astroport.service';
 import {SimulateZapToBondResponse} from '../../../../services/api/staker/simulate_zap_to_bond_response';
 import {SimulationResponse} from '../../../../services/api/terraswap_pair/simulation_response';
 import {PercentPipe} from '@angular/common';
-import {FarmInfoService, FARM_TYPE_SINGLE_TOKEN} from 'src/app/services/farm_info/farm-info.service';
+import {FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN, FarmInfoService} from 'src/app/services/farm_info/farm-info.service';
 import {AstroportRouterService} from '../../../../services/api/astroport-router.service';
 import {RewardInfoPipe} from 'src/app/pipes/reward-info.pipe';
 import {LpSplitPipe} from 'src/app/pipes/lp-split.pipe';
@@ -51,7 +51,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   UNIT: number = CONFIG.UNIT;
   SLIPPAGE = CONFIG.SLIPPAGE_TOLERANCE;
-  FARM_TYPE_SINGLE_TOKEN = FARM_TYPE_SINGLE_TOKEN;
+  FARM_TYPE_SINGLE_TOKEN = FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN;
   // naming convention: actual input field, input mode
   depositTokenAAmtTokenToken: number;
   depositUSTAmountTokenUST: number;
@@ -159,7 +159,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.vault.poolInfo.farmType === 'LP') {
       this.depositMode = 'tokentoken';
       this.withdrawMode = 'tokentoken';
-    } else if (FARM_TYPE_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
+    } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
       this.depositMode = 'single_token';
       this.withdrawMode = 'single_token';
     }
@@ -177,7 +177,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           if (this.withdrawAmt) {
             this.withdrawAmtChanged();
           }
-        } else if (FARM_TYPE_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
+        } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
           const tasks: Promise<any>[] = [];
           tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.baseTokenContract)); // AssetToken-Farm
           tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.denomTokenContract)); // Farm-UST
@@ -526,7 +526,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               max_spread: CONFIG.SLIPPAGE_TOLERANCE,
             },
           },
-          { [this.vault.poolInfo.baseTokenContract]: dpTokenAmount }
+          {[this.vault.poolInfo.baseTokenContract]: dpTokenAmount}
         );
 
         await this.terrajs.post(msg);
@@ -1425,13 +1425,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     const [baseAsset, borrowedAsset] = poolResponse.assets[0].info === this.vault.baseAssetInfo
       ? [poolResponse.assets[0], poolResponse.assets[1]]
       : [poolResponse.assets[1], poolResponse.assets[0]];
-    const price = times(div(baseAsset.amount, borrowedAsset.amount), 0.995); // for price diff
+    const price = times(div(baseAsset.amount, borrowedAsset.amount), 0.995); // for price diff //TODO what is 0.995
     const depositedAmount = (this.info.rewardInfos[this.vault.poolInfo.key]?.net_amount ?? '0') as string;
 
     this.depositTotalCredit = times(userCredit, price);
     this.depositAvailableCredit = minus(this.depositTotalCredit, depositedAmount);
   }
-  
+
   private async refreshDataTokenToken(inputFromA: boolean) {
     const pool = this.info.poolResponses[this.vault.poolInfo.key];
     const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
