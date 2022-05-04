@@ -1,23 +1,17 @@
-import { Injectable } from '@angular/core';
-import { PoolItem } from '../api/pylon_liquid_farm/pools_response';
-import { RewardInfoResponseItem } from '../api/pylon_farm/reward_info_response';
-import { TerrajsService } from '../terrajs.service';
-import {
-  DEX,
-  FARM_TYPE_ENUM,
-  FarmInfoService,
-  PairStat,
-  PoolInfo
-} from './farm-info.service';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../libs/base64';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { BPsiDpFarmService } from '../api/bpsidp-farm.service';
-import { WasmService } from '../api/wasm.service';
-import { VaultsResponse } from '../api/gov/vaults_response';
-import { div } from '../../libs/math';
-import { Apollo, gql } from 'apollo-angular';
-import { Denom } from '../../consts/denom';
+import {Injectable} from '@angular/core';
+import {PoolItem} from '../api/pylon_liquid_farm/pools_response';
+import {RewardInfoResponseItem} from '../api/pylon_farm/reward_info_response';
+import {TerrajsService} from '../terrajs.service';
+import {DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo} from './farm-info.service';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
+import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {BPsiDpFarmService} from '../api/bpsidp-farm.service';
+import {WasmService} from '../api/wasm.service';
+import {VaultsResponse} from '../api/gov/vaults_response';
+import {div} from '../../libs/math';
+import {Apollo, gql} from 'apollo-angular';
+import {Denom} from '../../consts/denom';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
@@ -45,7 +39,8 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     private terrajs: TerrajsService,
     private wasm: WasmService,
     private apollo: Apollo,
-  ) { }
+  ) {
+  }
 
   get farmContract() {
     return this.terrajs.settings.bPsiDPFarm;
@@ -69,13 +64,13 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.bPsiDpFarmService.query({ pools: {} });
+    const pool = await this.bPsiDpFarmService.query({pools: {}});
     return pool.pools;
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
-    const farmConfigTask = this.bPsiDpFarmService.query({ config: {} });
-    const balanceOfTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { balance_of: { owner: this.terrajs.settings.bPsiDPFarm } });
+    const farmConfigTask = this.bPsiDpFarmService.query({config: {}});
+    const balanceOfTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, {balance_of: {owner: this.terrajs.settings.bPsiDPFarm}});
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
     const nexusGovStatTask = apollo.query<any>({
       query: gql`{
@@ -97,7 +92,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     const specbPsiDPTvl = (await balanceOfTask)?.amount || '0';
 
     const poolApr = +(bPsiDPStat.apr || 0);
-    const key = `${this.defaultBaseTokenContract}`;
+    const key = `${this.defaultBaseTokenContract}-${this.farmType}`;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
     pair.tvl = specbPsiDPTvl;
@@ -121,8 +116,8 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   }
 
   async getBPsiDPStat(poolResponses: Record<string, PoolResponse>) {
-    const configInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { config: {} });
-    const rewardInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { reward: {} });
+    const configInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, {config: {}});
+    const rewardInfoTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, {reward: {}});
     const [configInfo, rewardInfo] = await Promise.all([configInfoTask, rewardInfoTask]);
 
     const psiPool = poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`];
@@ -156,7 +151,7 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.nexusGov,
           amount,
-          msg: toBase64({ stake_voting_tokens: {} })
+          msg: toBase64({stake_voting_tokens: {}})
         }
       }
     );

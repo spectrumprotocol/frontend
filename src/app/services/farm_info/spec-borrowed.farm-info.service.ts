@@ -8,6 +8,8 @@ import {PairInfo} from '../api/terraswap_factory/pair_info';
 import {PoolResponse} from '../api/terraswap_pair/pool_response';
 import {TerrajsService} from '../terrajs.service';
 import {FarmInfoService, PairStat, PoolInfo, PoolItem, RewardInfoResponseItem} from './farm-info.service';
+import {WasmService} from '../api/wasm.service';
+import BigNumber from 'bignumber.js';
 
 @Injectable()
 export class SpecBorrowedFarmInfoService implements FarmInfoService {
@@ -24,7 +26,8 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
   constructor(
     private terrajs: TerrajsService,
     private borrowedFarmService: SpecBorrowedFarmService,
-    private gov: GovService
+    private gov: GovService,
+    private wasm: WasmService
   ) {
   }
 
@@ -59,10 +62,31 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
+    const leverageFarmPositionTask = this.wasm.query(this.terrajs.settings.specLeveragedFarm, {
+      position: {
+        user: this.farmContract
+      }
+    });
+    const [leverageFarmPosition] = await Promise.all([leverageFarmPositionTask]);
+    const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
+    const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
+    const depositAmount = leverageFarmPosition[0]?.bond_amount || '0';
     const pairs: Record<string, PairStat> = {};
-    const key = `${this.dex}|${this.defaultBaseTokenContract}|${this.denomTokenContract}`;
+    const key = `${this.dex}|${this.defaultBaseTokenContract}|${this.denomTokenContract}-${this.farmType}`;
+    const p = poolResponses[key.split('-')[0]];
+    const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
+    if (!uusd) {
+      return;
+    }
 
-    pairs[key] = createPairStat(0, key);
+    const poolApr = 0; //TODO and there is no poolAPY
+    pairs[key] = createPairStat(poolApr, key);
+    const pair = pairs[key];
+    pair.tvl = new BigNumber(uusd.amount)
+      .times(depositAmount)
+      .times(2)
+      .div(p.total_share)
+      .toString();
     return pairs;
 
     // tslint:disable-next-line:no-shadowed-variable
@@ -74,8 +98,8 @@ export class SpecBorrowedFarmInfoService implements FarmInfoService {
         poolAstroApr: 0,
         farmApr: 0,
         tvl: '0',
-        multiplier: 0,
-        vaultFee: 0,
+        multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
+        vaultFee: 0, // vaultFee is already applied in normal spec farm, except spec compound farm
       };
       return stat;
     }

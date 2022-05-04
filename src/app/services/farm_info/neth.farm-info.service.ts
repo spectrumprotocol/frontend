@@ -101,7 +101,7 @@ export class NethFarmInfoService implements FarmInfoService {
     const nAssetTvl = this.balancePipe.transform(nAssetBalance.balance, poolResponses[`Astroport|${this.defaultBaseTokenContract}|${this.terrajs.settings.nexusToken}`], poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
 
     const poolApr = +(nexusNAssetStat.data?.getBAssetVaultAprRecords[0]?.bEthVaultApr || 0) / 100;
-    const key = `${this.defaultBaseTokenContract}`;
+    const key = `${this.defaultBaseTokenContract}-${this.farmType}`;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
     pair.tvl = nAssetTvl;

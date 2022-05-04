@@ -252,9 +252,15 @@ export class InfoService {
     const bundler = new QueryBundler(this.wasm);
     const tasks: Promise<any>[] = [];
     for (const farmInfo of this.farmInfos) {
-      const getKey = (pool: Omit<PoolItem, 'key'>) => farmInfo.farmType === 'LP'
-        ? `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}`
-        : `${pool.asset_token}`;
+      const getKey = (pool: Omit<PoolItem, 'key'>) => {
+        if (FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(farmInfo.farmType)) {
+          return `${pool.asset_token}-${farmInfo.farmType}`;
+        } else if (farmInfo.farmType === 'LP') {
+          return `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}`;
+        } else {
+          return `${farmInfo.dex}|${pool.asset_token}|${farmInfo.denomTokenContract}-${farmInfo.farmType}`;
+        }
+      };
 
       if (!this.shouldEnableFarmInfo(farmInfo)) {
         continue;
@@ -327,7 +333,7 @@ export class InfoService {
       const baseTokenContract = this.poolInfos[key].baseTokenContract;
       const denomTokenContract = this.poolInfos[key].denomTokenContract;
       if (this.poolInfos[key].farmType === 'LP') {
-        pairInfoKey = key;
+        pairInfoKey = key.split('-')[0];
       } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
         pairInfoKey = `${this.poolInfos[key].dex}|${baseTokenContract}|${denomTokenContract}`;
       } else {
@@ -523,20 +529,21 @@ export class InfoService {
         }
       }
       for (const reward of rewards) {
-        if (farmInfo.farmType === 'LP') {
-          rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = {
+        if (FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(farmInfo.farmType)) {
+          rewardInfos[`${reward.asset_token}-${farmInfo.farmType}`] = {
             ...reward,
             farm: farmInfo.farm,
             farmContract: farmInfo.farmContract
           };
-        } else if (farmInfo.farmType === 'BORROWED') {
-          rewardInfos[farmInfo.denomTokenContract] = {
+        } else if (farmInfo.farmType === 'LP') {
+          return `${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`;
+        } else {
+          const baseToken = reward.asset_token || farmInfo.defaultBaseTokenContract;
+          rewardInfos[`${farmInfo.dex}|${baseToken}|${farmInfo.denomTokenContract}-${farmInfo.farmType}`] = {
             ...reward,
             farm: farmInfo.farm,
             farmContract: farmInfo.farmContract
           };
-        } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmInfo.farmType)) {
-          rewardInfos[`${reward.asset_token}`] = {...reward, farm: farmInfo.farm, farmContract: farmInfo.farmContract};
         }
       }
     };
@@ -615,7 +622,7 @@ export class InfoService {
       let poolResponseKey: string;
       const dex = this.poolInfos[key].dex;
       if (this.poolInfos[key].farmType === 'LP') {
-        poolResponseKey = key;
+        poolResponseKey = key.split('-')[0];
       } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
         const baseTokenContract = this.poolInfos[key].baseTokenContract;
         const denomTokenContract = this.poolInfos[key].denomTokenContract;
