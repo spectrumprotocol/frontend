@@ -536,7 +536,11 @@ export class InfoService {
             farmContract: farmInfo.farmContract
           };
         } else if (farmInfo.farmType === 'LP') {
-          return `${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`;
+          rewardInfos[`${farmInfo.dex}|${reward.asset_token}|${farmInfo.denomTokenContract}`] = {
+            ...reward,
+            farm: farmInfo.farm,
+            farmContract: farmInfo.farmContract
+          };
         } else {
           const baseToken = reward.asset_token || farmInfo.defaultBaseTokenContract;
           rewardInfos[`${farmInfo.dex}|${baseToken}|${farmInfo.denomTokenContract}-${farmInfo.farmType}`] = {
@@ -847,6 +851,7 @@ export class InfoService {
     } finally {
       this.loadedNetwork = this.terrajs.settings.chainID;
     }
+    localStorage.setItem('infoSchemaVersion', '4');
   }
 
   updateVaults() {
