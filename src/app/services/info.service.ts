@@ -643,7 +643,7 @@ export class InfoService {
 
   async refreshCirculation() {
     // testnet doesn't have burnvault
-    if (this.terrajs.network?.name === 'testnet' || DEFAULT_NETWORK === 'testnet') {
+    if (this.terrajs.network?.name === 'testnet' || DEFAULT_NETWORK.trim() === 'testnet') {
       const task1 = this.token.query(this.terrajs.settings.specToken, {token_info: {}});
       const task2 = this.wallet.balance(this.terrajs.settings.wallet, this.terrajs.settings.platform);
       const taskResult = await Promise.all([task1, task2]);
