@@ -115,6 +115,7 @@
             {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
             <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | balance: info.poolResponses[NASSET_PSI_KEY]:info.poolResponses[PSI_UST_KEY] | unit: 6: '1.0-2' }})
+<!--              TODO fix this-->
               <i [mdbTooltip]="info.rewardInfos[vault.poolInfo.key] | rewardInfo"
                  class="fas fa-info-circle info-icon super"></i>
             </span>
