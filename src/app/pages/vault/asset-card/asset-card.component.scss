@@ -18,6 +18,10 @@
     position: absolute;
     left: 5.5px;
     top: 22px;
+    filter: drop-shadow(1px 0 0 $gray-800) 
+            drop-shadow(0 1px 0 $gray-800)
+            drop-shadow(-1px 0 0 $gray-800) 
+            drop-shadow(0 -1px 0 $gray-800);
   }
 
   .hand-icon-under-token-row {
