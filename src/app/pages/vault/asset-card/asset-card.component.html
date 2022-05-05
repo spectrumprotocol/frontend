@@ -14,6 +14,8 @@
         <div class="row">
           <div class="col-12 col-sm-8 text-center no-padding">
             <div class="p-2 bulk-name-container" *ngIf="FARM_TYPE_DISPLAY_AS_PAIR_TOKEN.has(vault.poolInfo.farmType)">
+              <i *ngIf="vault.poolInfo.farmType === 'BORROWED'"
+                 class="fas fa-lg fa-hand-holding hand-icon-under-token-row"></i>
               <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon mt-2 float-start">
               <img [src]="vault.denomSymbol | url:'icon'"
                    class="img-fluid rounded-circle assetIcon mt-2 float-start token-denom">
@@ -129,9 +131,7 @@
       <div class="col-12 d-flex justify-content-center no-padding">
         <div class="pt-2 p-l-0 bulk-name-container"
              *ngIf="FARM_TYPE_DISPLAY_AS_PAIR_TOKEN.has(vault.poolInfo.farmType)">
-          <!--          <img *ngIf="vault.poolInfo.farmType === 'BORROWED'" src="assets/hand-borrowfarm100px.png"-->
-          <!--               class="img-fluid rounded-circle borrowIcon float-start">-->
-          <i *ngIf="vault.poolInfo.farmType === 'BORROWED'" class="fas fa-lg fa-hand-holding borrowIcon2"></i>
+          <i *ngIf="vault.poolInfo.farmType === 'BORROWED'" class="fas fa-lg fa-hand-holding hand-icon-under-token"></i>
           <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
           <img [src]="vault.denomSymbol | url:'icon'"
                class="img-fluid rounded-circle assetIcon float-start token-denom">

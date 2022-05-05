@@ -26,7 +26,11 @@ import {AstroportService} from '../../../../services/api/astroport.service';
 import {SimulateZapToBondResponse} from '../../../../services/api/staker/simulate_zap_to_bond_response';
 import {SimulationResponse} from '../../../../services/api/terraswap_pair/simulation_response';
 import {PercentPipe} from '@angular/common';
-import {FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN, FarmInfoService} from 'src/app/services/farm_info/farm-info.service';
+import {
+  FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN,
+  FARM_TYPE_DISPLAY_AS_PAIR_TOKEN,
+  FarmInfoService
+} from 'src/app/services/farm_info/farm-info.service';
 import {AstroportRouterService} from '../../../../services/api/astroport-router.service';
 import {RewardInfoPipe} from 'src/app/pipes/reward-info.pipe';
 import {LpSplitPipe} from 'src/app/pipes/lp-split.pipe';
@@ -51,7 +55,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   UNIT: number = CONFIG.UNIT;
   SLIPPAGE = CONFIG.SLIPPAGE_TOLERANCE;
-  FARM_TYPE_SINGLE_TOKEN = FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN;
+  FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN = FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN;
+  FARM_TYPE_DISPLAY_AS_PAIR_TOKEN = FARM_TYPE_DISPLAY_AS_PAIR_TOKEN;
   // naming convention: actual input field, input mode
   depositTokenAAmtTokenToken: number;
   depositUSTAmountTokenUST: number;
@@ -668,7 +673,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else if (this.vault.poolInfo.dex === 'Terraswap') {
       commission = +CONFIG.TERRASWAP_COMMISSION;
     }
-    if (this.FARM_TYPE_SINGLE_TOKEN.has(this.vault.poolInfo.farmType) && this.vault.poolInfo.farmType !== 'BORROWED') {
+    if (this.FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.vault.poolInfo.farmType) && this.vault.poolInfo.farmType !== 'BORROWED') {
       const offer_amount = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT).toString();
       let simulateSwapOperationRes;
       if (this.vault.poolInfo.dex === 'Terraswap') {

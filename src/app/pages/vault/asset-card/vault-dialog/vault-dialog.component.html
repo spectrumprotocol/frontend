@@ -1,11 +1,9 @@
 <div class="modal-header pb-0">
   <div class="col-11 d-flex justify-content-center">
-    <div *ngIf="vault.poolInfo.farmType === 'LP' || vault.poolInfo.farmType === 'BORROWED'" class="p-2 p-l-0 bulk-name-container">
-      <img [src]="(vault.poolInfo.farmType === 'BORROWED' ? vault.denomSymbol : vault.baseSymbol) | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
-      <img [src]="(vault.poolInfo.farmType === 'BORROWED' ? vault.baseSymbol : vault.denomSymbol) | url:'icon'"
-           class="img-fluid rounded-circle assetIcon float-start token-denom">
-      <!--          <img [src]="vault.symbol | url:'icon'" class="img-fluid rounded-circle assetIcon-list-sm float-start">-->
-      <!--          <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle assetIcon ust-outline float-start">-->
+    <div *ngIf="FARM_TYPE_DISPLAY_AS_PAIR_TOKEN.has(vault.poolInfo.farmType)" class="p-2 p-l-0 bulk-name-container">
+      <i *ngIf="vault.poolInfo.farmType === 'BORROWED'" class="fas fa-lg fa-hand-holding hand-icon-under-token-vault-dialog"></i>
+      <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
+      <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start token-denom">
       <div class="name-detail">
         <h6 class="m-0"> {{vault.fullName}}
           <img *ngIf="vault.poolInfo.dex === 'Astroport'" src="./assets/logo-astroport.svg" class="dex-logo" alt="Astroport DEX">
@@ -14,7 +12,7 @@
         <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
       </div>
     </div>
-    <div *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'" class="p-2 p-l-0 bulk-name-container">
+    <div *ngIf="FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'" class="p-2 p-l-0 bulk-name-container">
       <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
       <div class="name-detail">
         <h6 class="m-0">{{vault.fullName}}
@@ -93,7 +91,7 @@
         <div class="card-body">
           <p class="card-text sub-topic">
             <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">LP Balance</ng-container>
-            <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)">Balance</ng-container>
+            <ng-container *ngIf="FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(vault.poolInfo.farmType)">Balance</ng-container>
           </p>
           <h3 class="card-title text-primary" *ngIf="vault.poolInfo.farmType === 'LP'">
             {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
@@ -153,7 +151,7 @@
       </div>
     </div>
     <div *ngIf="(vault.poolInfo.dex === 'Terraswap' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake) ||
-      (vault.poolInfo.auto_stake && FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType))
+      (vault.poolInfo.auto_stake && FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(vault.poolInfo.farmType))
       " class="col col-mb">
       <div class="card box-left h-100">
         <div class="card-body">
@@ -1002,7 +1000,7 @@
                 <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
                 {{ vault.unitDisplay }}
               </span>
-              <span *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)" class="input-group-text f-12 igt-fixwidth fw-bold-600">
+              <span *ngIf="FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(vault.poolInfo.farmType)" class="input-group-text f-12 igt-fixwidth fw-bold-600">
                 <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
                 {{ vault.baseSymbol }}
               </span>
@@ -1211,7 +1209,7 @@
         </button>
       </span>
       </ng-container>
-      <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'">
+      <ng-container *ngIf="FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'">
       <span class="btn-group w-100">
         <button (click)="depositMode = 'single_token'; changeDepositMode('single_token')" [ngClass]="depositMode === 'single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}</button>
@@ -1225,7 +1223,7 @@
 
   <ng-template #withdrawModeSection>
     <div class="auto-container mb-1">
-    <ng-container *ngIf="FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'">
+    <ng-container *ngIf="FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'">
       <span class="btn-group w-100">
         <button (click)="withdrawMode = 'single_token'" [ngClass]="withdrawMode === 'single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}

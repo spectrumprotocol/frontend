@@ -13,21 +13,24 @@
     padding-left: 10px;
     text-align: left;
   }
-}
 
-//TODO remove this later
-.borrowIcon {
-  top: 25px;
-  left: -2.5px;
-  width: 20px;
-  height: 20px;
-  position: absolute;
-}
+  .hand-icon-under-token {
+    position: absolute;
+    left: 5.5px;
+    top: 22px;
+  }
 
-.borrowIcon2 {
-  top: 22px;
-  left: 5px;
-  position: absolute;
+  .hand-icon-under-token-row {
+    position: absolute;
+    left: 13px;
+    top: 30px;
+  }
+
+  .hand-icon-under-token-vault-dialog {
+    position: absolute;
+    left: 13px;
+    top: 22px;
+  }
 }
 
 .assetIcon {
