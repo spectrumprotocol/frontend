@@ -10,16 +10,18 @@ import {GoogleAnalyticsService} from 'ngx-google-analytics';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
 
+type AssetInfo = { native_token: { denom: string } } | { token: { contract_addr: string } };
+
 export interface Vault {
   baseSymbol: string;
   denomSymbol: string;
   rewardSymbol: string;
   baseDecimals: number;
   baseUnit: number;
-  baseAssetInfo: object;
+  baseAssetInfo: AssetInfo;
   denomDecimals: number;
   denomUnit: number;
-  denomAssetInfo: object;
+  denomAssetInfo: AssetInfo;
   lpToken: string;
   pairInfo: PairInfo;
   poolInfo: PoolInfo;

@@ -7,10 +7,33 @@
 
 .bulk-name-container {
   position: relative;
+
   .name-detail {
     float: left;
     padding-left: 10px;
     text-align: left;
+  }
+
+  .hand-icon-under-token {
+    position: absolute;
+    left: 5.5px;
+    top: 22px;
+    filter: drop-shadow(1px 0 0 $gray-800) 
+            drop-shadow(0 1px 0 $gray-800)
+            drop-shadow(-1px 0 0 $gray-800) 
+            drop-shadow(0 -1px 0 $gray-800);
+  }
+
+  .hand-icon-under-token-row {
+    position: absolute;
+    left: 13px;
+    top: 30px;
+  }
+
+  .hand-icon-under-token-vault-dialog {
+    position: absolute;
+    left: 13px;
+    top: 22px;
   }
 }
 
@@ -83,6 +106,7 @@
     transform: translateY(-0.2em);
   }
 }
+
 @keyframes mover {
   0% {
     transform: translateY(0);
@@ -107,20 +131,24 @@
       background: $white;
       height: 10px;
     }
+
     .ngx-slider-pointer {
       width: 32px;
       height: 32px;
       top: auto;
       bottom: -16px;
       background-color: $primary;
+
       &:focus {
         outline-style: none !important;
         outline-width: 0 !important;
       }
+
       &:after {
         display: none;
       }
     }
+
     .ngx-slider-bubble {
       display: none;
     }

@@ -91,6 +91,8 @@ export interface ISettings {
   astroportStlunaLdoFarm: string;
   astroportStlunaLdoStaking: string;
   astroportMarsUstFarm: string;
+  astroportOrneUstFarm: string;
+  orneToken: string;
   marsToken: string;
   stlunaToken: string;
   stsolToken: string;
@@ -123,6 +125,8 @@ export interface ISettings {
   nLunaFarm: string;
   nETHFarm: string;
   astroportRouter: string;
+  specBorrowedFarm: string;
+  specLeveragedFarm: string;
   // // batch only
   // lcdPost: string;
   // controller: string;
@@ -226,6 +230,8 @@ export const networks: Record<string, ISettings> = {
     astroportStlunaLdoFarm: 'terra1aeaz2w7gxu7ga8fj76mna8skhvq6ft0q0x42tv',
     astroportStlunaLdoStaking: 'terra10t8rn7swtkmkfm56mmxwmk2v9xrv78fljsd3ez',
     astroportMarsUstFarm: 'terra1d55nmhuq75r3vf93hwkau2stts4mpe9h22herz',
+    astroportOrneUstFarm: 'terra19adzxnzdgmpm3jelxjw0d2h635cuymemsvtp5n',
+    orneToken: 'terra1hnezwjqlhzawcrfysczcxs6xqxu2jawn729kkf',
     marsToken: 'terra12hgwnpupflfpuual532wgrxu2gjp0tcagzgx4n',
     stlunaToken: 'terra1yg3j2s986nyp5z7r2lvt0hx3r0lnd7kwvwwtsc', // decimal 6
     stsolToken: 'terra1t9ul45l7m6jw6sxgvnp8e5hj8xzkjsg82g84ap', // decimal 8
@@ -254,8 +260,10 @@ export const networks: Record<string, ISettings> = {
     nLunaFarm: 'terra16usjvptlpdrj7hcmy7mvdap5tttzcya7ch0can',
     nETHFarm: 'terra1gvlll4hytc9s34dskw5ym86erx3hx2j6sa8zhy',
     astroportRouter: 'terra16t7dpwwgx9n3lq6l6te3753lsjqwhxwpday9zx',
+    specBorrowedFarm: '',
     // lcd: 'https://lcd.terra.dev',
     lcd: 'https://node2.spec.finance',
+    specLeveragedFarm: '',
     fcd: 'https://fcd.terra.dev',
     querier: 'terra1kwk8xzc3ag5e02mzdvrqafwtjncnpypsnuxztf',
     mirrorGraph: 'mirror',
@@ -356,6 +364,8 @@ export const networks: Record<string, ISettings> = {
     astroportStlunaLdoFarm: '',
     astroportStlunaLdoStaking: '',
     astroportMarsUstFarm: '',
+    astroportOrneUstFarm: '',
+    orneToken: '',
     marsToken: '',
     stlunaToken: '',
     stsolToken: '',
@@ -386,6 +396,8 @@ export const networks: Record<string, ISettings> = {
     nLunaFarm: 'terra1qrzu4zls2ep8drfmx2ul4fu9fu5qular9jlktl',
     nETHFarm: 'terra1zhdxsmpzpakrxcns00kyegpd8gsj4qvrahwj26',
     astroportRouter: 'terra13wf295fj9u209nknz2cgqmmna7ry3d3j5kv7t4',
+    specBorrowedFarm: 'terra1jr9ctj9segzevwz6w7gmdc35jhcgxgsuqmrudy',
+    specLeveragedFarm: 'terra1r2rtxhwj5fxzhj7tj3ek2dfdzqc8vcsf5z24ga',
     lcd: 'https://bombay-lcd.terra.dev',
     fcd: 'https://bombay-fcd.terra.dev',
     querier: 'terra16t9kkqa5esathvd0prw7v4zv5gsud2kvzj5qew',

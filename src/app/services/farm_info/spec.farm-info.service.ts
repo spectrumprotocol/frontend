@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import BigNumber from 'bignumber.js';
-import { SpecFarmService } from '../api/spec-farm.service';
-import { TerrajsService } from '../terrajs.service';
+import {SpecFarmService} from '../api/spec-farm.service';
+import {TerrajsService} from '../terrajs.service';
 import {
   DEX,
   FARM_TYPE_ENUM,
@@ -11,11 +11,11 @@ import {
   PoolItem,
   RewardInfoResponseItem
 } from './farm-info.service';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../libs/base64';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { VaultsResponse } from '../api/gov/vaults_response';
-import { Denom } from '../../consts/denom';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
+import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {VaultsResponse} from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
@@ -36,7 +36,8 @@ export class SpecFarmInfoService implements FarmInfoService {
   constructor(
     private specFarm: SpecFarmService,
     private terrajs: TerrajsService,
-  ) { }
+  ) {
+  }
 
   get farmContract() {
     return this.terrajs.settings.specFarm;
@@ -51,7 +52,7 @@ export class SpecFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.specFarm.query({ pools: {} });
+    const pool = await this.specFarm.query({pools: {}});
     return pool.pools;
   }
 
@@ -60,28 +61,49 @@ export class SpecFarmInfoService implements FarmInfoService {
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.specFarm)?.weight || 0;
 
     const pairs: Record<string, PairStat> = {};
-    const tasks = Object.keys(poolInfos).map(async key => {
-      const poolInfo = poolInfos[key];
-      const p = poolResponses[key];
-      const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
-      if (!uusd) {
-        return;
-      }
-      const value = new BigNumber(uusd.amount)
-        .times(poolInfo.total_bond_amount as string)
-        .times(2)
-        .div(p.total_share)
-        .toString();
-      pairs[key] = {
-        poolApr: 0,
-        poolApy: 0,
-        farmApr: 0,
-        tvl: value,
-        multiplier: govWeight * poolInfo.weight / totalWeight,
-        vaultFee: 0,
-      };
-    });
-    await Promise.all(tasks);
+    // const tasks = Object.keys(poolInfos).map(async key => {
+    //   const poolInfo = poolInfos[key];
+    //   const p = poolResponses[key];
+    //   const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
+    //   if (!uusd) {
+    //     return;
+    //   }
+    //   const value = new BigNumber(uusd.amount)
+    //     .times(poolInfo.total_bond_amount as string)
+    //     .times(2)
+    //     .div(p.total_share)
+    //     .toString();
+    //   pairs[key] = {
+    //     poolApr: 0,
+    //     poolApy: 0,
+    //     farmApr: 0,
+    //     tvl: value,
+    //     multiplier: govWeight * poolInfo.weight / totalWeight,
+    //     vaultFee: 0,
+    //   };
+    // });
+    // await Promise.all(tasks);
+    const key = `${this.dex}|${this.defaultBaseTokenContract}|${this.denomTokenContract}`;
+    const poolInfo = poolInfos[key];
+    const p = poolResponses[key];
+    const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
+    if (!uusd) {
+      return;
+    }
+    const value = new BigNumber(uusd.amount)
+      .times(poolInfo.total_bond_amount as string)
+      .times(2)
+      .div(p.total_share)
+      .toString();
+    pairs[key] = {
+      poolApr: 0,
+      poolApy: 0,
+      farmApr: 0,
+      tvl: value,
+      multiplier: govWeight * poolInfo.weight / totalWeight,
+      vaultFee: 0,
+    };
+
     return pairs;
   }
 
@@ -105,7 +127,7 @@ export class SpecFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.gov,
           amount,
-          msg: toBase64({ stake_tokens: additionalData })
+          msg: toBase64({stake_tokens: additionalData})
         }
       }
     );

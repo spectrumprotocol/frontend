@@ -97,6 +97,7 @@ import {LoterraFarmInfoService} from 'src/app/services/farm_info/loterra.farm-in
 import {NethFarmInfoService} from './services/farm_info/neth.farm-info.service';
 import {NlunaFarmInfoService} from './services/farm_info/nluna.farm-info.service';
 import {CurrencyPipe} from './pipes/currency.pipe';
+import {SpecBorrowedFarmInfoService} from './services/farm_info/spec-borrowed.farm-info.service';
 import {AstroportSayveUstFarmInfoService} from './services/farm_info/astroport/astroport-sayve-ust.farm-info.service';
 import {
   AstroportStlunaLunaFarmInfoService
@@ -105,6 +106,7 @@ import {AstroportStlunaLdoFarmInfoService} from './services/farm_info/astroport/
 import {AstroportStethUstFarmInfoService} from './services/farm_info/astroport/astroport-steth-ust.farm-info.service';
 import {AstroportStsolUstFarmInfoService} from './services/farm_info/astroport/astroport-stsol-ust.farm-info.service';
 import {AstroporMarsUstFarmInfoService} from './services/farm_info/astroport/astroport-mars-ust.farm-info.service';
+import {AstroportOrneUstFarmInfoService} from './services/farm_info/astroport/astroport-orne-ust.farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -190,6 +192,7 @@ registerLocaleData(locale, 'en');
       multi: true
     },
     {provide: FARM_INFO_SERVICE, useClass: SpecFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: SpecBorrowedFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportApolloUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportAstroUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportLunaUstFarmInfoService, multi: true},
@@ -215,6 +218,7 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: NethFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: OrionFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportOrionUstFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportOrneUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: PylonFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportMineUstFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: BPsiDPFarmInfoService, multi: true},

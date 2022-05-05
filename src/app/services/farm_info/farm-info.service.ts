@@ -9,6 +9,7 @@ import {RewardInfoResponseItem as SpecRewardInfoResponseItem} from '../api/spec_
 import {
   RewardInfoResponseItem as AstroportTokenUSTRewardInfoResponseItem
 } from '../api/astroport_token_ust_farm/reward_info_response';
+import {RewardInfoResponseItem as BorrowedFarmRewardInfoResponseItem} from '../api/borrowed_farm/reward_info_response';
 
 import {InjectionToken} from '@angular/core';
 import {MsgExecuteContract} from '@terra-money/terra.js';
@@ -22,8 +23,10 @@ export type PoolItem =
   | nAssetPsiPoolItem
   | PylonLiquidPoolItem
   | AstroportTokenUSTPoolItem;
-export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID' | 'NASSET';
-export const FARM_TYPE_SINGLE_TOKEN: Set<string> = new Set(['PYLON_LIQUID', 'NASSET']);
+export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID' | 'NASSET' | 'BORROWED';
+export const FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN: Set<FARM_TYPE_ENUM> = new Set(['PYLON_LIQUID', 'NASSET', 'BORROWED']);
+export const FARM_TYPE_DISPLAY_AS_PAIR_TOKEN: Set<FARM_TYPE_ENUM> = new Set(['LP', 'BORROWED']);
+export const FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN: Set<FARM_TYPE_ENUM> = new Set(['PYLON_LIQUID', 'NASSET']);
 
 export type DEX = 'Terraswap' | 'Astroport';
 export type PoolInfo = PoolItem & {
@@ -51,7 +54,8 @@ export type PoolInfo = PoolItem & {
 export type RewardInfoResponseItem =
   AstroportTokenUSTRewardInfoResponseItem
   | MirrorRewardInfoResponseItem
-  | SpecRewardInfoResponseItem;
+  | SpecRewardInfoResponseItem
+  | BorrowedFarmRewardInfoResponseItem;
 
 export interface PairStat {
   tvl: string;
@@ -109,5 +113,7 @@ export interface FarmInfoService {
 
   getConfig?();
 
-}
+  getCustomPoolInfos?(): Promise<Omit<PoolInfo, 'key'>[]>;
 
+  getUserCredit?(): Promise<string>;
+}
