@@ -950,13 +950,13 @@ export class InfoService {
         stakeApy,
         apy,
         name: vaultName,
-        unitDisplay: FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(poolInfo.farmType)
+        unitDisplay: FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
-        unitDisplayDexAbbreviated: FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(poolInfo.farmType)
+        unitDisplayDexAbbreviated: FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `${baseSymbol}-${denomSymbol} ${abbreviatedDex} LP`,
-        shortUnitDisplay: FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(poolInfo.farmType)
+        shortUnitDisplay: FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(poolInfo.farmType)
           ? baseSymbol
           : `LP`,
         score,
