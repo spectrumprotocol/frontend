@@ -90,8 +90,8 @@
       <div class="card box-left">
         <div class="card-body">
           <p class="card-text sub-topic">
-            <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">LP Balance</ng-container>
-            <ng-container *ngIf="FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(vault.poolInfo.farmType)">Balance</ng-container>
+            <ng-container *ngIf="FARM_TYPE_DISPLAY_AS_PAIR_TOKEN.has(vault.poolInfo.farmType)">LP Balance</ng-container>
+            <ng-container *ngIf="FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(vault.poolInfo.farmType)">Balance</ng-container>
           </p>
           <h3 class="card-title text-primary" *ngIf="vault.poolInfo.farmType === 'LP'">
             {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
@@ -119,9 +119,9 @@
             </span>
           </h3>
           <h3 class="card-title text-primary" *ngIf="vault.poolInfo.farmType === 'BORROWED'">
-            {{ info.rewardInfos[vault.poolInfo.key]?.net_amount || '0' | unit: 6}}
-            <span *ngIf="vault.baseSymbol !== 'UST' && +info.rewardInfos[vault.poolInfo.key]?.net_amount >= 10" class="small text-white">
-              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.net_value || '0' | unit: 6: '1.0-2' }})
+            {{ info.rewardInfos[vault.poolInfo.key]?.['bond_amount'] || '0' | unit: 6}}
+            <span *ngIf="vault.baseSymbol !== 'UST' && +info.rewardInfos[vault.poolInfo.key]?.['net_amount']  >= 10" class="small text-white">
+              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.['net_amount'] || '0' | unit: 6: '1.0-2' }})
             </span>
           </h3>
           <h6 *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="card-subtitle text-success">

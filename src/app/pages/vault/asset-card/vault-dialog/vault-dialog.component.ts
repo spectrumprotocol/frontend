@@ -192,11 +192,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           }
         } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
           const tasks: Promise<any>[] = [];
-          tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.baseTokenContract)); // AssetToken-Farm
-          tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.denomTokenContract)); // Farm-UST
 
           if (this.vault.poolInfo.farmType === 'BORROWED') {
             tasks.push(this.refreshBorrowedFarmData());
+          } else {
+            tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.baseTokenContract)); // AssetToken-Farm
+            tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.denomTokenContract)); // Farm-UST
           }
 
           await Promise.all(tasks);
