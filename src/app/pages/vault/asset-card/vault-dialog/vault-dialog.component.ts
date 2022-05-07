@@ -795,7 +795,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       } else {
         const rewardInfo = this.info.rewardInfos[this.vault.poolInfo.key];
         const percentage = +div(times(this.withdrawAmt, CONFIG.UNIT), rewardInfo.net_amount as any);
-        this.borrowedFarmUnbondAmount = percentage === 1 ? undefined : floor(times(rewardInfo.bond_amount, percentage));
+        this.borrowedFarmUnbondAmount = floor(times(rewardInfo.bond_amount, percentage));
       }
     } else if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
       // LDO -> stLuna
@@ -1014,12 +1014,15 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       await this.terrajs.post([unbond, withdrawUst]);
     } else if (this.withdrawMode === 'ust_single_token') {
       if (this.vault.poolInfo.farmType === 'BORROWED') {
+        const rewardInfo = this.info.rewardInfos[this.vault.poolInfo.key];
+        const percentage = +div(times(this.withdrawAmt, CONFIG.UNIT), rewardInfo.net_amount as any);
+        const borrowedFarmUnbondAmountForSubmit = percentage === 1 ? undefined : floor(times(rewardInfo.bond_amount, percentage));
         const unbondBorrowFarm = new MsgExecuteContract(
           this.terrajs.address,
           this.vault.poolInfo.farmContract,
           {
             unbond: {
-              amount: this.borrowedFarmUnbondAmount,
+              amount: borrowedFarmUnbondAmountForSubmit,
               belief_price: this.withdrawTokenPrice,
               max_spread: this.SLIPPAGE,
             },
