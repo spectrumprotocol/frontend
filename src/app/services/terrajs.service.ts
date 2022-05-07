@@ -1,9 +1,9 @@
-import {Injectable, OnDestroy} from '@angular/core';
-import {Coin, LCDClient, Msg, SyncTxBroadcastResult} from '@terra-money/terra.js';
-import {ISettings, networks} from '../consts/networks';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {BehaviorSubject, firstValueFrom, interval, Subject, Subscription} from 'rxjs';
-import {filter, startWith} from 'rxjs/operators';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Coin, LCDClient, Msg, SyncTxBroadcastResult } from '@terra-money/terra.js';
+import { ISettings, networks } from '../consts/networks';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, firstValueFrom, interval, Subject, Subscription } from 'rxjs';
+import { filter, startWith } from 'rxjs/operators';
 import {
   ConnectType,
   getChainOptions,
@@ -12,10 +12,11 @@ import {
   WalletStates,
   WalletStatus
 } from '@terra-money/wallet-provider';
-import {ModalService} from './modal.service';
-import {throttleAsync} from 'utils-decorators';
-import {MdbModalService} from 'mdb-angular-ui-kit/modal';
+import { ModalService } from './modal.service';
+import { throttleAsync } from 'utils-decorators';
+import { MdbModalService } from 'mdb-angular-ui-kit/modal';
 import BigNumber from 'bignumber.js';
+import { environment } from '../../environments/environment';
 
 export const BLOCK_TIME = 6500; // 6.5s
 export const DEFAULT_NETWORK = 'mainnet';
@@ -127,6 +128,12 @@ export class TerrajsService implements OnDestroy {
 
   async initLcdClient() {
     const gasPrices = await this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`).toPromise();
+
+    // use terra lcd for localhost
+    if (!environment.production && this.network.name === 'mainnet') {
+      this.settings.lcd = 'https://lcd.terra.dev';
+    }
+
     this.lcdClient = new LCDClient({
       URL: this.settings.lcd,
       chainID: this.settings.chainID,
@@ -164,7 +171,7 @@ export class TerrajsService implements OnDestroy {
       const types = connectTypes.concat(installTypes);
       const modal = await import('./connect-options/connect-options.component');
       const ref = this.modalService.open(modal.ConnectOptionsComponent, {
-        data: {types}
+        data: { types }
       });
       connectCallbackData = await ref.onClose.toPromise();
       if (!connectCallbackData.type) {
@@ -186,7 +193,7 @@ export class TerrajsService implements OnDestroy {
     let wallet: WalletInfo;
     if (state.wallets.length === 0) {
 
-      this.modal.alert('No wallet, please setup wallet first', {iconType: 'danger'});
+      this.modal.alert('No wallet, please setup wallet first', { iconType: 'danger' });
       throw new Error('No wallet');
     } else if (state.wallets.length === 1) {
       wallet = state.wallets[0];
@@ -228,7 +235,7 @@ export class TerrajsService implements OnDestroy {
   @throttleAsync(20)
   async get(path: string, params?: Record<string, string>, additionalHeaders?: Record<string, string>) {
     // const headers = new HttpHeaders({ 'Cache-Control': 'no-cache', 'Content-Type': 'application/json' });
-    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     if (additionalHeaders) {
       const keys = Object.keys(additionalHeaders);
       for (const key of keys) {

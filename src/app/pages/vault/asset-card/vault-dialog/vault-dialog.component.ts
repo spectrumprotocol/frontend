@@ -444,56 +444,36 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
         await this.terrajs.post(msgs);
       } else {
-        let msgs;
-        if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
-          msgs = new MsgExecuteContract(this.terrajs.address, staker, {
-            zap_to_bond: {
-              asset_token: this.vault.poolInfo.asset_token, // stluna
-              contract: farmContract,
-              provide_asset: {
-                info: {
-                  native_token: {
-                    denom: Denom.USD
-                  }
-                },
-                amount: depositUST
+        const farmInfo = this.info.farmInfos.find(it => it.farmContract === this.vault.poolInfo.farmContract);
+        const msgs = new MsgExecuteContract(this.terrajs.address, staker, {
+          zap_to_bond: {
+            asset_token: this.vault.poolInfo.asset_token,
+            contract: farmContract,
+            provide_asset: {
+              info: {
+                native_token: {
+                  denom: Denom.USD
+                }
               },
-              pair_asset: this.vault.baseAssetInfo, // stluna
-              belief_price: this.basedTokenPrice, // stluna
-              max_spread: '0.01',
-              compound_rate: auto_compound_ratio,
-              pair_asset_b: this.vault.denomAssetInfo, // ldo
-              belief_price_b: this.tokenPrice, // ldo
-              swap_hints: this.getSwapHints(false, this.swapHintPrices)
-            }
-          } as StakerExecuteMsg, new Coins([coin]));
-        } else {
-          msgs = new MsgExecuteContract(this.terrajs.address, staker, {
-            zap_to_bond: {
-              asset_token: this.vault.poolInfo.asset_token,
-              contract: farmContract,
-              provide_asset: {
-                info: {
-                  native_token: {
-                    denom: Denom.USD
-                  }
-                },
-                amount: depositUST
-              },
-              pair_asset: this.vault.denomAssetInfo,
-              belief_price: this.tokenPrice,
-              max_spread: CONFIG.SLIPPAGE_TOLERANCE,
-              compound_rate: auto_compound_ratio,
-              pair_asset_b: {
-                token: {
-                  contract_addr: this.vault.poolInfo.baseTokenContract // nasset
-                },
-              },
-              belief_price_b: this.basedTokenPrice,
-              swap_hints: this.getSwapHints()
-            }
-          } as StakerExecuteMsg, new Coins([coin]));
-        }
+              amount: depositUST
+            },
+            pair_asset: farmInfo.zapToBaseFirst
+              ? this.vault.baseAssetInfo
+              : this.vault.denomAssetInfo,
+            belief_price: farmInfo.zapToBaseFirst
+              ? this.basedTokenPrice
+              : this.tokenPrice,
+            max_spread: this.SLIPPAGE,
+            compound_rate: auto_compound_ratio,
+            pair_asset_b: farmInfo.zapToBaseFirst
+              ? this.vault.denomAssetInfo
+              : this.vault.baseAssetInfo,
+            belief_price_b: farmInfo.zapToBaseFirst
+              ? this.tokenPrice
+              : this.basedTokenPrice,
+            swap_hints: farmInfo.getSwapHints?.(this.info.pairInfos, false, this.swapHintPrices),
+          }
+        } as StakerExecuteMsg, new Coins([coin]));
         await this.terrajs.post(msgs);
       }
     } else if (this.depositMode === 'single_token') {
@@ -908,7 +888,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           },
         } as StakerCw20HookMsg;
       } else {
-        if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
+        const farmInfo = this.info.farmInfos.find(it => it.farmContract === this.vault.poolInfo.farmContract);
+        if (farmInfo.zapToBaseFirst) {
           msg = {
             zap_to_unbond: {
               sell_asset: this.vault.baseAssetInfo,
@@ -917,7 +898,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               belief_price: this.withdrawTokenPrice,
               belief_price_b: this.withdrawBaseTokenPrice,
               max_spread: this.SLIPPAGE,
-              swap_hints: this.getSwapHints(true)
+              swap_hints: farmInfo.getSwapHints?.(this.info.pairInfos, true)
             },
           } as StakerCw20HookMsg;
         } else {
@@ -929,6 +910,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
               belief_price: this.withdrawTokenPrice,
               belief_price_b: this.withdrawBaseTokenPrice,
               max_spread: this.SLIPPAGE,
+              swap_hints: farmInfo.getSwapHints?.(this.info.pairInfos, true)
             },
           } as StakerCw20HookMsg;
         }
@@ -1137,26 +1119,22 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       grossLp = new BigNumber(res.lp_amount).div(CONFIG.UNIT);
       this.tokenPrice = this.toUIPrice(res.belief_price, 6, this.vault.baseDecimals);
     } else {
-      let assetBase;
-      let assetDenom;
-      if (this.terrajs.settings.astroportStlunaLdoFarm === this.vault.poolInfo.farmContract) {
-        const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
-        [assetBase, assetDenom] = this.terrajs.settings.ldoToken === this.vault.poolInfo.baseTokenContract
-          ? [poolResponse.assets[0], poolResponse.assets[1]]
-          : [poolResponse.assets[1], poolResponse.assets[0]];
-      } else {
-        [assetBase, assetDenom] = this.findAssetBaseAndDenom();
-      }
+      const farmInfo = this.info.farmInfos.find(it => it.farmContract === this.vault.poolInfo.farmContract);
+      const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
 
       const simulate_zap_to_bond_msg = {
         simulate_zap_to_bond: {
-          pair_asset_b: assetBase.info,
-          pair_asset: assetDenom.info,
+          pair_asset: farmInfo.zapToBaseFirst
+            ? assetBase.info
+            : assetDenom.info,
+          pair_asset_b: farmInfo.zapToBaseFirst
+            ? assetDenom.info
+            : assetBase.info,
           provide_asset: {
             amount: depositTVL.toString(),
             info: {native_token: {denom: Denom.USD}}
           },
-          swap_hints: this.getSwapHints()
+          swap_hints: farmInfo.getSwapHints?.(this.info.pairInfos, false)
         }
       };
       let res: SimulateZapToBondResponse;
@@ -1441,51 +1419,5 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else if (mode === 'compound') {
       return times(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount, (this.auto_compound_percent_reallocate) / 100);
     }
-  }
-
-  private getSwapHints(reverse?: boolean, swapHintPrices?: { [p: string]: Decimal }): [] {
-    let swap_hints;
-    if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
-      const luna_ust_pairInfo = this.info.pairInfos[this.LUNA_UST_KEY];
-      const stluna_luna_pairInfo = this.info.pairInfos[this.STLUNA_LUNA_KEY];
-      if (reverse) {
-        swap_hints = [{
-          asset_info: {
-            token: {
-              contract_addr: this.terrajs.settings.stlunaToken
-            }
-          },
-          pair_contract: stluna_luna_pairInfo.contract_addr,
-          belief_price: swapHintPrices ? swapHintPrices[1] : undefined
-        } as SwapOperation, {
-          asset_info: {
-            native_token: {
-              denom: Denom.LUNA
-            }
-          },
-          pair_contract: luna_ust_pairInfo.contract_addr,
-          belief_price: swapHintPrices ? swapHintPrices[0] : undefined
-        } as SwapOperation];
-      } else {
-        swap_hints = [{
-          asset_info: {
-            native_token: {
-              denom: Denom.USD
-            }
-          },
-          pair_contract: luna_ust_pairInfo.contract_addr,
-          belief_price: swapHintPrices ? swapHintPrices[0] : undefined
-        } as SwapOperation, {
-          asset_info: {
-            native_token: {
-              denom: Denom.LUNA
-            }
-          },
-          pair_contract: stluna_luna_pairInfo.contract_addr,
-          belief_price: swapHintPrices ? swapHintPrices[1] : undefined
-        } as SwapOperation];
-      }
-    }
-    return swap_hints;
   }
 }

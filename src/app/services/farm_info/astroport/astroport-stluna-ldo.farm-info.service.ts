@@ -1,19 +1,20 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import BigNumber from 'bignumber.js';
-import {PoolItem} from '../../api/astroport_token_ust_farm/pools_response';
-import {RewardInfoResponseItem} from '../../api/astroport_token_ust_farm/reward_info_response';
-import {TerrajsService} from '../../terrajs.service';
-import {DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo} from './../farm-info.service';
-import {MsgExecuteContract} from '@terra-money/terra.js';
-import {PoolResponse} from '../../api/terraswap_pair/pool_response';
-import {VaultsResponse} from '../../api/gov/vaults_response';
-import {Denom} from '../../../consts/denom';
-import {WasmService} from '../../api/wasm.service';
-import {PairInfo} from '../../api/terraswap_factory/pair_info';
-import {AstroportStlunaLdoFarmService} from '../../api/astroport-stlunaldo-farm.service';
-import {times} from '../../../libs/math';
-import {getStablePrice} from '../../../libs/stable';
-import {balance_transform} from '../../calc/balance_calc';
+import { PoolItem } from '../../api/astroport_token_ust_farm/pools_response';
+import { RewardInfoResponseItem } from '../../api/astroport_token_ust_farm/reward_info_response';
+import { TerrajsService } from '../../terrajs.service';
+import { DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo } from './../farm-info.service';
+import { MsgExecuteContract } from '@terra-money/terra.js';
+import { PoolResponse } from '../../api/terraswap_pair/pool_response';
+import { VaultsResponse } from '../../api/gov/vaults_response';
+import { Denom } from '../../../consts/denom';
+import { WasmService } from '../../api/wasm.service';
+import { PairInfo } from '../../api/terraswap_factory/pair_info';
+import { AstroportStlunaLdoFarmService } from '../../api/astroport-stlunaldo-farm.service';
+import { times } from '../../../libs/math';
+import { getStablePrice } from '../../../libs/stable';
+import { balance_transform } from '../../calc/balance_calc';
+import { SwapOperation } from '../../api/staker/query_msg';
 
 @Injectable()
 export class AstroportStlunaLdoFarmInfoService implements FarmInfoService {
@@ -29,12 +30,21 @@ export class AstroportStlunaLdoFarmInfoService implements FarmInfoService {
   mainnetOnly = true;
   hasProxyReward = true;
   notUseAstroportGqlApr = false;
+  zapToBaseFirst = true;
 
   constructor(
     private farmService: AstroportStlunaLdoFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService,
   ) {
+  }
+
+  get LUNA_UST_KEY() {
+    return `Astroport|${Denom.LUNA}|${Denom.USD}`;
+  }
+
+  get STLUNA_LUNA_KEY() {
+    return `Astroport|${this.terrajs.settings.stlunaToken}|${Denom.LUNA}`;
   }
 
   get defaultBaseTokenContract() {
@@ -54,7 +64,7 @@ export class AstroportStlunaLdoFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.farmService.query({pools: {}});
+    const pool = await this.farmService.query({ pools: {} });
     return pool.pools;
   }
 
@@ -67,7 +77,7 @@ export class AstroportStlunaLdoFarmInfoService implements FarmInfoService {
         user: this.farmContract
       }
     });
-    const farmConfigTask = this.farmService.query({config: {}});
+    const farmConfigTask = this.farmService.query({ config: {} });
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
@@ -223,8 +233,8 @@ export class AstroportStlunaLdoFarmInfoService implements FarmInfoService {
 
   async getStLunaLdoLPStat(stlunaLdoPoolResponse: PoolResponse, ldoPrice: string) {
     const height = await this.terrajs.getHeight();
-    const configTask = this.wasm.query(this.terrajs.settings.astroportStlunaLdoStaking, {config: {}});
-    const stateTask = this.wasm.query(this.terrajs.settings.astroportStlunaLdoStaking, {state: {}});
+    const configTask = this.wasm.query(this.terrajs.settings.astroportStlunaLdoStaking, { config: {} });
+    const stateTask = this.wasm.query(this.terrajs.settings.astroportStlunaLdoStaking, { state: {} });
     const [config, state] = await Promise.all([configTask, stateTask]);
     const poolLdoAmount = stlunaLdoPoolResponse.assets.find(asset => asset.info.token['contract_addr'] === this.terrajs.settings.ldoToken).amount || 0;
     const current_distribution_schedule = (config.distribution_schedule as []).find(obj => height >= +obj[0] && height <= +obj[1]);
@@ -241,6 +251,48 @@ export class AstroportStlunaLdoFarmInfoService implements FarmInfoService {
     return {
       apr,
     };
+  }
+
+  getSwapHints(pairInfos: Record<string, PairInfo>, reverse: boolean, swapHintPrices?: Record<string, string>): SwapOperation[] {
+    const luna_ust_pairInfo = pairInfos[this.LUNA_UST_KEY];
+    const stluna_luna_pairInfo = pairInfos[this.STLUNA_LUNA_KEY];
+    if (reverse) {
+      return [{
+        asset_info: {
+          token: {
+            contract_addr: this.terrajs.settings.stlunaToken
+          }
+        },
+        pair_contract: stluna_luna_pairInfo.contract_addr,
+        belief_price: swapHintPrices ? swapHintPrices[1] : undefined
+      } as SwapOperation, {
+        asset_info: {
+          native_token: {
+            denom: Denom.LUNA
+          }
+        },
+        pair_contract: luna_ust_pairInfo.contract_addr,
+        belief_price: swapHintPrices ? swapHintPrices[0] : undefined
+      } as SwapOperation];
+    } else {
+      return [{
+        asset_info: {
+          native_token: {
+            denom: Denom.USD
+          }
+        },
+        pair_contract: luna_ust_pairInfo.contract_addr,
+        belief_price: swapHintPrices ? swapHintPrices[0] : undefined
+      } as SwapOperation, {
+        asset_info: {
+          native_token: {
+            denom: Denom.LUNA
+          }
+        },
+        pair_contract: stluna_luna_pairInfo.contract_addr,
+        belief_price: swapHintPrices ? swapHintPrices[1] : undefined
+      } as SwapOperation];
+    }
   }
 
 }

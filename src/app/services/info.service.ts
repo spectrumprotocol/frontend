@@ -286,7 +286,7 @@ export class InfoService {
                 highlight: farmInfo.highlight,
                 hasProxyReward: farmInfo.hasProxyReward ?? false,
                 notUseAstroportGqlApr: farmInfo.notUseAstroportGqlApr,
-                farmConfig
+                farmConfig,
               });
           }
         });
@@ -526,7 +526,11 @@ export class InfoService {
       }
       let task;
       if (BUNDLER_BLACKLIST.has(farmInfo.farmContract)) {
-        task = await farmInfo.queryRewards().then((rewards) => processRewards(farmInfo, rewards));
+        task = this.wasm.query(farmInfo.farmContract, {
+          reward_info: {
+            staker_addr: this.terrajs.address,
+          }
+        }).then(({reward_infos: rewards}: { reward_infos: RewardInfoResponseItem[] }) => processRewards(farmInfo, rewards));
       } else {
         task = bundler.query(farmInfo.farmContract, {
           reward_info: {

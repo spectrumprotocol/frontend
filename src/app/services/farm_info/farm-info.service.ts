@@ -15,6 +15,7 @@ import {MsgExecuteContract} from '@terra-money/terra.js';
 import {PoolResponse} from '../api/terraswap_pair/pool_response';
 import {VaultsResponse} from '../api/gov/vaults_response';
 import {PairInfo} from '../api/astroport_pair/pair_info';
+import { SwapOperation } from '../api/staker/query_msg';
 
 export type PoolItem =
   SpecPoolItem
@@ -96,18 +97,16 @@ export interface FarmInfoService {
   // baseToken should be is get from querying poolInfo
   readonly defaultBaseTokenContract: string;
   readonly denomTokenContract: string;
+  readonly zapToBaseFirst?: boolean;
 
   readonly notUseAstroportGqlApr?: boolean;
 
-  queryPoolItems(): Promise<PoolItem[]>;
-
   queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>>;
-
-  queryRewards(): Promise<RewardInfoResponseItem[]>;
 
   getStakeGovMsg?(amount: string, additionalData?: object): MsgExecuteContract;
 
-  getConfig?();
+  getConfig?(): any;
 
+  getSwapHints?(pairInfos: Record<string, PairInfo>, reverse: boolean, swapHintPrices?: Record<string, string>): SwapOperation[];
 }
 
