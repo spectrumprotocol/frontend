@@ -55,6 +55,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   @ViewChild('formWithdraw') formWithdraw: NgForm;
 
   UNIT: number = CONFIG.UNIT;
+  DIGIT: number = CONFIG.DIGIT;
   SLIPPAGE = CONFIG.SLIPPAGE_TOLERANCE;
   FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN = FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN;
   FARM_TYPE_DISPLAY_AS_PAIR_TOKEN = FARM_TYPE_DISPLAY_AS_PAIR_TOKEN;
@@ -98,6 +99,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositTotalCredit: string;
   depositAvailableCredit: string;
   depositEstAssets: string;
+
+  borrowedFarmUnbondAmount: string;
 
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
@@ -671,7 +674,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_single_token' && this.vault.poolInfo.farmType !== 'BORROWED') {
+    if (this.withdrawMode !== 'ust' && this.withdrawMode !== 'ust_single_token') {
       return;
     }
 
@@ -686,7 +689,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else if (this.vault.poolInfo.dex === 'Terraswap') {
       commission = +CONFIG.TERRASWAP_COMMISSION;
     }
-    if (this.FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.vault.poolInfo.farmType) && this.vault.poolInfo.farmType !== 'BORROWED') {
+    if (this.FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
       const offer_amount = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT).toString();
       let simulateSwapOperationRes;
       if (this.vault.poolInfo.dex === 'Terraswap') {
@@ -786,8 +789,14 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         .integerValue()
         .toString();
       this.withdrawTokenPrice = floor18Decimal(div(tokenAmt, returnAmt));
-      this.withdrawUST = ustAmt.plus(returnAmt).toString();
-      this.withdrawMinUST = ustAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
+      if (this.vault.poolInfo.farmType !== 'BORROWED') {
+        this.withdrawUST = ustAmt.plus(returnAmt).toString();
+        this.withdrawMinUST = ustAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
+      } else {
+        const rewardInfo = this.info.rewardInfos[this.vault.poolInfo.key];
+        const percentage = +div(times(this.withdrawAmt, CONFIG.UNIT), rewardInfo.net_amount as any);
+        this.borrowedFarmUnbondAmount = percentage === 1 ? undefined : floor(times(rewardInfo.bond_amount, percentage));
+      }
     } else if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
       // LDO -> stLuna
       const poolResponseStlunaLdo = this.info.poolResponses[this.vault.poolInfo.key];
@@ -926,9 +935,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.formWithdraw.invalid) {
       return;
     }
-    this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', this.vault.poolInfo.farm.toUpperCase(), this.vault.baseSymbol + '-UST');
+    this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', this.vault.poolInfo.farm.toUpperCase(), this.vault.baseSymbol + '-' + this.vault.denomSymbol);
     const staker = this.vault.poolInfo.dex === 'Terraswap' ? this.terrajs.settings.staker : this.terrajs.settings.stakerAstroport;
-    const unbond = new MsgExecuteContract(
+
+    const unbond = this.vault.poolInfo.farmType !== 'BORROWED' ? new MsgExecuteContract(
       this.terrajs.address,
       this.vault.poolInfo.farmContract,
       {
@@ -937,7 +947,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           amount: times(this.withdrawAmt, CONFIG.UNIT),
         }
       }
-    );
+    ) : null;
     if (this.withdrawMode === 'tokentoken') {
       const withdrawLp = new MsgExecuteContract(
         this.terrajs.address,
@@ -952,24 +962,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       );
       await this.terrajs.post([unbond, withdrawLp]);
     } else if (this.withdrawMode === 'lp' || this.withdrawMode === 'single_token') {
-      if (this.vault.poolInfo.farmType === 'BORROWED') {
-        const rewardInfo = this.info.rewardInfos[this.vault.poolInfo.key];
-        const percentage = +div(times(this.withdrawAmt, CONFIG.UNIT), rewardInfo.net_amount as any);
-        const unbondAmount = percentage === 1 ? undefined : floor(times(rewardInfo.bond_amount, percentage));
-        await this.terrajs.post(new MsgExecuteContract(
-          this.terrajs.address,
-          this.vault.poolInfo.farmContract,
-          {
-            unbond: {
-              amount: unbondAmount,
-              belief_price: this.withdrawTokenPrice,
-              max_spread: this.SLIPPAGE,
-            },
-          }
-        ));
-      } else {
-        await this.terrajs.post([unbond]);
-      }
+      await this.terrajs.post([unbond]);
     } else if (this.withdrawMode === 'ust') {
       let msg: object;
       if (this.vault.poolInfo.denomTokenContract === Denom.USD) {
@@ -1020,105 +1013,122 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       );
       await this.terrajs.post([unbond, withdrawUst]);
     } else if (this.withdrawMode === 'ust_single_token') {
-      let msg;
-      if (this.vault.poolInfo.dex === 'Terraswap') {
-        msg = {
-          execute_swap_operations: {
-            minimum_receive: this.withdrawMinUST,
-            operations: [
-              {
-                terra_swap: {
-                  offer_asset_info: {
-                    token: {
-                      contract_addr: this.vault.poolInfo.baseTokenContract
-                    }
-                  },
-                  ask_asset_info: {
-                    token: {
-                      contract_addr: this.vault.poolInfo.denomTokenContract
-                    }
-                  }
-                }
-              },
-              {
-                terra_swap: {
-                  offer_asset_info: {
-                    token: {
-                      contract_addr: this.vault.poolInfo.denomTokenContract
-                    }
-                  },
-                  ask_asset_info: {
-                    native_token: {
-                      denom: Denom.USD
-                    }
-                  }
-                }
-              }
-            ]
+      if (this.vault.poolInfo.farmType === 'BORROWED') {
+        const unbondBorrowFarm = new MsgExecuteContract(
+          this.terrajs.address,
+          this.vault.poolInfo.farmContract,
+          {
+            unbond: {
+              amount: this.borrowedFarmUnbondAmount,
+              belief_price: this.withdrawTokenPrice,
+              max_spread: this.SLIPPAGE,
+            },
           }
-        };
-      } else if (this.vault.poolInfo.dex === 'Astroport') {
-        msg = {
-          execute_swap_operations: {
-            minimum_receive: this.withdrawMinUST,
-            operations: [
-              {
-                astro_swap: {
-                  offer_asset_info: {
-                    token: {
-                      contract_addr: this.vault.poolInfo.baseTokenContract
+        );
+        await this.terrajs.post([unbondBorrowFarm]);
+      } else {
+        let msg;
+        if (this.vault.poolInfo.dex === 'Terraswap') {
+          msg = {
+            execute_swap_operations: {
+              minimum_receive: this.withdrawMinUST,
+              operations: [
+                {
+                  terra_swap: {
+                    offer_asset_info: {
+                      token: {
+                        contract_addr: this.vault.poolInfo.baseTokenContract
+                      }
+                    },
+                    ask_asset_info: {
+                      token: {
+                        contract_addr: this.vault.poolInfo.denomTokenContract
+                      }
                     }
-                  },
-                  ask_asset_info: {
-                    token: {
-                      contract_addr: this.vault.poolInfo.denomTokenContract
+                  }
+                },
+                {
+                  terra_swap: {
+                    offer_asset_info: {
+                      token: {
+                        contract_addr: this.vault.poolInfo.denomTokenContract
+                      }
+                    },
+                    ask_asset_info: {
+                      native_token: {
+                        denom: Denom.USD
+                      }
                     }
                   }
                 }
-              },
-              {
-                astro_swap: {
-                  offer_asset_info: {
-                    token: {
-                      contract_addr: this.vault.poolInfo.denomTokenContract
+              ]
+            }
+          };
+        } else if (this.vault.poolInfo.dex === 'Astroport') {
+          msg = {
+            execute_swap_operations: {
+              minimum_receive: this.withdrawMinUST,
+              operations: [
+                {
+                  astro_swap: {
+                    offer_asset_info: {
+                      token: {
+                        contract_addr: this.vault.poolInfo.baseTokenContract
+                      }
+                    },
+                    ask_asset_info: {
+                      token: {
+                        contract_addr: this.vault.poolInfo.denomTokenContract
+                      }
                     }
-                  },
-                  ask_asset_info: {
-                    native_token: {
-                      denom: Denom.USD
+                  }
+                },
+                {
+                  astro_swap: {
+                    offer_asset_info: {
+                      token: {
+                        contract_addr: this.vault.poolInfo.denomTokenContract
+                      }
+                    },
+                    ask_asset_info: {
+                      native_token: {
+                        denom: Denom.USD
+                      }
                     }
                   }
                 }
-              }
-            ]
-          }
-        };
-      }
-      const routerContract = this.vault.poolInfo.dex === 'Terraswap' ? this.terrajs.settings.terraSwapRouter : this.terrajs.settings.astroportRouter;
-      const withdrawUst = new MsgExecuteContract(
-        this.terrajs.address,
-        this.vault.poolInfo.baseTokenContract,
-        {
-          send: {
-            amount: times(this.withdrawAmt, CONFIG.UNIT),
-            contract: routerContract,
-            msg: toBase64(msg),
-          },
+              ]
+            }
+          };
         }
-      );
+        const routerContract = this.vault.poolInfo.dex === 'Terraswap' ? this.terrajs.settings.terraSwapRouter : this.terrajs.settings.astroportRouter;
+        const withdrawUst = new MsgExecuteContract(
+          this.terrajs.address,
+          this.vault.poolInfo.baseTokenContract,
+          {
+            send: {
+              amount: times(this.withdrawAmt, CONFIG.UNIT),
+              contract: routerContract,
+              msg: toBase64(msg),
+            },
+          }
+        );
 
-      if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
-        const lossPercent = (((+this.withdrawAmt * CONFIG.UNIT - +this.withdrawUST) / (+this.withdrawAmt * CONFIG.UNIT)) * 100).toFixed(2);
-        const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.baseSymbol} at about ${lossPercent}% discount.` : undefined;
-        await this.terrajs.post([unbond, withdrawUst], confirmMsg);
-      } else if (this.vault.poolInfo.farmType === 'NASSET') {
-        await this.terrajs.post([unbond, withdrawUst]);
+        if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
+          const lossPercent = (((+this.withdrawAmt * CONFIG.UNIT - +this.withdrawUST) / (+this.withdrawAmt * CONFIG.UNIT)) * 100).toFixed(2);
+          const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.baseSymbol} at about ${lossPercent}% discount.` : undefined;
+          await this.terrajs.post([unbond, withdrawUst], confirmMsg);
+        } else if (this.vault.poolInfo.farmType === 'NASSET') {
+          await this.terrajs.post([unbond, withdrawUst]);
+        }
+
       }
 
     }
     this.withdrawAmt = undefined;
     this.withdrawUST = undefined;
     this.withdrawMinUST = undefined;
+    this.borrowedFarmUnbondAmount = undefined;
   }
 
   async doClaimReward(all?: boolean) {

@@ -142,12 +142,10 @@
                class="img-fluid rounded-circle assetIcon float-start token-denom">
           <div class="name-detail">
             <h6 class="m-0">{{vault.name}}
-              <ng-container *ngIf="vault.poolInfo.farmType == 'LP'">
-                <img *ngIf="vault.poolInfo.dex === 'Astroport'" src="./assets/logo-astroport.svg" class="dex-logo"
-                     alt="Astroport DEX" title="Astroport DEX">
-                <img *ngIf="vault.poolInfo.dex === 'Terraswap'" src="./assets/logo-terraswap.svg" class="dex-logo"
-                     alt="Terraswap DEX" title="Terraswap DEX">
-              </ng-container>
+              <img *ngIf="vault.poolInfo.dex === 'Astroport'" src="./assets/logo-astroport.svg" class="dex-logo"
+                   alt="Astroport DEX" title="Astroport DEX">
+              <img *ngIf="vault.poolInfo.dex === 'Terraswap'" src="./assets/logo-terraswap.svg" class="dex-logo"
+                   alt="Terraswap DEX" title="Terraswap DEX">
             </h6>
             <p class="m-0">
               <span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span>

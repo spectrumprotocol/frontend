@@ -951,14 +951,14 @@ export class InfoService {
         apy,
         name: vaultName,
         unitDisplay: FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(poolInfo.farmType)
-          ? baseSymbol
-          : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
+          ? baseSymbol : poolInfo.farmType === 'BORROWED' ? 'UST'
+            : `${baseSymbol}-${denomSymbol} ${poolInfo.dex} LP`,
         unitDisplayDexAbbreviated: FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(poolInfo.farmType)
-          ? baseSymbol
-          : `${baseSymbol}-${denomSymbol} ${abbreviatedDex} LP`,
+          ? baseSymbol : poolInfo.farmType === 'BORROWED' ? 'UST'
+            : `${baseSymbol}-${denomSymbol} ${abbreviatedDex} LP`,
         shortUnitDisplay: FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(poolInfo.farmType)
-          ? baseSymbol
-          : `LP`,
+          ? baseSymbol : poolInfo.farmType === 'BORROWED' ? 'UST'
+            : `LP`,
         score,
         fullName: vaultName,
         disabled,
