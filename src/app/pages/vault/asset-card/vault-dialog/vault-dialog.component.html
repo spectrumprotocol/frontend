@@ -437,7 +437,7 @@
                       vault.denomSymbol}} Price</div>
                     <div class="col text-end">{{tokenPrice | number:'0.0-6' }} UST</div>
                   </div>
-                  <div *ngIf="vault.denomSymbol !== 'UST'" class="row">
+                  <div *ngIf="vault.denomSymbol !== 'UST' && +basedTokenPrice" class="row">
                     <div class="col">Expected {{vault.baseSymbol}} Price</div>
                     <div class="col text-end">
                       {{basedTokenPrice | number:'0.0-6' }} {{vault.denomSymbol}}
