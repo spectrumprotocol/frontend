@@ -442,7 +442,7 @@
                       vault.denomSymbol}} Price</div>
                     <div class="col text-end">{{tokenPrice | number:'0.0-6' }} UST</div>
                   </div>
-                  <div *ngIf="vault.denomSymbol !== 'UST'" class="row">
+                  <div *ngIf="vault.denomSymbol !== 'UST' && +basedTokenPrice" class="row">
                     <div class="col">Expected {{vault.baseSymbol}} Price</div>
                     <div class="col text-end">
                       {{basedTokenPrice | number:'0.0-6' }} {{vault.denomSymbol}}
@@ -744,7 +744,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from auto compound <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
+                  <div class="col">APY from auto compound</div>
                   <div class="col text-end">{{vault.pairStat?.poolApy || 0 | percent }}</div>
                 </div>
                 <div class="row">
@@ -752,7 +752,7 @@
                   <div class="col text-end">{{vault.specApy | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">Total APY</div>
+                  <div class="col">Final APY <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(incl. fee)</a></div>
                   <div class="col text-end">{{vault.compoundApy | percent }}</div>
                 </div>
               </div>
@@ -781,7 +781,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-                  <div class="col">APY from auto stake <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
+                  <div class="col">APY from auto stake</div>
                   <div class="col text-end">{{vault.farmApy | percent }}</div>
                 </div>
                 <div class="row">
@@ -789,7 +789,7 @@
                   <div class="col text-end">{{vault.specApy | percent }}</div>
                 </div>
                 <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-                  <div class="col">Total APY</div>
+                  <div class="col">Final APY <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(incl. fee)</a></div>
                   <div class="col text-end">{{vault.stakeApy | percent }}</div>
                 </div>
               </div>
@@ -835,7 +835,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from mixed <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
+                  <div class="col">APY from mixed</div>
                   <div class="col text-end">{{vault['mixApy'] || 0 | percent }}</div>
                 </div>
                 <div class="row">
@@ -843,7 +843,7 @@
                   <div class="col text-end">{{vault.specApy | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">Total APY</div>
+                  <div class="col">Final APY <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(incl. fee)</a></div>
                   <div class="col text-end">{{vault['totalMixApy'] | percent }}</div>
                 </div>
               </div>

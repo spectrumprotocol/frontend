@@ -252,13 +252,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
     if (this.vault.pairStat?.poolApy > 0) {
       html += `<div class="row">
-                    <div class="col-10">Auto-compound APY (fee incl.)</div>
+                    <div class="col-10">Auto-compound APY (incl. fee)</div>
                     <div class="col-2">${this.percentPipe.transform(this.vault.pairStat?.poolApy)}</div>
             </div>`;
     }
     if (this.vault.farmApy > 0 && this.vault.poolInfo.auto_stake) {
       html += `<div class="row">
-                    <div class="col-10">Auto-stake APY (fee incl.)</div>
+                    <div class="col-10">Auto-stake APY (incl. fee)</div>
                     <div class="col-2">${this.percentPipe.transform(+this.vault.farmApy)}</div>
             </div>`;
     }
