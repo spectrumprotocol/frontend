@@ -6,7 +6,7 @@ import {getStablePrice} from '../../libs/stable';
 import {InfoService} from '../info.service';
 
 export const balance_transform = (value: any, poolResponse: PoolResponse, poolResponseB?: PoolResponse) => {
-  if (typeof value !== 'string' || !poolResponse) {
+  if (typeof value !== 'string' && typeof value !== 'number' || !poolResponse) {
     return undefined;
   }
   if (poolResponse.assets[0].info.native_token?.['denom'] === 'uusd') {
