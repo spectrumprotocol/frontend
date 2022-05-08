@@ -24,7 +24,8 @@ export type PoolItem =
   | PylonLiquidPoolItem
   | AstroportTokenUSTPoolItem;
 export type FARM_TYPE_ENUM = 'LP' | 'PYLON_LIQUID' | 'NASSET' | 'BORROWED';
-export const FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN: Set<FARM_TYPE_ENUM> = new Set(['PYLON_LIQUID', 'NASSET', 'BORROWED']);
+export const FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN: Set<FARM_TYPE_ENUM> = new Set(['PYLON_LIQUID', 'NASSET', 'BORROWED']); // TODO remove BORROWED and adapt to changes
+export const FARM_TYPE_DEPOSIT_WITH_UST_ONLY: Set<FARM_TYPE_ENUM> = new Set(['BORROWED']); // TODO utilized this
 export const FARM_TYPE_DISPLAY_AS_PAIR_TOKEN: Set<FARM_TYPE_ENUM> = new Set(['LP', 'BORROWED']);
 export const FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN: Set<FARM_TYPE_ENUM> = new Set(['PYLON_LIQUID', 'NASSET']);
 
