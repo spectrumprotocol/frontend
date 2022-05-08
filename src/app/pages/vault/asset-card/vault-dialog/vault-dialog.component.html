@@ -126,7 +126,7 @@
           </h3>
           <h6 *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="card-subtitle text-success">
             +{{ info.rewardInfos[vault.poolInfo.key] | lpEarning | unit }}
-            <ng-container *ngIf="!FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)">
+            <ng-container *ngIf="!FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN.has(vault.poolInfo.farmType)">
               (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : vault.poolInfo.key | unit: 6: '1.0-2' }})
             </ng-container>
             <ng-container *ngIf="vault.poolInfo.farmType === 'NASSET'">
