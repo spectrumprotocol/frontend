@@ -1041,7 +1041,8 @@
               <div *ngIf="withdrawMode === 'ust' || withdrawMode === 'ust_single_token'">
                 <div class="d-flex" *ngIf="withdrawUST">
                   <div>
-                    <span>Expected receive </span>
+                    <span *ngIf="vault.poolInfo.farmType !== 'BORROWED'">Expected receive </span>
+                    <span *ngIf="vault.poolInfo.farmType === 'BORROWED'">Estimated receive </span>
                   </div>
                   <div class="margin-left-auto">
                     {{ withdrawUST | unit }} UST
