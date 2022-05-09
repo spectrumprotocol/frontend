@@ -995,11 +995,11 @@
             <div class="text-end small mt-3 mb-1 fw-bold">
               <span class="sub-topic">Deposited: </span>
               <span class="text-white">
-                {{ info.rewardInfos[vault.poolInfo.key]?.[vault.poolInfo.farmType === 'BORROWED' ? 'net_amount' : 'bond_amount'] || 0 | unit }} {{ vault.unitDisplay }}
+                {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || 0 | unit }} {{ vault.unitDisplay }}
               </span>
             </div>
             <div class="input-group">
-              <span *ngIf="vault.poolInfo.farmType === 'LP'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
+              <span *ngIf="FARM_TYPE_DISPLAY_AS_PAIR_TOKEN.has(vault.poolInfo.farmType)" class="input-group-text f-12 igt-fixwidth fw-bold-600">
                 <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
                 <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
                 {{ vault.unitDisplay }}
@@ -1008,21 +1008,17 @@
                 <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
                 {{ vault.baseSymbol }}
               </span>
-              <span *ngIf="vault.poolInfo.farmType == 'BORROWED'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
-                <img [src]="'UST' | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
-                UST
-              </span>
               <input #withdrawAmtCtl="ngModel" (input)="withdrawAmtChanged()" [(ngModel)]="withdrawAmt"
                      [class.is-invalid]="(formWithdraw.submitted || withdrawAmtCtl.touched) && withdrawAmtCtl.invalid"
-                     [max]="+info.rewardInfos[vault.poolInfo.key]?.[vault.poolInfo.farmType === 'BORROWED' ? 'net_amount' : 'bond_amount'] / UNIT" [min]="0.000001"
+                     [max]="+info.rewardInfos[vault.poolInfo.key].bond_amount / UNIT" [min]="0.000001"
                      [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-border"
                      name="withdrawAmtCtl" required type="number" />
               <button (click)="setMaxWithdrawAmount()" class="btn btn-max last" type="button">
                 Max
               </button>
             </div>
-            <span *ngIf="withdrawAmt > +info.rewardInfos[vault.poolInfo.key]?.[vault.poolInfo.farmType === 'BORROWED' ? 'net_amount' : 'bond_amount'] / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)" class="invalid-feedback-custom">
-              Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.[vault.poolInfo.farmType === 'BORROWED' ? 'net_amount' : 'bond_amount'] | unit }}
+            <span *ngIf="withdrawAmt > +info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)" class="invalid-feedback-custom">
+              Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_amount | unit }}
             </span>
             <span *ngIf="withdrawAmt > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)" class="invalid-feedback-custom">
               You do not have any {{ vault.unitDisplay }} deposited
@@ -1030,7 +1026,7 @@
             <span *ngIf="withdrawAmtCtl.errors?.pattern" class="invalid-feedback-custom">
               Amount must be within 6 decimal points
             </span>
-            <div *ngIf="withdrawAmt && vault.poolInfo.farmType !== 'BORROWED'" class="mt-3">
+            <div *ngIf="withdrawAmt" class="mt-3">
               <div *ngIf="withdrawMode !== 'ust' && withdrawMode !== 'ust_single_token'" class="d-flex">
                 Receive
                 <div class="margin-left-auto">
@@ -1043,7 +1039,7 @@
                 </div>
               </div>
               <div *ngIf="withdrawMode === 'ust' || withdrawMode === 'ust_single_token'">
-                <div class="d-flex">
+                <div class="d-flex" *ngIf="withdrawUST">
                   <div>
                     <span>Expected receive </span>
                   </div>
@@ -1051,7 +1047,7 @@
                     {{ withdrawUST | unit }} UST
                   </div>
                 </div>
-                <div class="d-flex">
+                <div class="d-flex" *ngIf="withdrawMinUST">
                   <div>
                     <span>Minimum receive </span>
                     <i class="fas fa-info-circle info-icon"
@@ -1067,14 +1063,6 @@
                 </div>
                 <div class="card-text small text-info mb-1 mt-1" *ngIf="vault.poolInfo.farmContract === terrajs.settings.astroportStlunaLdoFarm">
                   <i class="fas fa-info-circle"></i> Due to swap hops of LDO -> stLuna -> Luna -> UST exposing 0.3%, 0.05%, and 0.3% swap fee. <br>Expected receive is less than UST value of LP Balance compared to other vaults.
-                </div>
-              </div>
-            </div>
-            <div *ngIf="withdrawAmt && vault.poolInfo.farmType === 'BORROWED'" class="mt-3">
-              <div class="d-flex">
-                Expected LP to be withdrawn and sold to UST
-                <div class="margin-left-auto">
-                  {{ borrowedFarmUnbondAmount | unit: DIGIT | number}} LP
                 </div>
               </div>
             </div>

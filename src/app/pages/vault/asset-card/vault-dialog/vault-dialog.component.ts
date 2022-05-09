@@ -100,8 +100,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositAvailableCredit: string;
   depositEstAssets: string;
 
-  borrowedFarmUnbondAmount: string;
-
   private heightChanged: Subscription;
   auto_compound_percent_deposit = 50;
   auto_compound_percent_reallocate = 50;
@@ -173,7 +171,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(this.vault.poolInfo.farmType)) {
       this.depositMode = 'single_token';
       this.withdrawMode = 'single_token';
-    } else if (this.vault.poolInfo.farmType === 'BORROWED'){
+    } else if (this.vault.poolInfo.farmType === 'BORROWED') {
       this.depositMode = 'ust_single_token';
       this.withdrawMode = 'ust_single_token';
     }
@@ -199,7 +197,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           if (this.depositUSTAmtSingleToken) {
             this.depositUSTForSingleToken(true);
           }
-        } else if (this.vault.poolInfo.farmType === 'BORROWED'){
+        } else if (this.vault.poolInfo.farmType === 'BORROWED') {
           tasks.push(this.refreshBorrowedFarmData());
           if (this.depositUSTAmtSingleToken) {
             this.depositUSTForSingleToken(true);
@@ -310,9 +308,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   setMaxWithdrawAmount() {
     const rewardInfo = this.info.rewardInfos?.[this.vault.poolInfo.key];
     if (rewardInfo) {
-      this.withdrawAmt = this.vault.poolInfo.farmType === 'BORROWED'
-        ? +rewardInfo.net_amount / CONFIG.UNIT
-        : +rewardInfo.bond_amount / CONFIG.UNIT;
+      this.withdrawAmt = +rewardInfo.bond_amount / CONFIG.UNIT;
     }
     this.withdrawAmtChanged();
   }
@@ -791,9 +787,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         this.withdrawUST = ustAmt.plus(returnAmt).toString();
         this.withdrawMinUST = ustAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
       } else {
+        // input net_amount calculate bond_amount
+        // const rewardInfo = this.info.rewardInfos[this.vault.poolInfo.key];
+        // const percentage = +div(times(this.withdrawAmt, CONFIG.UNIT), rewardInfo.net_amount as any);
+        // this.borrowedFarmUnbondAmount = floor(times(rewardInfo.bond_amount, percentage));
         const rewardInfo = this.info.rewardInfos[this.vault.poolInfo.key];
-        const percentage = +div(times(this.withdrawAmt, CONFIG.UNIT), rewardInfo.net_amount as any);
-        this.borrowedFarmUnbondAmount = floor(times(rewardInfo.bond_amount, percentage));
+        const percentage = +div(times(this.withdrawAmt, CONFIG.UNIT), rewardInfo.bond_amount as any);
+        this.withdrawUST = floor(times(rewardInfo?.['net_amount'] as string, percentage));
       }
     } else if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
       // LDO -> stLuna
@@ -1012,15 +1012,15 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       await this.terrajs.post([unbond, withdrawUst]);
     } else if (this.withdrawMode === 'ust_single_token') {
       if (this.vault.poolInfo.farmType === 'BORROWED') {
-        const rewardInfo = this.info.rewardInfos[this.vault.poolInfo.key];
-        const percentage = +div(times(this.withdrawAmt, CONFIG.UNIT), rewardInfo.net_amount as any);
-        const borrowedFarmUnbondAmountForSubmit = percentage === 1 ? undefined : floor(times(rewardInfo.bond_amount, percentage));
+        // const rewardInfo = this.info.rewardInfos[this.vault.poolInfo.key];
+        // const percentage = +div(times(this.withdrawAmt, CONFIG.UNIT), rewardInfo.net_amount as any);
+        // const borrowedFarmUnbondAmountForSubmit = percentage === 1 ? undefined : floor(times(rewardInfo.bond_amount, percentage));
         const unbondBorrowFarm = new MsgExecuteContract(
           this.terrajs.address,
           this.vault.poolInfo.farmContract,
           {
             unbond: {
-              amount: borrowedFarmUnbondAmountForSubmit,
+              amount: times(this.withdrawAmt, CONFIG.UNIT),
               belief_price: this.withdrawTokenPrice,
               max_spread: this.SLIPPAGE,
             },
@@ -1129,7 +1129,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.withdrawAmt = undefined;
     this.withdrawUST = undefined;
     this.withdrawMinUST = undefined;
-    this.borrowedFarmUnbondAmount = undefined;
   }
 
   async doClaimReward(all?: boolean) {
