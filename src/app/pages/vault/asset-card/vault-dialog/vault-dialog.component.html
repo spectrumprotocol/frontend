@@ -121,8 +121,11 @@
           </h3>
           <h6 *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="card-subtitle text-success">
             +{{ info.rewardInfos[vault.poolInfo.key] | lpEarning | unit }}
-            <ng-container *ngIf="vault.poolInfo.farmType != 'PYLON_LIQUID'">
+            <ng-container *ngIf="!FARM_TYPE_SINGLE_TOKEN.has(vault.poolInfo.farmType)">
               (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : vault.poolInfo.key | unit: 6: '1.0-2' }})
+            </ng-container>
+            <ng-container *ngIf="vault.poolInfo.farmType === 'NASSET'">
+              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]  | lpEarning | balance: info.poolResponses[NASSET_PSI_KEY]:info.poolResponses[PSI_UST_KEY] | unit: 6: '1.0-2' }})
             </ng-container>
           </h6>
         </div>
@@ -722,7 +725,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from auto compound <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
+                  <div class="col">APY from auto compound</div>
                   <div class="col text-end">{{vault.pairStat?.poolApy || 0 | percent }}</div>
                 </div>
                 <div class="row">
@@ -730,7 +733,7 @@
                   <div class="col text-end">{{vault.specApy | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">Total APY</div>
+                  <div class="col">Final APY <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(incl. fee)</a></div>
                   <div class="col text-end">{{vault.compoundApy | percent }}</div>
                 </div>
               </div>
@@ -759,7 +762,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-                  <div class="col">APY from auto stake <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
+                  <div class="col">APY from auto stake</div>
                   <div class="col text-end">{{vault.farmApy | percent }}</div>
                 </div>
                 <div class="row">
@@ -767,7 +770,7 @@
                   <div class="col text-end">{{vault.specApy | percent }}</div>
                 </div>
                 <div class="row" *ngIf="vault.poolInfo.farm !== 'Spectrum'">
-                  <div class="col">Total APY</div>
+                  <div class="col">Final APY <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(incl. fee)</a></div>
                   <div class="col text-end">{{vault.stakeApy | percent }}</div>
                 </div>
               </div>
@@ -813,7 +816,7 @@
                   <div class="col text-end">{{vault.poolInfo.tradeApr || 0 | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">APY from mixed <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(fee incl.)</a></div>
+                  <div class="col">APY from mixed</div>
                   <div class="col text-end">{{vault['mixApy'] || 0 | percent }}</div>
                 </div>
                 <div class="row">
@@ -821,7 +824,7 @@
                   <div class="col text-end">{{vault.specApy | percent }}</div>
                 </div>
                 <div class="row">
-                  <div class="col">Total APY</div>
+                  <div class="col">Final APY <a href="https://spectrum-protocol.gitbook.io/spectrum-protocol/protocol/fees" target="_blank">(incl. fee)</a></div>
                   <div class="col text-end">{{vault['totalMixApy'] | percent }}</div>
                 </div>
               </div>
