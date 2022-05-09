@@ -10,7 +10,7 @@ import {Event} from '@terra-money/terra.js';
 import {Denom} from '../../consts/denom';
 import {fromBase64} from '../../libs/base64';
 import {
-  FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN,
+  FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN,
   FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN,
   FARM_TYPE_ENUM
 } from '../../services/farm_info/farm-info.service';
@@ -62,12 +62,10 @@ const txHistoryFactory = {
     let desc = 'Deposited';
 
     if (!provide) {
-      if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmType)) {
-        if (farmType === 'BORROWED') {
-          desc += ` ${amount} UST`;
-        } else {
-          desc += ` ${amount} ${tokenASymbol}`;
-        }
+      if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(farmType)) {
+        desc += ` ${amount} ${tokenASymbol}`;
+      } else if ( farmType === 'BORROWED') {
+        desc += ` ${amount} UST`;
       } else {
         desc += ` ${amount} ${tokenASymbol}-${tokenBSymbol} LP`;
       }
@@ -76,12 +74,10 @@ const txHistoryFactory = {
       const {provideAmount, returnAmount, price, returnAmountB, priceB, via} = provide;
 
       let lpDesc: string = null;
-      if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmType)) {
-        if (farmType === 'BORROWED') {
-          lpDesc = ` ${amount} UST`;
-        } else {
-          lpDesc = ` ${amount} ${tokenASymbol}`;
-        }
+      if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(farmType)) {
+        lpDesc = ` ${amount} ${tokenASymbol}`;
+      } else if ( farmType === 'BORROWED') {
+        desc += ` ${amount} UST`;
       } else {
         lpDesc = ` ${amount} ${tokenASymbol}-${tokenBSymbol} LP`;
       }
@@ -122,12 +118,10 @@ const txHistoryFactory = {
   withdrawFarm: (farm: string, baseTokenSymbol: string, denomTokenSymbol: string, amount: number, isWithdrawToUST: boolean, dex: string, demand?: { tokenAAmount: number, tokenBAmount?: number }, farmType?: FARM_TYPE_ENUM) => {
     let desc = 'Withdrawn';
     let amountDesc = '';
-    if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmType)) {
-      if (farmType === 'BORROWED') {
-        amountDesc = `${amount} UST`;
-      } else {
-        amountDesc = `${amount} ${baseTokenSymbol}`;
-      }
+    if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(farmType)) {
+      amountDesc = `${amount} ${baseTokenSymbol}`;
+    } else if ( farmType === 'BORROWED') {
+      desc += ` ${amount} UST`;
     } else {
       // farmType = ${dex} LP OR null
       amountDesc = `${amount} ${baseTokenSymbol}-${denomTokenSymbol} LP`;
@@ -355,7 +349,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         const baseSymbol = this.getSymbol(baseTokenContract);
         let poolName: string;
         if (baseSymbol) {
-          if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmInfo.farmType)) {
+          if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(farmInfo.farmType)) {
             poolName = `${baseSymbol} pool`;
           } else {
             const denomSymbol = this.getSymbol(farmInfo.denomTokenContract);
@@ -364,7 +358,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
         } else if (farmInfo.rewardTokenContract === this.terrajs.settings.mirrorToken) {
           poolName = 'all pools';
         } else {
-          if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmInfo.farmType)) {
+          if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(farmInfo.farmType)) {
             poolName = `${this.getSymbol(farmInfo.defaultBaseTokenContract)} pool`;
           } else {
             poolName = `${this.getSymbol(farmInfo.defaultBaseTokenContract)}-${this.getSymbol(farmInfo.denomTokenContract)} ${farmInfo.dex} pool`;
@@ -646,7 +640,7 @@ export class TxHistoryComponent implements OnInit, OnDestroy {
 
       let assetDesc = '';
       let unit = '';
-      if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmInfo.farmType)) {
+      if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(farmInfo.farmType)) {
         assetDesc = `${baseSymbol}`;
         unit = `${baseSymbol}`;
       } else {

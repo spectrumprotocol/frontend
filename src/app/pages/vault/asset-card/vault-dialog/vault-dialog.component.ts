@@ -27,7 +27,7 @@ import {SimulateZapToBondResponse} from '../../../../services/api/staker/simulat
 import {SimulationResponse} from '../../../../services/api/terraswap_pair/simulation_response';
 import {PercentPipe} from '@angular/common';
 import {
-  FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN,
+  FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN,
   FARM_TYPE_DISPLAY_AS_PAIR_TOKEN,
   FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN,
   FarmInfoService
@@ -57,7 +57,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   UNIT: number = CONFIG.UNIT;
   DIGIT: number = CONFIG.DIGIT;
   SLIPPAGE = CONFIG.SLIPPAGE_TOLERANCE;
-  FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN = FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN;
+  FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN = FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN;
   FARM_TYPE_DISPLAY_AS_PAIR_TOKEN = FARM_TYPE_DISPLAY_AS_PAIR_TOKEN;
   FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN = FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN;
 
@@ -170,19 +170,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.vault.poolInfo.farmType === 'LP') {
       this.depositMode = 'tokentoken';
       this.withdrawMode = 'tokentoken';
-    } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
-      if (this.vault.poolInfo.farmType === 'BORROWED') {
-        this.depositMode = 'ust_single_token';
-        this.withdrawMode = 'ust_single_token';
-      } else {
-        this.depositMode = 'single_token';
-        this.withdrawMode = 'single_token';
-      }
+    } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(this.vault.poolInfo.farmType)) {
+      this.depositMode = 'single_token';
+      this.withdrawMode = 'single_token';
+    } else if (this.vault.poolInfo.farmType === 'BORROWED'){
+      this.depositMode = 'ust_single_token';
+      this.withdrawMode = 'ust_single_token';
     }
     this.heightChanged = this.terrajs.heightChanged.subscribe(async () => {
       if (this.terrajs.isConnected) {
+        const tasks: Promise<any>[] = [];
         if (this.vault.poolInfo.farmType === 'LP') {
-          const tasks: Promise<any>[] = [];
           tasks.push(this.info.refreshPoolResponse(this.vault.poolInfo.key));
           await Promise.all(tasks);
           if (this.depositTokenAAmtTokenToken && this.tokenAToBeStatic) {
@@ -193,20 +191,20 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           if (this.withdrawAmt) {
             this.withdrawAmtChanged();
           }
-        } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.vault.poolInfo.farmType)) {
-          const tasks: Promise<any>[] = [];
-
-          if (this.vault.poolInfo.farmType === 'BORROWED') {
-            tasks.push(this.refreshBorrowedFarmData());
-          } else {
-            tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.baseTokenContract)); // AssetToken-Farm
-            tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.denomTokenContract)); // Farm-UST
-          }
+        } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(this.vault.poolInfo.farmType)) {
+          tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.baseTokenContract)); // AssetToken-Farm
+          tasks.push(this.info.refreshTokenBalance(this.vault.poolInfo.denomTokenContract)); // Farm-UST
 
           await Promise.all(tasks);
           if (this.depositUSTAmtSingleToken) {
             this.depositUSTForSingleToken(true);
           }
+        } else if (this.vault.poolInfo.farmType === 'BORROWED'){
+          tasks.push(this.refreshBorrowedFarmData());
+          if (this.depositUSTAmtSingleToken) {
+            this.depositUSTForSingleToken(true);
+          }
+          await Promise.all(tasks);
         }
         this.refreshLpBalanceInfo();
       }

@@ -154,7 +154,7 @@
       </div>
     </div>
     <div *ngIf="(vault.poolInfo.dex === 'Terraswap' && vault.poolInfo.farm !== 'Spectrum' && vault.poolInfo.auto_stake) ||
-      (vault.poolInfo.auto_stake && FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(vault.poolInfo.farmType))
+      (vault.poolInfo.auto_stake && FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(vault.poolInfo.farmType))
       " class="col col-mb">
       <div class="card box-left h-100">
         <div class="card-body">
@@ -1224,8 +1224,7 @@
         </button>
       </span>
       </ng-container>
-<!--      TODO refactor this-->
-      <ng-container *ngIf="FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'">
+      <ng-container *ngIf="FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(vault.poolInfo.farmType)">
       <span class="btn-group w-100">
         <button (click)="depositMode = 'single_token'; changeDepositMode('single_token')" [ngClass]="depositMode === 'single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}</button>
@@ -1239,7 +1238,7 @@
 
   <ng-template #withdrawModeSection>
     <div class="auto-container mb-1">
-    <ng-container *ngIf="FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(vault.poolInfo.farmType) && vault.poolInfo.farmType !== 'BORROWED'">
+    <ng-container *ngIf="FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(vault.poolInfo.farmType)">
       <span class="btn-group w-100">
         <button (click)="withdrawMode = 'single_token'" [ngClass]="withdrawMode === 'single_token' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
           {{ vault.baseSymbol }}

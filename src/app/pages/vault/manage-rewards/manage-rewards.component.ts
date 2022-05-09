@@ -7,7 +7,7 @@ import {InfoService, Portfolio} from '../../../services/info.service';
 import {TerrajsService} from '../../../services/terrajs.service';
 import {GovService} from '../../../services/api/gov.service';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
-import {FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN} from '../../../services/farm_info/farm-info.service';
+import {FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN} from '../../../services/farm_info/farm-info.service';
 
 type MapToKeyValue<T> = T extends Map<infer X, infer Y> ? KeyValue<X, Y> : never;
 
@@ -58,7 +58,7 @@ export class ManageRewardsComponent implements OnInit {
         let pendingReward = 0;
         if (isSpec) {
           pendingReward = +rewardInfo.pending_spec_reward;
-        } else if (farmInfo.dex === 'Terraswap' || FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmInfo.farmType)) {
+        } else if (farmInfo.dex === 'Terraswap' || FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(farmInfo.farmType)) {
           pendingReward = +rewardInfo.pending_farm_reward;
         } else if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP') {
           pendingReward = +rewardInfo.pending_farm2_reward;

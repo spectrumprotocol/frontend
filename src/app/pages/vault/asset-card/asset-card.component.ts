@@ -8,7 +8,7 @@ import {VaultDialogComponent} from './vault-dialog/vault-dialog.component';
 import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
 import {CONFIG} from '../../../consts/config';
 import {
-  FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN,
+  FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN,
   FARM_TYPE_DISPLAY_AS_PAIR_TOKEN,
   FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN
 } from '../../../services/farm_info/farm-info.service';
@@ -27,7 +27,7 @@ export class AssetCardComponent implements OnInit {
   @Input() vault: Vault;
 
   UNIT = CONFIG.UNIT;
-  FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN = FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN;
+  FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN = FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN;
   FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN = FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN;
   FARM_TYPE_DISPLAY_AS_PAIR_TOKEN = FARM_TYPE_DISPLAY_AS_PAIR_TOKEN;
 

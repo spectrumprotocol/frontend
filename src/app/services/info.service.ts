@@ -10,7 +10,7 @@ import {TerraSwapFactoryService} from './api/terraswap-factory.service';
 import {GovService} from './api/gov.service';
 import {
   FARM_INFO_SERVICE,
-  FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN,
+  FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN,
   FARM_TYPE_DISPLAY_AS_SINGLE_TOKEN,
   FarmInfoService,
   PairStat,
@@ -334,33 +334,37 @@ export class InfoService {
       const denomTokenContract = this.poolInfos[key].denomTokenContract;
       if (this.poolInfos[key].farmType === 'LP') {
         pairInfoKey = key.split('-')[0];
-      } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
+      } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(this.poolInfos[key].farmType) || this.poolInfos[key].farmType === 'BORROWED') {
         pairInfoKey = `${this.poolInfos[key].dex}|${baseTokenContract}|${denomTokenContract}`;
       } else {
         continue;
       }
-      const tokenA = baseTokenContract.startsWith('u') ?
-        {native_token: {denom: baseTokenContract}} : {token: {contract_addr: baseTokenContract}};
-      const tokenB = denomTokenContract.startsWith('u') ?
-        {native_token: {denom: denomTokenContract}} : {token: {contract_addr: denomTokenContract}};
 
-      let factory: string;
-      if (this.poolInfos[key].dex === 'Terraswap') {
-        factory = this.terrajs.settings.terraSwapFactory;
-      } else if (this.poolInfos[key].dex === 'Astroport') {
-        factory = this.terrajs.settings.astroportFactory;
-      } else {
-        continue;
-      }
-
-      const task = bundler.query(factory, {
-        pair: {
-          asset_infos: [
-            tokenA, tokenB
-          ]
+      if (baseTokenContract && denomTokenContract) {
+        const tokenA = baseTokenContract.startsWith('u') ?
+          {native_token: {denom: baseTokenContract}} : {token: {contract_addr: baseTokenContract}};
+        const tokenB = denomTokenContract.startsWith('u') ?
+          {native_token: {denom: denomTokenContract}} : {token: {contract_addr: denomTokenContract}};
+        let factory: string;
+        if (this.poolInfos[key].dex === 'Terraswap') {
+          factory = this.terrajs.settings.terraSwapFactory;
+        } else if (this.poolInfos[key].dex === 'Astroport') {
+          factory = this.terrajs.settings.astroportFactory;
+        } else {
+          continue;
         }
-      }).then(value => this.pairInfos[pairInfoKey] = value);
-      tasks.push(task);
+
+        const task = bundler.query(factory, {
+          pair: {
+            asset_infos: [
+              tokenA, tokenB
+            ]
+          }
+        }).then(value => this.pairInfos[pairInfoKey] = value);
+        tasks.push(task);
+      } else {
+        console.error(`ensurePairInfos() error at key ${key} pairInfoKey ${pairInfoKey} baseTokenContract ${baseTokenContract} denomTokenContract ${denomTokenContract}`);
+      }
     }
 
     if (tasks.length) {
@@ -465,7 +469,7 @@ export class InfoService {
           }
           if (farmInfo.dex === 'Terraswap' && farmInfo.farmType === 'LP') {
             // supported only in backend
-          } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmInfo.farmType)) {
+          } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(farmInfo.farmType)) {
             const poolApy = ((+pairStats[key].poolApr * (1 - totalFee)) / 8760 + 1) ** 8760 - 1;
             pairStats[key].poolApy = pairStats[key].poolApr > 0 ? poolApy : 0;
           }
@@ -627,15 +631,19 @@ export class InfoService {
       const dex = this.poolInfos[key].dex;
       if (this.poolInfos[key].farmType === 'LP') {
         poolResponseKey = key.split('-')[0];
-      } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(this.poolInfos[key].farmType)) {
+      } else if (FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(this.poolInfos[key].farmType) || this.poolInfos[key].farmType === 'BORROWED') {
         const baseTokenContract = this.poolInfos[key].baseTokenContract;
         const denomTokenContract = this.poolInfos[key].denomTokenContract;
         poolResponseKey = `${dex}|${baseTokenContract}|${denomTokenContract}`;
       }
       const pairInfo = this.pairInfos[poolResponseKey];
 
-      poolTasks.push(bundler.query(pairInfo.contract_addr, {pool: {}})
-        .then(it => poolResponses[poolResponseKey] = it));
+      if (pairInfo) {
+        poolTasks.push(bundler.query(pairInfo.contract_addr, {pool: {}})
+          .then(it => poolResponses[poolResponseKey] = it));
+      } else {
+        console.error(`this.pairInfos key ${poolResponseKey} not found!`);
+      }
     }
 
     bundler.flush();
@@ -762,7 +770,7 @@ export class InfoService {
 
           portfolio.total_reward_ust += pending_farm_reward_ust;
           portfolio.total_reward_ust += pending_farm2_reward_ust;
-        } else if (farmInfo.dex === 'Terraswap' || FARM_TYPE_DEPOSIT_WITH_SINGLE_TOKEN.has(farmInfo.farmType)) {
+        } else if (farmInfo.dex === 'Terraswap' || FARM_TYPE_DEPOSIT_WITH_SINGLE_CW20TOKEN.has(farmInfo.farmType)) {
           const pending_farm_reward_ust = +this.balancePipe.transform(rewardInfo.pending_farm_reward, rewardTokenPoolResponse) / CONFIG.UNIT || 0;
           tvl += pending_farm_reward_ust;
           portfolio.tokens.get(rewardSymbol).pending_reward_token += +rewardInfo.pending_farm_reward / CONFIG.UNIT;
