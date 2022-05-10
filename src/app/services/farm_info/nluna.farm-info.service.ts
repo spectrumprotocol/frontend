@@ -69,9 +69,9 @@ export class NlunaFarmInfoService implements FarmInfoService {
     const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
     const nexusGovStatTask = apollo.query<any>({
       query: gql`{
-        getGovStakingAprRecords(limit: 1, offset: 0) {
+        getGovStakingApyRecords(limit: 1, offset: 0) {
           date
-          govStakingApr
+          govStakingApy
         }
       }`
     }).toPromise();
@@ -115,7 +115,7 @@ export class NlunaFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: nexusGovStat.data.getGovStakingAprRecords[0].govStakingApr / 100,
+        farmApr: nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
