@@ -1,25 +1,18 @@
-import { Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
+import {Injectable} from '@angular/core';
+import {Apollo, gql} from 'apollo-angular';
 import BigNumber from 'bignumber.js';
-import { TerrajsService } from '../terrajs.service';
-import {
-  DEX,
-  FARM_TYPE_ENUM,
-  FarmInfoService,
-  PairStat,
-  PoolInfo,
-  PoolItem
-} from './farm-info.service';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../libs/base64';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { div, times } from '../../libs/math';
-import { RewardInfoResponseItem } from '../api/nexus_nassets_psi_farm/reward_info_response';
-import { NlunaPsiFarmService } from '../api/nluna-psi-farm.service';
-import { NlunaPsiStakingService } from '../api/nluna-psi-staking.service';
-import { BalancePipe } from '../../pipes/balance.pipe';
-import { VaultsResponse } from '../api/gov/vaults_response';
-import { Denom } from '../../consts/denom';
+import {TerrajsService} from '../terrajs.service';
+import {DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo, PoolItem} from './farm-info.service';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
+import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {div, times} from '../../libs/math';
+import {RewardInfoResponseItem} from '../api/nexus_nassets_psi_farm/reward_info_response';
+import {NlunaPsiFarmService} from '../api/nluna-psi-farm.service';
+import {NlunaPsiStakingService} from '../api/nluna-psi-staking.service';
+import {BalancePipe} from '../../pipes/balance.pipe';
+import {VaultsResponse} from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
@@ -46,7 +39,8 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     private apollo: Apollo,
     private nlunaPsiStakingService: NlunaPsiStakingService,
     private balancePipe: BalancePipe
-  ) { }
+  ) {
+  }
 
   get farmContract() {
     return this.terrajs.settings.nLunaPsiFarm;
@@ -61,7 +55,7 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.nlunaPsiFarmService.query({ pools: {} });
+    const pool = await this.nlunaPsiFarmService.query({pools: {}});
     return pool.pools;
   }
 
@@ -76,16 +70,21 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
     }).toPromise();
     const nexusGovStatTask = apollo.query<any>({
       query: gql`{
-        getGovStakingAprRecords(limit: 1, offset: 0) {
+        getGovStakingApyRecords(limit: 1, offset: 0) {
           date
-          govStakingApr
+          govStakingApy
         }
       }`
     }).toPromise();
 
     const unixTimeSecond = Math.floor(Date.now() / 1000);
-    const rewardInfoTask = this.nlunaPsiStakingService.query({ staker_info: { time_seconds: +unixTimeSecond, staker: this.terrajs.settings.nLunaPsiFarm } });
-    const farmConfigTask = this.nlunaPsiFarmService.query({ config: {} });
+    const rewardInfoTask = this.nlunaPsiStakingService.query({
+      staker_info: {
+        time_seconds: +unixTimeSecond,
+        staker: this.terrajs.settings.nLunaPsiFarm
+      }
+    });
+    const farmConfigTask = this.nlunaPsiFarmService.query({config: {}});
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
@@ -126,7 +125,7 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: nexusGovStat.data.getGovStakingAprRecords[0].govStakingApr / 100,
+        farmApr: nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
@@ -152,15 +151,15 @@ export class NlunaPsiFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.nexusGov,
           amount,
-          msg: toBase64({ stake_voting_tokens: {} })
+          msg: toBase64({stake_voting_tokens: {}})
         }
       }
     );
   }
 
   async getnLunaPsiLPStat(nLunaPsiPoolResponse: PoolResponse, unixTimeSecond) {
-    const configTask = this.nlunaPsiStakingService.query({ config: {} });
-    const stateTask = this.nlunaPsiStakingService.query({ state: { time_seconds: +unixTimeSecond } });
+    const configTask = this.nlunaPsiStakingService.query({config: {}});
+    const stateTask = this.nlunaPsiStakingService.query({state: {time_seconds: +unixTimeSecond}});
     const [config, state] = await Promise.all([configTask, stateTask]);
     const poolnLunaAmount = nLunaPsiPoolResponse.assets[0]?.info?.token['contract_addr'] === this.terrajs.settings.nLunaToken ? nLunaPsiPoolResponse.assets[0].amount : nLunaPsiPoolResponse.assets[1].amount;
     const poolPsiAmount = nLunaPsiPoolResponse.assets[0]?.info?.token['contract_addr'] === this.terrajs.settings.nexusToken ? nLunaPsiPoolResponse.assets[0].amount : nLunaPsiPoolResponse.assets[1].amount;

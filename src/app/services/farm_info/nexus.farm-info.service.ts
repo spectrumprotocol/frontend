@@ -1,23 +1,16 @@
-import { Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
+import {Injectable} from '@angular/core';
+import {Apollo, gql} from 'apollo-angular';
 import BigNumber from 'bignumber.js';
-import { TerrajsService } from '../terrajs.service';
-import {
-  DEX,
-  FARM_TYPE_ENUM,
-  FarmInfoService,
-  PairStat,
-  PoolInfo,
-  PoolItem
-} from './farm-info.service';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../libs/base64';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { NexusFarmService } from '../api/nexus-farm.service';
-import { RewardInfoResponseItem } from '../api/nexus_farm/reward_info_response';
-import { NexusStakingService } from '../api/nexus-staking.service';
-import { VaultsResponse } from '../api/gov/vaults_response';
-import { Denom } from '../../consts/denom';
+import {TerrajsService} from '../terrajs.service';
+import {DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo, PoolItem} from './farm-info.service';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
+import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {NexusFarmService} from '../api/nexus-farm.service';
+import {RewardInfoResponseItem} from '../api/nexus_farm/reward_info_response';
+import {NexusStakingService} from '../api/nexus-staking.service';
+import {VaultsResponse} from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
@@ -40,7 +33,8 @@ export class NexusFarmInfoService implements FarmInfoService {
     private terrajs: TerrajsService,
     private apollo: Apollo,
     private nexusStaking: NexusStakingService,
-  ) { }
+  ) {
+  }
 
   get farmContract() {
     return this.terrajs.settings.nexusFarm;
@@ -55,7 +49,7 @@ export class NexusFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const pool = await this.nexusFarm.query({ pools: {} });
+    const pool = await this.nexusFarm.query({pools: {}});
     return pool.pools;
   }
 
@@ -70,16 +64,21 @@ export class NexusFarmInfoService implements FarmInfoService {
     }).toPromise();
     const nexusGovStatTask = apollo.query<any>({
       query: gql`{
-        getGovStakingAprRecords(limit: 1, offset: 0) {
+        getGovStakingApyRecords(limit: 1, offset: 0) {
           date
-          govStakingApr
+          govStakingApy
         }
       }`
     }).toPromise();
 
     const unixTimeSecond = Math.floor(Date.now() / 1000);
-    const rewardInfoTask = this.nexusStaking.query({ staker_info: { time_seconds: +unixTimeSecond, staker: this.terrajs.settings.nexusFarm } });
-    const farmConfigTask = this.nexusFarm.query({ config: {} });
+    const rewardInfoTask = this.nexusStaking.query({
+      staker_info: {
+        time_seconds: +unixTimeSecond,
+        staker: this.terrajs.settings.nexusFarm
+      }
+    });
+    const farmConfigTask = this.nexusFarm.query({config: {}});
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
@@ -117,7 +116,7 @@ export class NexusFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: nexusGovStat.data.getGovStakingAprRecords[0].govStakingApr / 100,
+        farmApr: nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
@@ -143,7 +142,7 @@ export class NexusFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.nexusGov,
           amount,
-          msg: toBase64({ stake_voting_tokens: {} })
+          msg: toBase64({stake_voting_tokens: {}})
         }
       }
     );
