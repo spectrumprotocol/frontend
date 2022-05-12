@@ -1034,9 +1034,29 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       );
 
       if (this.vault.poolInfo.farmType === 'PYLON_LIQUID') {
-        const lossPercent = (((+this.withdrawAmt * CONFIG.UNIT - +this.withdrawUST) / (+this.withdrawAmt * CONFIG.UNIT)) * 100).toFixed(2);
-        const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.baseSymbol} at about ${lossPercent}% discount.` : undefined;
-        await this.terrajs.post([unbond, withdrawUst], confirmMsg);
+        // const lossPercent = (((+this.withdrawAmt * CONFIG.UNIT - +this.withdrawUST) / (+this.withdrawAmt * CONFIG.UNIT)) * 100).toFixed(2);
+        // const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.baseSymbol} at about ${lossPercent}% discount.` : undefined;
+        let withdrawFromPylon = new MsgExecuteContract(
+          this.terrajs.address,
+          "terra1fmnedmd3732gwyyj47r5p03055mygce98dpte2",
+          {
+            withdraw: {
+              amount: times(this.withdrawAmt, CONFIG.UNIT),
+            },
+          }
+        );
+        let withdrawFromPylonCore = new MsgExecuteContract(
+          this.terrajs.address,
+          "terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc",
+          {
+            send: {
+              amount: times(this.withdrawAmt, CONFIG.UNIT),
+              contract: "terra1xu84jh7x2ugt3gkpv8d450hdwcyejtcwwkkzgv",
+              msg: toBase64({redeem:{}}),
+            },
+          }
+        );
+        await this.terrajs.post([unbond, withdrawFromPylon, withdrawFromPylonCore], );
       } else if (this.vault.poolInfo.farmType === 'NASSET') {
         await this.terrajs.post([unbond, withdrawUst]);
       }

@@ -1016,7 +1016,18 @@
                   </ng-container>
                 </div>
               </div>
-              <div *ngIf="withdrawMode === 'ust' || withdrawMode === 'ust_single_token'">
+              <div *ngIf="(withdrawMode === 'ust' || withdrawMode === 'ust_single_token') && (vault.poolInfo.farmType === 'PYLON_LIQUID')">
+
+                <div class="d-flex">
+                  <div>
+                    <span>Expected receive </span>
+                  </div>
+                  <div class="margin-left-auto">
+                    {{ withdrawAmt | number }} UST
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="(withdrawMode === 'ust' || withdrawMode === 'ust_single_token') && (vault.poolInfo.farmType !== 'PYLON_LIQUID')">
                 <div class="d-flex">
                   <div>
                     <span>Expected receive </span>
