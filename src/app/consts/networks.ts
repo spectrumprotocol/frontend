@@ -265,7 +265,7 @@ export const networks: Record<string, ISettings> = {
     fcd: 'https://fcd.terra.dev',
     querier: 'terra1kwk8xzc3ag5e02mzdvrqafwtjncnpypsnuxztf',
     mirrorGraph: 'mirror',
-    specAPI: 'https://specapi.azurefd.net/api',
+    specAPI: 'https://api.spec.finance/api',
     anchorAPI: 'https://api.anchorprotocol.com/api/v2',
     pylonAPI: 'https://api.pylon.money',
     valkyrieAPI: 'https://api.valkyrieprotocol.com',
