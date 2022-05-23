@@ -1,22 +1,16 @@
-import { Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
+import {Injectable} from '@angular/core';
+import {Apollo, gql} from 'apollo-angular';
 import BigNumber from 'bignumber.js';
-import { MirrorFarmService } from '../api/mirror-farm.service';
-import { MirrorStakingService } from '../api/mirror-staking.service';
-import { RewardInfoResponseItem } from '../api/mirror_farm/reward_info_response';
-import { TerrajsService } from '../terrajs.service';
-import {
-  DEX, FARM_TYPE_ENUM,
-  FarmInfoService,
-  PairStat,
-  PoolInfo,
-  PoolItem
-} from './farm-info.service';
-import { MsgExecuteContract } from '@terra-money/terra.js';
-import { toBase64 } from '../../libs/base64';
-import { PoolResponse } from '../api/terraswap_pair/pool_response';
-import { VaultsResponse } from '../api/gov/vaults_response';
-import { Denom } from '../../consts/denom';
+import {MirrorFarmService} from '../api/mirror-farm.service';
+import {MirrorStakingService} from '../api/mirror-staking.service';
+import {RewardInfoResponseItem} from '../api/mirror_farm/reward_info_response';
+import {TerrajsService} from '../terrajs.service';
+import {DEX, FARM_TYPE_ENUM, FarmInfoService, PairStat, PoolInfo, PoolItem} from './farm-info.service';
+import {MsgExecuteContract} from '@terra-money/terra.js';
+import {toBase64} from '../../libs/base64';
+import {PoolResponse} from '../api/terraswap_pair/pool_response';
+import {VaultsResponse} from '../api/gov/vaults_response';
+import {Denom} from '../../consts/denom';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 
 @Injectable()
@@ -40,7 +34,8 @@ export class MirrorFarmInfoService implements FarmInfoService {
     private mirrorFarm: MirrorFarmService,
     private mirrorStaking: MirrorStakingService,
     private terrajs: TerrajsService,
-  ) { }
+  ) {
+  }
 
   get farmContract() {
     return this.terrajs.settings.mirrorFarm;
@@ -55,7 +50,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
   }
 
   async queryPoolItems(): Promise<PoolItem[]> {
-    const res = await this.mirrorFarm.query({ pools: {} });
+    const res = await this.mirrorFarm.query({pools: {}});
     return res.pools;
   }
 
@@ -66,7 +61,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
         staker_addr: this.terrajs.settings.mirrorFarm
       }
     });
-    const farmConfigTask = this.mirrorFarm.query({ config: {} });
+    const farmConfigTask = this.mirrorFarm.query({config: {}});
     const apollo = this.apollo.use(this.terrajs.settings.mirrorGraph);
     const mirrorGovStatTask = apollo.query<any>({
       query: gql`query statistic($network: Network) {
@@ -96,7 +91,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     const mirrorGovStat = await mirrorGovStatTask;
     const pairs: Record<string, PairStat> = {};
     for (const asset of mirrorStat.data.assets) {
-      const poolApr = asset.token === this.terrajs.settings.mirrorToken ? 0 : +(asset.statistic.apr?.long || 0);
+      const poolApr = asset.token === this.terrajs.settings.mirrorToken ? 0 : (+asset.statistic.apr?.long / 100 || 0);
       const key = `${this.dex}|${asset.token}|${this.denomTokenContract}`;
       pairs[key] = createPairStat(poolApr, key);
     }
@@ -155,7 +150,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
         send: {
           contract: this.terrajs.settings.mirrorGov,
           amount,
-          msg: toBase64({ stake_voting_tokens: {} })
+          msg: toBase64({stake_voting_tokens: {}})
         }
       }
     );
