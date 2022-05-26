@@ -175,6 +175,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       ? this.info.allVaults.filter(vault => !vault.disabled)
       : this.activeFarm === 'Disabled farms'
         ? this.info.allVaults.filter(vault => !vault.disabled || (this.terrajs.isConnected && vault.disabled && +this.info.rewardInfos[vault.poolInfo.key]?.bond_amount > 10)) : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm && !vault.disabled);
+    vaults = vaults.filter(vault => vault.poolInfo.farm !== "Spectrum");
     if (this.lastSortBy !== this.sortBy || this.lastActiveFarm !== this.activeFarm || !this.search) {
       switch (this.sortBy) {
         case 'multiplier':

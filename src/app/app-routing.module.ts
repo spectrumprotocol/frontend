@@ -11,10 +11,10 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 const routes: Routes = [
   { path: 'vaults', component: VaultComponent },
   { path: 'tx-history', component: TxHistoryComponent },
-  { path: 'trade', component: TradeComponent },
-  { path: 'gov', component: GovComponent },
-  { path: 'gov/poll/new', component: GovPollNewComponent },
-  { path: 'gov/poll/:id', component: GovPollDetailComponent },
+  // { path: 'trade', component: TradeComponent },
+  // { path: 'gov', component: GovComponent },
+  // { path: 'gov/poll/new', component: GovPollNewComponent },
+  // { path: 'gov/poll/:id', component: GovPollDetailComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: '**', redirectTo: '/vaults' },
 ];
