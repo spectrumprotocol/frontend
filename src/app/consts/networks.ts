@@ -146,7 +146,7 @@ export interface ISettings {
 }
 
 export const networks: Record<string, ISettings> = {
-  mainnet: {
+  classic: {
     specToken: 'terra1s5eczhe0h0jutf46re52x5z4r03c8hupacxmdr',
     specPool: 'terra1tn8ejzw8kpuc87nu42f6qeyen4c7qy35tl8t20',
     specLpToken: 'terra1y9kxxm97vu4ex3uy0rgdr5h2vt7aze5sqx7jyl',

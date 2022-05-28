@@ -18,7 +18,7 @@ import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import BigNumber from 'bignumber.js';
 
 export const BLOCK_TIME = 6500; // 6.5s
-export const DEFAULT_NETWORK = 'mainnet';
+export const DEFAULT_NETWORK = 'classic';
 
 export type Result = SyncTxBroadcastResult.Data;
 

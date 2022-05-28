@@ -192,7 +192,7 @@ export class InfoService {
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
     if (this.terrajs.network?.name) {
-      return this.terrajs.network?.name === 'mainnet' || !farmInfo.mainnetOnly;
+      return this.terrajs.network?.name === 'classic' || !farmInfo.mainnetOnly;
     } else {
       return true;
     }
@@ -787,7 +787,7 @@ export class InfoService {
 
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
-      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+      const data = await this.httpClient.get<any>('https://terra.spec.finance/assets/lpVault.json').toPromise();
       if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
         throw (data);
       }
