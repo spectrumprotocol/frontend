@@ -2257,7 +2257,7 @@
       "farmType": "LP",
       "score": 1000001,
       "dex": "Astroport",
-      "highlight": true,
+      "highlight": false,
       "hasProxyReward": true,
       "farmConfig": {
         "controller_fee": 0.01,
@@ -2482,7 +2482,7 @@
       "farmType": "LP",
       "score": 1000100,
       "dex": "Astroport",
-      "highlight": true,
+      "highlight": false,
       "hasProxyReward": true,
       "farmConfig": {
         "controller_fee": 0.01,
@@ -4199,7 +4199,7 @@
       "farmType": "LP",
       "score": 1000100,
       "dex": "Astroport",
-      "highlight": true,
+      "highlight": false,
       "hasProxyReward": true,
       "farmConfig": {
         "controller_fee": 0.01,
@@ -4312,7 +4312,7 @@
       "farmType": "LP",
       "score": 1000100,
       "dex": "Astroport",
-      "highlight": true,
+      "highlight": false,
       "hasProxyReward": true,
       "farmConfig": {
         "controller_fee": 0.01,
@@ -4350,7 +4350,7 @@
       "farmType": "LP",
       "score": 1000100,
       "dex": "Astroport",
-      "highlight": true,
+      "highlight": false,
       "hasProxyReward": true,
       "notUseAstroportGqlApr": false,
       "farmConfig": {
@@ -4389,7 +4389,7 @@
       "farmType": "LP",
       "score": 1000100,
       "dex": "Astroport",
-      "highlight": true,
+      "highlight": false,
       "hasProxyReward": true,
       "farmConfig": {
         "controller_fee": 0.01,

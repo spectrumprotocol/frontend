@@ -122,14 +122,14 @@ export class InfoService {
   astroportData: any;
   private loadedNetwork: string;
   private DISABLED_VAULTS: Set<string> = new Set(['Astroport|STT|UST', 'Terraswap|mAMC|UST', 'Terraswap|mGME|UST',
-                                                  'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST',
-                                                  'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST',
-                                                  'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi', 'Astroport|ANC|UST',
-                                                  'Astroport|bLUNA|LUNA', 'Astroport|MIR|UST', 'Astroport|nLuna|Psi',
-                                                  'Astroport|ORNE|UST', 'Astroport|SAYVE|UST', 'Astroport|stLuna|LUNA',
-                                                  'Astroport|VKR|UST', 'Astroport|stLuna|LDO', 'Terraswap|GLOW|UST',
-                                                  'Terraswap|TNS|UST', 'Terraswap|TWD|UST', 'Terraswap|LOTA|UST',
-                                                ]);
+    'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST',
+    'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST',
+    'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi', 'Astroport|ANC|UST',
+    'Astroport|bLUNA|LUNA', 'Astroport|MIR|UST', 'Astroport|nLuna|Psi',
+    'Astroport|ORNE|UST', 'Astroport|SAYVE|UST', 'Astroport|stLuna|LUNA',
+    'Astroport|VKR|UST', 'Astroport|stLuna|LDO', 'Terraswap|GLOW|UST',
+    'Terraswap|TNS|UST', 'Terraswap|TWD|UST', 'Terraswap|LOTA|UST',
+  ]);
   private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
   private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
@@ -795,7 +795,7 @@ export class InfoService {
 
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
-      const data = await this.httpClient.get<any>('https://terra.spec.finance/assets/lpVault.json').toPromise();
+      const data = await this.httpClient.get<any>(`${window.location.origin}/assets/lpVault.json`).toPromise();
       if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
         throw (data);
       }
@@ -846,7 +846,6 @@ export class InfoService {
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const poolInfo = this.poolInfos[key];
-      console.log(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`)
       const shouldSetAprZero = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
 
       const pairStat = this.stat?.pairs[key];
