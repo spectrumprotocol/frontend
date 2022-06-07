@@ -23,7 +23,7 @@ export class NethFarmInfoService implements FarmInfoService {
   farmColor = '#F4B6C7';
   farmType: FARM_TYPE_ENUM = 'NASSET';
   auditWarning = false;
-  dex: DEX = 'Astroport';
+  dex: DEX = 'Terraswap';
   mainnetOnly = false;
   highlight = false;
 

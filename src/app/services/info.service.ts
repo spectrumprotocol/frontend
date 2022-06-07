@@ -121,11 +121,19 @@ export class InfoService {
   portfolio: Portfolio;
   astroportData: any;
   private loadedNetwork: string;
-  private DISABLED_VAULTS: Set<string> = new Set(['Astroport|STT|UST', 'Terraswap|mAMC|UST', 'Terraswap|mGME|UST', 'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
+  private DISABLED_VAULTS: Set<string> = new Set(['Astroport|STT|UST', 'Terraswap|mAMC|UST', 'Terraswap|mGME|UST',
+                                                  'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST',
+                                                  'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST',
+                                                  'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi', 'Astroport|ANC|UST',
+                                                  'Astroport|bLUNA|LUNA', 'Astroport|MIR|UST', 'Astroport|nLuna|Psi',
+                                                  'Astroport|ORNE|UST', 'Astroport|SAYVE|UST', 'Astroport|stLuna|LUNA',
+                                                  'Astroport|VKR|UST', 'Astroport|stLuna|LDO', 'Terraswap|GLOW|UST',
+                                                  'Terraswap|TNS|UST', 'Terraswap|TWD|UST', 'Terraswap|LOTA|UST',
+                                                ]);
   private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
   private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
-  private PROXY_REWARD_STOPPED: Set<string> = new Set(['Astroport|ANC|UST']);
+  private PROXY_REWARD_STOPPED: Set<string> = new Set(['Astroport|ANC|UST', 'Astroport|XDEFI|UST']);
 
   constructor(
     private bankService: BankService,
@@ -838,7 +846,7 @@ export class InfoService {
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const poolInfo = this.poolInfos[key];
-
+      console.log(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`)
       const shouldSetAprZero = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
 
       const pairStat = this.stat?.pairs[key];
@@ -878,7 +886,7 @@ export class InfoService {
       if (poolInfo.farm === 'Spectrum') {
         score = 2000000;
       } else if (disabled) {
-        score = 2100000;
+        score = -1;
       } else {
         score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0);
       }
