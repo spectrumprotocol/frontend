@@ -262,7 +262,7 @@ export const networks: Record<string, ISettings> = {
     astroportRouter: 'terra16t7dpwwgx9n3lq6l6te3753lsjqwhxwpday9zx',
     lcd: 'https://lcd.terra.dev',
     // lcd: 'https://node2.spec.finance',
-    fcd: 'https://fcd.terra.dev',
+    fcd: 'https://columbus-fcd.terra.dev',
     querier: 'terra1kwk8xzc3ag5e02mzdvrqafwtjncnpypsnuxztf',
     mirrorGraph: 'mirror',
     specAPI: 'https://api.spec.finance/api',

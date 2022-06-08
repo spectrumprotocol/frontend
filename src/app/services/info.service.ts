@@ -795,7 +795,7 @@ export class InfoService {
 
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
-      const data = await this.httpClient.get<any>(`${window.location.origin}/assets/lpVault.json`).toPromise();
+      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
       if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion) {
         throw (data);
       }

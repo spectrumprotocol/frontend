@@ -1,13 +1,13 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { Coin, CreateTxOptions, Fee, Msg, SignerOptions, Tx } from '@terra-money/terra.js';
-import { CONFIG } from '../../consts/config';
-import { TerrajsService } from '../terrajs.service';
-import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
-import { InfoService } from '../info.service';
+import {HttpClient} from '@angular/common/http';
+import {Component, OnInit} from '@angular/core';
+import {Coin, CreateTxOptions, Fee, Msg, SignerOptions, Tx} from '@terra-money/terra.js';
+import {CONFIG} from '../../consts/config';
+import {TerrajsService} from '../terrajs.service';
+import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import {MdbModalRef} from 'mdb-angular-ui-kit/modal';
+import {InfoService} from '../info.service';
 import BigNumber from 'bignumber.js';
-import { Denom } from '../../consts/denom';
+import {Denom} from '../../consts/denom';
 
 @Component({
   selector: 'app-tx-post',
@@ -51,12 +51,16 @@ export class TxPostComponent implements OnInit {
     private terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
     private info: InfoService
-  ) { }
+  ) {
+  }
 
   async ngOnInit() {
     try {
       if (!this.terrajs.isConnected) {
         throw new Error('please connect your wallet');
+      }
+      if (this.terrajs.extensionCurrentNetworkName !== this.terrajs.networkName) {
+        throw new Error('Please switch to classic network in Terra Station and reconnect wallet again.');
       }
 
       // ensure native token balances
@@ -76,7 +80,8 @@ export class TxPostComponent implements OnInit {
             this.gasBuffer = +gasSetting.gasBuffer;
           }
         }
-      } catch (e) { }
+      } catch (e) {
+      }
       this.coins = Object.keys(this.info.tokenBalances)
         .filter(it => this.terrajs.lcdClient.config.gasPrices[it]);
       if (!this.coins.length) {
@@ -88,7 +93,7 @@ export class TxPostComponent implements OnInit {
 
       // simulate
       this.loadingMsg = 'Simulating...';
-      const singerOptions: SignerOptions[] = [{ address: this.terrajs.address }];
+      const singerOptions: SignerOptions[] = [{address: this.terrajs.address}];
       this.signMsg = await this.terrajs.lcdClient.tx.create(singerOptions, {
         msgs: this.msgs,
         feeDenoms: [Denom.USD],
@@ -150,7 +155,8 @@ export class TxPostComponent implements OnInit {
           gasBuffer: this.gasBuffer,
           selectedCoin: this.selectedCoin,
         }));
-      } catch (e) { }
+      } catch (e) {
+      }
       this.loading = true;
       this.loadingMsg = 'Broadcasting...';
       const postMsg: CreateTxOptions = {
@@ -176,14 +182,14 @@ export class TxPostComponent implements OnInit {
 
       this.loadingMsg = 'Waiting for result...';
       do {
-        const res2 = await this.httpClient.get<any>(`${this.terrajs.settings.lcd}/txs/${this.txhash}`,
+        const res2 = await this.httpClient.get<any>(`${this.terrajs.settings.fcd}/v1/tx/${this.txhash}`,
           {
             observe: 'response',
           })
           .toPromise().catch(e => e);
         if (res2.ok) {
-          if (res2.body.code || res2.body.error) {
-            throw { message: 'Transaction failed', data: res2.body.code || res2.body.error };
+          if (res2.body?.code || res2.body?.error) {
+            throw {message: 'Transaction failed', data: res2.body.code || res2.body.error};
           }
           break;
         } else {
