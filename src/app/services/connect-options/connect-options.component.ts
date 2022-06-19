@@ -20,7 +20,7 @@ export class ConnectOptionsComponent {
     {
       name: 'Leap Wallet',
       identifier: 'leap-wallet',
-      icon: 'https://bit.ly/39CMJLF',
+      icon: 'https://bit.ly/L3APLOGO',
       installUrl: 'https://chrome.google.com/webstore/detail/leap-wallet/aijcbedoijmgnlmjeegjaglmepbmpkpi'
     },
     {
