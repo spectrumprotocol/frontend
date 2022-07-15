@@ -1,15 +1,15 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { CONFIG } from '../../consts/config';
-import { GovService } from '../../services/api/gov.service';
-import { ConfigInfo } from '../../services/api/gov/config_info';
-import { PollInfo, PollStatus } from '../../services/api/gov/polls_response';
-import { InfoService } from '../../services/info.service';
-import { TerrajsService } from '../../services/terrajs.service';
-import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { GovPoolDetail } from './gov-pool/gov-pool.component';
-import { BalanceResponse } from '../../services/api/gov/balance_response';
-import { StateInfo } from '../../services/api/gov/state_info';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Subscription} from 'rxjs';
+import {CONFIG} from '../../consts/config';
+import {GovService} from '../../services/api/gov.service';
+import {ConfigInfo} from '../../services/api/gov/config_info';
+import {PollInfo, PollStatus} from '../../services/api/gov/polls_response';
+import {InfoService} from '../../services/info.service';
+import {TerrajsService} from '../../services/terrajs.service';
+import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import {GovPoolDetail} from './gov-pool/gov-pool.component';
+import {BalanceResponse} from '../../services/api/gov/balance_response';
+import {StateInfo} from '../../services/api/gov/state_info';
 
 const LIMIT = 10;
 
@@ -37,17 +37,18 @@ export class GovComponent implements OnInit, OnDestroy {
     public info: InfoService,
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.$gaService.event('VIEW_GOV_PAGE');
     this.onTransaction = this.terrajs.transactionComplete.subscribe(() => {
-      this.info.refreshBalance({ native_token: true, spec: true });
+      this.info.refreshBalance({native_token: true, spec: true});
     });
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
         if (connected) {
-          await this.info.refreshBalance({ native_token: true, spec: true });
+          await this.info.refreshBalance({native_token: true, spec: true});
         }
         this.info.initializeVaultData(connected);
         this.gov.config()
@@ -68,7 +69,8 @@ export class GovComponent implements OnInit, OnDestroy {
         limit: LIMIT
       }
     });
-    this.polls = res.polls;
+
+    this.polls = res.polls.filter(poll => !this.info.malicious_polls.has(poll.id));
     this.hasMore = res.polls.length >= LIMIT;
   }
 

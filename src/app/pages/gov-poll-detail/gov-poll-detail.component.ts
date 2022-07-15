@@ -1,17 +1,18 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {NgForm} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
 import {MsgExecuteContract, SignerOptions} from '@terra-money/terra.js';
-import { Subscription } from 'rxjs';
-import { fade } from '../../consts/animations';
-import { CONFIG } from '../../consts/config';
-import { times } from '../../libs/math';
-import { GovService } from '../../services/api/gov.service';
-import { ConfigInfo } from '../../services/api/gov/config_info';
-import { PollInfo } from '../../services/api/gov/polls_response';
-import { TerrajsService } from '../../services/terrajs.service';
-import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { environment } from '../../../environments/environment';
+import {Subscription} from 'rxjs';
+import {fade} from '../../consts/animations';
+import {CONFIG} from '../../consts/config';
+import {times} from '../../libs/math';
+import {GovService} from '../../services/api/gov.service';
+import {ConfigInfo} from '../../services/api/gov/config_info';
+import {PollInfo} from '../../services/api/gov/polls_response';
+import {TerrajsService} from '../../services/terrajs.service';
+import {GoogleAnalyticsService} from 'ngx-google-analytics';
+import {environment} from '../../../environments/environment';
+import {InfoService} from '../../services/info.service';
 
 @Component({
   selector: 'app-gov-poll-detail',
@@ -37,6 +38,8 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
   yourVote: number;
   voteOption: 'yes' | 'no';
 
+  is_malicious_poll = false;
+
   @ViewChild('form') form: NgForm;
 
   private connected: Subscription;
@@ -47,22 +50,25 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     public terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
-  ) { }
+    private info: InfoService
+  ) {
+  }
 
   async ngOnInit() {
     const poll_id = +this.route.snapshot.paramMap.get('id');
     this.$gaService.event('VIEW_GOV_POLL', poll_id.toString());
     this.connected = this.terrajs.connected
       .subscribe(async connected => {
-        const stateTask = this.gov.query({ state: {} })
+        const stateTask = this.gov.query({state: {}})
           .then(it => this.staked = +it.total_staked);
         const configTask = this.gov.config()
           .then(it => this.config = it);
-        const pollTask = this.gov.query({ poll: { poll_id } });
+        const pollTask = this.gov.query({poll: {poll_id}});
         const height = await this.terrajs.getHeight();
         Promise.all([stateTask, configTask, pollTask])
           .then(([state, config, poll]) => this.resetPoll(poll, connected, height));
       });
+    this.is_malicious_poll = this.info.malicious_polls.has(poll_id);
   }
 
   private resetPoll(poll: PollInfo, connected: boolean, height: number) {
@@ -97,6 +103,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.connected.unsubscribe();
   }
+
   setMax() {
     this.amount = this.maxAmount;
   }
@@ -134,7 +141,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
           this.terrajs.address,
           this.terrajs.settings.gov,
           {
-            poll_end: { poll_id }
+            poll_end: {poll_id}
           },
         )
       ]);
@@ -151,7 +158,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
           this.terrajs.address,
           this.terrajs.settings.gov,
           {
-            poll_execute: { poll_id }
+            poll_execute: {poll_id}
           },
         )
       ]);
@@ -168,7 +175,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
           this.terrajs.address,
           this.terrajs.settings.gov,
           {
-            poll_expire: { poll_id }
+            poll_expire: {poll_id}
           },
         )
       ]);
@@ -182,7 +189,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
     msgs.push(new MsgExecuteContract(
       this.terrajs.settings.gov,
       this.terrajs.settings.gov,
-      { mint: {} })
+      {mint: {}})
     );
     for (const msg of this.poll.execute_msgs) {
       msgs.push(new MsgExecuteContract(
