@@ -70,7 +70,7 @@ export class GovComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.polls = res.polls.filter(poll => !this.info.malicious_polls.has(poll.id));
+    this.polls = res.polls.filter(poll => !this.info.malicious_polls.has(poll.id) || poll.id <= 46);
     this.hasMore = res.polls.length >= LIMIT;
   }
 
