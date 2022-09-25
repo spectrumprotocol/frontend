@@ -412,7 +412,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         },
         coins
       ));
-      await this.terrajs.post(msgs, { tax });
+      await this.terrajs.post(msgs, {tax});
     } else if (this.depositMode === 'lp') {
       const lpAmount = times(this.depositLPAmtLP, CONFIG.UNIT);
       const farmContract = this.vault.poolInfo.farmContract;
@@ -450,7 +450,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           }
         } as StakerExecuteMsg, new Coins([coin]));
 
-        await this.terrajs.post(msgs, { tax });
+        await this.terrajs.post(msgs, {tax});
       } else {
         let msgs: MsgExecuteContract;
         if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
@@ -502,7 +502,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             }
           } as StakerExecuteMsg, new Coins([coin]));
         }
-        await this.terrajs.post(msgs, { tax });
+        await this.terrajs.post(msgs, {tax});
       }
     } else if (this.depositMode === 'single_token') {
       const dpTokenAmount = times(this.depositTokenAmtSingleToken, CONFIG.UNIT);
@@ -602,7 +602,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         ));
       }
 
-      await this.terrajs.post(msgs, { tax: new Coin(Denom.USD, taxAmount) });
+      await this.terrajs.post(msgs, {tax: new Coin(Denom.USD, taxAmount)});
     }
 
     this.depositTokenAAmtTokenToken = undefined;
@@ -1051,7 +1051,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         // const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.baseSymbol} at about ${lossPercent}% discount.` : undefined;
         let withdrawFromPylon = new MsgExecuteContract(
           this.terrajs.address,
-          "terra1fmnedmd3732gwyyj47r5p03055mygce98dpte2",
+          'terra1fmnedmd3732gwyyj47r5p03055mygce98dpte2',
           {
             withdraw: {
               amount: times(this.withdrawAmt, CONFIG.UNIT),
@@ -1060,16 +1060,16 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         );
         let withdrawFromPylonCore = new MsgExecuteContract(
           this.terrajs.address,
-          "terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc",
+          'terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc',
           {
             send: {
               amount: times(this.withdrawAmt, CONFIG.UNIT),
-              contract: "terra1xu84jh7x2ugt3gkpv8d450hdwcyejtcwwkkzgv",
-              msg: toBase64({redeem:{}}),
+              contract: 'terra1xu84jh7x2ugt3gkpv8d450hdwcyejtcwwkkzgv',
+              msg: toBase64({redeem: {}}),
             },
           }
         );
-        await this.terrajs.post([unbond, withdrawFromPylon, withdrawFromPylonCore], );
+        await this.terrajs.post([unbond, withdrawFromPylon, withdrawFromPylonCore],);
       } else if (this.vault.poolInfo.farmType === 'NASSET') {
         await this.terrajs.post([unbond, withdrawUst]);
       }
@@ -1412,7 +1412,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.grossLpTokenToken = grossLp.toString();
 
     if (this.vault.poolInfo.denomTokenContract === Denom.USD) {
-      this.depositUSTAmountTokenUST = amountDenom
+      const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({
+        amount: amountDenom.toString(),
+        denom: 'uusd'
+      }));
+      console.log(tax.amount.toString());
+      this.depositUSTAmountTokenUST = amountDenom.plus(tax.amount.toString())
         .div(CONFIG.UNIT)
         .toNumber();
     }
