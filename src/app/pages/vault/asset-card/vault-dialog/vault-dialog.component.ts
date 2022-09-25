@@ -345,10 +345,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     const staker = this.vault.poolInfo.dex === 'Terraswap' ? this.terrajs.settings.staker : this.terrajs.settings.stakerAstroport;
 
     if (this.depositMode === 'tokentoken') {
-      const assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
+      let assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
       const assetDenomAmount = this.vault.poolInfo.denomTokenContract === Denom.USD
         ? times(this.depositUSTAmountTokenUST, CONFIG.UNIT)
         : times(this.depositTokenBAmtTokenToken, this.vault.denomUnit);
+      let tax: Coin = null;
+      if (this.vault.poolInfo.denomTokenContract === Denom.USD) {
+        tax = await this.terrajs.lcdClient.utils.calculateTax(new Coin(Denom.USD, assetDenomAmount));
+      }
+      if (this.vault.poolInfo.baseTokenContract === Denom.LUNA) {
+        assetBaseAmount = await this.terrajs.addTax(Denom.LUNA, assetBaseAmount);
+      }
       const assetBase = {
         amount: assetBaseAmount,
         info: this.vault.baseAssetInfo
@@ -405,7 +412,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         },
         coins
       ));
-      await this.terrajs.post(msgs);
+      await this.terrajs.post(msgs, {tax});
     } else if (this.depositMode === 'lp') {
       const lpAmount = times(this.depositLPAmtLP, CONFIG.UNIT);
       const farmContract = this.vault.poolInfo.farmContract;
@@ -426,6 +433,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const farmContract = this.vault.poolInfo.farmContract;
       const depositUST = times(this.depositUSTAmtUST, CONFIG.UNIT);
       const coin = new Coin(Denom.USD, depositUST);
+      const tax = await this.terrajs.lcdClient.utils.calculateTax(coin);
       if (this.vault.poolInfo.denomTokenContract === Denom.USD) {
         const msgs = new MsgExecuteContract(this.terrajs.address, staker, {
           zap_to_bond: {
@@ -442,9 +450,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           }
         } as StakerExecuteMsg, new Coins([coin]));
 
-        await this.terrajs.post(msgs);
+        await this.terrajs.post(msgs, {tax});
       } else {
-        let msgs;
+        let msgs: MsgExecuteContract;
         if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
           msgs = new MsgExecuteContract(this.terrajs.address, staker, {
             zap_to_bond: {
@@ -494,7 +502,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             }
           } as StakerExecuteMsg, new Coins([coin]));
         }
-        await this.terrajs.post(msgs);
+        await this.terrajs.post(msgs, {tax});
       }
     } else if (this.depositMode === 'single_token') {
       const dpTokenAmount = times(this.depositTokenAmtSingleToken, CONFIG.UNIT);
@@ -514,7 +522,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       await this.tokenService.handle(this.vault.poolInfo.baseTokenContract, msg);
     } else if (this.depositMode === 'ust_single_token') {
       const msgs: MsgExecuteContract[] = [];
+      let taxAmount = '0';
       if (+this.ustForSwapSingleToken) {
+        const tax = await this.terrajs.lcdClient.utils.calculateTax(new Coin(Denom.USD, this.ustForSwapSingleToken));
+        taxAmount = tax.amount.toString();
         msgs.push(new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.stakerSingleAsset, {
           zap_to_bond: {
             contract: this.vault.poolInfo.farmContract,
@@ -553,6 +564,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
 
       if (+this.ustForDepositbDP) {
+        const tax = await this.terrajs.lcdClient.utils.calculateTax(new Coin(Denom.USD, this.ustForDepositbDP));
+        taxAmount = plus(taxAmount, tax.amount.toString());
         const farmInfo = this.info.farmInfos.find(it => it.farmContract === this.vault.poolInfo.farmContract);
         const liquidPool = farmInfo.pylonLiquidInfo;
         msgs.push(new MsgExecuteContract(
@@ -589,7 +602,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         ));
       }
 
-      await this.terrajs.post(msgs);
+      await this.terrajs.post(msgs, {tax: new Coin(Denom.USD, taxAmount)});
     }
 
     this.depositTokenAAmtTokenToken = undefined;
@@ -1038,7 +1051,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         // const confirmMsg = +lossPercent > 0 ? `I confirm to sell ${this.vault.baseSymbol} at about ${lossPercent}% discount.` : undefined;
         let withdrawFromPylon = new MsgExecuteContract(
           this.terrajs.address,
-          "terra1fmnedmd3732gwyyj47r5p03055mygce98dpte2",
+          'terra1fmnedmd3732gwyyj47r5p03055mygce98dpte2',
           {
             withdraw: {
               amount: times(this.withdrawAmt, CONFIG.UNIT),
@@ -1047,16 +1060,16 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         );
         let withdrawFromPylonCore = new MsgExecuteContract(
           this.terrajs.address,
-          "terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc",
+          'terra1rzj8fua8wmqq7x0ka8emr6t7n9j45u82pe6sgc',
           {
             send: {
               amount: times(this.withdrawAmt, CONFIG.UNIT),
-              contract: "terra1xu84jh7x2ugt3gkpv8d450hdwcyejtcwwkkzgv",
-              msg: toBase64({redeem:{}}),
+              contract: 'terra1xu84jh7x2ugt3gkpv8d450hdwcyejtcwwkkzgv',
+              msg: toBase64({redeem: {}}),
             },
           }
         );
-        await this.terrajs.post([unbond, withdrawFromPylon, withdrawFromPylonCore], );
+        await this.terrajs.post([unbond, withdrawFromPylon, withdrawFromPylonCore],);
       } else if (this.vault.poolInfo.farmType === 'NASSET') {
         await this.terrajs.post([unbond, withdrawUst]);
       }
@@ -1403,6 +1416,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         amount: amountDenom.toString(),
         denom: 'uusd'
       }));
+      console.log(tax.amount.toString());
       this.depositUSTAmountTokenUST = amountDenom.plus(tax.amount.toString())
         .div(CONFIG.UNIT)
         .toNumber();
