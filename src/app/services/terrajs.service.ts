@@ -51,6 +51,11 @@ export interface ExecuteOptions {
   coin?: Coin.Data;
 }
 
+export interface PostOptions {
+  confirmMsg?: string;
+  tax?: Coin;
+}
+
 interface ConnectedState {
   status: WalletStatus;
   network: NetworkInfo;
@@ -262,7 +267,7 @@ export class TerrajsService implements OnDestroy {
     return res as any;
   }
 
-  async post(msgs: Msg[] | Msg, confirmMsg?: string) {
+  async post(msgs: Msg[] | Msg, opts?: PostOptions) {
     if (this.posting) {
       return;
     }
@@ -274,7 +279,8 @@ export class TerrajsService implements OnDestroy {
         ignoreBackdropClick: true,
         data: {
           msgs: msgs instanceof Array ? msgs : [msgs],
-          confirmMsg
+          confirmMsg: opts?.confirmMsg,
+          tax: opts?.tax,
         }
       });
       const result = await ref.onClose.toPromise();
@@ -304,6 +310,19 @@ export class TerrajsService implements OnDestroy {
       tax = new BigNumber(taxCap.amount.toString());
     }
     return num.minus(tax).toString();
+  }
+
+  async addTax(denom: string, amount: string) {
+    const [taxRate, taxCap] = await Promise.all([
+      this.lcdClient.treasury.taxRate(),
+      this.lcdClient.treasury.taxCap(denom)
+    ]);
+    const num = new BigNumber(amount);
+    let tax = num.dividedBy(1 - taxRate.toNumber()).integerValue(BigNumber.ROUND_UP);
+    if (tax.gt(taxCap.amount.toString())) {
+      tax = new BigNumber(taxCap.amount.toString());
+    }
+    return num.plus(tax).toString();
   }
 
   private async getWalletController() {

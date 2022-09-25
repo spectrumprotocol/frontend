@@ -158,6 +158,7 @@ export class TradeComponent implements OnInit, OnDestroy {
     this.$gaService.event('CLICK_BUY_SPEC');
     const amountUSTSubmit = times(this.amountBuyUST, CONFIG.UNIT);
     const coin = new Coin(Denom.USD, amountUSTSubmit);
+    const tax = await this.terrajs.lcdClient.utils.calculateTax(new Coin(Denom.USD, amountUSTSubmit));
     const swapBuySPECMsg = new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.specPool, {
       swap: {
         belief_price: this.beliefPriceBuy,
@@ -172,7 +173,7 @@ export class TradeComponent implements OnInit, OnDestroy {
         }
       }
     }, new Coins([coin]));
-    await this.terrajs.post(swapBuySPECMsg);
+    await this.terrajs.post(swapBuySPECMsg, { tax });
     this.amountBuySPEC = null;
     this.amountBuyUST = null;
     await this.infoService.refreshBalance({ spec: true, native_token: true });

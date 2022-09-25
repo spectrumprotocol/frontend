@@ -345,10 +345,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     const staker = this.vault.poolInfo.dex === 'Terraswap' ? this.terrajs.settings.staker : this.terrajs.settings.stakerAstroport;
 
     if (this.depositMode === 'tokentoken') {
-      const assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
+      let assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
       const assetDenomAmount = this.vault.poolInfo.denomTokenContract === Denom.USD
         ? times(this.depositUSTAmountTokenUST, CONFIG.UNIT)
         : times(this.depositTokenBAmtTokenToken, this.vault.denomUnit);
+      let tax: Coin = null;
+      if (this.vault.poolInfo.denomTokenContract === Denom.USD) {
+        tax = await this.terrajs.lcdClient.utils.calculateTax(new Coin(Denom.USD, assetDenomAmount));
+      }
+      if (this.vault.poolInfo.baseTokenContract === Denom.LUNA) {
+        assetBaseAmount = await this.terrajs.addTax(Denom.LUNA, assetBaseAmount);
+      }
       const assetBase = {
         amount: assetBaseAmount,
         info: this.vault.baseAssetInfo
@@ -405,7 +412,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         },
         coins
       ));
-      await this.terrajs.post(msgs);
+      await this.terrajs.post(msgs, { tax });
     } else if (this.depositMode === 'lp') {
       const lpAmount = times(this.depositLPAmtLP, CONFIG.UNIT);
       const farmContract = this.vault.poolInfo.farmContract;
@@ -426,6 +433,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const farmContract = this.vault.poolInfo.farmContract;
       const depositUST = times(this.depositUSTAmtUST, CONFIG.UNIT);
       const coin = new Coin(Denom.USD, depositUST);
+      const tax = await this.terrajs.lcdClient.utils.calculateTax(coin);
       if (this.vault.poolInfo.denomTokenContract === Denom.USD) {
         const msgs = new MsgExecuteContract(this.terrajs.address, staker, {
           zap_to_bond: {
@@ -442,9 +450,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           }
         } as StakerExecuteMsg, new Coins([coin]));
 
-        await this.terrajs.post(msgs);
+        await this.terrajs.post(msgs, { tax });
       } else {
-        let msgs;
+        let msgs: MsgExecuteContract;
         if (this.vault.poolInfo.farmContract === this.terrajs.settings.astroportStlunaLdoFarm) {
           msgs = new MsgExecuteContract(this.terrajs.address, staker, {
             zap_to_bond: {
@@ -494,7 +502,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
             }
           } as StakerExecuteMsg, new Coins([coin]));
         }
-        await this.terrajs.post(msgs);
+        await this.terrajs.post(msgs, { tax });
       }
     } else if (this.depositMode === 'single_token') {
       const dpTokenAmount = times(this.depositTokenAmtSingleToken, CONFIG.UNIT);
@@ -514,7 +522,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       await this.tokenService.handle(this.vault.poolInfo.baseTokenContract, msg);
     } else if (this.depositMode === 'ust_single_token') {
       const msgs: MsgExecuteContract[] = [];
+      let taxAmount = '0';
       if (+this.ustForSwapSingleToken) {
+        const tax = await this.terrajs.lcdClient.utils.calculateTax(new Coin(Denom.USD, this.ustForSwapSingleToken));
+        taxAmount = tax.amount.toString();
         msgs.push(new MsgExecuteContract(this.terrajs.address, this.terrajs.settings.stakerSingleAsset, {
           zap_to_bond: {
             contract: this.vault.poolInfo.farmContract,
@@ -553,6 +564,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
 
       if (+this.ustForDepositbDP) {
+        const tax = await this.terrajs.lcdClient.utils.calculateTax(new Coin(Denom.USD, this.ustForDepositbDP));
+        taxAmount = plus(taxAmount, tax.amount.toString());
         const farmInfo = this.info.farmInfos.find(it => it.farmContract === this.vault.poolInfo.farmContract);
         const liquidPool = farmInfo.pylonLiquidInfo;
         msgs.push(new MsgExecuteContract(
@@ -589,7 +602,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         ));
       }
 
-      await this.terrajs.post(msgs);
+      await this.terrajs.post(msgs, { tax: new Coin(Denom.USD, taxAmount) });
     }
 
     this.depositTokenAAmtTokenToken = undefined;
@@ -1399,11 +1412,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.grossLpTokenToken = grossLp.toString();
 
     if (this.vault.poolInfo.denomTokenContract === Denom.USD) {
-      const tax = await this.terrajs.lcdClient.utils.calculateTax(Coin.fromData({
-        amount: amountDenom.toString(),
-        denom: 'uusd'
-      }));
-      this.depositUSTAmountTokenUST = amountDenom.plus(tax.amount.toString())
+      this.depositUSTAmountTokenUST = amountDenom
         .div(CONFIG.UNIT)
         .toNumber();
     }

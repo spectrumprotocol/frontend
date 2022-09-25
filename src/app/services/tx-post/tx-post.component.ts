@@ -8,6 +8,7 @@ import {MdbModalRef} from 'mdb-angular-ui-kit/modal';
 import {InfoService} from '../info.service';
 import BigNumber from 'bignumber.js';
 import {Denom} from '../../consts/denom';
+import { plus } from 'src/app/libs/math';
 
 @Component({
   selector: 'app-tx-post',
@@ -44,6 +45,7 @@ export class TxPostComponent implements OnInit {
     showTicksValues: false,
     hideLimitLabels: true,
   };
+  tax: Coin;
 
   constructor(
     private httpClient: HttpClient,
@@ -159,14 +161,19 @@ export class TxPostComponent implements OnInit {
       }
       this.loading = true;
       this.loadingMsg = 'Broadcasting...';
+
+      const feeDenom = this.selectedCoin;
+      const feeAmount = this.fee;
+      const amount = !this.tax
+        ? [{ denom: feeDenom, amount: feeAmount }]
+        : this.tax.denom === feeDenom
+        ? [{ denom: feeDenom, amount: plus(feeAmount, this.tax.amount.toString()) }]
+        : [{ denom: feeDenom, amount: feeAmount }, { denom: this.tax.denom, amount: this.tax.amount.toString() }];
       const postMsg: CreateTxOptions = {
         msgs: this.msgs,
         fee: Fee.fromData({
           gas_limit: this.userGasLimit,
-          amount: [{
-            denom: this.selectedCoin,
-            amount: this.fee,
-          }],
+          amount,
           payer: undefined,
           granter: undefined,
         }),
