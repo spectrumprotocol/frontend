@@ -134,7 +134,6 @@ export class InfoService {
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
   private PROXY_REWARD_NOT_YET_AVAILABLE: Set<string> = new Set([]);
   private PROXY_REWARD_STOPPED: Set<string> = new Set(['Astroport|ANC|UST', 'Astroport|XDEFI|UST']);
-  malicious_polls: Set<number> = new Set([47, 48]);
 
   constructor(
     private bankService: BankService,

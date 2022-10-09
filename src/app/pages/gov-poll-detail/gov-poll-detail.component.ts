@@ -68,7 +68,7 @@ export class GovPollDetailComponent implements OnInit, OnDestroy {
         Promise.all([stateTask, configTask, pollTask])
           .then(([state, config, poll]) => this.resetPoll(poll, connected, height));
       });
-    this.is_malicious_poll = this.info.malicious_polls.has(poll_id);
+    this.is_malicious_poll = poll_id > 46;
   }
 
   private resetPoll(poll: PollInfo, connected: boolean, height: number) {

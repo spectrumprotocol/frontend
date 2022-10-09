@@ -15,9 +15,11 @@
     </div>
     <div *ngIf="poll && staked && config">
       <div *ngIf="is_malicious_poll" class="row pt-3">
-        <div class="card py-3">
-          <div class="card-body">
-            Warning! This poll is hidden because it is a malicious poll.
+        <div class="col-12">
+          <div class="card py-3 mb-0 alert alert-danger text-white">
+            <div class="card-body">
+              Warning! This poll is hidden because it is a malicious poll.
+            </div>
           </div>
         </div>
       </div>
