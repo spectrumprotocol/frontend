@@ -132,9 +132,11 @@
         <app-poll-item [config]="config" [poll]="poll" [staked]="+info.stat.govStaked" link="gov">
         </app-poll-item>
       </div>
-      <div class="d-grid gap-2 col-4 mx-auto">
-        <button (click)="pollMore()" *ngIf="hasMore" class="btn btn-secondary border-1" type="button">More</button>
-      </div>
+    </div>
+  </div>
+  <div class="row pb-4">
+    <div class="d-grid gap-2 col-4 mx-auto">
+      <button (click)="pollMore()" *ngIf="hasMore" class="btn btn-secondary border-1" type="button">More</button>
     </div>
   </div>
 </main>

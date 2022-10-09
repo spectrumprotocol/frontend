@@ -11,7 +11,7 @@ import {GovPoolDetail} from './gov-pool/gov-pool.component';
 import {BalanceResponse} from '../../services/api/gov/balance_response';
 import {StateInfo} from '../../services/api/gov/state_info';
 
-const LIMIT = 10;
+const LIMIT = 11;
 
 @Component({
   selector: 'app-gov',
