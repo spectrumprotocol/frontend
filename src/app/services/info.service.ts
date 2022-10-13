@@ -125,8 +125,8 @@ export class InfoService {
     'Astroport|STT|UST', 'Terraswap|mAMC|UST', 'Terraswap|mGME|UST',
     'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST',
     'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST',
-    'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi', 'Astroport|ORNE|UST', 
-    'Astroport|stLuna|LDO', 'Terraswap|GLOW|UST', 'Terraswap|TNS|UST', 
+    'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi',
+    'Astroport|stLuna|LDO', 'Terraswap|GLOW|UST', 'Terraswap|TNS|UST',
     'Terraswap|TWD|UST', 'Terraswap|LOTA|UST',
   ]);
   private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
