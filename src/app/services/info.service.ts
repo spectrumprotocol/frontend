@@ -121,14 +121,13 @@ export class InfoService {
   portfolio: Portfolio;
   astroportData: any;
   private loadedNetwork: string;
-  private DISABLED_VAULTS: Set<string> = new Set(['Astroport|STT|UST', 'Terraswap|mAMC|UST', 'Terraswap|mGME|UST',
+  private DISABLED_VAULTS: Set<string> = new Set([
+    'Astroport|STT|UST', 'Terraswap|mAMC|UST', 'Terraswap|mGME|UST',
     'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST',
     'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST',
-    'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi', 'Astroport|ANC|UST',
-    'Astroport|bLUNA|LUNA', 'Astroport|MIR|UST', 'Astroport|nLuna|Psi',
-    'Astroport|ORNE|UST', 'Astroport|SAYVE|UST', 'Astroport|stLuna|LUNA',
-    'Astroport|VKR|UST', 'Astroport|stLuna|LDO', 'Terraswap|GLOW|UST',
-    'Terraswap|TNS|UST', 'Terraswap|TWD|UST', 'Terraswap|LOTA|UST',
+    'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi', 'Astroport|ORNE|UST', 
+    'Astroport|stLuna|LDO', 'Terraswap|GLOW|UST', 'Terraswap|TNS|UST', 
+    'Terraswap|TWD|UST', 'Terraswap|LOTA|UST',
   ]);
   private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
