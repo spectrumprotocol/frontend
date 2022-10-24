@@ -125,9 +125,9 @@ export class InfoService {
     'Astroport|STT|UST', 'Terraswap|mAMC|UST', 'Terraswap|mGME|UST',
     'Terraswap|VKR|UST', 'Terraswap|MIR|UST', 'Terraswap|ANC|UST',
     'Terraswap|MINE|UST', 'Terraswap|ORION|UST', 'Terraswap|Psi|UST',
-    'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi',
+    'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi', 'nETH', 'nLuna', 'bPsiDP-24m',
     'Astroport|stLuna|LDO', 'Terraswap|GLOW|UST', 'Terraswap|TNS|UST',
-    'Terraswap|TWD|UST', 'Terraswap|LOTA|UST',
+    'Terraswap|TWD|UST', 'Terraswap|LOTA|UST', 'Astroport|stLuna|LUNA'
   ]);
   private WILL_AVAILABLE_AT_ASTROPORT: Set<string> = new Set([]);
   private NOW_AVAILABLE_AT_ASTROPORT: Set<string> = new Set(['Terraswap|MIR|UST', 'Terraswap|ANC|UST', 'Terraswap|VKR|UST', 'Terraswap|ORION|UST', 'Terraswap|MINE|UST', 'Terraswap|Psi|UST', 'Terraswap|nLuna|Psi', 'Terraswap|nETH|Psi']);
@@ -845,7 +845,7 @@ export class InfoService {
       const baseSymbol = baseToken.startsWith('u') ? Denom.display[baseToken] : this.tokenInfos[baseToken]?.symbol;
       const denomSymbol = denomToken.startsWith('u') ? Denom.display[denomToken] : this.tokenInfos[denomToken]?.symbol;
       const poolInfo = this.poolInfos[key];
-      const shouldSetAprZero = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
+      const shouldSetAprZero = FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType) ? this.DISABLED_VAULTS.has(`${baseSymbol}`) : this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
 
       const pairStat = this.stat?.pairs[key];
       const poolApr = shouldSetAprZero ? 0 : pairStat?.poolApr || 0;
@@ -879,7 +879,7 @@ export class InfoService {
       const stakeApy = farmApy + specApy;
       const apy = Math.max(compoundApy, stakeApy);
 
-      const disabled = this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
+      const disabled = FARM_TYPE_SINGLE_TOKEN.has(poolInfo.farmType) ? this.DISABLED_VAULTS.has(`${baseSymbol}`) : this.DISABLED_VAULTS.has(`${poolInfo.dex}|${baseSymbol}|${denomSymbol}`);
       let score;
       if (poolInfo.farm === 'Spectrum') {
         score = 2000000;
