@@ -76,15 +76,15 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const farmConfigTask = this.bPsiDpFarmService.query({ config: {} });
     const balanceOfTask = this.wasm.query(this.terrajs.settings.bPsiDPGatewayPool, { balance_of: { owner: this.terrajs.settings.bPsiDPFarm } });
-    const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
-    const nexusGovStatTask = apollo.query<any>({
-      query: gql`{
-        getGovStakingAprRecords(limit: 1, offset: 0) {
-          date
-          govStakingApr
-        }
-      }`
-    }).toPromise();
+    // const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    // const nexusGovStatTask = apollo.query<any>({
+    //   query: gql`{
+    //     getGovStakingAprRecords(limit: 1, offset: 0) {
+    //       date
+    //       govStakingApr
+    //     }
+    //   }`
+    // }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
@@ -92,7 +92,8 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
     const bPsiDPStat = await this.getBPsiDPStat(poolResponses);
     const pairs: Record<string, PairStat> = {};
 
-    const [farmConfig, nexusGovStat] = await Promise.all([farmConfigTask, nexusGovStatTask]);
+    // const [farmConfig, nexusGovStat] = await Promise.all([farmConfigTask, nexusGovStatTask]);
+    const [farmConfig] = await Promise.all([farmConfigTask]);
     const communityFeeRate = +farmConfig.community_fee;
     const specbPsiDPTvl = (await balanceOfTask)?.amount || '0';
 
@@ -111,7 +112,8 @@ export class BPsiDPFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: nexusGovStat.data.getGovStakingAprRecords[0].govStakingApr / 100,
+        farmApr: 0,
+        //nexusGovStat.data.getGovStakingAprRecords[0].govStakingApr / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,

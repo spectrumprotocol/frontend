@@ -133,23 +133,24 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
     const farmConfigTask = this.farmService.query(this.farmContract, { config: {} });
     const apollo = this.apollo.use(this.terrajs.settings.mirrorGraph);
-    const mirrorGovStatTask = apollo.query<any>({
-      query: gql`query statistic($network: Network) {
-        statistic(network: $network) {
-          govAPR
-        }
-      }`,
-      variables: {
-        network: 'TERRA'
-      }
-    }).toPromise();
+    // const mirrorGovStatTask = apollo.query<any>({
+    //   query: gql`query statistic($network: Network) {
+    //     statistic(network: $network) {
+    //       govAPR
+    //     }
+    //   }`,
+    //   variables: {
+    //     network: 'TERRA'
+    //   }
+    // }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
     const pairs: Record<string, PairStat> = {};
 
-    const [mirrorGovStat, depositAmount, farmConfig] = await Promise.all([mirrorGovStatTask, depositAmountTask, farmConfigTask]);
+    // const [mirrorGovStat, depositAmount, farmConfig] = await Promise.all([mirrorGovStatTask, depositAmountTask, farmConfigTask]);
+    const [depositAmount, farmConfig] = await Promise.all([depositAmountTask, farmConfigTask]);
 
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
@@ -177,7 +178,8 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
         poolAstroApr: 0,
-        farmApr: +(mirrorGovStat.data?.statistic?.govAPR || 0),
+        farmApr: 0,
+        // +(mirrorGovStat.data?.statistic?.govAPR || 0),
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,
