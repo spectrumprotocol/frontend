@@ -56,7 +56,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   search: string;
   showDepositedPoolOnly = false;
   defaultSortBy: SORT_BY = 'multiplier';
-  defaultActiveFarm = 'Active farms';
+  defaultActiveFarm = 'All farms';
   sortBy: SORT_BY = this.defaultSortBy;
   activeFarm = this.defaultActiveFarm;
   UNIT = CONFIG.UNIT;
@@ -172,9 +172,12 @@ export class VaultComponent implements OnInit, OnDestroy {
   @debounce(250)
   refresh(resetFilterOnEmpty?: boolean) {
     let vaults = this.activeFarm === 'Active farms'
-      ? this.info.allVaults
+      ? this.info.allVaults.filter(vault => !vault.disabled || (this.terrajs.isConnected && vault.disabled && +this.info.rewardInfos[vault.poolInfo.key]?.bond_amount > 10))
+      : this.activeFarm === 'All farms' 
+        ? this.info.allVaults
       : this.activeFarm === 'Disabled farms'
-        ? this.info.allVaults.filter(vault => !vault.disabled || (this.terrajs.isConnected && vault.disabled && +this.info.rewardInfos[vault.poolInfo.key]?.bond_amount > 10)) : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm && !vault.disabled);
+        ? this.info.allVaults.filter(vault => vault.disabled) 
+      : this.info.allVaults.filter(vault => vault.poolInfo.farm === this.activeFarm && !vault.disabled);
     if (this.lastSortBy !== this.sortBy || this.lastActiveFarm !== this.activeFarm || !this.search) {
       switch (this.sortBy) {
         case 'multiplier':

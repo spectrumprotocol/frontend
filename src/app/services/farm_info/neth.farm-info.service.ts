@@ -66,15 +66,15 @@ export class NethFarmInfoService implements FarmInfoService {
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const farmConfigTask = this.nassetFarmService.query(this.farmContract, {config: {}});
     const nAssetBalanceTask = this.tokenService.balance(this.defaultBaseTokenContract, this.farmContract);
-    const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
-    const nexusGovStatTask = apollo.query<any>({
-      query: gql`{
-        getGovStakingApyRecords(limit: 1, offset: 0) {
-          date
-          govStakingApy
-        }
-      }`
-    }).toPromise();
+    // const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    // const nexusGovStatTask = apollo.query<any>({
+    //   query: gql`{
+    //     getGovStakingApyRecords(limit: 1, offset: 0) {
+    //       date
+    //       govStakingApy
+    //     }
+    //   }`
+    // }).toPromise();
     // query: gql`{
     //     getBAssetVaultAprRecords(limit: 7, offset: 0) {
     //       date
@@ -83,24 +83,26 @@ export class NethFarmInfoService implements FarmInfoService {
     //       bLunaVaultApr
     //       bLunaVaultManualApr
     //      }`
-    const nexusNAssetStatTask = apollo.query<any>({
-      query: gql`{
-        getBAssetVaultAprRecords(limit: 1, offset: 0) {
-          bEthVaultApr
-         }
-        }`
-    }).toPromise();
+    // const nexusNAssetStatTask = apollo.query<any>({
+    //   query: gql`{
+    //     getBAssetVaultAprRecords(limit: 1, offset: 0) {
+    //       bEthVaultApr
+    //      }
+    //     }`
+    // }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
     const pairs: Record<string, PairStat> = {};
 
-    const [farmConfig, nexusGovStat, nexusNAssetStat, nAssetBalance] = await Promise.all([farmConfigTask, nexusGovStatTask, nexusNAssetStatTask, nAssetBalanceTask]);
+    // const [farmConfig, nexusGovStat, nexusNAssetStat, nAssetBalance] = await Promise.all([farmConfigTask, nexusGovStatTask, nexusNAssetStatTask, nAssetBalanceTask]);
+    const [farmConfig, nAssetBalance] = await Promise.all([farmConfigTask, nAssetBalanceTask]);
     const communityFeeRate = +farmConfig.community_fee;
     const nAssetTvl = this.balancePipe.transform(nAssetBalance.balance, poolResponses[`Astroport|${this.defaultBaseTokenContract}|${this.terrajs.settings.nexusToken}`], poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
 
-    const poolApr = +(nexusNAssetStat.data?.getBAssetVaultAprRecords[0]?.bEthVaultApr || 0) / 100;
+    const poolApr = 0;
+    // +(nexusNAssetStat.data?.getBAssetVaultAprRecords[0]?.bEthVaultApr || 0) / 100;
     const key = `${this.defaultBaseTokenContract}`;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
@@ -115,7 +117,8 @@ export class NethFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
+        farmApr: 0,
+        // nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,

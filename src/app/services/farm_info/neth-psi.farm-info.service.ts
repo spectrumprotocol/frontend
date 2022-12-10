@@ -60,22 +60,22 @@ export class NethPsiFarmInfoService implements FarmInfoService {
   }
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
-    const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
-    const nexusLPStatTask = apollo.query<any>({
-      query: gql`{
-        getLiquidityPoolApr {
-          psiNEthLpArp
-        }
-      }`
-    }).toPromise();
-    const nexusGovStatTask = apollo.query<any>({
-      query: gql`{
-        getGovStakingApyRecords(limit: 1, offset: 0) {
-          date
-          govStakingApy
-        }
-      }`
-    }).toPromise();
+    // const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    // const nexusLPStatTask = apollo.query<any>({
+    //   query: gql`{
+    //     getLiquidityPoolApr {
+    //       psiNEthLpArp
+    //     }
+    //   }`
+    // }).toPromise();
+    // const nexusGovStatTask = apollo.query<any>({
+    //   query: gql`{
+    //     getGovStakingApyRecords(limit: 1, offset: 0) {
+    //       date
+    //       govStakingApy
+    //     }
+    //   }`
+    // }).toPromise();
 
     const unixTimeSecond = Math.floor(Date.now() / 1000);
     const rewardInfoTask = this.nethPsiStakingService.query({
@@ -89,8 +89,8 @@ export class NethPsiFarmInfoService implements FarmInfoService {
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.nEthPsiFarm)?.weight || 0;
-    const nexusLPStat = await nexusLPStatTask;
-    const nexusGovStat = await nexusGovStatTask;
+    // const nexusLPStat = await nexusLPStatTask;
+    // const nexusGovStat = await nexusGovStatTask;
     const pairs: Record<string, PairStat> = {};
 
     const rewardInfo = await rewardInfoTask;
@@ -110,7 +110,8 @@ export class NethPsiFarmInfoService implements FarmInfoService {
       .div(p.total_share)
       .toString();
 
-    const poolApr = +(nexusLPStat.data.getLiquidityPoolApr.psiNEthLpArp || 0) / 100;
+    const poolApr = 0;
+    // +(nexusLPStat.data.getLiquidityPoolApr.psiNEthLpArp || 0) / 100;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
     pair.tvl = nEthPsiTvl;
@@ -124,7 +125,8 @@ export class NethPsiFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
+        farmApr: 0,
+        // nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,

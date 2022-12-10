@@ -66,15 +66,15 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
       }
     });
     const farmConfigTask = this.farmService.query(this.farmContract, {config: {}});
-    const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
-    const nexusGovStatTask = apollo.query<any>({
-      query: gql`{
-        getGovStakingApyRecords(limit: 1, offset: 0) {
-          date
-          govStakingApy
-        }
-      }`
-    }).toPromise();
+    // const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    // const nexusGovStatTask = apollo.query<any>({
+    //   query: gql`{
+    //     getGovStakingApyRecords(limit: 1, offset: 0) {
+    //       date
+    //       govStakingApy
+    //     }
+    //   }`
+    // }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
@@ -83,7 +83,8 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
     const govStatTask = this.getGovStat();
     const pairs: Record<string, PairStat> = {};
 
-    const [depositAmount, farmConfig, lpStat, nexusGovStat] = await Promise.all([depositAmountTask, farmConfigTask, lpStatTask, nexusGovStatTask]);
+    // const [depositAmount, farmConfig, lpStat, nexusGovStat] = await Promise.all([depositAmountTask, farmConfigTask, lpStatTask, nexusGovStatTask]);
+    const [depositAmount, farmConfig, lpStat] = await Promise.all([depositAmountTask, farmConfigTask, lpStatTask]);
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
     const uusd = p.assets.find(a => a.info.native_token?.['denom'] === 'uusd');
@@ -109,7 +110,8 @@ export class AstroportPsiUstFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
+        farmApr: 0,
+        // nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,

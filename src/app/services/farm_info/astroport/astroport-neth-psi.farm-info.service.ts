@@ -143,22 +143,23 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
     });
     const farmConfigTask = this.farmService.query(this.farmContract, {config: {}});
     const psiPrice = this.balancePipe.transform('1', poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
-    const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
-    const nexusGovStatTask = apollo.query<any>({
-      query: gql`{
-        getGovStakingApyRecords(limit: 1, offset: 0) {
-          date
-          govStakingApy
-        }
-      }`
-    }).toPromise();
+    // const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
+    // const nexusGovStatTask = apollo.query<any>({
+    //   query: gql`{
+    //     getGovStakingApyRecords(limit: 1, offset: 0) {
+    //       date
+    //       govStakingApy
+    //     }
+    //   }`
+    // }).toPromise();
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.farmContract)?.weight || 0;
     const pairs: Record<string, PairStat> = {};
 
-    const [depositAmount, farmConfig, nexusGovStat] = await Promise.all([depositAmountTask, farmConfigTask, nexusGovStatTask]);
+    // const [depositAmount, farmConfig, nexusGovStat] = await Promise.all([depositAmountTask, farmConfigTask, nexusGovStatTask]);
+    const [depositAmount, farmConfig] = await Promise.all([depositAmountTask, farmConfigTask]);
     const communityFeeRate = +farmConfig.community_fee;
     const p = poolResponses[key];
     const psiAsset = p.assets.find(a => a.info.token?.['contract_addr'] === this.terrajs.settings.nexusToken);
@@ -187,7 +188,8 @@ export class AstroportNethPsiFarmInfoService implements FarmInfoService {
       const stat: PairStat = {
         poolApr,
         poolApy: (poolApr / 8760 + 1) ** 8760 - 1,
-        farmApr: nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
+        farmApr: 0,
+        // nexusGovStat.data.getGovStakingApyRecords[0].govStakingApy / 100,
         tvl: '0',
         multiplier: poolInfo ? govWeight * poolInfo.weight / totalWeight : 0,
         vaultFee: 0,

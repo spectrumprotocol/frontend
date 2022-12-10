@@ -56,10 +56,11 @@ export class OrionFarmInfoService implements FarmInfoService {
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.orionFarm)?.weight || 0;
-    const orionLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.orionAPI}/staking`));
+    // const orionLPStat = await firstValueFrom(this.httpClient.get<any>(`${this.terrajs.settings.orionAPI}/staking`));
     const pairs: Record<string, PairStat> = {};
 
-    const poolApr = +orionLPStat?.lp?.apr / 100 || 0;
+    const poolApr = 0;
+    // +orionLPStat?.lp?.apr / 100 || 0;
     const key = `${this.dex}|${this.terrajs.settings.orionToken}|${Denom.USD}`;
     pairs[key] = createPairStat(poolApr, key);
 
