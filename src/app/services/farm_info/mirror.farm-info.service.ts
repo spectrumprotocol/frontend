@@ -12,6 +12,7 @@ import {PoolResponse} from '../api/terraswap_pair/pool_response';
 import {VaultsResponse} from '../api/gov/vaults_response';
 import {Denom} from '../../consts/denom';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class MirrorFarmInfoService implements FarmInfoService {
@@ -34,6 +35,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
     private mirrorFarm: MirrorFarmService,
     private mirrorStaking: MirrorStakingService,
     private terrajs: TerrajsService,
+    private httpClient: HttpClient,
   ) {
   }
 
@@ -62,7 +64,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
       }
     });
     const farmConfigTask = this.mirrorFarm.query({config: {}});
-    // const apollo = this.apollo.use(this.terrajs.settings.mirrorGraph);
+    const apollo = this.apollo.use(this.terrajs.settings.mirrorGraph);
     // const mirrorGovStatTask = apollo.query<any>({
     //   query: gql`query statistic($network: Network) {
     //     statistic(network: $network) {
@@ -85,16 +87,19 @@ export class MirrorFarmInfoService implements FarmInfoService {
     //   }`
     // }).toPromise();
 
+    const mirrorApr = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/mirror').toPromise();
+
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.mirrorFarm)?.weight || 0;
     // const mirrorGovStat = await mirrorGovStatTask;
     const pairs: Record<string, PairStat> = {};
-    // for (const asset of mirrorStat.data.assets) {
-    //   const poolApr = asset.token === this.terrajs.settings.mirrorToken ? 0 : (+asset.statistic.apr?.long / 100 || 0);
-    //   const key = `${this.dex}|${asset.token}|${this.denomTokenContract}`;
-    //   pairs[key] = createPairStat(poolApr, key);
-    // }
+    const mirrorStat = Object.keys(mirrorApr.apr).map((key) => ({token: key, apr: {...mirrorApr.apr[key]}}));
+    for (const asset of mirrorStat) {
+      const poolApr = asset.token === this.terrajs.settings.mirrorToken ? 0 : (+asset.apr?.long || 0);
+      const key = `${this.dex}|${asset.token}|${this.denomTokenContract}`;
+      pairs[key] = createPairStat(poolApr, key);
+    }
 
     const rewardInfos = await rewardInfoTask;
     const farmConfig = await farmConfigTask;
