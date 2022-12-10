@@ -180,11 +180,11 @@
                    class="dropdown w-100 btn-group"
                    mdbDropdown>
                 <button aria-expanded="false" class="btn p-0" mdbDropdownToggle type="button">
-                  <img *ngIf="activeFarm !== 'Active farms' && activeFarm !== 'Disabled farms'"
+                  <img *ngIf="activeFarm !== 'Active farms' && activeFarm !== 'Disabled farms' && activeFarm !== 'All farms'"
                        [src]="activeFarm | url:'icon'"
                        class="mobile-icon" height="24"
                        width="24">
-                  <img *ngIf="activeFarm === 'Active farms' || activeFarm === 'Disabled farms'" class="mobile-icon"
+                  <img *ngIf="activeFarm === 'Active farms' || activeFarm === 'Disabled farms' || activeFarm === 'All farms'" class="mobile-icon"
                        height="24" src="../../../assets/Icon_Farms.svg"
                        width="24">
                   <span class="text-dropdown d-none d-md-inline ps-2 sub-topic">{{activeFarm}}</span>
@@ -193,6 +193,10 @@
                   </span>
                 </button>
                 <ul class="dropdown-menu" mdbDropdownMenu>
+                  <li>
+                    <a (click)="activeFarm = 'All farms'; refresh()" [class.active]="activeFarm === 'All farms'"
+                       class="dropdown-item">All farms</a>
+                  </li>
                   <li>
                     <a (click)="activeFarm = 'Active farms'; refresh()" [class.active]="activeFarm === 'Active farms'"
                        class="dropdown-item">Active farms</a>
