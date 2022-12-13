@@ -13,6 +13,12 @@ import {VaultsResponse} from '../api/gov/vaults_response';
 import {Denom} from '../../consts/denom';
 import {PairInfo} from '../api/terraswap_factory/pair_info';
 import { HttpClient } from '@angular/common/http';
+import { assetsAPRQuery } from '../apr/apr';
+import { listed } from '../apr/data';
+import { StakingPool } from '../apr/type';
+import { WasmService } from '../api/wasm.service';
+
+const num = (number: BigNumber.Value) => new BigNumber(number)
 
 @Injectable()
 export class MirrorFarmInfoService implements FarmInfoService {
@@ -31,11 +37,10 @@ export class MirrorFarmInfoService implements FarmInfoService {
   }
 
   constructor(
-    private apollo: Apollo,
     private mirrorFarm: MirrorFarmService,
     private mirrorStaking: MirrorStakingService,
     private terrajs: TerrajsService,
-    private httpClient: HttpClient,
+    private wasm: WasmService,
   ) {
   }
 
@@ -64,7 +69,7 @@ export class MirrorFarmInfoService implements FarmInfoService {
       }
     });
     const farmConfigTask = this.mirrorFarm.query({config: {}});
-    const apollo = this.apollo.use(this.terrajs.settings.mirrorGraph);
+    // const apollo = this.apollo.use(this.terrajs.settings.mirrorGraph);
     // const mirrorGovStatTask = apollo.query<any>({
     //   query: gql`query statistic($network: Network) {
     //     statistic(network: $network) {
@@ -86,15 +91,16 @@ export class MirrorFarmInfoService implements FarmInfoService {
     //     }
     //   }`
     // }).toPromise();
-
-    const mirrorApr = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/mirror').toPromise();
+    const annualRewards = await this.getAnnualRewardsQuery();
+    const stakingPoolInfoAssets = await this.getStakingPoolInfoAssets(listed);;
+    const mirrorApr = assetsAPRQuery(this.terrajs, poolResponses, annualRewards, stakingPoolInfoAssets);
 
     // action
     const totalWeight = Object.values(poolInfos).reduce((a, b) => a + b.weight, 0);
     const govWeight = govVaults.vaults.find(it => it.address === this.terrajs.settings.mirrorFarm)?.weight || 0;
     // const mirrorGovStat = await mirrorGovStatTask;
     const pairs: Record<string, PairStat> = {};
-    const mirrorStat = Object.keys(mirrorApr.apr).map((key) => ({token: key, apr: {...mirrorApr.apr[key]}}));
+    const mirrorStat = Object.keys(mirrorApr).map((key) => ({token: key, apr: {...mirrorApr[key]}}));
     for (const asset of mirrorStat) {
       const poolApr = asset.token === this.terrajs.settings.mirrorToken ? 0 : (+asset.apr?.long || 0);
       const key = `${this.dex}|${asset.token}|${this.denomTokenContract}`;
@@ -160,5 +166,61 @@ export class MirrorFarmInfoService implements FarmInfoService {
         }
       }
     );
+  }
+
+  getStakingPoolInfoAssets = async (listed: Array<any>): Promise<Record<string, StakingPool>> => {
+    let stakingPoolInfoAssets = {};
+    for(let { token } of listed) {
+      const stakingPoolInfo = await this.mirrorStaking.query({
+        pool_info: {
+          asset_token: token
+        }
+      });
+      stakingPoolInfoAssets[token] = stakingPoolInfo;
+    };
+    return stakingPoolInfoAssets;
+  }
+
+  getAnnualRewardsQuery = async (): Promise<Record<string, String>> => {
+
+    // got from apr.ts in Mirror dApp FE
+    // genesis(2020-12-04 04:00 KST) + 6hours
+    const START = 1607022000000 + 60000 * 60 * 6;
+    const YEAR = 60000 * 60 * 24 * 365;
+  
+    const distributionSchedules = [
+      [START, YEAR * 1 + START, '54900000000000'],
+      [YEAR * 1 + START, YEAR * 2 + START, '27450000000000'],
+      [YEAR * 2 + START, YEAR * 3 + START, '13725000000000'],
+      [YEAR * 3 + START, YEAR * 4 + START, '6862500000000'],
+    ];
+  
+    const now = Date.now();
+    const schedule = distributionSchedules.find(
+      (item) => now >= item[0] && now <= item[1]
+    );
+    const reward = Array.isArray(schedule) ? schedule[2] : "0"
+  
+    const distributionInfo = await this.wasm.query(this.terrajs.settings.mirrorFactory, { distribution_info: {} });
+    const weights = distributionInfo?.weights;
+  
+    if (reward === "0" || !weights) {
+      return {}
+    }
+  
+    const totalWeight = weights.reduce((acc, cur) => acc.plus(cur[1]), num(0))
+  
+    const getTokenReward = (weight: number) =>
+      num(reward).multipliedBy(num(weight).dividedBy(totalWeight))
+  
+    return weights
+      .filter(([, weight]) => num(weight).isGreaterThan(0))
+      .reduce(
+        (acc, cur) =>
+          Object.assign(acc, {
+            [cur[0]]: getTokenReward(cur[1]).toFixed(0),
+          }),
+        {}
+      )
   }
 }
