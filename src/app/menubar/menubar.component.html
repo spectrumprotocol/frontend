@@ -37,6 +37,29 @@
     <!-- Left links -->
 
     <!--- right links -->
+    <div #selectNetworkDropdown class="selectNetworkDropdown me-2" mdbDropdown>
+      <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
+        <img [src]='"/assets/LUNC.svg"' class="network-logo me-1">Terra Classic
+      </button>
+      <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu dropdown-menu-end" mdbDropdownMenu>
+        <li>
+          <a class="dropdown-item disabled text-center pb-0">Select Network</a>
+        </li>
+        <li class="dropdown-item disabled">
+          <div class="solid-line"></div>
+        </li>
+        <li><a (click)="selectNetworkDropdown.hide()"
+               class="dropdown-item"
+               href="https://terra.spec.finance"
+               target="_blank"><img [src]='"/assets/luna.png"' class="network-logo"> Terra</a>
+        </li>
+        <li><a (click)="selectNetworkDropdown.hide()"
+               class="dropdown-item"
+               href="https://aptos.spec.finance"
+               target="_blank"><img [src]='"/assets/aptos.svg"' class="network-logo"> Aptos</a>
+        </li>
+      </ul>
+    </div>
     <div #dropdown *ngIf="terrajs.address" class="dropdown" mdbDropdown>
       <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
         <i class="fas fa-wallet"></i>&nbsp;<span class="text-muted d-none d-md-inline">{{ tnsName || walletText }}
