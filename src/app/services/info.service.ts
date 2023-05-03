@@ -539,7 +539,9 @@ export class InfoService {
           reward_info: {
             staker_addr: this.terrajs.address,
           }
-        }).then(({reward_infos: rewards}: { reward_infos: RewardInfoResponseItem[] }) => processRewards(farmInfo, rewards));
+        }).then(({reward_infos: rewards}: {
+          reward_infos: RewardInfoResponseItem[]
+        }) => processRewards(farmInfo, rewards));
       }
       tasks.push(task);
     }
@@ -946,7 +948,7 @@ export class InfoService {
 
     const [state, rates] = await Promise.all([
       this.anchorMarket.query({epoch_state: {}}),
-      this.httpClient.get<any>(this.terrajs.settings.anchorAPI + '/deposit-rate').toPromise().catch(_ => undefined),
+      // this.httpClient.get<any>(this.terrajs.settings.anchorAPI + '/deposit-rate').toPromise().catch(_ => undefined),
       this.gov.state().then(it => this.govStateInfo = it),
       this.terrajs.isConnected
         ? this.gov.balance().then(it => this.govBalanceResponse = it)
@@ -954,7 +956,8 @@ export class InfoService {
       this.refreshPool(),
     ]);
 
-    const anchorRatePerBlock = rates?.[0]?.deposit_rate ?? '0.000000041729682765';
+    // const anchorRatePerBlock = rates?.[0]?.deposit_rate ?? '0.000000041729682765';
+    const anchorRatePerBlock = '0.000000041729682765';
     const anchorRatePerYear = times(anchorRatePerBlock, 4656810);
 
     const vaultFeeByPools = {};
