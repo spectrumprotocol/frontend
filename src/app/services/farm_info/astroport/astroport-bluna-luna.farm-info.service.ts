@@ -22,6 +22,7 @@ import {WasmService} from '../../api/wasm.service';
 import {BalancePipe} from '../../../pipes/balance.pipe';
 import { balance_transform } from '../../calc/balance_calc';
 import { getStablePrice } from 'src/app/libs/stable';
+import { TokenService } from '../../api/token.service';
 
 @Injectable()
 export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
@@ -44,7 +45,7 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
     private farmService: AstroportBlunalunaFarmService,
     private terrajs: TerrajsService,
     private wasm: WasmService,
-    private balancePipe: BalancePipe
+    private token: TokenService,
   ) {
   }
 
@@ -121,7 +122,7 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
   // no LP APR calculation, return 0 to use Astroport API
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const key = `${this.dex}|${this.terrajs.settings.bLunaToken}|${Denom.LUNA}`;
-    const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
+    const depositAmountTask = this.token.balance(pairInfos[key].liquidity_token, this.farmContract);
     const farmConfigTask = this.farmService.query({ config: {} });
 
     // action
@@ -142,7 +143,7 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
       return;
     }
     const bLunaPrice = getStablePrice(+blunaAsset.amount, +ulunaAsset.amount);
-    const bLunaSwap = new BigNumber(depositAmount)
+    const bLunaSwap = new BigNumber(depositAmount.balance)
       .times(blunaAsset.amount)
       .div(p.total_share)
       .times(bLunaPrice)
@@ -151,7 +152,7 @@ export class AstroportBlunaLunaFarmInfoService implements FarmInfoService {
     const poolApr = 0;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
-    pair.tvl = new BigNumber(depositAmount)
+    pair.tvl = new BigNumber(depositAmount.balance)
       .times(ulunaAsset.amount)
       .div(p.total_share)
       .plus(bLunaSwap)

@@ -20,6 +20,7 @@ import {AstroportLunaUstFarmService} from '../../api/astroport-lunaust-farm.serv
 import {PairInfo} from '../../api/terraswap_factory/pair_info';
 import {WasmService} from '../../api/wasm.service';
 import { balance_transform } from '../../calc/balance_calc';
+import { TokenService } from '../../api/token.service';
 
 @Injectable()
 export class AstroportLunaUstFarmInfoService implements FarmInfoService {
@@ -38,7 +39,8 @@ export class AstroportLunaUstFarmInfoService implements FarmInfoService {
   constructor(
     private farmService: AstroportLunaUstFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService
+    private wasm: WasmService,
+    private token: TokenService,
   ) {
   }
 
@@ -112,7 +114,7 @@ export class AstroportLunaUstFarmInfoService implements FarmInfoService {
   // no LP APR calculation, return 0 to use Astroport API
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${Denom.USD}`;
-    const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
+    const depositAmountTask = this.token.balance(pairInfos[key].liquidity_token, this.farmContract);
     const farmConfigTask = this.farmService.query({ config: {} });
 
     // action
@@ -133,7 +135,7 @@ export class AstroportLunaUstFarmInfoService implements FarmInfoService {
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
     pair.tvl = new BigNumber(uusd.amount)
-      .times(depositAmount)
+      .times(depositAmount.balance)
       .times(2)
       .div(p.total_share)
       .toString();

@@ -15,6 +15,7 @@ import {Denom} from '../../../consts/denom';
 import {times} from '../../../libs/math';
 import {BalancePipe} from '../../../pipes/balance.pipe';
 import {Apollo, gql} from 'apollo-angular';
+import { TokenService } from '../../api/token.service';
 
 @Injectable()
 export class AstroportNlunaPsiFarmInfoService implements FarmInfoService {
@@ -39,7 +40,7 @@ export class AstroportNlunaPsiFarmInfoService implements FarmInfoService {
     private terrajs: TerrajsService,
     private wasm: WasmService,
     private balancePipe: BalancePipe,
-    private apollo: Apollo,
+    private token: TokenService,
   ) {
   }
 
@@ -135,12 +136,7 @@ export class AstroportNlunaPsiFarmInfoService implements FarmInfoService {
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${this.denomTokenContract}`;
-    const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
-      deposit: {
-        lp_token: pairInfos[key].liquidity_token,
-        user: this.farmContract
-      }
-    });
+    const depositAmountTask = this.token.balance(pairInfos[key].liquidity_token, this.farmContract);
     const farmConfigTask = this.farmService.query(this.farmContract, {config: {}});
     const psiPrice = this.balancePipe.transform('1', poolResponses[`Astroport|${this.terrajs.settings.nexusToken}|${Denom.USD}`]);
     // const apollo = this.apollo.use(this.terrajs.settings.nexusGraph);
@@ -169,7 +165,7 @@ export class AstroportNlunaPsiFarmInfoService implements FarmInfoService {
 
     const totalPsiValueUST = times(psiPrice, psiAsset.amount);
     const nLunaPsiTvl = new BigNumber(totalPsiValueUST)
-      .times(depositAmount)
+      .times(depositAmount.balance)
       .times(2)
       .div(p.total_share)
       .toString();
