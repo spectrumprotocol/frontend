@@ -22,6 +22,7 @@ import { div } from '../../../libs/math';
 import { MirrorStakingService } from '../../api/mirror-staking.service';
 import { BalancePipe } from '../../../pipes/balance.pipe';
 import { Apollo, gql } from 'apollo-angular';
+import { TokenService } from '../../api/token.service';
 
 @Injectable()
 export class AstroportMirUstFarmInfoService implements FarmInfoService {
@@ -47,7 +48,7 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
     private terrajs: TerrajsService,
     private wasm: WasmService,
     private mirrorStaking: MirrorStakingService,
-    private balancePipe: BalancePipe,
+    private token: TokenService,
   ) {
   }
 
@@ -130,7 +131,7 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
 
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${Denom.USD}`;
-    const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, { deposit: { lp_token: pairInfos[key].liquidity_token, user: this.farmContract }});
+    const depositAmountTask = this.token.balance(pairInfos[key].liquidity_token, this.farmContract);
     const farmConfigTask = this.farmService.query(this.farmContract, { config: {} });
     const apollo = this.apollo.use(this.terrajs.settings.mirrorGraph);
     // const mirrorGovStatTask = apollo.query<any>({
@@ -163,7 +164,7 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
     pair.tvl = new BigNumber(uusd.amount)
-      .times(depositAmount)
+      .times(depositAmount.balance)
       .times(2)
       .div(p.total_share)
       .toString();
@@ -247,7 +248,7 @@ export class AstroportMirUstFarmInfoService implements FarmInfoService {
 
     const now = Date.now();
     const current_distribution_schedule = distributionSchedules.find(
-      (item) => now >= item[0] && now <= item[1]
+      (item) => now >= +item[0] && now <= +item[1]
     );
 
 

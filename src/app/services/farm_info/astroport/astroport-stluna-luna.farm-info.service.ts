@@ -13,6 +13,7 @@ import {PairInfo} from '../../api/terraswap_factory/pair_info';
 import {getStablePrice} from '../../../libs/stable';
 import {balance_transform} from '../../calc/balance_calc';
 import {AstroportStlunaLunaFarmService} from '../../api/astroport-stlunaluna-farm.service';
+import { TokenService } from '../../api/token.service';
 
 @Injectable()
 export class AstroportStlunaLunaFarmInfoService implements FarmInfoService {
@@ -31,7 +32,7 @@ export class AstroportStlunaLunaFarmInfoService implements FarmInfoService {
   constructor(
     private farmService: AstroportStlunaLunaFarmService,
     private terrajs: TerrajsService,
-    private wasm: WasmService,
+    private token: TokenService,
   ) {
   }
 
@@ -59,12 +60,7 @@ export class AstroportStlunaLunaFarmInfoService implements FarmInfoService {
   // no LP APR calculation, return 0 to use Astroport API
   async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>): Promise<Record<string, PairStat>> {
     const key = `${this.dex}|${this.defaultBaseTokenContract}|${this.denomTokenContract}`;
-    const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
-      deposit: {
-        lp_token: pairInfos[key].liquidity_token,
-        user: this.farmContract
-      }
-    });
+    const depositAmountTask = this.token.balance(pairInfos[key].liquidity_token, this.farmContract);
     const farmConfigTask = this.farmService.query({config: {}});
 
     // action
@@ -85,7 +81,7 @@ export class AstroportStlunaLunaFarmInfoService implements FarmInfoService {
     const ulunaPrice = balance_transform('1', poolResponses[`${this.dex}|${Denom.LUNA}|${Denom.USD}`]);
     const stlunaPriceInLuna = getStablePrice(+stluna.amount, +ulunaAsset.amount);
 
-    const stlunaSwap = new BigNumber(depositAmount)
+    const stlunaSwap = new BigNumber(depositAmount.balance)
       .times(stluna.amount)
       .div(stlunaLunaPoolResponses.total_share)
       .times(stlunaPriceInLuna)
@@ -94,7 +90,7 @@ export class AstroportStlunaLunaFarmInfoService implements FarmInfoService {
     const poolApr = 0;
     pairs[key] = createPairStat(poolApr, key);
     const pair = pairs[key];
-    pair.tvl = new BigNumber(depositAmount)
+    pair.tvl = new BigNumber(depositAmount.balance)
       .times(ulunaAsset.amount)
       .div(stlunaLunaPoolResponses.total_share)
       .plus(stlunaSwap)
