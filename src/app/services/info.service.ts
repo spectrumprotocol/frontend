@@ -505,7 +505,7 @@ export class InfoService {
 
   async refreshRewardInfos() {
     const rewardInfos: InfoService['rewardInfos'] = {};
-    const bundler = new QueryBundler(this.wasm, 8);
+    const bundler = new QueryBundler(this.wasm);
     const tasks: Promise<any>[] = [];
     const BUNDLER_BLACKLIST = new Set([this.terrajs.settings.mirrorFarm]);
     const processRewards = (farmInfo: FarmInfoService, rewards: RewardInfoResponseItem[]) => {
@@ -1046,7 +1046,7 @@ export class InfoService {
   }
 
   @memoize(30000)
-  private async ensureAstroportData() {
+  async ensureAstroportData() {
     const apollo = this.apollo.use('astroport');
     this.astroportData = (await apollo.query<any>({
       query: gql`query {

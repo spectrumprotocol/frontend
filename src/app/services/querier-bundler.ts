@@ -16,7 +16,7 @@ export class QueryBundler {
 
   constructor(
     private wasm: WasmService,
-    private maxSize = 10
+    private maxSize = 5,
   ) { }
 
   query(addr: string, msg: any): Promise<any> {
@@ -50,9 +50,6 @@ export class QueryBundler {
         const result = results[i];
         const task = tasks[i];
         const str = fromBase64(result);
-        if (false){ // for debug
-          console.log(task.query.addr, fromBase64(task.query.msg), str);
-        }
         task.ok(str);
       }
     }).catch(ex => {
