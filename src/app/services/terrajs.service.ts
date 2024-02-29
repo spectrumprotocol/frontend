@@ -244,11 +244,11 @@ export class TerrajsService implements OnDestroy {
     }
 
     if (this.USE_NEW_BASE64_API) {
-      const res = await this.httpClient.get<GetResponse>(`${this.settings.lcd}/${path}`, {
+      const res = await this.httpClient.get<any>(`${this.settings.lcd}/${path}`, {
         params,
         headers,
       }).toPromise();
-      return res.query_result as any;
+      return res.data as any;
     } else {
       const res = await this.httpClient.get<GetResponseOld>(`${this.settings.lcd}/${path}`, {
         params,
